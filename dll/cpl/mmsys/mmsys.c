@@ -497,12 +497,6 @@ MMSYS_InstallDevice(HDEVINFO hDevInfo, PSP_DEVINFO_DATA pspDevInfoData)
                                          NULL,
                                          NULL);
 
-    if (Result)
-    {
-        Result = SetupInstallServicesFromInfSectionW(hInf,
-                                                     L"Audio_Inst.NT.Services",
-                                                     0);
-    }
 
     SetupTermDefaultQueueCallback(Context);
     SetupCloseInfFile(hInf);
@@ -521,6 +515,7 @@ MMSYS_InstallDevice(HDEVINFO hDevInfo, PSP_DEVINFO_DATA pspDevInfoData)
         InstallSoftwareBusPnpEnumerator(szBuffer, L"ROOT\\SWENUM\0");
     }
 
+<<<<<<< HEAD
     hSCManager = OpenSCManagerW(NULL, NULL, SC_MANAGER_CONNECT);
     if (!hSCManager)
     {
@@ -538,7 +533,7 @@ MMSYS_InstallDevice(HDEVINFO hDevInfo, PSP_DEVINFO_DATA pspDevInfoData)
     }
     CloseServiceHandle(hSCManager);
 
-    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Drivers32", 0, KEY_READ | KEY_WRITE, &hKey) == ERROR_SUCCESS)
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Drivers32", 0, GENERIC_READ | GENERIC_WRITE, &hKey) == ERROR_SUCCESS)
     {
         Length = GetSystemDirectoryW(szBuffer, _countof(szBuffer));
         if (!Length || Length >= _countof(szBuffer) - CONST_STR_LEN(L"\\wdmaud.drv"))
