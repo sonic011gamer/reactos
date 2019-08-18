@@ -19,6 +19,7 @@ include_directories(
 
 list(APPEND SOURCE
     dbg/dbgui.c
+    ldr/appcompat.c
     ldr/ldrapi.c
     ldr/ldrinit.c
     ldr/ldrpe.c
@@ -63,6 +64,7 @@ if (STACK_PROTECTOR)
     target_sources(ntdll PRIVATE $<TARGET_OBJECTS:gcc_ssp_nt>)
 endif()
 
+target_link_libraries(ntdll rtl rtl_vista ntdllsys libcntpr uuid ${PSEH_LIB})
 add_pch(ntdll include/ntdll.h "${PCH_SKIP_SOURCE}")
 add_dependencies(ntdll ntstatus asm)
 add_cd_file(TARGET ntdll DESTINATION reactos/system32 NO_CAB FOR all)
