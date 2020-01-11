@@ -82,15 +82,7 @@ NtfsDispatch(PNTFS_IRP_CONTEXT IrpContext)
             break;
 
         case IRP_MJ_SET_INFORMATION:
-            if (!NtfsGlobalData->EnableWriteSupport)
-            {
-                DPRINT1("NTFS write-support is EXPERIMENTAL and is disabled by default!\n");
-                Status = STATUS_ACCESS_DENIED;
-            }
-            else
-            {
-                Status = NtfsSetInformation(IrpContext);
-            }
+            Status = NtfsSetInformation(IrpContext);
             break;
 
         case IRP_MJ_DIRECTORY_CONTROL:
@@ -106,15 +98,7 @@ NtfsDispatch(PNTFS_IRP_CONTEXT IrpContext)
              break;
 
         case IRP_MJ_WRITE:
-            if (!NtfsGlobalData->EnableWriteSupport)
-            {
-                DPRINT1("NTFS write-support is EXPERIMENTAL and is disabled by default!\n");
-                Status = STATUS_ACCESS_DENIED;
-            }
-            else
-            {
-                Status = NtfsWrite(IrpContext);
-            }
+            Status = NtfsWrite(IrpContext);
             break;
 
         case IRP_MJ_CLOSE:

@@ -152,7 +152,6 @@ typedef struct
     NPAGED_LOOKASIDE_LIST IrpContextLookasideList;
     NPAGED_LOOKASIDE_LIST FcbLookasideList;
     NPAGED_LOOKASIDE_LIST AttrCtxtLookasideList;
-    BOOLEAN EnableWriteSupport;
 } NTFS_GLOBAL_DATA, *PNTFS_GLOBAL_DATA;
 
 
