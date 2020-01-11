@@ -2086,7 +2086,6 @@ AddNewMftEntry(PFILE_RECORD_HEADER FileRecord,
     if (BitmapBits.HighPart != 0)
     {
         DPRINT1("\tFIXME: bitmap sizes beyond 32bits are not yet supported! (Your NTFS volume is too large)\n");
-        NtfsGlobalData->EnableWriteSupport = FALSE;
         ExFreePoolWithTag(BitmapBuffer, TAG_NTFS);
         ReleaseAttributeContext(BitmapContext);
         return STATUS_NOT_IMPLEMENTED;
