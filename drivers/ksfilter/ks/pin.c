@@ -1776,17 +1776,8 @@ NTAPI
 KsPinGetFirstCloneStreamPointer(
     IN PKSPIN Pin)
 {
-    IKsPinImpl * This;
-
-    DPRINT("KsPinGetFirstCloneStreamPointer %p\n", Pin);
-
-    This = (IKsPinImpl*)CONTAINING_RECORD(Pin, IKsPinImpl, Pin);
-
-    if (!This->ClonedStreamPointer)
-        return NULL;
-
-    /* return first cloned stream pointer */
-    return &This->ClonedStreamPointer->StreamPointer;
+    UNIMPLEMENTED;
+    return NULL;
 }
 
 /*
