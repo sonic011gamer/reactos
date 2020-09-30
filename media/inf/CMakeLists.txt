@@ -28,6 +28,7 @@ list(APPEND INF_FILES
     usbport.inf
     volume.inf
     wdmaudio.inf
+    wdma_usb.inf
     wmiacpi.inf)
 
 list(APPEND UTF8_INF_FILES
