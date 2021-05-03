@@ -764,8 +764,6 @@ DxEngSetDCState(HDC hDC, DWORD SetType, DWORD Set)
 /************************************************************************/
 HBITMAP APIENTRY DxEngSelectBitmap(HDC hdc, HBITMAP hbmp)
 {
-    DPRINT1("ReactX Calling : DxEngSelectBitmap \n");
-
     return NtGdiSelectBitmap(hdc, hbmp);
 }
 
