@@ -780,8 +780,6 @@ BOOLEAN APIENTRY DxEngSetBitmapOwner(HBITMAP hbmp, ULONG ulOwner)
 /************************************************************************/
 BOOLEAN APIENTRY DxEngDeleteSurface(HSURF hsurf)
 {
-    DPRINT1("ReactX Calling : DxEngDeleteSurface \n");
-
     return EngDeleteSurface(hsurf);
 }
 
