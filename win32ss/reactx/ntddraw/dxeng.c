@@ -772,8 +772,6 @@ HBITMAP APIENTRY DxEngSelectBitmap(HDC hdc, HBITMAP hbmp)
 /************************************************************************/
 BOOLEAN APIENTRY DxEngSetBitmapOwner(HBITMAP hbmp, ULONG ulOwner)
 {
-    DPRINT1("ReactX Calling : DxEngSetBitmapOwner \n");
-
     return GreSetBitmapOwner(hbmp, ulOwner);
 }
 
