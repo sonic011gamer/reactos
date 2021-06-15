@@ -442,6 +442,12 @@ BOOLEAN CMAPI
 HvWriteHive(
    PHHIVE RegistryHive);
 
+BOOLEAN CMAPI
+HvRestoreFromLog(
+    PHHIVE Hive,
+    PHBASE_BLOCK BaseBlock
+);
+
 BOOLEAN
 CMAPI
 HvTrackCellRef(
