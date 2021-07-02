@@ -738,6 +738,11 @@ VOID
 NTAPI
 KeInitExceptions(VOID);
 
+CODE_SEG("INIT")
+VOID
+NTAPI
+KeStartAllProcessors(VOID);
+
 VOID
 NTAPI
 KeInitInterrupts(VOID);
