@@ -347,6 +347,7 @@
 @ stdcall FreeUserPhysicalPages(long long long)
 @ stdcall GenerateConsoleCtrlEvent(long long)
 @ stdcall GetACP()
+@ stdcall -version=0x600+ GetActiveProcessorCount(long)
 @ stdcall -version=0x600+ GetApplicationRecoveryCallback(ptr ptr ptr ptr ptr) kernel32_vista.GetApplicationRecoveryCallback
 @ stdcall -stub -version=0x600+ GetApplicationRestartSettings(ptr wstr ptr ptr)
 @ stdcall GetAtomNameA(long ptr long)
@@ -1347,4 +1348,4 @@
 @ stdcall -version=0x600+ K32QueryWorkingSetEx(ptr ptr long)
 @ stdcall -version=0x601+ GetThreadGroupAffinity(ptr ptr)
 @ stdcall -stub -version=0x600+ K32GetProcessImageFileNameW()
-@ stdcall -version=0x600+ GetActiveProcessorCount(long)
+;@ stdcall -version=0x600+ GetActiveProcessorCount(long)
