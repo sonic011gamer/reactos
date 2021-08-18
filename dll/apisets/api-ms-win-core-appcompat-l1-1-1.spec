@@ -3,6 +3,7 @@
 
 @ stdcall BaseCheckAppcompatCache() kernel32.BaseCheckAppcompatCache
 ;@ stub LoadAppInitDlls
+@ stdcall -version=0x603+ BaseCheckAppcompatCacheEx() kernel32.BaseCheckAppcompatCacheEx
 @ stdcall BaseCleanupAppcompatCacheSupport() kernel32.BaseCleanupAppcompatCacheSupport
 @ stdcall BaseDumpAppcompatCache() kernel32.BaseDumpAppcompatCache
 @ stdcall BaseFlushAppcompatCache() kernel32.BaseFlushAppcompatCache
