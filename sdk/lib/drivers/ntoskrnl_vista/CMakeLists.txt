@@ -6,7 +6,7 @@ add_definitions(-DUNICODE -D_UNICODE -D_NTOSKRNL_ -D_NTSYSTEM_)
 include_directories(${REACTOS_SOURCE_DIR}/sdk/lib/rtl)
 
 list(APPEND SOURCE
-    etw.c
+	etw.c
     fsrtl.c
     io.c
     po.c
