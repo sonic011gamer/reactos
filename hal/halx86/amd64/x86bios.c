@@ -493,7 +493,7 @@ x86BiosCall(
 
     return TRUE;
 }
-
+#ifdef _M_AMD64
 BOOLEAN
 NTAPI
 HalpBiosDisplayReset(VOID)
@@ -522,3 +522,4 @@ HalpBiosDisplayReset(VOID)
     return FALSE;
 #endif
 }
+#endif // _M_AMD64
