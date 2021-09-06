@@ -11,6 +11,7 @@ list(APPEND HAL_XBOX_SOURCE
     generic/display.c
     generic/dma.c
     generic/drive.c
+    generic/kdpci.c
     generic/halinit.c
     generic/memory.c
     generic/misc.c

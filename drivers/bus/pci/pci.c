@@ -9,6 +9,7 @@
 
 #include "pci.h"
 
+#include <ntstrsafe.h>
 #include <stdio.h>
 
 #define NDEBUG
@@ -25,6 +26,8 @@ static NTSTATUS NTAPI PciPowerControl(IN PDEVICE_OBJECT DeviceObject, IN PIRP Ir
 
 static DRIVER_DISPATCH PciPnpControl;
 static NTSTATUS NTAPI PciPnpControl(IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp);
+
+PCI_TYPE1_CFG_CYCLE_BITS PciDebuggingDevice[2] = {{{{0}}}};
 
 /*** PUBLIC ******************************************************************/
 
@@ -194,6 +197,48 @@ PciUnload(
     UNREFERENCED_PARAMETER(DriverObject);
 }
 
+static
+CODE_SEG("INIT")
+VOID
+PciDetectDebugger(VOID)
+{
+    ULONG i;
+    NTSTATUS Status;
+    WCHAR KeyNameBuffer[16];
+    ULONG BusNumber, SlotNumber;
+    RTL_QUERY_REGISTRY_TABLE QueryTable[3];
+
+    RtlZeroMemory(QueryTable, sizeof(QueryTable));
+    QueryTable[0].Flags = RTL_QUERY_REGISTRY_DIRECT | RTL_QUERY_REGISTRY_REQUIRED;
+    QueryTable[0].Name = L"Bus";
+    QueryTable[0].EntryContext = &BusNumber;
+    QueryTable[1].Flags = RTL_QUERY_REGISTRY_DIRECT | RTL_QUERY_REGISTRY_REQUIRED;
+    QueryTable[1].Name = L"Slot";
+    QueryTable[1].EntryContext = &SlotNumber;
+
+    for (i = 0; i < RTL_NUMBER_OF(PciDebuggingDevice); ++i)
+    {
+        PCI_SLOT_NUMBER PciSlot;
+
+        RtlStringCbPrintfW(KeyNameBuffer, sizeof(KeyNameBuffer), L"PCI\\Debug\\%d", i);
+
+        Status = RtlQueryRegistryValues(RTL_REGISTRY_SERVICES,
+                                        KeyNameBuffer,
+                                        QueryTable,
+                                        NULL,
+                                        NULL);
+        if (!NT_SUCCESS(Status))
+            continue;
+
+        PciSlot.u.AsULONG = SlotNumber;
+        PciDebuggingDevice[i].u.bits.DeviceNumber = PciSlot.u.bits.DeviceNumber;
+        PciDebuggingDevice[i].u.bits.FunctionNumber = PciSlot.u.bits.FunctionNumber;
+        PciDebuggingDevice[i].u.bits.BusNumber = BusNumber;
+        PciDebuggingDevice[i].u.bits.Reserved1 = TRUE;
+        DPRINT1("Debug device %X, %X\n", BusNumber, SlotNumber);
+    }
+}
+
 CODE_SEG("INIT")
 NTSTATUS
 NTAPI
@@ -223,6 +268,8 @@ DriverEntry(
 
     InitializeListHead(&DriverExtension->BusListHead);
     KeInitializeSpinLock(&DriverExtension->BusListLock);
+
+    PciDetectDebugger();
 
     return STATUS_SUCCESS;
 }

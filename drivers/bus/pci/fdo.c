@@ -49,6 +49,31 @@ FdoLocateChildDevice(
     return STATUS_UNSUCCESSFUL;
 }
 
+extern PCI_TYPE1_CFG_CYCLE_BITS PciDebuggingDevice[2];
+
+static
+BOOLEAN
+PciIsDebuggingDevice(
+    _In_ ULONG Bus,
+    _In_ PCI_SLOT_NUMBER SlotNumber)
+{
+    ULONG i;
+
+    for (i = 0; i < RTL_NUMBER_OF(PciDebuggingDevice); ++i)
+    {
+        if (!PciDebuggingDevice[i].u.bits.Reserved1)
+            continue;
+
+        if (PciDebuggingDevice[i].u.bits.BusNumber == Bus &&
+            PciDebuggingDevice[i].u.bits.DeviceNumber == SlotNumber.u.bits.DeviceNumber &&
+            PciDebuggingDevice[i].u.bits.FunctionNumber == SlotNumber.u.bits.FunctionNumber)
+        {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
 
 static NTSTATUS
 FdoEnumerateDevices(
@@ -120,6 +145,12 @@ FdoEnumerateDevices(
             Status = FdoLocateChildDevice(&Device, DeviceExtension, SlotNumber, &PciConfig);
             if (!NT_SUCCESS(Status))
             {
+                if (PciIsDebuggingDevice(DeviceExtension->BusNumber, SlotNumber))
+                {
+                    PciConfig.VendorID = 0xDEAD;
+                    PciConfig.DeviceID = 0xBEEF;
+                }
+
                 Device = ExAllocatePoolWithTag(NonPagedPool, sizeof(PCI_DEVICE), TAG_PCI);
                 if (!Device)
                 {

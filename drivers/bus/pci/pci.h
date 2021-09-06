@@ -93,6 +93,8 @@ typedef struct _FDO_DEVICE_EXTENSION
     KSPIN_LOCK DeviceListLock;
     // Lower device object
     PDEVICE_OBJECT Ldo;
+    // Wether the device is owned by the KD
+    BOOLEAN IsDebuggingDevice;
 } FDO_DEVICE_EXTENSION, *PFDO_DEVICE_EXTENSION;
 
 
@@ -110,6 +112,23 @@ typedef struct _PCI_DRIVER_EXTENSION
  * because at least InterfacePciDevicePresent has no
  * other way to get it... */
 extern PPCI_DRIVER_EXTENSION DriverExtension;
+
+typedef struct _PCI_TYPE1_CFG_CYCLE_BITS
+{
+    union
+    {
+        struct
+        {
+            ULONG Reserved1:2;
+            ULONG RegisterNumber:6;
+            ULONG FunctionNumber:3;
+            ULONG DeviceNumber:5;
+            ULONG BusNumber:8;
+            ULONG Reserved2:8;
+        } bits;
+        ULONG AsULONG;
+    } u;
+} PCI_TYPE1_CFG_CYCLE_BITS, *PPCI_TYPE1_CFG_CYCLE_BITS;
 
 /* fdo.c */
 

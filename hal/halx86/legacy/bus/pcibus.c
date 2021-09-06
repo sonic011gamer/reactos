@@ -17,8 +17,6 @@
 extern BOOLEAN HalpPciLockSettings;
 ULONG HalpBusType;
 
-PCI_TYPE1_CFG_CYCLE_BITS HalpPciDebuggingDevice[2] = {{{{0}}}};
-
 BOOLEAN HalpPCIConfigInitialized;
 ULONG HalpMinPciBus, HalpMaxPciBus;
 KSPIN_LOCK HalpPCIConfigLock;
@@ -606,53 +604,6 @@ HalpGetISAFixedPCIIrq(IN PBUS_HANDLER BusHandler,
     (*Range)->Base = PciData.u.type0.InterruptLine;
     (*Range)->Limit = PciData.u.type0.InterruptLine;
     return STATUS_SUCCESS;
-}
-
-CODE_SEG("INIT")
-NTSTATUS
-NTAPI
-HalpSetupPciDeviceForDebugging(IN PVOID LoaderBlock,
-                               IN OUT PDEBUG_DEVICE_DESCRIPTOR PciDevice)
-{
-    DPRINT1("Unimplemented!\n");
-    return STATUS_NOT_IMPLEMENTED;
-}
-
-CODE_SEG("INIT")
-NTSTATUS
-NTAPI
-HalpReleasePciDeviceForDebugging(IN OUT PDEBUG_DEVICE_DESCRIPTOR PciDevice)
-{
-    DPRINT1("Unimplemented!\n");
-    return STATUS_NOT_IMPLEMENTED;
-}
-
-CODE_SEG("INIT")
-VOID
-NTAPI
-HalpRegisterPciDebuggingDeviceInfo(VOID)
-{
-    BOOLEAN Found = FALSE;
-    ULONG i;
-    PAGED_CODE();
-
-    /* Loop PCI debugging devices */
-    for (i = 0; i < 2; i++)
-    {
-        /* Reserved bit is set if we found one */
-        if (HalpPciDebuggingDevice[i].u.bits.Reserved1)
-        {
-            Found = TRUE;
-            break;
-        }
-    }
-
-    /* Bail out if there aren't any */
-    if (!Found) return;
-
-    /* FIXME: TODO */
-    UNIMPLEMENTED_DBGBREAK("You have implemented the KD routines for searching PCI debugger"
-                           "devices, but you have forgotten to implement this routine\n");
 }
 #endif // _MINIHAL_
 
