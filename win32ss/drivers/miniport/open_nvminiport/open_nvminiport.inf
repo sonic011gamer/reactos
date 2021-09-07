@@ -1,0 +1,53 @@
+; open_nvminiport.inf
+
+; Installation file for the NVIDIA display card
+
+[Version]
+Signature  = "$Windows NT$"
+;Signature  = "$ReactOS$"
+LayoutFile = layout.inf
+Class      = Display
+ClassGUID  = {4D36E968-E325-11CE-BFC1-08002BE10318}
+Provider   = %ReactOS%
+DriverVer  = 09/07/2021,0.10
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[Manufacturer]
+%nVidiaMfg% = nVidiaMfg
+
+[nVidiaMfg]
+%PCI\VEN_10DE&DEV_1200.DeviceDesc% = Open_NVMiniport_Inst,PCI\VEN_10DE&DEV_1200
+
+;---------------------------- open_nvminiport DRIVER ----------------------------
+
+[Open_NVMiniport_Inst.NT]
+CopyFiles = Open_NVMiniport_CopyFiles.NT
+
+[Open_NVMiniport_CopyFiles.NT]
+open_nvminiport.sys
+
+[Open_NVMiniport.NT.Services]
+AddService = open_nvminiport, 0x00000002, nvmini_Service_Inst
+
+[open_nvminiport_Service_Inst]
+ServiceType   = 1
+StartType     = 1
+ErrorControl  = 0
+ServiceBinary = %12%\open_nvminiport.sys
+LoadOrderGroup = Video Save
+
+[open_nvminiport.SoftwareSettings]
+AddReg = open_nvminiport_SoftwareDeviceSettings
+
+[open_nvminiport_SoftwareDeviceSettings]
+HKR,,InstalledDisplayDrivers,0x00010000,nv_openframebuf
+
+;-------------------------------- STRINGS -------------------------------
+
+[Strings]
+ReactOS = "ReactOS Team/The_DarkFire_"
+
+nVidiaMfg = "NVIDIA Corporation"
+PCI\VEN_10DE&DEV_1200.DeviceDesc = "NVIDIA GeForce GTX 560 Ti"

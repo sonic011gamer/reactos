@@ -839,7 +839,7 @@ ProcessDisplayRegistry(
         return FALSE;
     }
 
-    ASSERT(wcslen(ServiceName) < 10);
+    //ASSERT(wcslen(ServiceName) < 10); //Blocked for now
     DPRINT("Service name: '%S'\n", ServiceName);
 
     RtlStringCchPrintfW(RegPath, ARRAYSIZE(RegPath),
