@@ -1,0 +1,13 @@
+; Nvidia driver
+[AddReg]
+HKLM,"SYSTEM\CurrentControlSet\Services\Open_NVMiniport","ErrorControl",0x00010001,0x00000000
+HKLM,"SYSTEM\CurrentControlSet\Services\Open_NVMiniport","Group",0x00000000,"Video Save"
+HKLM,"SYSTEM\CurrentControlSet\Services\Open_NVMiniport","ImagePath",0x00020000,"system32\drivers\open_nvminiport.sys"
+HKLM,"SYSTEM\CurrentControlSet\Services\Open_NVMiniport","Start",0x00010001,0x00000004
+HKLM,"SYSTEM\CurrentControlSet\Services\Open_NVMiniport","Type",0x00010001,0x00000001
+HKLM,"SYSTEM\CurrentControlSet\Enum\PCI\VEN_10DE&DEV_1200&SUBSYS_15683842&REV_A1\3&c02602b3&00","Service",0x00000000,"Open_NVMiniport"
+
+HKLM,"SYSTEM\CurrentControlSet\Hardware Profiles\Current\System\CurrentControlSet\Services\Open_NVMiniport\Device0","InstalledDisplayDrivers",0x00010000,"nv_openframebuf"
+
+; This is not true but it allows to use 3rd party drivers while having the open_nvminiport driver installed
+HKLM,"SYSTEM\CurrentControlSet\Hardware Profiles\Current\System\CurrentControlSet\Services\Open_NVMiniport\Device0","VgaCompatible",0x00010001,1
