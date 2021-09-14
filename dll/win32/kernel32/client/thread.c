@@ -1542,4 +1542,13 @@ BOOL WINAPI TrySubmitThreadpoolCallback( PTP_SIMPLE_CALLBACK callback, PVOID use
 
 #endif
 
+BOOL
+WINAPI
+SetThreadErrorMode(DWORD dwNewMode,
+                   LPDWORD lpOldMode)
+{
+    UNIMPLEMENTED;
+    return TRUE;
+}
+
 /* EOF */
