@@ -788,6 +788,7 @@ BOOLEAN APIENTRY DxEngDeleteSurface(HSURF hsurf)
 /************************************************************************/
 DWORD APIENTRY DxEngGetSurfaceData(DWORD x1, DWORD x2)
 {
+    __debugbreak();
     UNIMPLEMENTED;
     return FALSE;
 }
@@ -816,6 +817,7 @@ DWORD APIENTRY DxEngUploadPaletteEntryToSurface(DWORD x1, DWORD x2,DWORD x3, DWO
 /************************************************************************/
 DWORD APIENTRY DxEngMarkSurfaceAsDirectDraw(DWORD x1, DWORD x2)
 {
+    __debugbreak();
     UNIMPLEMENTED;
     return FALSE;
 }
@@ -825,6 +827,7 @@ DWORD APIENTRY DxEngMarkSurfaceAsDirectDraw(DWORD x1, DWORD x2)
 /************************************************************************/
 DWORD APIENTRY DxEngSelectPaletteToSurface(DWORD x1, DWORD x2)
 {
+    __debugbreak();
     UNIMPLEMENTED;
     return FALSE;
 }
@@ -834,6 +837,7 @@ DWORD APIENTRY DxEngSelectPaletteToSurface(DWORD x1, DWORD x2)
 /************************************************************************/
 DWORD APIENTRY DxEngSyncPaletteTableWithDevice(DWORD x1, DWORD x2)
 {
+    __debugbreak();
     UNIMPLEMENTED;
     return FALSE;
 }
@@ -843,6 +847,7 @@ DWORD APIENTRY DxEngSyncPaletteTableWithDevice(DWORD x1, DWORD x2)
 /************************************************************************/
 DWORD APIENTRY DxEngSetPaletteState(DWORD x1, DWORD x2, DWORD x3)
 {
+    __debugbreak();
     UNIMPLEMENTED;
     return FALSE;
 }
@@ -862,6 +867,7 @@ DxEngGetRedirectionBitmap(DWORD x1)
 /************************************************************************/
 DWORD APIENTRY DxEngLoadImage(DWORD x1,DWORD x2)
 {
+    __debugbreak();
     UNIMPLEMENTED;
     return FALSE;
 }
@@ -871,6 +877,7 @@ DWORD APIENTRY DxEngLoadImage(DWORD x1,DWORD x2)
 /************************************************************************/
 DWORD APIENTRY DxEngSpTearDownSprites(DWORD x1, DWORD x2, DWORD x3)
 {
+    __debugbreak();
     UNIMPLEMENTED;
     return FALSE;
 }
@@ -880,6 +887,7 @@ DWORD APIENTRY DxEngSpTearDownSprites(DWORD x1, DWORD x2, DWORD x3)
 /************************************************************************/
 DWORD APIENTRY DxEngSpUnTearDownSprites(DWORD x1, DWORD x2, DWORD x3)
 {
+    __debugbreak();
     UNIMPLEMENTED;
     return FALSE;
 }
@@ -889,6 +897,7 @@ DWORD APIENTRY DxEngSpUnTearDownSprites(DWORD x1, DWORD x2, DWORD x3)
 /************************************************************************/
 DWORD APIENTRY DxEngSpSpritesVisible(DWORD x1)
 {
+    __debugbreak();
     UNIMPLEMENTED;
     return FALSE;
 }
