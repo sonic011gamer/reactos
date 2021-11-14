@@ -557,7 +557,11 @@
 @ stdcall GetPrivateProfileStructW(wstr wstr ptr long wstr)
 @ stdcall GetProcAddress(long str)
 @ stdcall GetProcessAffinityMask(long ptr ptr)
+<<<<<<< HEAD
 ;@ stub -version=0x600+ GetProcessDEPPolicy
+=======
+@ stdcall GetProcessDEPPolicy(ptr ptr ptr)
+>>>>>>> 47a7cc342a8 ([KERNEL32] Implement Data Execution Prevention (DEP) support)
 @ stdcall GetProcessHandleCount(long ptr)
 @ stdcall -norelay GetProcessHeap()
 @ stdcall GetProcessHeaps(long ptr)
@@ -588,7 +592,11 @@
 @ stdcall GetStringTypeExA(long long str long ptr)
 @ stdcall GetStringTypeExW(long long wstr long ptr)
 @ stdcall GetStringTypeW(long wstr long ptr)
+<<<<<<< HEAD
 ;@ stub -version=0x600+ GetSystemDEPPolicy
+=======
+@ stdcall GetSystemDEPPolicy()
+>>>>>>> 47a7cc342a8 ([KERNEL32] Implement Data Execution Prevention (DEP) support)
 @ stdcall GetSystemDefaultLCID()
 @ stdcall GetSystemDefaultLangID()
 @ stdcall -stub -version=0x600+ GetSystemDefaultLocaleName(ptr long)
@@ -1054,7 +1062,7 @@
 @ stdcall SetPriorityClass(long long)
 @ stdcall SetProcessAffinityMask(long long)
 @ stdcall -stub -version=0x600+ SetProcessAffinityUpdateMode(ptr long)
-;@ stub -version=0x600+ SetProcessDEPPolicy
+@ stdcall SetProcessDEPPolicy(long)
 @ stdcall SetProcessPriorityBoost(long long)
 @ stdcall SetProcessShutdownParameters(long long)
 @ stdcall SetProcessWorkingSetSize(long long long)
