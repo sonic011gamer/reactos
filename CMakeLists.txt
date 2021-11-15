@@ -233,10 +233,10 @@ Enable this if the module uses typeid or dynamic_cast. You will probably need to
     endif()
 
     # Version Options
-    add_definitions(-DWINVER=0x502
-                    -D_WIN32_IE=0x600
-                    -D_WIN32_WINNT=0x502
-                    -D_WIN32_WINDOWS=0x502
+    add_definitions(-DWINVER=${TARGET_WINVER}
+                    -D_WIN32_IE=${TARGET_WINVER_IE}
+                    -D_WIN32_WINNT=${TARGET_WINVER}
+                    -D_WIN32_WINDOWS=${TARGET_WINVER}
                     -D_SETUPAPI_VER=0x502
                     -DMINGW_HAS_SECURE_API=1)
 
