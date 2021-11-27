@@ -60,4 +60,59 @@ typedef struct _DC21X4_ADAPTER
     BOOLEAN HasPmFeatures;
 } DC21X4_ADAPTER, *PDC21X4_ADAPTER;
 
+/*
+ * Various offsets in the SROM
+ */
+#define SROM_VERSION             18
+#define SROM_CONTROLLER_COUNT    19
+#define SROM_MAC_ADDRESS         20
+#define SROM_DEVICE_NUMBER(n)    (26 + ((n) * 3))
+#define SROM_LEAF_OFFSET(n)      (27 + ((n) * 3))
+#define SROM_CHECKSUM_V1         126
+#define SROM_CHECKSUM_V2         94
+#define SROM_MAGIC_PACKET_BLOCK  96
+
+/*
+ * Extended format types
+ */
+#define SROM_BLOCK_NON_MII       0
+#define SROM_BLOCK_MII_1         1
+#define SROM_BLOCK_SIA           2
+#define SROM_BLOCK_MII_2         3
+#define SROM_BLOCK_SYM           4
+#define SROM_BLOCK_RESET         5
+#define SROM_BLOCK_PHY_SHUTDOWN  6
+
+/*
+ * CSR 9
+ */
+#define EE_CS     0x0001
+#define EE_SK     0x0002
+#define EE_DI     0x0004
+#define EE_DO     0x0008
+#define EE_SR     0x0800
+#define EE_RD     0x4000
+#define MII_MDC   0x10000
+#define MII_MDO   0x20000
+#define MII_READ  0x40000
+#define MII_MDI   0x80000
+#define EAR_DN   0x80000000
+#define EAR_DT   0x000000FF
+
+#define EEPROM_CMD_WRITE    5
+#define EEPROM_CMD_READ     6
+#define EEPROM_CMD_ERASE    7
+
+#define EEPROM_CMD_LENGTH   3
+
+#define EAR_SIZE    8
+
+/* We don't care about Magic Info in 21143+ */
+#define EE_SIZE     128
+
+CODE_SEG("PAGE")
+VOID
+Dc21x4ReadEeprom(
+    _In_ PDC21X4_ADAPTER Adapter);
+
 #endif /* _DC21X4_PCH_ */
