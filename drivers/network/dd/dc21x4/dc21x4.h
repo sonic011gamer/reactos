@@ -15,6 +15,15 @@
 
 #define DC21X4_TAG '4x12'
 
+typedef enum _DC_CHIP_TYPE
+{
+    DC21040,
+    DC21140,
+    DC21041,
+    DC21142,
+    DC21143
+} DC_CHIP_TYPE;
+
 typedef struct _DC21X4_ADAPTER
 {
     PULONG CSR0;
@@ -40,12 +49,15 @@ typedef struct _DC21X4_ADAPTER
     UCHAR PermanentMacAddress[ETH_LENGTH_OF_ADDRESS];
     UCHAR CurrentMacAddress[ETH_LENGTH_OF_ADDRESS];
 
+    DC_CHIP_TYPE ChipType;
+
     USHORT DeviceId;
     UCHAR RevisionId;
 
     USHORT Media;
     UCHAR GpioDirection;
 
+    BOOLEAN HasPmFeatures;
 } DC21X4_ADAPTER, *PDC21X4_ADAPTER;
 
 #endif /* _DC21X4_PCH_ */
