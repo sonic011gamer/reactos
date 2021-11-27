@@ -1,0 +1,71 @@
+; NET21X4.INF
+
+; Installation file for DC21x4-based NICs
+
+[Version]
+Signature  = "$Windows NT$"
+;Signature  = "$ReactOS$"
+LayoutFile = layout.inf
+Class      = Net
+ClassGUID  = {4D36E972-E325-11CE-BFC1-08002BE10318}
+Provider   = %ReactOS%
+DriverVer  = 09/01/2021,1.00
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[Manufacturer]
+%IntelMfg% = IntelMfg
+
+[ControlFlags]
+ExcludeFromSelect = *
+
+[IntelMfg]
+%DC21040.DeviceDesc% = DC21040_Inst.ndi,PCI\VEN_1011&DEV_0002
+%DC21140.DeviceDesc% = DC21040_Inst.ndi,PCI\VEN_1011&DEV_0009
+%DC21041.DeviceDesc% = DC21040_Inst.ndi,PCI\VEN_1011&DEV_0014
+%DC21143.DeviceDesc% = DC21040_Inst.ndi,PCI\VEN_1011&DEV_0019
+
+;----------------------------- DC21X4 DRIVER ----------------------------
+
+[DC21040_Inst.ndi.NT]
+Characteristics = 0x84 ; NCF_PHYSICAL | NCF_HAS_UI
+BusType = 5 ; PCIBus
+CopyFiles = DC_CopyFiles.NT
+AddReg = DC21040_AddReg
+
+[DC_CopyFiles.NT]
+dc21x4.sys
+
+[DC21040_Inst.ndi.NT.Services]
+AddService = dc21x4, 2, DC_Service_Inst, DC_EventLog
+
+[DC21040_AddReg]
+HKR, Ndi,            Service,    0, "dc21x4"
+HKR, Ndi\Interfaces, UpperRange, 0, "ndis5"
+HKR, Ndi\Interfaces, LowerRange, 0, "ethernet"
+
+[DC_Service_Inst]
+ServiceType   = 1
+StartType     = 3
+ErrorControl  = 1
+ServiceBinary = %12%\dc21x4.sys
+LoadOrderGroup = NDIS
+
+[DC_EventLog]
+AddReg = DC_EventLog_AddReg
+
+[DC_EventLog_AddReg]
+HKR, , EventMessageFile, 0x00020000, "%%SystemRoot%%\System32\netevent.dll"
+HKR, , TypesSupported,   0x00010001, 7
+
+;-------------------------------- STRINGS -------------------------------
+
+[Strings]
+ReactOS = "ReactOS Team"
+
+IntelMfg = "Intel"
+DC21040.DeviceDesc = "Intel 21040 Ethernet Adapter"
+DC21140.DeviceDesc = "Intel 21041 Ethernet Adapter"
+DC21041.DeviceDesc = "Intel 21043 Ethernet Adapter"
+DC21143.DeviceDesc = "Intel 21043 Ethernet Adapter"
