@@ -115,4 +115,18 @@ VOID
 Dc21x4ReadEeprom(
     _In_ PDC21X4_ADAPTER Adapter);
 
+BOOLEAN
+MiiWrite(
+    _In_ PDC21X4_ADAPTER Adapter,
+    _In_ ULONG PhyAddress,
+    _In_ ULONG RegAddress,
+    _In_ USHORT Data);
+
+BOOLEAN
+MiiRead(
+    _In_ PDC21X4_ADAPTER Adapter,
+    _In_ ULONG PhyAddress,
+    _In_ ULONG RegAddress,
+    _Out_ PUSHORT Data);
+
 #endif /* _DC21X4_PCH_ */
