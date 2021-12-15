@@ -1,5 +1,3 @@
-
-
 #ifndef _ARM64_KETYPES_H
 #define _ARM64_KETYPES_H
 
