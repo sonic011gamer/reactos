@@ -551,7 +551,8 @@ void Draw3dRect2(HDC hDC, LPRECT lpRect, COLORREF clrTopLeft, COLORREF clrBottom
 static void SetUpdateSpeed(HWND hWnd)
 {
     /* Setup update speed (pause=fall down) */
-    switch (TaskManagerSettings.UpdateSpeed) {
+    switch (TaskManagerSettings.UpdateSpeed)
+    {
     case ID_VIEW_UPDATESPEED_HIGH:
         SetTimer(hWnd, 1, 1000, NULL);
         break;
@@ -1163,6 +1164,7 @@ LPWSTR GetLastErrorText(LPWSTR lpszBuf, DWORD dwSize)
     return lpszBuf;
 }
 
+#if 0
 DWORD EndLocalThread(HANDLE *hThread, DWORD dwThread)
 {
     DWORD dwExitCodeThread = 0;
@@ -1185,4 +1187,4 @@ DWORD EndLocalThread(HANDLE *hThread, DWORD dwThread)
     }
     return dwExitCodeThread;
 }
-
+#endif
