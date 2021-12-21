@@ -1,0 +1,7 @@
+; APFS Filesystem driver
+[AddReg]
+HKLM,"SYSTEM\CurrentControlSet\Services\apfs","ErrorControl",0x00010001,0x00000000
+HKLM,"SYSTEM\CurrentControlSet\Services\apfs","Group",0x00000000,"Boot File System"
+HKLM,"SYSTEM\CurrentControlSet\Services\apfs","ImagePath",0x00020000,"system32\drivers\apfs.sys"
+HKLM,"SYSTEM\CurrentControlSet\Services\apfs","Start",0x00010001,0x00000003
+HKLM,"SYSTEM\CurrentControlSet\Services\apfs","Type",0x00010001,0x00000002

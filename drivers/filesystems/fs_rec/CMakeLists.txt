@@ -1,4 +1,5 @@
 list(APPEND SOURCE
+    apfs.c
     blockdev.c
     btrfs.c
     cdfs.c

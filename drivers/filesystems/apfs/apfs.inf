@@ -1,0 +1,147 @@
+; ApfsForWin
+[Version]
+Signature   = "$Windows NT$"
+Class       = Volume
+ClassGuid   = {71a27cdd-812a-11d0-bec7-08002be2092f}
+Provider    = %Me%
+DriverVer   = 08/23/2022,1.8.1
+CatalogFile = apfs.cat
+
+[DestinationDirs]
+DefaultDestDir          = 12
+Apfs.DriverFiles       = 12            ;%windir%\system32\drivers
+Apfs.DllFiles          = 11            ;%windir%\system32
+
+;;
+;; Default install sections
+;;
+
+[DefaultInstall]
+OptionDesc  = %ServiceDescription%
+CopyFiles   = Apfs.DriverFiles,Apfs.DllFiles
+CopyINF     = apfs.inf
+
+[DefaultInstall.Services]
+AddService  = %ServiceName%,0x802,apfs.Service
+
+[Manufacturer]
+%Me%=Standard,NTamd64,NTx86,NTarm,NTarm64
+
+[Standard.NTamd64]
+%VolumeName% = Apfs_Install, ApfsVolume
+%ControllerName% = Apfs_Install, ROOT\apfs
+
+[Standard.NTx86]
+%VolumeName% = Apfs_Install, ApfsVolume
+%ControllerName% = Apfs_Install, ROOT\apfs
+
+[Standard.NTarm]
+%VolumeName% = Apfs_Install, ApfsVolume
+%ControllerName% = Apfs_Install, ROOT\apfs
+
+[Standard.NTarm64]
+%VolumeName% = Apfs_Install, ApfsVolume
+%ControllerName% = Apfs_Install, ROOT\apfs
+
+[Apfs_Install]
+OptionDesc   = %ServiceDescription%
+CopyFiles    = Apfs.DriverFiles,Apfs.DllFiles
+
+[Apfs_Install.Services]
+AddService  = %ServiceName%,2,Apfs.Service
+
+;;
+;; Default uninstall sections
+;;
+
+[DefaultUninstall]
+DelFiles   = Apfs.DriverFiles,Apfs.DllFiles
+
+[DefaultUninstall.Services]
+DelService = %ServiceName%,0x200      ;Ensure service is stopped before deleting
+
+;
+; Services Section
+;
+
+[Apfs.Service]
+DisplayName      = %ServiceName%
+Description      = %ServiceDescription%
+ServiceBinary    = %12%\%DriverName%.sys    ;%windir%\system32\drivers\
+ServiceType      = 2
+StartType        = 1                        ;SERVICE_SYSTEM_START
+ErrorControl     = 1
+LoadOrderGroup   = "File System"
+
+;
+; Copy Files
+;
+
+[Apfs.DriverFiles]
+%DriverName%.sys
+
+[Apfs.DllFiles]
+uapfs.dll
+; mkApfs.exe ; Not imported into ReactOS.
+
+[SourceDisksFiles]
+apfs.sys = 1,,
+uapfs.dll = 1,,
+; mkapfs.exe = 1,, ; Not imported into ReactOS.
+
+[SourceDisksNames.x86]
+1 = %DiskId1%,,,\x86
+
+[SourceDisksNames.amd64]
+1 = %DiskId1%,,,\x64
+
+[SourceDisksNames.arm]
+1 = %DiskId1%,,,\arm
+
+[SourceDisksNames.arm64]
+1 = %DiskId1%,,,\aarch64
+
+;;
+;; String Section
+;;
+
+[Strings]
+Me                      = "The_DarkFire_"
+ServiceDescription      = "apfs driver"
+ServiceName             = "apfs"
+DriverName              = "apfs"
+DiskId1                 = "Apfs Device Installation Disk"
+VolumeName              = "Apfs volume"
+ControllerName          = "Apfs controller"
+
+[Strings.0404]
+ServiceDescription      = "Apfs 驅動程式"
+ServiceName             = "apfs"
+DriverName              = "apfs"
+DiskId1                 = "Apfs 裝置安裝磁片"
+VolumeName              = "Apfs 磁碟區"
+ControllerName          = "Apfs 控制器"
+
+[Strings.0415]
+ServiceDescription      = "Sterownik systemu plików Apfs"
+ServiceName             = "apfs"
+DriverName              = "apfs"
+DiskId1                 = "Dysk instalacyjny urządzenia Apfs"
+VolumeName              = "Wolumin Apfs"
+ControllerName          = "Kontroler Apfs"
+
+[Strings.0804]
+ServiceDescription      = "Apfs 驱动程序"
+ServiceName             = "apfs"
+DriverName              = "Apfs"
+DiskId1                 = "Apfs 设备安装磁盘"
+VolumeName              = "Apfs 卷"
+ControllerName          = "Apfs 控制器"
+
+[Strings.0c04]
+ServiceDescription      = "Apfs 驅動程式"
+ServiceName             = "apfs"
+DriverName              = "apfs"
+DiskId1                 = "apfs 裝置安裝磁片"
+VolumeName              = "apfs 磁碟區"
+ControllerName          = "apfs 控制器"

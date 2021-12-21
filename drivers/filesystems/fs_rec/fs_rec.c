@@ -145,7 +145,11 @@ FsRecFsControl(IN PDEVICE_OBJECT DeviceObject,
             /* Send NTFS command */
             Status = FsRecNtfsFsControl(DeviceObject, Irp);
             break;
+        case FS_TYPE_APFS:
 
+            /* Send NTFS command */
+            Status = FsRecApfsFsControl(DeviceObject, Irp);
+            break;
         case FS_TYPE_CDFS:
 
             /* Send CDFS command */
@@ -426,6 +430,17 @@ DriverEntry(IN PDRIVER_OBJECT DriverObject,
                              L"\\Ntfs",
                              L"\\FileSystem\\NtfsRecognizer",
                              FS_TYPE_NTFS,
+                             FILE_DEVICE_DISK_FILE_SYSTEM,
+                             0);
+    if (NT_SUCCESS(Status)) DeviceCount++;
+
+    /* Register APFS */
+    Status = FsRecRegisterFs(DriverObject,
+                             NULL,
+                             NULL,
+                             L"\\Apfs",
+                             L"\\FileSystem\\ApfsRecognizer",
+                             FS_TYPE_APFS,
                              FILE_DEVICE_DISK_FILE_SYSTEM,
                              0);
     if (NT_SUCCESS(Status)) DeviceCount++;

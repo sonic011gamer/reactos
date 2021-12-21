@@ -8,6 +8,11 @@
 #ifndef APFS_H
 #define APFS_H
 
+/* INCLUDES **************************************************************************************/
+
+#include <ntddk.h>
+#include <ntifs.h>
+
 /* CONSTANTS *************************************************************************************/
 
 /* Object Identifier Constants */
@@ -73,7 +78,7 @@
 #define NX_EFI_JUMPSTART_MAGIC          "RDSJ";
 #define NX_EFI_JUMPSTART_VERSION        1;
 
-#define APFS_GPT_PARTITION_UUID         "7C3457EF-0000-11AA-AA11-00306543ECAC”;
+#define APFS_GPT_PARTITION_UUID         "7C3457EF-0000-11AA-AA11-00306543ECAC";
 
 #define NX_MAGIC                        "BSXN";
 #define NX_MAX_FILE_SYSTEMS             100;
@@ -186,34 +191,34 @@
 // LEFT OFF PAGE 67
 /* GENERAL-PURPOSE TYPES *************************************************************************/
 
-typedef INT64 PADDR
-typedef UCHAR UUID[16];
+typedef INT64 PADDR;
+//typedef UCHAR UUID[16];
 typedef UINT64 OID;
 typedef UINT64 XID;
-
+#if 0
 /* A range of a physical addresses */
 struct _PRANGE {
-    PADDER PRStartPAdder; /* First block in a range */
+    PADDR PRStartPAdder; /* First block in a range */
     UINT64 PRBlockCount;    /* Number of blocks in a range */
 } PRANGE, *PPRANGE;
 
 /* Header used at the beginning of all objects */
 struct _OBJ_PHYS {
-    UINT8 O_Chksum[MAX_CHKSUM_SIZE]
+    UINT8 O_Chksum[sizeof(UINT32)];
     OID OOId;
     XID OXId;
-    UINT32 OType
-    UINT32 OSubtype
-} OBJ_PHYS, *POBJ_PHYS
+    UINT32 OType;
+    UINT32 OSubtype;
+} OBJ_PHYS, *POBJ_PHYS;
 
 struct _NX_EFI_JUMPSTART {
-    OBJ_PHYS NejO;
+    //_OBJ_PHYS NejO;
     UINT32 NejMagic;
     UINT32 NejVersion;
     UINT32 NejEfiFileLen;
     UINT32 NejNumExtents;
     UINT64 NejReserved[16];
-    PRange NejRecExtents[];
+    struct PPRANGE NejRecExtents;
 } NX_EFI_JUMPSTART, *PNX_EFI_JUMPSTART;
 
 struct _NX_SUPERBLOCK {
@@ -290,12 +295,12 @@ struct _CHECKPOINT_MAP_PHY {
     CHECKPOINT_MAPPING CpmMap[];
 } CHECKPOINT_MAP_PHY, *PCHECKPOINT_MAP_PHY;
 
-#include <poppack>
+//#include <poppack>
 struct _EVICT_MAPPIMG_VAL {
     PADDR DstPAddr;
     UINT64 Len;
 } EVICT_MAPPIMG_VAL;
-#include <pshpack>
+//#include <pshpack>
 
 struct _OMAP_PHYS {
     OBJ_PHYS OmO;
@@ -385,5 +390,11 @@ struct _APFS_SUPERBLOCK {
     UINT32 ReservedType;
     OID ReservedOId;
 } APFS_SUPERBLOCK, *PAPFS_SUPERBLOCK;
+#endif
+NTSTATUS
+ApfsRead();
+
+NTSTATUS
+ApfsWrite();
 
 #endif /* APFS_H */

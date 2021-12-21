@@ -1,6 +1,7 @@
 
 list(APPEND SOURCE
     apfs.c
+    rw.c
     apfs.h)
 
 add_library(apfs MODULE ${SOURCE} apfs.rc)
@@ -9,3 +10,5 @@ target_link_libraries(apfs ${PSEH_LIB})
 add_importlibs(apfs ntoskrnl hal)
 add_pch(apfs apfs.h SOURCE)
 add_cd_file(TARGET apfs DESTINATION reactos/system32/drivers FOR all)
+add_driver_inf(apfs apfs.inf)
+add_registry_inf(apfs_reg.inf)
