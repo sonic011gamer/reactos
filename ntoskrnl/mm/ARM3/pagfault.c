@@ -364,7 +364,7 @@ MiCheckPdeForSessionSpace(IN PVOID Address)
 
         /* Now get the session-specific page table for this address */
         SessionAddress = MiPteToAddress(Address);
-        PointerPde = MiAddressToPte(Address);
+        PointerPde = (PMMPDE)MiAddressToPte(Address);
         if (PointerPde->u.Hard.Valid) return STATUS_WAIT_1;
 
         /* It's not valid, so find it in the page table array */
@@ -2234,7 +2234,7 @@ UserFault:
             MiUnlockProcessWorkingSet(CurrentProcess, CurrentThread);
             return Status;
         }
-
+#if _M_IX86
         /* Resolve a demand zero fault */
         Status = MiResolveDemandZeroFault(PointerPte,
                                  PointerPde,
@@ -2245,7 +2245,7 @@ UserFault:
         {
             goto ExitUser;
         }
-
+#endif
 #if _MI_PAGING_LEVELS >= 3
         MiIncrementPageTableReferences(PointerPte);
 #endif
@@ -2312,7 +2312,9 @@ UserFault:
                 /* And make a new shiny one with our page */
                 MiInitializePfn(PageFrameIndex, PointerPte, TRUE);
                 TempPte.u.Hard.PageFrameNumber = PageFrameIndex;
+#if _M_IX86
                 TempPte.u.Hard.Write = 1;
+#endif
                 TempPte.u.Hard.CopyOnWrite = 0;
 
                 MI_WRITE_VALID_PTE(PointerPte, TempPte);
