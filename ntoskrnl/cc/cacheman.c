@@ -115,7 +115,11 @@ VOID
 NTAPI
 CcShutdownSystem(VOID)
 {
-    /* NOTHING TO DO */
+    ULONG Dummy;
+    /* Flush everything */
+    CcRosFlushDirtyPages(MAXULONG, &Dummy, TRUE, FALSE);
+    /* HACK: One last round for the Mm Writer thread */
+    MmShutdownBalancer();
 }
 
 /*
