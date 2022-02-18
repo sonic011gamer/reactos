@@ -53,7 +53,7 @@ IntCreatePrimarySurface(VOID)
 VOID FASTCALL
 IntDestroyPrimarySurface(VOID)
 {
-    UNIMPLEMENTED;
+    UNIMPLEMENTED_ONCE;
 }
 
 PPDEVOBJ FASTCALL
@@ -73,7 +73,7 @@ NtGdiDrawEscape(
     IN INT cjIn,
     IN OPTIONAL LPSTR pjIn)
 {
-    UNIMPLEMENTED;
+    UNIMPLEMENTED_ONCE;
     return 0;
 }
 
