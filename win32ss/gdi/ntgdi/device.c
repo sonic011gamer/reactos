@@ -16,13 +16,13 @@ PDC defaultDCstate = NULL;
 VOID FASTCALL
 IntGdiReferencePdev(PPDEVOBJ ppdev)
 {
-    UNIMPLEMENTED;
+    UNIMPLEMENTED_ONCE;
 }
 
 VOID FASTCALL
 IntGdiUnreferencePdev(PPDEVOBJ ppdev, DWORD CleanUpType)
 {
-    UNIMPLEMENTED;
+    UNIMPLEMENTED_ONCE;
 }
 
 BOOL FASTCALL
@@ -43,7 +43,7 @@ IntCreatePrimarySurface(VOID)
 VOID FASTCALL
 IntDestroyPrimarySurface(VOID)
 {
-    UNIMPLEMENTED;
+    UNIMPLEMENTED_ONCE;
 }
 
 PPDEVOBJ FASTCALL
@@ -63,7 +63,7 @@ NtGdiDrawEscape(
     IN INT cjIn,
     IN OPTIONAL LPSTR pjIn)
 {
-    UNIMPLEMENTED;
+    UNIMPLEMENTED_ONCE;
     return 0;
 }
 
