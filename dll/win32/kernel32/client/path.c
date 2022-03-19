@@ -2447,4 +2447,15 @@ GetSystemWow64DirectoryA(OUT LPSTR lpBuffer,
 #endif
 }
 
+/*
+ * @unimplemented
+ */
+BOOL
+WINAPI
+SetSearchPathMode(DWORD Flags)
+{
+    UNIMPLEMENTED;
+    return TRUE;
+}
+
 /* EOF */
