@@ -1327,5 +1327,3 @@ TlsSetValue(IN DWORD Index,
     /* Success */
     return TRUE;
 }
-
-/* EOF */
