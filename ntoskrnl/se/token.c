@@ -1775,6 +1775,513 @@ SepCreateSystemAnonymousLogonTokenNoEveryone(VOID)
 
 /**
  * @brief
+ * Filters an access token from an existing token, making it more restricted
+ * than the previous one.
+ *
+ * @param[in] ExistingToken
+ * An existing token for filtering.
+ *
+ * @param[in] Flags
+ * Privilege flag options. This parameter argument influences how the token
+ * is filtered. Such parameter can be 0. See NtFilterToken syscall for
+ * more information.
+ *
+ * @param[in] SidsToDisable
+ * Array of SIDs to disable. Such parameter can be NULL.
+ *
+ * @param[in] PrivilegesToDelete
+ * Array of privileges to delete. If DISABLE_MAX_PRIVILEGE flag is specified
+ * in the Flags parameter, PrivilegesToDelete is ignored.
+ *
+ * @param[in] RestrictedSids
+ * An array of restricted SIDs for the new filtered token. Such parameter
+ * can be NULL.
+ *
+ * @param[out] FilteredToken
+ * The newly filtered token, returned to the caller.
+ *
+ * @return
+ * Returns STATUS_SUCCESS if the function has successfully completed its
+ * operations and that the access token has been filtered. STATUS_INVALID_PARAMETER
+ * is returned if one or more of the parameter are not valid. A failure NTSTATUS code
+ * is returned otherwise.
+ *
+ * @remarks
+ * WARNING -- The caller IS RESPONSIBLE for locking the existing access token
+ *            before attempting to do any kind of filtering operation into
+ *            the token. The lock MUST BE RELEASED after this kernel routine
+ *            has finished doing its work.
+ */
+NTSTATUS
+NTAPI
+SeFilterToken(
+    _In_ PACCESS_TOKEN ExistingToken,
+    _In_ ULONG Flags,
+    _In_opt_ PTOKEN_GROUPS SidsToDisable,
+    _In_opt_ PTOKEN_PRIVILEGES PrivilegesToDelete,
+    _In_opt_ PTOKEN_GROUPS RestrictedSids,
+    _Out_ PACCESS_TOKEN *FilteredToken)
+{
+    NTSTATUS Status;
+    PTOKEN AccessToken;
+    ULONG PrivilegesCount = 0;
+    ULONG SidsCount = 0;
+    ULONG RestrictedSidsCount = 0;
+    PAGED_CODE();
+
+    /* Begin copying the counters */
+    if (SidsToDisable != NULL)
+    {
+        SidsCount = SidsToDisable->GroupCount;
+    }
+
+    if (PrivilegesToDelete != NULL)
+    {
+        PrivilegesCount = PrivilegesToDelete->PrivilegeCount;
+    }
+
+    if (RestrictedSids != NULL)
+    {
+        RestrictedSidsCount = RestrictedSids->GroupCount;
+    }
+
+    /* Call the internal API */
+    Status = SepPerformTokenFiltering(ExistingToken,
+                                      PrivilegesToDelete->Privileges,
+                                      SidsToDisable->Groups,
+                                      RestrictedSids->Groups,
+                                      PrivilegesCount,
+                                      SidsCount,
+                                      RestrictedSidsCount,
+                                      Flags,
+                                      KernelMode,
+                                      &AccessToken);
+    if (!NT_SUCCESS(Status))
+    {
+        DPRINT1("SeFilterToken(): Failed to filter the token (Status 0x%lx)\n", Status);
+        return Status;
+    }
+
+    /* Insert the filtered token */
+    Status = ObInsertObject(AccessToken,
+                            NULL,
+                            0,
+                            0,
+                            NULL,
+                            NULL);
+    if (!NT_SUCCESS(Status))
+    {
+        DPRINT1("SeFilterToken(): Failed to insert the token (Status 0x%lx)\n", Status);
+        return Status;
+    }
+
+    /* Give it to the caller */
+    *FilteredToken = AccessToken;
+    return Status;
+}
+
+/**
+ * @brief
+ * Queries information details about the given token to the call. The difference
+ * between NtQueryInformationToken and this routine is that the system call has
+ * user mode buffer data probing and additional protection checks whereas this
+ * routine doesn't have any of these. The routine is used exclusively in kernel
+ * mode.
+ *
+ * @param[in] AccessToken
+ * An access token to be given.
+ *
+ * @param[in] TokenInformationClass
+ * Token information class.
+ *
+ * @param[out] TokenInformation
+ * Buffer with retrieved information. Such information is arbitrary, depending
+ * on the requested information class.
+ *
+ * @return
+ * Returns STATUS_SUCCESS if the operation to query the desired information
+ * has completed successfully. STATUS_INSUFFICIENT_RESOURCES is returned if
+ * pool memory allocation has failed to satisfy an operation. Otherwise
+ * STATUS_INVALID_INFO_CLASS is returned indicating that the information
+ * class provided is not supported by the routine.
+ *
+ * @remarks
+ * Only certain information classes are not implemented in this function and
+ * these are TokenOrigin, TokenGroupsAndPrivileges, TokenRestrictedSids and
+ * TokenSandBoxInert. The following classes are implemented in NtQueryInformationToken
+ * only.
+ */
+NTSTATUS
+NTAPI
+SeQueryInformationToken(
+    _In_ PACCESS_TOKEN AccessToken,
+    _In_ TOKEN_INFORMATION_CLASS TokenInformationClass,
+    _Outptr_result_buffer_(_Inexpressible_(token-dependent)) PVOID *TokenInformation)
+{
+    NTSTATUS Status;
+    PTOKEN Token = (PTOKEN)AccessToken;
+    ULONG RequiredLength;
+    union
+    {
+        PSID PSid;
+        ULONG Ulong;
+    } Unused;
+
+    PAGED_CODE();
+
+    /* Lock the token */
+    SepAcquireTokenLockShared(Token);
+
+    switch (TokenInformationClass)
+    {
+        case TokenUser:
+        {
+            PTOKEN_USER tu;
+
+            DPRINT("SeQueryInformationToken(TokenUser)\n");
+            RequiredLength = sizeof(TOKEN_USER) +
+                RtlLengthSid(Token->UserAndGroups[0].Sid);
+
+            /* Allocate the output buffer */
+            tu = ExAllocatePoolWithTag(PagedPool, RequiredLength, TAG_SE);
+            if (tu == NULL)
+            {
+                Status = STATUS_INSUFFICIENT_RESOURCES;
+                break;
+            }
+
+            Status = RtlCopySidAndAttributesArray(1,
+                                                  &Token->UserAndGroups[0],
+                                                  RequiredLength - sizeof(TOKEN_USER),
+                                                  &tu->User,
+                                                  (PSID)(tu + 1),
+                                                  &Unused.PSid,
+                                                  &Unused.Ulong);
+
+            /* Return the structure */
+            *TokenInformation = tu;
+            Status = STATUS_SUCCESS;
+            break;
+        }
+
+        case TokenGroups:
+        {
+            PTOKEN_GROUPS tg;
+            ULONG SidLen;
+            PSID Sid;
+
+            DPRINT("SeQueryInformationToken(TokenGroups)\n");
+            RequiredLength = sizeof(tg->GroupCount) +
+                RtlLengthSidAndAttributes(Token->UserAndGroupCount - 1, &Token->UserAndGroups[1]);
+
+            SidLen = RequiredLength - sizeof(tg->GroupCount) -
+                ((Token->UserAndGroupCount - 1) * sizeof(SID_AND_ATTRIBUTES));
+
+            /* Allocate the output buffer */
+            tg = ExAllocatePoolWithTag(PagedPool, RequiredLength, TAG_SE);
+            if (tg == NULL)
+            {
+                Status = STATUS_INSUFFICIENT_RESOURCES;
+                break;
+            }
+
+            Sid = (PSID)((ULONG_PTR)tg + sizeof(tg->GroupCount) +
+                         ((Token->UserAndGroupCount - 1) * sizeof(SID_AND_ATTRIBUTES)));
+
+            tg->GroupCount = Token->UserAndGroupCount - 1;
+            Status = RtlCopySidAndAttributesArray(Token->UserAndGroupCount - 1,
+                                                  &Token->UserAndGroups[1],
+                                                  SidLen,
+                                                  &tg->Groups[0],
+                                                  Sid,
+                                                  &Unused.PSid,
+                                                  &Unused.Ulong);
+
+            /* Return the structure */
+            *TokenInformation = tg;
+            Status = STATUS_SUCCESS;
+            break;
+        }
+
+        case TokenPrivileges:
+        {
+            PTOKEN_PRIVILEGES tp;
+
+            DPRINT("SeQueryInformationToken(TokenPrivileges)\n");
+            RequiredLength = sizeof(tp->PrivilegeCount) +
+                (Token->PrivilegeCount * sizeof(LUID_AND_ATTRIBUTES));
+
+            /* Allocate the output buffer */
+            tp = ExAllocatePoolWithTag(PagedPool, RequiredLength, TAG_SE);
+            if (tp == NULL)
+            {
+                Status = STATUS_INSUFFICIENT_RESOURCES;
+                break;
+            }
+
+            tp->PrivilegeCount = Token->PrivilegeCount;
+            RtlCopyLuidAndAttributesArray(Token->PrivilegeCount,
+                                          Token->Privileges,
+                                          &tp->Privileges[0]);
+
+            /* Return the structure */
+            *TokenInformation = tp;
+            Status = STATUS_SUCCESS;
+            break;
+        }
+
+        case TokenOwner:
+        {
+            PTOKEN_OWNER to;
+            ULONG SidLen;
+
+            DPRINT("SeQueryInformationToken(TokenOwner)\n");
+            SidLen = RtlLengthSid(Token->UserAndGroups[Token->DefaultOwnerIndex].Sid);
+            RequiredLength = sizeof(TOKEN_OWNER) + SidLen;
+
+            /* Allocate the output buffer */
+            to = ExAllocatePoolWithTag(PagedPool, RequiredLength, TAG_SE);
+            if (to == NULL)
+            {
+                Status = STATUS_INSUFFICIENT_RESOURCES;
+                break;
+            }
+
+            to->Owner = (PSID)(to + 1);
+            Status = RtlCopySid(SidLen,
+                                to->Owner,
+                                Token->UserAndGroups[Token->DefaultOwnerIndex].Sid);
+
+            /* Return the structure */
+            *TokenInformation = to;
+            Status = STATUS_SUCCESS;
+            break;
+        }
+
+        case TokenPrimaryGroup:
+        {
+            PTOKEN_PRIMARY_GROUP tpg;
+            ULONG SidLen;
+
+            DPRINT("SeQueryInformationToken(TokenPrimaryGroup)\n");
+            SidLen = RtlLengthSid(Token->PrimaryGroup);
+            RequiredLength = sizeof(TOKEN_PRIMARY_GROUP) + SidLen;
+
+            /* Allocate the output buffer */
+            tpg = ExAllocatePoolWithTag(PagedPool, RequiredLength, TAG_SE);
+            if (tpg == NULL)
+            {
+                Status = STATUS_INSUFFICIENT_RESOURCES;
+                break;
+            }
+
+            tpg->PrimaryGroup = (PSID)(tpg + 1);
+            Status = RtlCopySid(SidLen,
+                                tpg->PrimaryGroup,
+                                Token->PrimaryGroup);
+
+            /* Return the structure */
+            *TokenInformation = tpg;
+            Status = STATUS_SUCCESS;
+            break;
+        }
+
+        case TokenDefaultDacl:
+        {
+            PTOKEN_DEFAULT_DACL tdd;
+
+            DPRINT("SeQueryInformationToken(TokenDefaultDacl)\n");
+            RequiredLength = sizeof(TOKEN_DEFAULT_DACL);
+
+            if (Token->DefaultDacl != NULL)
+                RequiredLength += Token->DefaultDacl->AclSize;
+
+            /* Allocate the output buffer */
+            tdd = ExAllocatePoolWithTag(PagedPool, RequiredLength, TAG_SE);
+            if (tdd == NULL)
+            {
+                Status = STATUS_INSUFFICIENT_RESOURCES;
+                break;
+            }
+
+            if (Token->DefaultDacl != NULL)
+            {
+                tdd->DefaultDacl = (PACL)(tdd + 1);
+                RtlCopyMemory(tdd->DefaultDacl,
+                              Token->DefaultDacl,
+                              Token->DefaultDacl->AclSize);
+            }
+            else
+            {
+                tdd->DefaultDacl = NULL;
+            }
+
+            /* Return the structure */
+            *TokenInformation = tdd;
+            Status = STATUS_SUCCESS;
+            break;
+        }
+
+        case TokenSource:
+        {
+            PTOKEN_SOURCE ts;
+
+            DPRINT("SeQueryInformationToken(TokenSource)\n");
+            RequiredLength = sizeof(TOKEN_SOURCE);
+
+            /* Allocate the output buffer */
+            ts = ExAllocatePoolWithTag(PagedPool, RequiredLength, TAG_SE);
+            if (ts == NULL)
+            {
+                Status = STATUS_INSUFFICIENT_RESOURCES;
+                break;
+            }
+
+            *ts = Token->TokenSource;
+
+            /* Return the structure */
+            *TokenInformation = ts;
+            Status = STATUS_SUCCESS;
+            break;
+        }
+
+        case TokenType:
+        {
+            PTOKEN_TYPE tt;
+
+            DPRINT("SeQueryInformationToken(TokenType)\n");
+            RequiredLength = sizeof(TOKEN_TYPE);
+
+            /* Allocate the output buffer */
+            tt = ExAllocatePoolWithTag(PagedPool, RequiredLength, TAG_SE);
+            if (tt == NULL)
+            {
+                Status = STATUS_INSUFFICIENT_RESOURCES;
+                break;
+            }
+
+            *tt = Token->TokenType;
+
+            /* Return the structure */
+            *TokenInformation = tt;
+            Status = STATUS_SUCCESS;
+            break;
+        }
+
+        case TokenImpersonationLevel:
+        {
+            PSECURITY_IMPERSONATION_LEVEL sil;
+
+            DPRINT("SeQueryInformationToken(TokenImpersonationLevel)\n");
+            RequiredLength = sizeof(SECURITY_IMPERSONATION_LEVEL);
+
+            /* Fail if the token is not an impersonation token */
+            if (Token->TokenType != TokenImpersonation)
+            {
+                Status = STATUS_INVALID_INFO_CLASS;
+                break;
+            }
+
+            /* Allocate the output buffer */
+            sil = ExAllocatePoolWithTag(PagedPool, RequiredLength, TAG_SE);
+            if (sil == NULL)
+            {
+                Status = STATUS_INSUFFICIENT_RESOURCES;
+                break;
+            }
+
+            *sil = Token->ImpersonationLevel;
+
+            /* Return the structure */
+            *TokenInformation = sil;
+            Status = STATUS_SUCCESS;
+            break;
+        }
+
+        case TokenStatistics:
+        {
+            PTOKEN_STATISTICS ts;
+
+            DPRINT("SeQueryInformationToken(TokenStatistics)\n");
+            RequiredLength = sizeof(TOKEN_STATISTICS);
+
+            /* Allocate the output buffer */
+            ts = ExAllocatePoolWithTag(PagedPool, RequiredLength, TAG_SE);
+            if (ts == NULL)
+            {
+                Status = STATUS_INSUFFICIENT_RESOURCES;
+                break;
+            }
+
+            ts->TokenId = Token->TokenId;
+            ts->AuthenticationId = Token->AuthenticationId;
+            ts->ExpirationTime = Token->ExpirationTime;
+            ts->TokenType = Token->TokenType;
+            ts->ImpersonationLevel = Token->ImpersonationLevel;
+            ts->DynamicCharged = Token->DynamicCharged;
+            ts->DynamicAvailable = Token->DynamicAvailable;
+            ts->GroupCount = Token->UserAndGroupCount - 1;
+            ts->PrivilegeCount = Token->PrivilegeCount;
+            ts->ModifiedId = Token->ModifiedId;
+
+            /* Return the structure */
+            *TokenInformation = ts;
+            Status = STATUS_SUCCESS;
+            break;
+        }
+
+        case TokenSessionId:
+        {
+            DPRINT("SeQueryInformationToken(TokenSessionId)\n");
+            Status = SeQuerySessionIdToken(Token, (PULONG)TokenInformation);
+            break;
+        }
+
+        case TokenIntegrityLevel:
+        case TokenUIAccess:
+        case TokenMandatoryPolicy:
+        case TokenLogonSid:
+        case TokenIsAppContainer:
+        case TokenCapabilities:
+        case TokenAppContainerSid:
+        case TokenAppContainerNumber:
+        case TokenUserClaimAttributes:
+        case TokenDeviceClaimAttributes:
+        case TokenRestrictedUserClaimAttributes:
+        case TokenRestrictedDeviceClaimAttributes:
+        case TokenDeviceGroups:
+        case TokenRestrictedDeviceGroups:
+        case TokenSecurityAttributes:
+        case TokenIsRestricted:
+        case TokenProcessTrustLevel:
+        case TokenPrivateNameSpace:
+        case TokenSingletonAttributes:
+        case TokenBnoIsolation:
+        case TokenChildProcessFlags:
+        case TokenIsLessPrivilegedAppContainer:
+        case TokenIsSandboxed:
+        case TokenOriginatingProcessTrustLevel:
+        case MaxTokenInfoClass:
+        {
+            DPRINT1("SeQueryInformationToken(%d) not implemented\n");
+            Status = STATUS_SUCCESS;
+            break;
+        }
+
+        default:
+            DPRINT1("SeQueryInformationToken(%d) invalid information class\n", TokenInformationClass);
+            Status = STATUS_INVALID_INFO_CLASS;
+            break;
+    }
+
+    /* Release the lock of the token */
+    SepReleaseTokenLock(Token);
+
+    return Status;
+}
+
+/**
+ * @brief
  * Queries the session ID of an access token.
  *
  * @param[in] Token
