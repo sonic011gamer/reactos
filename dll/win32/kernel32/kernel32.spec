@@ -172,6 +172,12 @@
 @ stdcall CreateThread(ptr long ptr long long ptr)
 @ stdcall CreateTimerQueue ()
 @ stdcall CreateTimerQueueTimer(ptr long ptr ptr long long long)
+@ stdcall -stub -version=0x600+ CreateThreadpool(ptr)
+@ stdcall -stub -version=0x600+ CreateThreadpoolCleanupGroup()
+@ stdcall -stub -version=0x600+ CreateThreadpoolIo(ptr ptr ptr ptr)
+@ stdcall -stub -version=0x600+ CreateThreadpoolTimer(ptr ptr ptr)
+@ stdcall -stub -version=0x600+ CreateThreadpoolWait(ptr ptr ptr)
+@ stdcall -stub -version=0x600+ CreateThreadpoolWork(ptr ptr ptr)
 @ stdcall CreateToolhelp32Snapshot(long long)
 @ stdcall CreateWaitableTimerA(ptr long str)
 @ stub -version=0x600+ CreateWaitableTimerExA
@@ -881,6 +887,7 @@
 @ stdcall QueueUserAPC(ptr long long)
 @ stdcall QueueUserWorkItem(ptr ptr long)
 @ stdcall -norelay RaiseException(long long long ptr)
+@ stdcall -stub RaiseFailFastException(ptr ptr long)
 @ stdcall ReOpenFile(ptr long long long)
 @ stdcall ReadConsoleA(long ptr long ptr ptr)
 @ stdcall ReadConsoleInputA(long ptr long ptr)
@@ -1124,10 +1131,10 @@
 @ stdcall SetThreadPriorityBoost(long long)
 @ stdcall SetThreadStackGuarantee(ptr)
 @ stdcall SetThreadUILanguage(long)
-@ stub -version=0x600+ SetThreadpoolThreadMaximum
-@ stub -version=0x600+ SetThreadpoolThreadMinimum
-@ stub -version=0x600+ SetThreadpoolTimer
-@ stub -version=0x600+ SetThreadpoolWait
+@ stdcall -stub -version=0x600+ SetThreadpoolThreadMaximum(ptr long)
+@ stdcall -stub -version=0x600+ SetThreadpoolThreadMinimum(ptr long)
+@ stdcall -stub -version=0x600+ SetThreadpoolTimer(ptr ptr long long)
+@ stdcall -stub -version=0x600+ SetThreadpoolWait(ptr ptr ptr)
 @ stdcall SetTimeZoneInformation(ptr)
 @ stdcall SetTimerQueueTimer(long ptr ptr long long long)
 @ stdcall SetUnhandledExceptionFilter(ptr)
