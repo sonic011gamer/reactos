@@ -2086,8 +2086,8 @@
 @ stub -version=0x602+ ZwWaitForAlertByThreadId	
 @ stub -version=0x602+ ZwWaitForWnfNotifications	
 @ stub -version=0x602+ ZwWow64AllocateVirtualMemory64
-@ stdcall -version=0x602+ _ftol2()
-@ stdcall -version=0x602+ _ftol2_sse()
+@ cdecl -arch=i386 -version=0x602+ _ftol2(long)
+@ cdecl -arch=i386 -version=0x602+ _ftol2_sse(long)
 ;@ stdcall -stub -version=0x602+ _local_unwind4()
 ;@ stdcall -stub -version=0x602+ _strlwr_s()
 ;@ stdcall -stub -version=0x602+ _strupr_s()
