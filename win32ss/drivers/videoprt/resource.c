@@ -890,7 +890,7 @@ VideoPortVerifyAccessRanges(
       &ConflictDetected);
    ExFreePool(ResourceList);
 
-   if (!NT_SUCCESS(Status) || ConflictDetected)
+   if (!NT_SUCCESS(Status))
       return ERROR_INVALID_PARAMETER;
    else
       return NO_ERROR;
