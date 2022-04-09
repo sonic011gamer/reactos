@@ -247,6 +247,11 @@ MiReserveSystemPtes(IN ULONG NumberOfPtes,
                     IN MMSYSTEM_PTE_POOL_TYPE SystemPtePoolType)
 {
     PMMPTE PointerPte;
+    
+    if( NumberOfPtes > 32768 )
+    {
+        return NULL;
+    }
 
     //
     // Use the extended function
