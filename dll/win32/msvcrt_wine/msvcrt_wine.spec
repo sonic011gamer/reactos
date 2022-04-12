@@ -1,1 +1,11 @@
-@ cdecl -version=0x600+ _libm_sse2_sqrt_precise()
+
+@ cdecl __libm_sse2_acos_precise()
+@ cdecl __libm_sse2_asin_precise()
+@ cdecl __libm_sse2_atan_precise()
+@ cdecl __libm_sse2_cos_precise() 
+@ cdecl __libm_sse2_exp_precise() 
+@ cdecl __libm_sse2_log10_precise()
+@ cdecl __libm_sse2_log_precise() 
+@ cdecl __libm_sse2_pow_precise() 
+@ cdecl __libm_sse2_sin_precise()
+@ cdecl __libm_sse2_sqrt_precise()
