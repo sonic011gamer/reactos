@@ -728,6 +728,7 @@
 @ cdecl _kbhit()
 @ cdecl _lfind(ptr ptr ptr long ptr)
 @ stub -version=0x600+ _lfind_s
+@ cdecl -version=0x600+ _libm_sse2_sqrt_precise() msvcrt_wine._libm_sse2_sqrt_precise
 @ cdecl -arch=i386 _loaddll(str)
 @ cdecl -arch=x86_64 -version=0x502 _loaddll(str)
 @ cdecl -arch=x86_64 _local_unwind(ptr ptr)
@@ -752,7 +753,6 @@
 @ cdecl -version=0x600+ _ltoa_s(long str long long)
 @ cdecl _ltow(long ptr long)
 @ cdecl -version=0x600+ _ltow_s(long ptr long long)
-@ cdecl -version=0x600+ _libm_sse2_sqrt_precise()
 @ cdecl _makepath(ptr str str str str)
 @ stub -version=0x600+ _makepath_s
 @ cdecl -version=0x600+ _malloc_base(long)
