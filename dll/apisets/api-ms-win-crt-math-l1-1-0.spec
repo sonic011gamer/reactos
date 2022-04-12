@@ -103,16 +103,16 @@
 @ stub _ldsin
 @ stub _ldtest
 @ stub _ldunscale
-@ stub _libm_sse2_acos_precise
-@ stub _libm_sse2_asin_precise
-@ stub _libm_sse2_atan_precise
-@ stub _libm_sse2_cos_precise
-@ stub _libm_sse2_exp_precise
-@ stub _libm_sse2_log10_precise
-@ stub _libm_sse2_log_precise
-@ stub _libm_sse2_pow_precise
-@ stub _libm_sse2_sin_precise
-@ stdcall _libm_sse2_sqrt_precise() msvcrt._libm_sse2_sqrt_precise
+@ stdcall _libm_sse2_acos_precise() msvcrt_wine.__libm_sse2_acos_precise
+@ stdcall _libm_sse2_asin_precise() msvcrt_wine.__libm_sse2_asin_precise
+@ stdcall _libm_sse2_atan_precise() msvcrt_wine.__libm_sse2_atan_precise
+@ stdcall _libm_sse2_cos_precise() msvcrt_wine.__libm_sse2_cos_precise
+@ stdcall _libm_sse2_exp_precise() msvcrt_wine.__libm_sse2_exp_precise
+@ stdcall _libm_sse2_log10_precise() msvcrt_wine.__libm_sse2_log10_precise
+@ stdcall _libm_sse2_log_precise() msvcrt_wine.__libm_sse2_log_precise
+@ stdcall _libm_sse2_pow_precise() msvcrt_wine.__libm_sse2_pow_precise
+@ stdcall _libm_sse2_sin_precise() msvcrt_wine.__libm_sse2_sin_precise
+@ stdcall _libm_sse2_sqrt_precise() msvcrt_wine.__libm_sse2_sqrt_precise
 @ stub _libm_sse2_tan_precise
 @ stdcall _logb() msvcrt._logb
 @ stub _logbf
