@@ -44,5 +44,5 @@ if(MSVC)
     set_property(TARGET libmsvcrt_real APPEND PROPERTY STATIC_LIBRARY_OPTIONS "/ignore:4102")
 endif()
 
-add_importlibs(msvcrt kernel32 ntdll)
+add_importlibs(msvcrt msvcrt_wine kernel32 ntdll)
 add_cd_file(TARGET msvcrt DESTINATION reactos/system32 FOR all)
