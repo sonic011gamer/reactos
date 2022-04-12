@@ -705,7 +705,7 @@
 @ cdecl _kbhit()
 @ cdecl _lfind(ptr ptr ptr long ptr)
 @ stub -version=0x600+ _lfind_s
-@ cdecl -version=0x600+ _libm_sse2_sqrt_precise() msvcrt_wine._libm_sse2_sqrt_precise
+@ cdecl -version=0x600+ __libm_sse2_sqrt_precise() msvcrt_wine.__libm_sse2_sqrt_precise
 @ cdecl -arch=i386 _loaddll(str)
 @ cdecl -arch=x86_64 -version=0x502 _loaddll(str)
 @ cdecl -arch=x86_64 _local_unwind(ptr ptr)
