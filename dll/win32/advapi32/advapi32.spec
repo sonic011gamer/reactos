@@ -320,7 +320,7 @@
 @ stdcall InitializeAcl(ptr long long)
 @ stdcall InitializeSecurityDescriptor(ptr long)
 @ stdcall InitializeSid(ptr ptr long)
-@ stub -version=600+ InitiateShutdownW
+@ stdcall -version=600+ InitiateShutdownW()
 @ stub -version=600+ EventWriteEndScenario
 @ stub -version=600+ EventWriteStartScenario
 @ stub -version=600+ CredReadByTokenHandle 
