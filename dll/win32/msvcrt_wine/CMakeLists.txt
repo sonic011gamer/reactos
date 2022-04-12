@@ -20,6 +20,7 @@ spec2def(msvcrt_wine.dll msvcrt_wine.spec ADD_IMPORTLIB)
 list(APPEND SOURCE
     DllMain.c
     stubs.c
+    #math.c
     ${CMAKE_CURRENT_BINARY_DIR}/msvcrt_wine_stubs.c
     ${CMAKE_CURRENT_BINARY_DIR}/msvcrt_wine.def)
 
