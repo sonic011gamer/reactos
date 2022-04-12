@@ -883,7 +883,7 @@
 @ stdcall RtlGetFullPathName_UstrEx(ptr ptr ptr ptr ptr ptr ptr ptr)
 @ stub -version=0x600+ -arch=x86_64 RtlGetFunctionTableListHead
 @ stdcall RtlGetGroupSecurityDescriptor(ptr ptr ptr)
-@ stub -version=0x600+ RtlGetIntegerAtom
+@ stdcall -stub -version=0x600+ RtlGetIntegerAtom(wstr ptr)
 @ stdcall RtlGetLastNtStatus()
 @ stdcall RtlGetLastWin32Error()
 @ stdcall RtlGetLengthWithoutLastFullDosOrNtPathElement(long ptr ptr)
@@ -1862,9 +1862,11 @@
 @ cdecl -arch=i386,x86_64 sqrt(double)
 @ varargs sscanf(str str)
 @ cdecl strcat(str str)
+@ cdecl -version=0x600+ strcat_s(str long str)
 @ cdecl strchr(str long)
 @ cdecl strcmp(str str)
 @ cdecl strcpy(ptr str)
+@ cdecl -version=0x600+ strcpy_s(ptr long str)
 @ cdecl strcspn(str str)
 @ cdecl strlen(str)
 @ cdecl strncat(str str long)
