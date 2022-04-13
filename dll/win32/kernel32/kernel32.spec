@@ -534,15 +534,15 @@
 @ stdcall GetNextVDMCommand(long)
 @ stdcall -version=0x500-0x502 GetNlsSectionName(long long long str str long)
 @ stdcall GetNumaAvailableMemoryNode(long ptr)
-@ stdcall -version=0x601+ GetNumaAvailableMemoryNodeEx(long ptr)  kernel32_vista.GetNumaAvailableMemoryNodeEx
+@ stdcall -version=0x601+ GetNumaAvailableMemoryNodeEx(long ptr)
 @ stdcall GetNumaHighestNodeNumber(ptr)
 @ stdcall GetNumaNodeProcessorMask(long ptr)
-@ stdcall -version=0x601+ GetNumaNodeNumberFromHandle(ptr ptr) kernel32_vista.GetNumaNodeNumberFromHandle 
-@ stdcall -version=0x601+ GetNumaNodeProcessorMaskEx(long ptr) kernel32_vista.GetNumaNodeProcessorMaskEx
+@ stdcall -version=0x601+ GetNumaNodeNumberFromHandle(ptr ptr)
+@ stdcall -version=0x601+ GetNumaNodeProcessorMaskEx(long ptr)
 @ stdcall GetNumaProcessorNode(long ptr)
-@ stdcall -version=0x601+ GetNumaProcessorNodeEx(ptr ptr)  kernel32_vista.GetNumaProcessorNodeEx
+@ stdcall -version=0x601+ GetNumaProcessorNodeEx(ptr ptr)
 @ stub -version=0x600+ GetNumaProximityNode	
-@ stdcall -version=0x601+ GetNumaProximityNodeEx(long ptr) kernel32_vista.GetNumaProximityNodeEx
+@ stdcall -version=0x601+ GetNumaProximityNodeEx(long ptr)
 @ stdcall GetNumberFormatA(long long str ptr ptr long)
 @ stdcall -version=0x600+ GetNumberFormatEx(wstr long wstr ptr wstr long)
 @ stdcall GetNumberFormatW(long long wstr ptr ptr long)
@@ -1731,16 +1731,16 @@
 @ stub -version=0x601+ -arch=x86_64 ExecuteUmsThread
 @ stdcall -stub -version=0x601+ FindStringOrdinal(long ptr long ptr long long)
 @ stdcall -version=0x601+ GetActiveProcessorCount(long)
-@ stdcall -version=0x601+ GetActiveProcessorGroupCount() kernel32_vista.GetActiveProcessorGroupCount
+@ stdcall -version=0x601+ GetActiveProcessorGroupCount()
 @ stdcall -version=0x601+ GetCurrentProcessorNumberEx() ntdll.RtlGetCurrentProcessorNumberEx
 ;GetCurrentUmsThread	x64 only;
 @ stdcall -stub -version=0x601+ GetEnabledXStateFeatures()
 @ stub -version=0x601+ GetEraNameCountedString	;implemented as jump to KERNELBASE
-@ stdcall -version=0x601+ GetLogicalProcessorInformationEx(ptr ptr ptr) kernel32_vista.GetLogicalProcessorInformationEx
-@ stdcall -version=0x601+ GetMaximumProcessorCount() kernel32_vista.GetMaximumProcessorCount
-@ stdcall -version=0x601+ GetMaximumProcessorGroupCount() kernel32_vista.GetMaximumProcessorGroupCount
+@ stdcall -version=0x601+ GetLogicalProcessorInformationEx(ptr ptr ptr)
+@ stdcall -version=0x601+ GetMaximumProcessorCount(long)
+@ stdcall -version=0x601+ GetMaximumProcessorGroupCount()
 ;GetNextUmsListItem	x64 only; 
-@ stdcall -version=0x601+ GetProcessGroupAffinity() kernel32_vista.GetProcessGroupAffinity	;implemented as jump to API-MS-Win-Core-ProcessTopology-L1-1-0 in 6.2 only;
+@ stdcall -version=0x601+ GetProcessGroupAffinity(ptr ptr ptr)	;implemented as jump to API-MS-Win-Core-ProcessTopology-L1-1-0 in 6.2 only;
 @ stdcall -version=0x601 GetProcessPreferredUILanguages(long ptr ptr ptr) ;	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only; implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only; implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
 @ stub -version=0x601 GetProcessUserModeExceptionPolicy
 ;GetProcessorSystemCycleTime	forwarded to api-ms-win-core-sysinfo-l1-2-2
