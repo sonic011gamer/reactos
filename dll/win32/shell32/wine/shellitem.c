@@ -1386,7 +1386,7 @@ HRESULT WINAPI SHCreateShellItemArrayFromDataObject(IDataObject *pdo, REFIID rii
 
         ret = SHCreateShellItemArray(parent_pidl, NULL, pida->cidl, children, &psia);
 
-        HeapFree(GetProcessHeap(), 0, children);
+        //HeapFree((HANDLE)GetProcessHeap(), 0, children);
 
         GlobalUnlock(medium.u.hGlobal);
         GlobalFree(medium.u.hGlobal);

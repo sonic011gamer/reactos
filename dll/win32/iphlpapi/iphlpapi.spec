@@ -173,3 +173,5 @@
 @ stub do_echo_rep
 @ stub do_echo_req
 @ stub register_icmp
+@ stub -version=0x601+ NotifyUnicastIpAddressChange
+@ stub -version=0x601+ GetBestRoute2

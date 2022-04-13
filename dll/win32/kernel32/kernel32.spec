@@ -1532,7 +1532,7 @@
 ;implemented as jump to api-ms-win-core-sysinfo-l1-2-1 in 6.3 and higher
 ;GetProductInfo	implemented as jump to api-ms-win-core-sysinfo-l1-2-0 in 6.2 only;
 ;implemented as jump to api-ms-win-core-sysinfo-l1-2-1 in 6.3 and higher
-;GetQueuedCompletionStatusEx	implemented as jump to API-MS-Win-Core-IO-L1-1-0 in 6.1 only;
+@ stdcall -stub -version=0x601+ GetQueuedCompletionStatusEx(ptr ptr long ptr long long) ;	implemented as jump to API-MS-Win-Core-IO-L1-1-0 in 6.1 only;
 ;implemented as jump to api-ms-win-core-io-l1-1-1 in 6.2 and higher
 ;GetStringScripts	implemented as jump to api-ms-win-core-normalization-l1-1-0 in 6.2 and higher
 ;GetSystemDefaultLocaleName	implemented as jump to KERNELBASE in 6.1 and higher
@@ -1745,7 +1745,7 @@
 @ stub -version=0x601 GetProcessUserModeExceptionPolicy
 ;GetProcessorSystemCycleTime	forwarded to api-ms-win-core-sysinfo-l1-2-2
 ;GetThreadErrorMode	implemented as jump to api-ms-win-core-errorhandling-l1-1-3 in 10.0 and higher
-;GetThreadGroupAffinity	implemented as jump to API-MS-Win-Core-ProcessTopology-L1-1-0 in 6.2 only;
+@ stdcall -stub -version=0x601+ GetThreadGroupAffinity(ptr ptr)	;implemented as jump to API-MS-Win-Core-ProcessTopology-L1-1-0 in 6.2 only;
 ;implemented as jump to api-ms-win-core-processtopology-l1-2-0 in 6.3 and higher
 ;GetThreadIdealProcessorEx	implemented as jump to api-ms-win-core-processthreads-l1-1-1 in 6.2 only;
 ;implemented as jump to api-ms-win-core-processthreads-l1-1-2 in 6.3 and higher
@@ -1841,7 +1841,7 @@
 ;QueryThreadpoolStackInformation	implemented as wrapper around NTDLL function TpQueryPoolStackInformation
 ;QueryUmsThreadInformation	x64 only;
 ;implemented as wrapper around NTDLL function RtlQueryUmsThreadInformation
-;QueryUnbiasedInterruptTime	implemented as jump to api-ms-win-core-realtime-l1-1-0 in 6.2 and higher
+@ stub -version=0x601+ QueryUnbiasedInterruptTime
 ;RaiseFailFastException	forwarded to KERNELBASE in 10.0 and higher
 ;ReadThreadProfilingData	implemented as wrapper around NTDLL function RtlReadThreadProfilingData
 ;RegCloseKey	also named export from ADVAPI32 3.51 and higher;
