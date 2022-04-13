@@ -85,6 +85,7 @@
 @ stdcall GetTcpTable( ptr ptr long )
 @ stub GetTcpTableFromStack
 @ stub GetUdpExTable2FromStack
+@ stdcall -stub -version=0x601+ ResolveIpNetEntry2(ptr ptr)
 @ stdcall GetUdpStatistics( ptr )
 @ stdcall GetUdpStatisticsEx(ptr long)
 @ stub GetUdpStatsFromStack
