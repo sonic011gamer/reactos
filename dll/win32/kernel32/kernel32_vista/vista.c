@@ -782,7 +782,6 @@ GetFileMUIPath(
 /*
  * @unimplemented
  */
-#if 0 // This is Windows 7+
 BOOL
 WINAPI
 GetProcessPreferredUILanguages(
@@ -795,7 +794,6 @@ GetProcessPreferredUILanguages(
     SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
     return FALSE;
 }
-#endif
 
 /*
 * @unimplemented

@@ -5,7 +5,7 @@
 @ stdcall CreateProcessAsUserW() advapi32.CreateProcessAsUserW
 @ stdcall CreateProcessW() kernel32.CreateProcessW
 @ stdcall CreateRemoteThread() kernel32.CreateRemoteThread
-@ stub CreateRemoteThreadEx
+@ stdcall -version=0x601+ CreateRemoteThreadEx() kernel32.CreateRemoteThreadEx
 @ stdcall CreateThread() kernel32.CreateThread
 @ stdcall -version=0x600+ DeleteProcThreadAttributeList() kernel32.DeleteProcThreadAttributeList
 @ stdcall ExitProcess() kernel32.ExitProcess

@@ -10,7 +10,7 @@
 @ stdcall -version=0x600+ EnumResourceTypesExA() kernel32.EnumResourceTypesExA
 @ stdcall -version=0x600+ EnumResourceTypesExW() kernel32.EnumResourceTypesExW
 @ stdcall FindResourceExW() kernel32.FindResourceExW
-@ stub FindStringOrdinal
+@ stdcall -version=0x601+ FindStringOrdinal() kernel32.FindStringOrdinal
 @ stdcall FreeLibrary() kernel32.FreeLibrary
 @ stdcall FreeLibraryAndExitThread() kernel32.FreeLibraryAndExitThread
 @ stdcall FreeResource() kernel32.FreeResource
