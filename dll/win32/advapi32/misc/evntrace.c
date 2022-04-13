@@ -150,6 +150,19 @@ EventWriteTransfer(
     return ERROR_SUCCESS;
 };
 
+
+typedef HANDLE REGHANDLE;
+
+typedef void (WINAPI *PENABLECALLBACK)(
+  LPCGUID SourceId,
+  ULONG IsEnabled,
+  UCHAR Level,
+  ULONGLONG MatchAnyKeyword,
+  ULONGLONG MatchAllKeyword,
+  PEVENT_FILTER_DESCRIPTOR FilterData,
+  PVOID CallbackContext
+);
+
 ULONG WINAPI EventRegister(
   LPCGUID         ProviderId,
   PENABLECALLBACK EnableCallback,
@@ -160,9 +173,9 @@ ULONG WINAPI EventRegister(
 	UNIMPLEMENTED;
     return ERROR_SUCCESS;
 };
-  
+
 ULONG WINAPI EventUnregister(REGHANDLE RegHandle)
 {
 	UNIMPLEMENTED;
     return ERROR_SUCCESS;
-};  
+};
