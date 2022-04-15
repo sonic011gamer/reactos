@@ -91,7 +91,7 @@
 @ stdcall wcslen() msvcrt.wcslen
 @ stub wcsncat_s
 @ stdcall wcsncmp() msvcrt.wcsncmp
-@ stub wcsncpy_s
+@ stdcall -version=0x600+ wcsncpy_s() msvcrt.wcsncpy_s
 @ stub wcsnlen
 @ stdcall wcspbrk() msvcrt.wcspbrk
 @ stdcall wcsrchr() msvcrt.wcsrchr
