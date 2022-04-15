@@ -350,7 +350,7 @@
 @ cdecl -stub -version=0x600+ __stdio_common_vfprintf_s(int64 ptr str ptr ptr) ; just holders for now
 @ cdecl -stub -version=0x600+ __stdio_common_vfwscanf(int64 ptr str ptr ptr) ; just holders for now
 @ cdecl -stub -version=0x600+ __stdio_common_vsprintf_p(int64 ptr str ptr ptr) ; just holders for now
-@ cdecl -stub -version=0x600+ __stdio_common_vsprintf_s(int64 ptr str ptr ptr) ; just holders for now
+;@ cdecl -version=0x600+ __stdio_common_vsprintf_s(int64 ptr str ptr ptr) ; just holders for now
 @ cdecl -stub -version=0x600+ __stdio_common_vsscanf(int64 ptr str ptr ptr) ; just holders for now
 @ cdecl -stub -version=0x600+ __stdio_common_vswprintf_p(int64 ptr str ptr ptr) ; just holders for now
 @ cdecl -stub -version=0x600+ __stdio_common_vswprintf_s(int64 ptr str ptr ptr) ; just holders for now
@@ -1586,6 +1586,7 @@
 @ cdecl wcsncmp(wstr wstr long)
 @ cdecl wcsncpy(ptr wstr long)
 @ cdecl -version=0x600+ wcsncpy_s(ptr long wstr long)
+@ cdecl -version=0x600+ __stdio_common_vsprintf_s(int64 ptr long str ptr ptr)
 @ cdecl -version=0x600+ wcsnlen(wstr long)
 @ cdecl wcspbrk(wstr wstr)
 @ cdecl wcsrchr(wstr long)

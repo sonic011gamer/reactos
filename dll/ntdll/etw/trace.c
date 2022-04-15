@@ -274,4 +274,50 @@ ULONG WINAPI EtwUpdateTraceW( TRACEHANDLE hSession, LPCWSTR SessionName, PEVENT_
     return EtwControlTraceW( hSession, SessionName, Properties, EVENT_TRACE_CONTROL_UPDATE );
 }
 
+typedef HANDLE REGHANDLE;
+
+ULONG
+WINAPI
+EtwNotificationRegister(
+    LPCGUID Guid,
+    ULONG Type,
+    ULONG_PTR Callback,
+    PVOID Context,
+    REGHANDLE RegHandle
+)
+{
+    UNIMPLEMENTED;
+    return 0;
+}
+
+typedef enum _EVENT_INFO_CLASS {
+    EventProviderBinaryTrackInfo, /*
+        Requests that the ETW runtime add the full path to the binary that
+        registered the provider into each trace. The full path is important if
+        if the binary contains the mc.exe-generated decoding resources but is
+        not globally registered. Decoding tools can use the path to locate the
+        binary and extract the decoding resources. */
+    EventProviderSetReserved1, /*
+        Not used. */
+    EventProviderSetTraits, /*
+        Provides the ETW runtime with additional information about the
+        provider, potentially including the provider name and a group GUID.
+        Refer the the MSDN Provider Traits topic for more information about the
+        format of the data to be used with this control code.
+        Setting this trait also configures the ETW runtime to respect the
+        Type field of EVENT_DATA_DESCRIPTOR (by default the Type field is
+        ignored). */
+    EventProviderUseDescriptorType, /*
+        Configures whether the ETW runtime should respect the Type field of the
+        EVENT_DATA_DESCRIPTOR. The data for this control code is a BOOLEAN
+        (1 byte, value FALSE or TRUE). */
+    MaxEventInfo
+} EVENT_INFO_CLASS;
+
+ULONG WINAPI EtwEventSetInformation( REGHANDLE handle, EVENT_INFO_CLASS class, void *info,
+                                     ULONG length )
+{
+    return ERROR_SUCCESS;
+}
+
 /* EOF */

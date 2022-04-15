@@ -94,6 +94,7 @@ list(APPEND SOURCE
     winnls/string/lstring.c
     winnls/string/nls.c
     winnls/string/sortkey.c
+    kernel32_vista/smp.c
     k32.h)
 
 if(MSVC)

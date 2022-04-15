@@ -14,6 +14,8 @@
 @ stdcall AddVectoredExceptionHandler(long ptr) ntdll.RtlAddVectoredExceptionHandler
 @ stdcall -stub -version=0x600+ AdjustCalendarDate(ptr long long)
 @ stdcall AllocConsole()
+;@ stub ResolveLocaleName
+@ stdcall -stub -version=0x601+ AppPolicyGetThreadInitializationType(long ptr)
 @ stdcall AllocateUserPhysicalPages(long ptr ptr)
 @ stdcall -stub -version=0x600+ AllocateUserPhysicalPagesNuma(ptr ptr ptr long)
 @ stdcall -stub -version=0x600+ ApplicationRecoveryFinished(long)
@@ -1291,3 +1293,897 @@
 @ stdcall -version=0x600+ PowerClearRequest(long long)
 @ stdcall -version=0x600+ PowerCreateRequest(ptr)
 @ stdcall -version=0x600+ PowerSetRequest(long long)
+@ stdcall -stub -version=0x600+ K32QueryWorkingSet(ptr ptr long)
+@ stdcall -stub -version=0x600+ K32QueryWorkingSetEx(ptr ptr long)
+;@ stdcall -stub -version=0x600+ PowerClearRequest(long long)
+;@ stdcall -stub -version=0x600+ PowerCreateRequest(ptr)
+;@ stdcall -stub -version=0x600+ PowerSetRequest(long long)
+
+
+; Dont mind me, these are out of order on purpose
+;nt6.0
+;AcquireSRWLockExclusive	forwarded to NTDLL function RtlAcquireSRWLockExclusive
+;AcquireSRWLockShared	forwarded to NTDLL function RtlAcquireSRWLockShared
+;AddSIDToBoundaryDescriptor	implemented as jump to API-MS-Win-Core-Namespace-L1-1-0 in 6.2 and higher
+;AddSecureMemoryCacheCallback	begins in SP1;
+;implemented as wrapper around NTDLL function RtlRegisterSecureMemoryCacheCallback
+;AdjustCalendarDate	undocumented until 2009
+;AllocateUserPhysicalPagesNuma	implemented as jump to api-ms-win-core-memory-l1-1-2 in 6.3 and higher
+;ApplicationRecoveryFinished	 
+;ApplicationRecoveryInProgress	 
+;BaseGenerateAppCompatData	 
+;BaseThreadInitThunk	 
+;CallbackMayRunLong	forwarded to NTDLL function TpCallbackMayRunLong before 6.1;
+;implemented as wrapper around NTDLL function TpCallbackMayRunLong in 6.1 and higher
+;CancelIoEx	implemented as jump to API-MS-Win-Core-IO-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-io-l1-1-1 in 6.2 and higher
+;CancelSynchronousIo	implemented as jump to api-ms-win-core-io-l1-1-1 in 6.2 and higher
+;CancelThreadpoolIo	forwarded to NTDLL function TpCancelAsyncIoOperation
+;CheckElevation	 
+;CheckElevationEnabled	 
+;CheckForReadOnlyResource	 
+;ClosePrivateNamespace	implemented as jump to API-MS-Win-Core-Namespace-L1-1-0 in 6.2 and higher
+;CloseThreadpool	forwarded to NTDLL function TpReleasePool
+;CloseThreadpoolCleanupGroup	forwarded to NTDLL function TpReleaseCleanupGroup
+;CloseThreadpoolCleanupGroupMembers	forwarded to NTDLL function TpReleaseCleanupGroupMembers
+;CloseThreadpoolIo	forwarded to NTDLL function TpReleaseIoCompletion
+;CloseThreadpoolTimer	forwarded to NTDLL function TpReleaseTimer
+;CloseThreadpoolWait	forwarded to NTDLL function TpReleaseWait
+;CloseThreadpoolWork	forwarded to NTDLL function TpReleaseWork
+;CompareCalendarDates	 
+;CompareStringEx	implemented as jump to API-MS-Win-Core-String-L1-1-0 in 6.1 and higher
+;CompareStringOrdinal	implemented as jump to API-MS-Win-Core-String-L1-1-0 in 6.1 and higher
+;ConvertCalDateTimeToSystemTime	undocumented until 2009
+;ConvertNLSDayOfWeekToWin32DayOfWeek	 
+;ConvertSystemTimeToCalDateTime	undocumented until 2009
+;CopyFileTransactedA	 
+;CopyFileTransactedW	 
+;CreateBoundaryDescriptorA	 
+;CreateBoundaryDescriptorW	implemented as jump to API-MS-Win-Core-Namespace-L1-1-0 in 6.2 and higher
+;CreateDirectoryTransactedA	 
+;CreateDirectoryTransactedW	 
+;CreateEventExA	implemented as jump to API-MS-Win-Core-Synch-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-synch-l1-2-0 in 6.2 and higher
+;CreateEventExW	implemented as jump to API-MS-Win-Core-Synch-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-synch-l1-2-0 in 6.2 and higher
+;CreateFileMappingNumaA	 
+;CreateFileMappingNumaW	implemented as jump to KERNELBASE in 6.1 only;
+;implemented as jump to api-ms-win-core-memory-l1-1-1 in 6.2 only;
+;implemented as jump to api-ms-win-core-memory-l1-1-2 in 6.3 and higher
+;CreateFileTransactedA	 
+;CreateFileTransactedW	 
+;CreateHardLinkTransactedA	 
+;CreateHardLinkTransactedW	 
+;CreateMutexExA	implemented as jump to API-MS-Win-Core-Synch-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-synch-l1-2-0 in 6.2 and higher
+;CreateMutexExW	implemented as jump to API-MS-Win-Core-Synch-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-synch-l1-2-0 in 6.2 and higher
+;CreatePrivateNamespaceA	 
+;CreatePrivateNamespaceW	implemented as jump to API-MS-Win-Core-Namespace-L1-1-0 in 6.2 and higher
+;CreateSemaphoreExA	 
+;CreateSemaphoreExW	implemented as jump to API-MS-Win-Core-Synch-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-synch-l1-2-0 in 6.2 and higher
+;CreateSymbolicLinkA	 
+;CreateSymbolicLinkTransactedA	 
+;CreateSymbolicLinkTransactedW	 
+;CreateSymbolicLinkW	implemented as jump to api-ms-win-core-file-l2-1-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-file-l2-1-1 in 6.3 and higher
+;CreateThreadpool	implemented as wrapper around NTDLL function TpAllocPool
+;CreateThreadpoolCleanupGroup	implemented as wrapper around NTDLL function TpAllocCleanupGroup
+;CreateThreadpoolIo	 
+;CreateThreadpoolTimer	implemented as wrapper around NTDLL function TpAllocTimer
+;CreateThreadpoolWait	implemented as wrapper around NTDLL function TpAllocWait
+;CreateThreadpoolWork	implemented as wrapper around NTDLL function TpAllocWork
+;CreateWaitableTimerExA	 
+;CreateWaitableTimerExW	implemented as jump to API-MS-Win-Core-Synch-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-synch-l1-2-0 in 6.2 and higher
+;DeleteBoundaryDescriptor	forwarded to NTDLL function RtlDeleteBoundaryDescriptor before 6.2;
+;implemented as jump to API-MS-Win-Core-Namespace-L1-1-0 in 6.2 and higher
+;DeleteFileTransactedA	 
+;DeleteFileTransactedW	 
+;DeleteProcThreadAttributeList	forwarded to API-MS-Win-Core-ProcessThreads-L1-1-0 in 6.1 and higher
+;DisassociateCurrentThreadFromCallback	forwarded to NTDLL function TpDisassociateCallback
+;EnumCalendarInfoExEx	implemented as jump to KERNELBASE in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l2-1-0 in 6.2 and higher
+;EnumDateFormatsExEx	implemented as jump to KERNELBASE in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l2-1-0 in 6.2 and higher
+;EnumResourceLanguagesExA	implemented as jump to api-ms-win-core-libraryloader-l1-1-1 in 6.2 only;
+;implemented as jump to api-ms-win-core-libraryloader-l1-2-0 in 6.3 and higher
+;EnumResourceLanguagesExW	implemented as jump to api-ms-win-core-libraryloader-l1-1-1 in 6.2 only;
+;implemented as jump to api-ms-win-core-libraryloader-l1-2-0 in 6.3 and higher
+;EnumResourceNamesExA	implemented as jump to api-ms-win-core-libraryloader-l1-1-1 in 6.2 only;
+;implemented as jump to api-ms-win-core-libraryloader-l1-2-0 in 6.3 and higher
+;EnumResourceNamesExW	implemented as jump to api-ms-win-core-libraryloader-l1-1-1 in 6.2 only;
+;implemented as jump to api-ms-win-core-libraryloader-l1-2-0 in 6.3 and higher
+;EnumResourceTypesExA	implemented as jump to api-ms-win-core-libraryloader-l1-1-1 in 6.2 only;
+;implemented as jump to api-ms-win-core-libraryloader-l1-2-0 in 6.3 and higher
+;EnumResourceTypesExW	implemented as jump to api-ms-win-core-libraryloader-l1-1-1 in 6.2 only;
+;implemented as jump to api-ms-win-core-libraryloader-l1-2-0 in 6.3 and higher
+;EnumSystemLocalesEx	implemented as jump to KERNELBASE in 6.1 and higher
+;EnumTimeFormatsEx	implemented as jump to KERNELBASE in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l2-1-0 in 6.2 and higher
+;FindFirstFileNameTransactedW	 
+;FindFirstFileNameW	implemented as jump to api-ms-win-core-file-l1-2-2 in 10.0 and higher
+;FindFirstFileTransactedA	 
+;FindFirstFileTransactedW	 
+;FindFirstStreamTransactedW	 
+;FindNLSString	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;FindNLSStringEx	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;FindNextFileNameW	implemented as jump to api-ms-win-core-file-l1-2-2 in 10.0 and higher
+;FlushProcessWriteBuffers	forwarded to NTDLL function NtFlushProcessWriteBuffers
+;FreeLibraryWhenCallbackReturns	forwarded to NTDLL function TpCallbackUnloadDllOnCompletion
+;GetApplicationRecoveryCallback	implemented as jump to API-MS-Win-Core-WindowsErrorReporting-L1-1-0 in 6.2 and higher
+;GetApplicationRestartSettings	implemented as jump to API-MS-Win-Core-WindowsErrorReporting-L1-1-0 in 6.2 and higher
+;GetCalendarDateFormat	 
+;GetCalendarDateFormatEx	undocumented until 2009
+;GetCalendarDaysInMonth	 
+;GetCalendarDifferenceInDays	 
+;GetCalendarInfoEx	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;GetCalendarMonthsInYear	 
+;GetCalendarSupportedDateRange	undocumented until 2009
+;GetCalendarWeekNumber	 
+;GetCompressedFileSizeTransactedA	 
+;GetCompressedFileSizeTransactedW	 
+;GetConsoleHistoryInfo	 
+;GetConsoleOriginalTitleA	 
+;GetConsoleOriginalTitleW	 
+;GetConsoleScreenBufferInfoEx	implemented as jump to API-MS-Win-Core-Console-L2-1-0 in 6.2 and higher
+;GetCurrencyFormatEx	implemented as jump to KERNELBASE in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l2-1-0 in 6.2 and higher;
+;documented as “Included in Windows 95 and later” (presumably as editing mistake)
+;GetCurrentConsoleFontEx	 
+;GetDateFormatEx	implemented as jump to api-ms-win-core-datetime-l1-1-1 in 6.2 and higher
+;GetDurationFormat	 
+;GetDurationFormatEx	implemented as jump to api-ms-win-core-datetime-l1-1-2 in 10.0 and higher
+;GetDynamicTimeZoneInformation	implemented as jump to API-MS-Win-Core-SysInfo-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-timezone-l1-1-0 in 6.2 and higher
+;GetFileAttributesTransactedA	 
+;GetFileAttributesTransactedW	 
+;GetFileBandwidthReservation	 
+;GetFileInformationByHandleEx	documented as available earlier through downloadable FILEEXTD.DLL;
+;implemented as jump to api-ms-win-core-file-l2-1-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-file-l2-1-1 in 6.3 and higher
+;GetFileMUIInfo	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;GetFileMUIPath	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;GetFinalPathNameByHandleA	implemented as jump to API-MS-Win-Core-File-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-file-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-file-l1-2-1 in 6.3 and higher
+;GetFinalPathNameByHandleW	implemented as jump to API-MS-Win-Core-File-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-file-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-file-l1-2-1 in 6.3 and higher
+;GetFullPathNameTransactedA	 
+;GetFullPathNameTransactedW	 
+;GetLocaleInfoEx	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;GetLongPathNameTransactedA	 
+;GetLongPathNameTransactedW	 
+;GetNLSVersionEx	implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;GetNamedPipeAttribute	implemented as jump to API-MS-Win-Core-NamedPipe-L1-1-0 in 6.1 only;
+;implemented as jump to KERNELBASE in 6.2 and higher
+;GetNamedPipeClientComputerNameA	 
+;GetNamedPipeClientComputerNameW	implemented as jump to API-MS-Win-Core-NamedPipe-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-namedpipe-l1-2-0 in 6.2 and higher
+;GetNamedPipeClientProcessId	 
+;GetNamedPipeClientSessionId	 
+;GetNamedPipeServerProcessId	 
+;GetNamedPipeServerSessionId	 
+;GetNumaProximityNode	 
+;GetNumberFormatEx	implemented as jump to KERNELBASE in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l2-1-0 in 6.2 and higher
+;GetPhysicallyInstalledSystemMemory	begins in SP1;
+;implemented as jump to api-ms-win-core-sysinfo-l1-2-1 in 6.3 and higher
+;GetProductInfo	implemented as jump to api-ms-win-core-sysinfo-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-sysinfo-l1-2-1 in 6.3 and higher
+;@ stdcall -version=0x601+ GetQueuedCompletionStatusEx(ptr ptr long ptr long long) ;	implemented as jump to API-MS-Win-Core-IO-L1-1-0 in 6.1 only;
+;;implemented as jump to api-ms-win-core-io-l1-1-1 in 6.2 and higher
+;GetStringScripts	implemented as jump to api-ms-win-core-normalization-l1-1-0 in 6.2 and higher
+;GetSystemDefaultLocaleName	implemented as jump to KERNELBASE in 6.1 and higher
+;GetSystemPreferredUILanguages	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;GetThreadPreferredUILanguages	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;GetThreadUILanguage	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;implemented as jump to api-ms-win-core-sysinfo-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-sysinfo-l1-2-1 in 6.3 only
+;GetTimeFormatEx	implemented as jump to api-ms-win-core-datetime-l1-1-1 in 6.2 and higher
+;GetTimeZoneInformationForYear	begins in SP1;
+;implemented as jump to API-MS-Win-Core-SysInfo-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-timezone-l1-1-0 in 6.2 and higher
+;GetUILanguageInfo	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;GetUserDefaultLocaleName	implemented as jump to KERNELBASE in 6.1 and higher
+;GetUserPreferredUILanguages	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;GetVolumeInformationByHandleW	implemented as jump to API-MS-Win-Core-File-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-file-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-file-l1-2-1 in 6.3 and higher
+;IdnToAscii	documented as available earlier through downloadable DLL;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;IdnToNameprepUnicode	documented as available earlier through downloadable DLL;
+;implemented as jump to api-ms-win-core-normalization-l1-1-0 in 6.2 and higher
+;IdnToUnicode	documented as available earlier through downloadable DLL;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;InitOnceComplete	forwarded to API-MS-Win-Core-Synch-L1-1-0 in 6.2 and higher
+;InitOnceExecuteOnce	forwarded to API-MS-Win-Core-Synch-L1-1-0 in 6.2 and higher
+;InitOnceInitialize	forwarded to NTDLL function RtlRunOnceInitialize
+;InitializeConditionVariable	forwarded to NTDLL function RtlInitializeConditionVariable
+;InitializeCriticalSectionEx	implemented as jump to API-MS-Win-Core-Synch-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-synch-l1-2-0 in 6.2 and higher
+;InitializeProcThreadAttributeList	forwarded to API-MS-Win-Core-ProcessThreads-L1-1-0 in 6.1 and higher
+;InitializeSRWLock	forwarded to NTDLL function RtlInitializeSRWLock
+;InterlockedPushListSList	forwarded to NTDLL function RtlInterlockedPushListSList
+;IsCalendarLeapDay	 
+;IsCalendarLeapMonth	 
+;IsCalendarLeapYear	undocumented until 2009
+;IsNormalizedString	documented as available earlier through downloadable DLL;
+;implemented as jump to api-ms-win-core-normalization-l1-1-0 in 6.2 and higher
+;IsThreadAFiber	implemented as jump to api-ms-win-core-fibers-l1-1-1 in 6.2 only
+;IsThreadpoolTimerSet	forwarded to NTDLL function TpIsTimerSet
+;IsValidCalDateTime	 
+;IsValidLocaleName	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;LCIDToLocaleName	implemented as jump to KERNELBASE in 6.1 and higher
+;LCMapStringEx	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;LeaveCriticalSectionWhenCallbackReturns	forwarded to NTDLL function TpCallbackLeaveCriticalSectionOnCompletion
+;LoadStringBaseExW	implemented as jump to KERNELBASE in 6.1 and higher
+;LoadStringBaseW	 
+;LocaleNameToLCID	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;MapViewOfFileExNuma	implemented as jump to KERNELBASE in 6.1 and higher
+;MoveFileTransactedA	 
+;MoveFileTransactedW	 
+;NlsCheckPolicy	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-private-l1-1-0 in 6.2 and higher
+;NlsEventDataDescCreate	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-private-l1-1-0 in 6.2 and higher
+;NlsUpdateLocale	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-private-l1-1-0 in 6.2 and higher
+;NlsUpdateSystemLocale	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-private-l1-1-0 in 6.2 and higher
+;NlsWriteEtwEvent	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 and higher;
+;implemented as call to api-ms-win-core-localization-private-l1-1-0 in 6.2 and higher
+;NormalizeString	documented as available earlier through downloadable DLL;
+;implemented as jump to api-ms-win-core-normalization-l1-1-0 in 6.2 and higher
+;NotifyUILanguageChange	 
+;OpenFileById	implemented as jump to api-ms-win-core-file-l2-1-1 in 6.3 and higher;
+;documented as available earlier through downloadable FILEEXTD.DLL
+;OpenPrivateNamespaceA	 
+;OpenPrivateNamespaceW	implemented as jump to API-MS-Win-Core-Namespace-L1-1-0 in 6.2 and higher
+;QueryActCtxSettingsW	implemented as jump to API-MS-Win-Core-SideBySide-L1-1-0 in 6.2 and higher
+;QueryFullProcessImageNameA	implemented as jump to api-ms-win-core-psapi-ansi-l1-1-0 in 6.2 and higher
+;QueryFullProcessImageNameW	implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;QueryIdleProcessorCycleTime	implemented as jump to api-ms-win-core-realtime-l1-1-0 in 6.2 and higher
+;QueryProcessAffinityUpdateMode	begins in SP1;
+;implemented as jump to API-MS-Win-Core-ProcessThreads-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-processthreads-l1-1-1 in 6.2 only;
+;implemented as jump to api-ms-win-core-processthreads-l1-1-2 in 6.3 and higher
+;QueryProcessCycleTime	implemented as jump to api-ms-win-core-realtime-l1-1-0 in 6.2 and higher
+;QueryThreadCycleTime	implemented as jump to api-ms-win-core-realtime-l1-1-0 in 6.2 and higher
+;RegisterApplicationRecoveryCallback	 
+;RegisterApplicationRestart	 
+;ReleaseMutexWhenCallbackReturns	forwarded to NTDLL function TpCallbackReleaseMutexOnCompletion
+;ReleaseSRWLockExclusive	forwarded to NTDLL function RtlReleaseSRWLockExclusive
+;ReleaseSRWLockShared	forwarded to NTDLL function RtlReleaseSRWLockShared
+;ReleaseSemaphoreWhenCallbackReturns	forwarded to NTDLL function TpCallbackReleaseSemaphoreOnCompletion
+;RemoveDirectoryTransactedA	 
+;RemoveDirectoryTransactedW	 
+;RemoveSecureMemoryCacheCallback	begins in SP1;
+;implemented as wrapper around NTDLL function RtlDeregisterSecureMemoryCacheCallback
+;ReplacePartitionUnit	begins in SP1;
+;x86 only
+;SetConsoleHistoryInfo	 
+;SetConsoleScreenBufferInfoEx	implemented as jump to API-MS-Win-Core-Console-L2-1-0 in 6.2 and higher
+;SetCurrentConsoleFontEx	 
+;SetDynamicTimeZoneInformation	implemented as jump to api-ms-win-core-timezone-l1-1-0 in 6.2 and higher
+;SetEventWhenCallbackReturns	forwarded to NTDLL function TpCallbackSetEventOnCompletion
+;SetFileAttributesTransactedA	 
+;SetFileAttributesTransactedW	 
+;SetFileBandwidthReservation	 
+;SetFileInformationByHandle	documented as available earlier through downloadable FILEEXTD.DLL;
+;implemented as jump to API-MS-Win-Core-File-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-file-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-file-l1-2-1 in 6.3 and higher
+;SetFileIoOverlappedRange	implemented as jump to api-ms-win-core-file-l1-2-1 in 6.3 and higher
+;SetNamedPipeAttribute	 
+;SetProcessAffinityUpdateMode	begins in SP1;
+;implemented as jump to API-MS-Win-Core-ProcessThreads-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-processthreads-l1-1-1 in 6.2 only;
+;implemented as jump to api-ms-win-core-processthreads-l1-1-2 in 6.3 and higher
+;SetSearchPathMode	begins in SP2;
+;implemented as wrapper around NTDLL function RtlSetSearchPathMode in 6.2 and higher
+;SetStdHandleEx	implemented as jump to API-MS-Win-Core-ProcessEnvironment-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-processenvironment-l1-2-0 in 6.2 and higher
+;SetThreadPreferredUILanguages	implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;SetThreadpoolThreadMaximum	forwarded to NTDLL function TpSetPoolMaxThreads
+;SetThreadpoolThreadMinimum	implemented as wrapper around NTDLL function TpSetPoolMinThreads
+;SetThreadpoolTimer	forwarded to NTDLL function TpSetTimer
+;SetThreadpoolWait	forwarded to NTDLL function TpSetWait
+;SleepConditionVariableCS	forwarded to API-MS-Win-Core-Synch-L1-1-0 in 6.2 and higher
+;SleepConditionVariableSRW	forwarded to API-MS-Win-Core-Synch-L1-1-0 in 6.2 and higher
+;StartThreadpoolIo	forwarded to NTDLL function TpStartAsyncIoOperation
+;SubmitThreadpoolWork	forwarded to NTDLL function TpPostWork
+;TrySubmitThreadpoolCallback	implemented as wrapper around NTDLL function TpSimpleTryPost
+;UnregisterApplicationRecoveryCallback	 
+;UnregisterApplicationRestart	 
+;UpdateCalendarDayOfWeek	undocumented until 2009
+;UpdateProcThreadAttribute	forwarded to API-MS-Win-Core-ProcessThreads-L1-1-0 in 6.1 and higher
+;VerifyScripts	implemented as jump to api-ms-win-core-normalization-l1-1-0 in 6.2 and higher
+;VirtualAllocExNuma	implemented as jump to KERNELBASE in 6.1 to 6.2;
+;implemented as jump to api-ms-win-core-memory-l1-1-2 in 6.3 and higher
+;WaitForThreadpoolIoCallbacks	forwarded to NTDLL function TpWaitForIoCompletion
+;WaitForThreadpoolTimerCallbacks	forwarded to NTDLL function TpWaitForTimer
+;WaitForThreadpoolWaitCallbacks	forwarded to NTDLL function TpWaitForWait
+;WaitForThreadpoolWorkCallbacks	forwarded to NTDLL function TpWaitForWork
+;WakeAllConditionVariable	forwarded to NTDLL function RtlWakeAllConditionVariable
+;WakeConditionVariable	forwarded to NTDLL function RtlWakeConditionVariable
+;WerGetFlags	 
+;WerRegisterFile	implemented as jump to API-MS-Win-Core-WindowsErrorReporting-L1-1-0 in 6.2 and higher
+;WerRegisterMemoryBlock	implemented as jump to API-MS-Win-Core-WindowsErrorReporting-L1-1-0 in 6.2 and higher
+;WerSetFlags	 
+;WerUnregisterFile	implemented as jump to API-MS-Win-Core-WindowsErrorReporting-L1-1-0 in 6.2 and higher
+;WerUnregisterMemoryBlock	implemented as jump to API-MS-Win-Core-WindowsErrorReporting-L1-1-0 in 6.2 and higher
+;WerpCleanupMessageMapping	 
+;WerpInitiateRemoteRecovery	 
+;WerpNotifyLoadStringResource	implemented as jump to API-MS-Win-Core-WindowsErrorReporting-L1-1-0 in 6.2 and higher
+;WerpNotifyLoadStringResourceEx	 
+;WerpNotifyUseStringResource	implemented as jump to API-MS-Win-Core-WindowsErrorReporting-L1-1-0 in 6.2 and higher
+;WerpStringLookup	 
+;Wow64GetThreadContext	implemented as wrapper around NTDLL function RtlWow64GetThreadContext (x64 only)
+;Wow64SetThreadContext	implemented as wrapper around NTDLL function RtlWow64SetThreadContext (x64 only)
+;Wow64SuspendThread	implemented as wrapper around NTDLL function RtlWow64SuspendThread (x64 only)
+;NT6.1
+;@ stdcall -version=0x601+ AddIntegrityLabelToBoundaryDescriptor() ntdll.RtlAddIntegrityLabelToBoundaryDescriptor
+@ stub -version=0x601+ BaseCheckAppcompatCacheEx
+@ stub -version=0x601+ BaseDllReadWriteIniFile	 
+@ stdcall -version=0x601+ BaseFormatObjectAttributes(ptr ptr ptr)
+@ stdcall -version=0x601+ BaseFormatTimeOut(ptr long)
+@ stdcall -version=0x601+ BaseSetLastNTError(long) 
+@ stub -version=0x601+ BaseVerifyUnicodeString	 
+@ stdcall -version=0x601+ Basep8BitStringToDynamicUnicodeString(ptr str)
+@ stdcall -version=0x601+ BasepAllocateActivationContextActivationBlock(long ptr ptr ptr)	 
+@ stub -version=0x601+ BasepAnsiStringToDynamicUnicodeString	 
+@ stub -version=0x601+ BasepCheckAppCompat
+;@ stub -version=0x601+ BasepFreeActivationContextActivationBlock	 
+;@ stub -version=0x601+ BasepMapModuleHandle
+@ stub -version=0x601+ CopyContext
+;CopyExtendedContext	discontinued in Windows 7 SP1
+;@ stdcall -version=0x601+ CreateProcessAsUserW() ADVAPI32.CreateProcessAsUserW
+@ stdcall -stub -version=0x601+ CreateRemoteThreadEx(ptr ptr long ptr ptr long ptr ptr)
+@ stub -version=0x601+ -arch=x86_64 CreateUmsCompletionList
+@ stub -version=0x601+ -arch=x86_64 CreateUmsThreadContext
+@ stub -version=0x601+ -arch=x86_64 DeleteUmsCompletionList
+@ stub -version=0x601+ -arch=x86_64 DeleteUmsThreadContext
+@ stdcall -stub -version=0x601+ -arch=x86_64 DequeueUmsCompletionListItems(ptr long ptr)
+@ stub -version=0x601+ DisableThreadProfiling
+@ stub -version=0x601+ EnableThreadProfiling
+@ stub -version=0x601+ -arch=x86_64 EnterUmsSchedulingMode ;RtlEnterUmsSchedulingMode
+@ stub -version=0x601+ -arch=x86_64 ExecuteUmsThread
+@ stdcall -stub -version=0x601+ FindStringOrdinal(long ptr long ptr long long)
+@ stdcall -version=0x601+ GetActiveProcessorCount(long)
+@ stdcall -version=0x601+ GetActiveProcessorGroupCount()
+@ stdcall -stub -version=0x601+ GetCurrentProcessorNumberEx(); ntdll.RtlGetCurrentProcessorNumberEx
+;GetCurrentUmsThread	x64 only;
+@ stdcall -stub -version=0x601+ GetEnabledXStateFeatures()
+@ stub -version=0x601+ GetEraNameCountedString	;implemented as jump to KERNELBASE
+@ stdcall -version=0x601+ GetLogicalProcessorInformationEx(ptr ptr ptr)
+@ stdcall -version=0x601+ GetMaximumProcessorCount(long)
+@ stdcall -version=0x601+ GetMaximumProcessorGroupCount()
+;GetNextUmsListItem	x64 only; 
+@ stdcall -version=0x601+ GetProcessGroupAffinity(ptr ptr ptr)	;implemented as jump to API-MS-Win-Core-ProcessTopology-L1-1-0 in 6.2 only;
+;@ stdcall -version=0x601 GetProcessPreferredUILanguages(long ptr ptr ptr) ;	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only; implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only; implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+@ stub -version=0x601 GetProcessUserModeExceptionPolicy
+;GetProcessorSystemCycleTime	forwarded to api-ms-win-core-sysinfo-l1-2-2
+;GetThreadErrorMode	implemented as jump to api-ms-win-core-errorhandling-l1-1-3 in 10.0 and higher
+@ stdcall -stub -version=0x601+ GetThreadGroupAffinity(ptr ptr)	;implemented as jump to API-MS-Win-Core-ProcessTopology-L1-1-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-processtopology-l1-2-0 in 6.3 and higher
+;GetThreadIdealProcessorEx	implemented as jump to api-ms-win-core-processthreads-l1-1-1 in 6.2 only;
+;implemented as jump to api-ms-win-core-processthreads-l1-1-2 in 6.3 and higher
+;GetUmsCompletionListEvent	x64 only;
+;implemented as wrapper around NTDLL function RtlGetUmsCompletionListEvent
+;GetUmsSystemThreadInformation	x64 only;
+;begins in Windows 7 SP1
+;GetXStateFeaturesMask	begins in Windows 7 SP1;
+;implemented as jump to api-ms-win-core-xstate-l2-1-0 in 6.3 and higher
+;InitializeContext	begins in Windows 7 SP1;
+;implemented as jump to api-ms-win-core-xstate-l2-1-0 in 6.3 and higher
+;InitializeExtendedContext	discontinued in Windows 7 SP1
+;K32EmptyWorkingSet	whole implementation of EmptyWorkingSet for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32EnumDeviceDrivers	whole implementation of EnumDeviceDrivers for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32EnumPageFilesA	whole implementation of EnumPageFilesA for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-ansi-l1-1-0 in 6.2 and higher
+;K32EnumPageFilesW	whole implementation of EnumPageFilesW for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32EnumProcessModules	whole implementation of EnumProcessModules for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-obsolete-l1-1-0 in 6.2 to 6.3;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 10.0 and higher
+;K32EnumProcessModulesEx	whole implementation of EnumProcessModulesEx for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-obsolete-l1-1-0 in 6.2 to 6.3;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 10.0 and higher
+;K32EnumProcesses	whole implementation of EnumProcesses for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32GetDeviceDriverBaseNameA	whole implementation of GetDeviceDriverBaseNameA for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-ansi-l1-1-0 in 6.2 and higher
+;K32GetDeviceDriverBaseNameW	whole implementation of GetDeviceDriverBaseNameW for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32GetDeviceDriverFileNameA	whole implementation of GetDeviceDriverFileNameA for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-ansi-l1-1-0 in 6.2 and higher
+;K32GetDeviceDriverFileNameW	whole implementation of GetDeviceDriverFileNameW for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32GetMappedFileNameA	whole implementation of GeMappedFileNameW for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-ansi-l1-1-0 in 6.2 and higher
+;K32GetMappedFileNameW	whole implementation of GetMappedFileNameW for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32GetModuleBaseNameA	whole implementation of GetModuleBaseNameA for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-obsolete-l1-1-0 in 6.2 to 6.3;
+;implemented as jump to api-ms-win-core-psapi-ansi-l1-1-0 in 10.0 and higher
+;K32GetModuleBaseNameW	whole implementation of GetModuleBaseNameW for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-obsolete-l1-1-0 in 6.2 to 6.3;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 10.0 and higher
+;K32GetModuleFileNameExA	whole implementation of GetModuleFileNameExA for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-obsolete-l1-1-0 in 6.2 to 6.3;
+;implemented as jump to api-ms-win-core-psapi-ansi-l1-1-0 in 10.0 and higher
+;K32GetModuleFileNameExW	whole implementation of GetModuleFileNameExW for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-obsolete-l1-1-0 in 6.2 to 6.3;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 10.0 and higher
+;K32GetModuleInformation	whole implementation of GetModuleInformation for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-obsolete-l1-1-0 in 6.2 to 6.3;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 10.0 and higher
+;K32GetPerformanceInfo	whole implementation of GetPerformanceInfo for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32GetProcessImageFileNameA	whole implementation of GetProcessImageFileNameA for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-ansi-l1-1-0 in 6.2 and higher
+;K32GetProcessImageFileNameW	whole implementation of GetProcessImageFileNameW for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32GetProcessMemoryInfo	whole implementation of GetProcessMemoryInfo for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32GetWsChanges	whole implementation of GetWsChanges for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32GetWsChangesEx	whole implementation of GetWsChangesEx for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32InitializeProcessForWsWatch	whole implementation of InitializeProcessForWsWatch for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32QueryWorkingSet	whole implementation of QueryWorkingSet for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;K32QueryWorkingSetEx	whole implementation of QueryWorkingSetEx for PSAPI 6.1 and higher;
+;implemented as jump to api-ms-win-core-psapi-l1-1-0 in 6.2 and higher
+;LoadAppInitDlls	 
+;LocateExtendedFeature	forwarded to API-MS-Win-Core-XState-L1-1-0 function RtlLocateExtendedFeature;
+;discontinued in Windows 7 SP1
+;LocateLegacyContext	forwarded to API-MS-Win-Core-XState-L1-1-0 function RtlLocateLegacyContext;
+;discontinued in Windows 7 SP1
+;LocateXStateFeature	begins in Windows 7 SP1;
+;implemented as jump to api-ms-win-core-xstate-l2-1-0 in 6.3 and higher
+;NotifyMountMgr	 
+;OpenProcessToken	forwarded to API-MS-Win-Core-ProcessThreads-L1-1-0;
+;also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher
+;OpenThreadToken	forwarded to API-MS-Win-Core-ProcessThreads-L1-1-0;
+;also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher
+;PowerClearRequest	 
+;PowerCreateRequest	 
+;PowerSetRequest	 
+;QueryIdleProcessorCycleTimeEx	implemented as jump to api-ms-win-core-realtime-l1-1-0 in 6.2 and higher
+;QueryThreadProfiling	implemented as wrapper around NTDLL function RtlQueryThreadProfiling
+;QueryThreadpoolStackInformation	implemented as wrapper around NTDLL function TpQueryPoolStackInformation
+;QueryUmsThreadInformation	x64 only;
+;implemented as wrapper around NTDLL function RtlQueryUmsThreadInformation
+;@ stub -version=0x601+ QueryUnbiasedInterruptTime
+;RaiseFailFastException	forwarded to KERNELBASE in 10.0 and higher
+;ReadThreadProfilingData	implemented as wrapper around NTDLL function RtlReadThreadProfilingData
+;RegCloseKey	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegCreateKeyExA	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegCreateKeyExW	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegDeleteKeyExA	also named export from ADVAPI32 5.2 from Windows Server 2003 SP1, and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegDeleteKeyExW	also named export from ADVAPI32 5.2 from Windows Server 2003 SP1, and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegDeleteTreeA	also named export from ADVAPI32 6.0 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegDeleteTreeW	also named export from ADVAPI32 6.0 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegDeleteValueA	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegDeleteValueW	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegDisablePredefinedCacheEx	also named export from ADVAPI32 5.1 from Windows XP SP3, and 6.0 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegEnumKeyExA	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegEnumKeyExW	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegEnumValueA	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegEnumValueW	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegFlushKey	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegGetKeySecurity	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegGetValueA	also named export from ADVAPI32 5.2 from Windows Server 2003 SP1, and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegGetValueW	also named export from ADVAPI32 5.2 from Windows Server 2003 SP1, and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegKrnGetGlobalState	discontinued in 6.2
+;RegKrnInitialize	discontinued in 6.2
+;RegLoadKeyA	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegLoadKeyW	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegLoadMUIStringA	also named export from ADVAPI32 6.0 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegLoadMUIStringW	also named export from ADVAPI32 6.0 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegNotifyChangeKeyValue	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegOpenCurrentUser	also named export from ADVAPI32 5.0 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegOpenKeyExA	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegOpenKeyExW	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegOpenUserClassesRoot	also named export from ADVAPI32 5.0 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegQueryInfoKeyA	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegQueryInfoKeyW	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegQueryValueExA	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegQueryValueExW	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegRestoreKeyA	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegRestoreKeyW	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegSaveKeyExA	also named export from ADVAPI32 5.1 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegSaveKeyExW	also named export from ADVAPI32 5.1 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegSetKeySecurity	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegSetValueExA	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegSetValueExW	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegUnLoadKeyA	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;RegUnLoadKeyW	also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0 in 6.2 and higher
+;ResolveLocaleName	implemented as jump to API-MS-Win-Core-Localization-L1-1-0 in 6.1 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;SetExtendedFeaturesMask	forwarded to API-MS-Win-Core-XState-L1-1-0 function RtlSetExtendedFeaturesMask;
+;discontinued in Windows 7 SP1
+;SetProcessPreferredUILanguages	implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;SetProcessUserModeExceptionPolicy	begins in Windows 7 SP1;
+;discontinued in 6.2
+;SetThreadErrorMode	implemented as jump to api-ms-win-core-errorhandling-l1-1-3 in 10.0 and higher
+;SetThreadGroupAffinity	implemented as jump to API-MS-Win-Core-ProcessTopology-L1-1-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-processtopology-l1-2-0 in 6.3 and higher
+;SetThreadIdealProcessorEx	implemented as jump to api-ms-win-core-processthreads-l1-1-1 in 6.2 only;
+;implemented as jump to api-ms-win-core-processthreads-l1-1-2 in 6.3 and higher
+;SetThreadToken	forwarded to API-MS-Win-Core-ProcessThreads-L1-1-0;
+;also named export from ADVAPI32 3.51 and higher;
+;whole implementation for ADVAPI32 6.1 and higher
+;SetThreadpoolStackInformation	implemented as wrapper around NTDLL function TpSetPoolStackInformation
+;SetUmsThreadInformation	x64 only;
+;implemented as wrapper around NTDLL function RtlSetUmsThreadInformation
+;SetWaitableTimerEx	forwarded to API-MS-Win-Core-ThreadPool-L1-1-0 in 6.1;
+;forwarded to API-MS-Win-Core-Synch-L1-1-0 in 6.2 and higher
+;SetXStateFeaturesMask	begins in Windows 7 SP1;
+;implemented as jump to api-ms-win-core-xstate-l2-1-0 in 6.3 and higher
+;SortCloseHandle	 
+;SortGetHandle	 
+;TryAcquireSRWLockExclusive	forwarded to NTDLL function RtlTryAcquireSRWLockExclusive
+;TryAcquireSRWLockShared	forwarded to NTDLL function RtlTryAcquireSRWLockShared
+;UmsThreadYield	x64 only;
+;implemented as wrapper around NTDLL function RtlUmsThreadYield
+;WerRegisterRuntimeExceptionModule	implemented as jump to API-MS-Win-Core-WindowsErrorReporting-L1-1-0 in 6.2 and higher
+;WerUnregisterRuntimeExceptionModule	implemented as jump to API-MS-Win-Core-WindowsErrorReporting-L1-1-0 in 6.2 and higher
+;Wow64GetThreadSelectorEntry
+
+; NT6.2
+@ stub -version=0x602 AcquireStateLock
+@ stub -version=0x602+ ActivateActCtxWorker	 
+@ stdcall -version=0x602+ AddDllDirectory() ntdll.LdrAddDllDirectory
+@ stdcall -version=0x602+ AddRefActCtxWorker() ntdll.RtlAddRefActivationContext
+;AddResourceAttributeAce	implemented as jump to api-ms-win-security-base-l1-2-0
+;AddScopedPolicyIDAce	implemented as jump to api-ms-win-security-base-l1-2-0
+@ stub -version=0x602 AppContainerDeriveSidFromMoniker
+@ stub -version=0x602 AppContainerFreeMemory
+@ stub -version=0x602 AppContainerLookupDisplayNameMrtReference
+@ stub -version=0x602 AppContainerLookupMoniker
+@ stub -version=0x602 AppContainerRegisterSid
+@ stub -version=0x602 AppContainerUnregisterSid
+@ stub -version=0x602 AppXFreeMemory
+@ stub -version=0x602 AppXGetApplicationData
+@ stub -version=0x602 AppXGetDevelopmentMode
+;@ stub -version=0x602 AppXGetOSMaxVersionTested	forwarded to KERNELBASE in 6.3 and higher
+@ stub -version=0x602 AppXGetOSMinVersion
+@ stub -version=0x602 AppXGetPackageCapabilities
+@ stub -version=0x602 AppXGetPackageSid
+@ stub -version=0x602 AppXGetPackageState
+@ stub -version=0x602 AppXLookupDisplayName
+@ stub -version=0x602 AppXLookupMoniker
+@ stub -version=0x602 AppXSetPackageState
+@ stub -version=0x602+ BaseCheckAppcompatCacheExWorker	 
+@ stub -version=0x602+ BaseCheckAppcompatCacheWorker	 
+@ stub -version=0x602+ BaseCheckElevation	 
+@ stub -version=0x602+ BaseCleanupAppcompatCacheSupportWorker	 
+@ stdcall -version=0x602+ BaseDestroyVDMEnvironment(ptr ptr)	 
+@ stub -version=0x602+ BaseDumpAppcompatCacheWorker	 
+@ stub -version=0x602+ BaseElevationPostProcessing	 
+@ stub -version=0x602+ BaseFlushAppcompatCacheWorker	 
+@ stub -version=0x602+ BaseInitAppcompatCacheSupportWorker	 
+@ stub -version=0x602+ BaseIsAppcompatInfrastructureDisabledWorker	 
+@ stdcall -version=0x602+ BaseIsDosApplication(ptr long)	 
+@ stub -version=0x602+ BaseUpdateAppcompatCacheWorker	 
+@ stdcall -version=0x602+ BaseUpdateVDMEntry(long ptr long long)	 
+@ stub -version=0x602+ BaseWriteErrorElevationRequiredEvent	 
+@ stub -version=0x602 BasepAppCompatHookDLL
+;@ stub -version=0x602+ BasepAppContainerEnvironmentExtension	 
+;@ stub -version=0x602+ BasepAppXExtension	 
+;@ stub -version=0x602+ BasepCheckWebBladeHashes	 
+;@ stub -version=0x602+ BasepConstructSxsCreateProcessMessage	 
+;@ stub -version=0x602+ BasepCopyEncryption	 
+;@ stub -version=0x602+ BasepGetAppCompatData	 
+;@ stub -version=0x602+ BasepGetComputerNameFromNtPath	 
+;@ stub -version=0x602+ BasepGetExeArchType	 
+;@ stub -version=0x602+ BasepIsProcessAllowed	 
+;@ stub -version=0x602+ BasepNotifyLoadStringResource	 
+;BasepPostSuccessAppXExtension	implemented as jump to KERNELBASE function AppXPostSuccessExtension in 6.3 and higher
+@ stub -version=0x602+ BasepProcessInvalidImage	 
+@ stub -version=0x602+ BasepQueryAppCompat	 
+;BasepReleaseAppXContext	implemented as jump to KERNELBASE function AppXReleaseAppXContext in 6.3 and higher
+@ stub -version=0x602+ BasepReleaseSxsCreateProcessUtilityStruct	 
+@ stub -version=0x602+ BasepReportFault	 
+@ stub -version=0x602+ BasepSetFileEncryptionCompression	 
+;CeipIsOptedIn	forwarded to KERNELBASE in 10.0 and higher;
+@ stub -version=0x602+ CheckAllowDecryptedRemoteDestinationPolicy	 
+@ stub -version=0x602+ CheckForReadOnlyResourceFilter	 
+;CheckTokenCapability	implemented as jump to api-ms-win-security-base-l1-2-0
+;CheckTokenMembershipEx	implemented as jump to api-ms-win-security-base-l1-2-0
+;ClosePackageInfo	forwarded to KERNELBASE in 6.3 and higher
+;CloseState	forwarded to KERNELBASE in 6.3 and higher
+@ stub -version=0x602 CloseStateAtom
+@ stub -version=0x602 CloseStateChangeNotification
+@ stub -version=0x602 CloseStateContainer
+@ stub -version=0x602 CloseStateLock
+@ stub -version=0x602 CommitStateAtom
+;CopyFile2	implemented as jump to api-ms-win-core-file-l2-1-0 in 6.2 only;
+@ stub -version=0x602+ CreateActCtxWWorker	 
+;CreateFile2	implemented as jump to api-ms-win-core-file-l1-2-0 in 6.2 only;
+;CreateFileMappingFromApp	forwarded to api-ms-win-core-memory-l1-1-1
+@ stub -version=0x602 CreateStateAtom
+@ stub -version=0x602 CreateStateChangeNotification
+@ stub -version=0x602 CreateStateContainer
+@ stub -version=0x602 CreateStateLock
+@ stub -version=0x602 CreateStateSubcontainer
+@ stub -version=0x602 DeactivateActCtxWorker	 
+@ stub -version=0x602 DeleteStateAtomValue
+@ stub -version=0x602 DeleteStateContainer
+@ stub -version=0x602 DeleteStateContainerValue
+@ stub -version=0x602+ DuplicateEncryptionInfoFileExt	 
+@ stub -version=0x602 DuplicateStateContainerHandle
+@ stub -version=0x602 EnumerateStateAtomValues
+@ stub -version=0x602 EnumerateStateContainerItems
+;FindActCtxSectionGuidWorker	 
+;FindActCtxSectionStringWWorker	 
+;GetAppContainerAce	implemented as jump to api-ms-win-security-base-l1-2-0
+;GetAppContainerNamedObjectPath	implemented as jump to api-ms-win-security-appcontainer-l1-1-0
+;GetApplicationRecoveryCallbackWorker	 
+;GetApplicationRestartSettingsWorker	 
+;GetApplicationUserModelId	forwarded to KERNELBASE in 6.3 and higher;
+;documented without version information
+;GetCachedSigningLevel	implemented as jump to api-ms-win-security-base-l1-2-0
+;GetCurrentActCtxWorker	 
+;GetCurrentApplicationUserModelId	forwarded to KERNELBASE in 6.3 and higher;
+;documented without version information
+;GetCurrentPackageFamilyName	forwarded to KERNELBASE in 6.3 and higher
+;GetCurrentPackageFullName	forwarded to KERNELBASE in 6.3 and higher
+;GetCurrentPackageId	forwarded to KERNELBASE in 6.3 and higher
+;GetCurrentPackageInfo	forwarded to KERNELBASE in 6.3 and higher
+;GetCurrentPackagePath	forwarded to KERNELBASE in 6.3 and higher
+;GetCurrentThreadStackLimits	forwarded to API-MS-Win-Core-ProcessThreads-L1-1-0
+;GetDateFormatAWorker	 
+;GetDateFormatWWorker	 
+;GetFirmwareEnvironmentVariableExA	 
+;GetFirmwareEnvironmentVariableExW	 
+;GetFirmwareType	 
+;GetHivePath	discontinued in 6.3
+;GetMemoryErrorHandlingCapabilities	implemented as jump to api-ms-win-core-memory-l1-1-2 in 6.3 and higher
+;GetOverlappedResultEx	forwarded to api-ms-win-core-io-l1-1-1
+;GetPackageFamilyName	forwarded to KERNELBASE in 6.3 and higher
+;GetPackageFullName	forwarded to KERNELBASE in 6.3 and higher
+;GetPackageId	forwarded to KERNELBASE in 6.3 and higher
+;GetPackageInfo	forwarded to KERNELBASE in 6.3 and higher
+;GetPackagePath	forwarded to KERNELBASE in 6.3 and higher
+;GetPackagesByPackageFamily	forwarded to KERNELBASE in 6.3 and higher
+;GetProcessInformation	implemented as jump to api-ms-win-core-processthreads-l1-1-3 in 10.0 and higher
+;GetProcessMitigationPolicy	forwarded to api-ms-win-core-processthreads-l1-1-1
+;GetRoamingLastObservedChangeTime	discontinued in 6.3
+;GetSerializedAtomBytes	discontinued in 6.3
+;GetStateContainerDepth	discontinued in 6.3
+;GetStateFolder	forwarded to KERNELBASE in 6.3 and higher
+;GetStateRootFolder	discontinued in 6.3
+;GetStateSettingsFolder	discontinued in 6.3
+;GetStateVersion	discontinued in 6.3
+;GetSystemAppDataFolder	discontinued in 6.3
+;GetSystemAppDataKey	forwarded to KERNELBASE in 6.3 and higher
+;GetSystemTimePreciseAsFileTime	implemented as jump to api-ms-win-core-sysinfo-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-sysinfo-l1-2-1 in 6.3 and higher
+;GetThreadInformation	implemented as jump to api-ms-win-core-processthreads-l1-1-2 in 6.3 and higher
+;GetTimeFormatAWorker	 
+;GetTimeFormatWWorker	 
+;GlobalAddAtomExA	documented without version information
+;GlobalAddAtomExW	documented without version information
+;InterlockedPushListSListEx	forwarded to NTDLL function RtlInterlockedPushListSListEx
+;IsNativeVhdBoot	 
+;IsValidNLSVersion	implemented as jump to api-ms-win-core-localization-l1-2-0 in 6.2 only;
+;implemented as jump to api-ms-win-core-localization-l1-2-1 in 6.3 and higher
+;LoadPackagedLibrary	implemented as jump to api-ms-win-core-libraryloader-l2-1-0 in 10.0 and higher
+;MapViewOfFileFromApp	forwarded to api-ms-win-core-memory-l1-1-1
+;NtVdm64CreateProcessInternalW	 
+;OpenConsoleWStub	 
+;OpenPackageInfoByFullName	forwarded to KERNELBASE in 6.3 and higher
+;OpenState	forwarded to KERNELBASE in 6.3 and higher
+;OpenStateAtom	discontinued in 6.3
+;OpenStateExplicit	forwarded to KERNELBASE in 6.3 and higher
+;OverrideRoamingDataModificationTimesInRange	discontinued in 6.3
+;PackageFamilyNameFromFullName	forwarded to KERNELBASE in 6.3 and higher
+;PackageFamilyNameFromId	forwarded to KERNELBASE in 6.3 and higher
+;PackageFullNameFromId	forwarded to KERNELBASE in 6.3 and higher
+;PackageIdFromFullName	forwarded to KERNELBASE in 6.3 and higher
+;PackageNameAndPublisherIdFromFamliyName	forwarded to KERNELBASE in 6.3 and higher
+;PrefetchVirtualMemory	forwarded to api-ms-win-core-memory-l1-1-1
+;PublishStateChangeNotification	discontinued in 6.3
+;QueryActCtxSettingsWWorker	 
+;QueryActCtxWWorker	 
+;QueryStateAtomValueInfo	discontinued in 6.3
+;QueryStateContainerItemInfo	discontinued in 6.3
+;RaiseInvalid16BitExeError	 
+;ReadStateAtomValue	discontinued in 6.3
+;ReadStateContainerValue	discontinued in 6.3
+;RegCopyTreeW	also named export from ADVAPI32 6.0 and higher;
+;implemented as jump to api-ms-win-core-registry-l1-1-0
+;RegisterBadMemoryNotification	implemented as jump to api-ms-win-core-memory-l1-1-2 in 6.3 and higher
+;RegisterStateChangeNotification	discontinued in 6.3
+;RegisterStateLock	discontinued in 6.3
+;ReleaseActCtxWorker	implemented as jump to NTDLL function RtlReleaseActivationContext
+;ReleaseStateLock	discontinued in 6.3
+;RemoveDllDirectory	forwarded to API-MS-Win-Core-LibraryLoader-L1-1-0;
+;documented for earlier versions (Windows Vista and higher) if KB2533623 installed
+;ResetState	discontinued in 6.3
+;ResolveDelayLoadedAPI	forwarded to NTDLL function LdrResolveDelayLoadedAPI;
+;documented without version information
+;ResolveDelayLoadsFromDll	forwarded to NTDLL function LdrResolveDelayLoadsFromDll;
+;documented without version information
+;SetCachedSigningLevel	implemented as jump to api-ms-win-security-base-l1-2-0
+;SetDefaultDllDirectories	forwarded to API-MS-Win-Core-LibraryLoader-L1-1-0;
+;documented for earlier versions (Windows Vista and higher) if KB2533623 installed
+;SetFirmwareEnvironmentVariableExA	 
+;SetFirmwareEnvironmentVariableExW	 
+;SetProcessInformation	implemented as jump to api-ms-win-core-processthreads-l1-1-3 in 10.0 and higher
+;SetProcessMitigationPolicy	forwarded to api-ms-win-core-processthreads-l1-1-1
+;SetRoamingLastObservedChangeTime	discontinued in 6.3
+;SetStateVersion	discontinued in 6.3
+;SetThreadInformation	implemented as jump to api-ms-win-core-processthreads-l1-1-2 in 6.3 and higher
+;SetThreadpoolTimerEx	forwarded to NTDLL function TpSetTimerEx;
+;documented for Windows Vista and higher
+;SetThreadpoolWaitEx	forwarded to NTDLL function TpSetWaitEx;
+;documented as requiring Windows 10 and higher
+;SetVolumeMountPointWStub	 
+;SubscribeStateChangeNotification	discontinued in 6.3
+;SystemTimeToTzSpecificLocalTimeEx	forwarded to api-ms-win-core-timezone-l1-1-0;
+;documented for Windows 7 and higher
+;TermsrvConvertSysRootToUserDir	 
+;TermsrvCreateRegEntry	 
+;TermsrvDeleteKey	 
+;TermsrvDeleteValue	 
+;TermsrvGetPreSetValue	 
+;TermsrvGetWindowsDirectoryA	 
+;TermsrvGetWindowsDirectoryW	 
+;TermsrvOpenRegEntry	 
+;TermsrvOpenUserClasses	 
+;TermsrvRestoreKey	 
+;TermsrvSetKeySecurity	 
+;TermsrvSetValueKey	 
+;TermsrvSyncUserIniFileExt	 
+;TzSpecificLocalTimeToSystemTimeEx	forwarded to api-ms-win-core-timezone-l1-1-0;
+;documented for Windows 7 and higher
+;UnmapViewOfFileEx	forwarded to api-ms-win-core-memory-l1-1-1
+;UnregisterBadMemoryNotification	implemented as wrapper around NTDLL function RtlUnsubscribeWnfStateChangeNotification in 6.2 only;
+;implemented as jump to api-ms-win-core-memory-l1-1-2 in 6.3 and higher
+;UnregisterStateChangeNotification	discontinued in 6.3
+;UnregisterStateLock	discontinued in 6.3
+;UnsubscribeStateChangeNotification	discontinued in 6.3
+;WerRegisterFileWorker	 
+;WerRegisterMemoryBlockWorker	 
+;WerRegisterRuntimeExceptionModuleWorker	 
+;WerUnregisterFileWorker	 
+;WerUnregisterMemoryBlockWorker	 
+;WerUnregisterRuntimeExceptionModuleWorker	 
+;WerpGetDebugger	 
+;WerpLaunchAeDebug	 
+;WerpNotifyLoadStringResourceWorker	 
+;WerpNotifyUseStringResourceWorker	 
+;WriteStateAtomValue	discontinued in 6.3
+;WriteStateContainerValue	discontinued in 6.3
+;ZombifyActCtxWorker	implemented as wrapper around NTDLL function RtlZombifyActivationContext
+@ stub -version=0x602+ timeBeginPeriod	 
+@ stub -version=0x602+ timeEndPeriod	 
+@ stub -version=0x602+ timeGetDevCaps	 
+@ stub -version=0x602+ timeGetSystemTime	 
+@ stub -version=0x602+ timeGetTime	 

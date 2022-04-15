@@ -12,6 +12,7 @@ list(APPEND SOURCE
     GetTickCount64.c
     InitOnceExecuteOnce.c
     sync.c
+   # smp.c
     vista.c
     ${CMAKE_CURRENT_BINARY_DIR}/kernel32_vista.def)
 
