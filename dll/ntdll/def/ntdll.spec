@@ -1960,7 +1960,7 @@
 
 ;Windows 8 stuff
 ;@ stub -version=0x602+ ApiSetQueryApiSetPresence	
-@ stub -version=0x602+ EtwEventSetInformation	
+@ stdcall -version=0x601+ EtwEventSetInformation(int64 long ptr long)
 @ stub -version=0x602+ LdrAddDllDirectory	
 @ stub -version=0x602+ LdrGetDllDirectory	
 @ stub -version=0x602+ LdrGetDllFullName	
@@ -2046,8 +2046,8 @@
 @ stub -version=0x602+ RtlUnsubscribeWnfStateChangeNotification	
 @ stub -version=0x602+ RtlWaitForWnfMetaNotification	
 @ stub -version=0x602+ RtlWaitOnAddress	
-@ stub -version=0x602+ RtlWakeAddressAll	
-@ stub -version=0x602+ RtlWakeAddressSingle	
+@ stdcall -stub -version=0x601+ RtlWakeAddressAll	(ptr)
+@ stdcall -stub -version=0x601+ RtlWakeAddressSingle(ptr)	
 @ stub -version=0x602+ RtlWnfDllUnloadCallback	
 @ stub -version=0x602+ RtlpConvertAbsoluteToRelativeSecurityAttribute	
 @ stub -version=0x602+ RtlpConvertRelativeToAbsoluteSecurityAttribute	
