@@ -84,7 +84,7 @@
 @ stdcall _statusfp() msvcrt._statusfp
 @ stub _statusfp2
 @ stdcall _strerror() msvcrt._strerror
-@ stub _strerror_s
+@ stdcall -version=0x600+ _strerror_s() msvcrt._strerror_s
 @ stub _wassert
 @ stdcall _wcserror() msvcrt._wcserror
 @ stub _wcserror_s

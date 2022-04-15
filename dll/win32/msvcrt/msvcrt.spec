@@ -1571,6 +1571,7 @@
 @ cdecl wcsncmp(wstr wstr long)
 @ cdecl wcsncpy(ptr wstr long)
 @ cdecl -version=0x600+ wcsncpy_s(ptr long wstr long)
+@ cdecl -version=0x600+ __stdio_common_vsprintf_s(int64 ptr long str ptr ptr)
 @ cdecl -version=0x600+ wcsnlen(wstr long)
 @ cdecl wcspbrk(wstr wstr)
 @ cdecl wcsrchr(wstr long)
