@@ -173,3 +173,19 @@ BOOL WINAPI InitializeCriticalSectionEx(OUT LPCRITICAL_SECTION lpCriticalSection
     return TRUE;
 }
 
+BOOL WINAPI DECLSPEC_HOTPATCH GetQueuedCompletionStatusEx( HANDLE port, OVERLAPPED_ENTRY *entries,
+                                                           ULONG count, ULONG *written,
+                                                           DWORD timeout, BOOL alertable )
+{
+    return FALSE;
+}
+
+LONG 
+WINAPI AppPolicyGetThreadInitializationType(HANDLE token, ULONG_PTR *policy)
+{
+    if(policy)
+        *policy = 0;
+
+    return ERROR_SUCCESS;
+}
+
