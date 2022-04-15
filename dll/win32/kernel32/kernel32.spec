@@ -15,6 +15,7 @@
 @ stdcall -stub -version=0x600+ AdjustCalendarDate(ptr long long)
 @ stdcall AllocConsole()
 @ stub ResolveLocaleName
+@ stdcall -version=0x601+ AppPolicyGetThreadInitializationType(long ptr)
 @ stdcall AllocateUserPhysicalPages(long ptr ptr)
 @ stdcall -stub -version=0x600+ AllocateUserPhysicalPagesNuma(ptr ptr ptr long)
 @ stdcall -version=0x600+ ApplicationRecoveryFinished(long)
@@ -1532,7 +1533,7 @@
 ;implemented as jump to api-ms-win-core-sysinfo-l1-2-1 in 6.3 and higher
 ;GetProductInfo	implemented as jump to api-ms-win-core-sysinfo-l1-2-0 in 6.2 only;
 ;implemented as jump to api-ms-win-core-sysinfo-l1-2-1 in 6.3 and higher
-@ stdcall -stub -version=0x601+ GetQueuedCompletionStatusEx(ptr ptr long ptr long long) ;	implemented as jump to API-MS-Win-Core-IO-L1-1-0 in 6.1 only;
+@ stdcall -version=0x601+ GetQueuedCompletionStatusEx(ptr ptr long ptr long long) ;	implemented as jump to API-MS-Win-Core-IO-L1-1-0 in 6.1 only;
 ;implemented as jump to api-ms-win-core-io-l1-1-1 in 6.2 and higher
 ;GetStringScripts	implemented as jump to api-ms-win-core-normalization-l1-1-0 in 6.2 and higher
 ;GetSystemDefaultLocaleName	implemented as jump to KERNELBASE in 6.1 and higher

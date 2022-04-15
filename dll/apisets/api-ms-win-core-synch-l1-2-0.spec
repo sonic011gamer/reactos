@@ -56,6 +56,6 @@
 @ stdcall WaitForSingleObjectEx() kernel32.WaitForSingleObjectEx
 @ stub WaitOnAddress
 @ stdcall -version=0x600+ WakeAllConditionVariable() kernel32.WakeAllConditionVariable
-@ stub WakeByAddressAll
-@ stub WakeByAddressSingle
+@ stdcall WakeByAddressAll(ptr) ntdll.RtlWakeAddressAll
+@ stdcall WakeByAddressSingle(ptr) ntdll.RtlWakeAddressSingle
 @ stdcall -version=0x600+ WakeConditionVariable() kernel32.WakeConditionVariable

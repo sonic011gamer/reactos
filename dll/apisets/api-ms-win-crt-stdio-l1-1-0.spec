@@ -16,7 +16,7 @@
 @ stdcall -version=0x600+ __stdio_common_vsnwprintf_s() msvcrt.__stdio_common_vsnwprintf_s
 @ stdcall -version=0x600+ __stdio_common_vsprintf() msvcrt.__stdio_common_vsprintf
 @ stub __stdio_common_vsprintf_p
-@ stub __stdio_common_vsprintf_s
+@ stdcall -version=0x600+ __stdio_common_vsprintf_s() msvcrt.__stdio_common_vsprintf_s
 @ stub __stdio_common_vsscanf
 @ stdcall -version=0x600+ __stdio_common_vswprintf() msvcrt.__stdio_common_vswprintf
 @ stub __stdio_common_vswprintf_p
