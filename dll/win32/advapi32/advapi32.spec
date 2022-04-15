@@ -224,6 +224,7 @@
 @ stdcall -version=0x600+ EventProviderEnabled(ptr str int64)
 @ stdcall -version=0x600+ EventWrite(ptr ptr long ptr)
 @ stub -version=0x600+ EventWriteString
+@ stdcall -version=0x600+ EventSetInformation(int64 long ptr long) ntdll.EtwEventSetInformation
 @ stdcall -version=0x600+ EventWriteTransfer(ptr ptr ptr ptr long ptr)
 @ stdcall -version=0x600+ EventRegister(ptr ptr ptr ptr)
 @ stdcall -version=0x600+ EventUnregister(ptr)

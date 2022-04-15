@@ -4,6 +4,13 @@
 #undef UNIMPLEMENTED
 #define UNIMPLEMENTED __wine_spec_unimplemented_stub("msvcrt.dll", __FUNCTION__)
 
+int CDECL __stdio_common_vsprintf_s( unsigned __int64 options,
+        char *str, size_t count, const char *format,
+        _locale_t locale, va_list valist )
+{
+    return 0;
+}
+
 int __get_app_type()
 {
     UNIMPLEMENTED;

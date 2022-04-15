@@ -14,6 +14,8 @@
 @ stdcall AddVectoredExceptionHandler(long ptr) ntdll.RtlAddVectoredExceptionHandler
 @ stdcall -stub -version=0x600+ AdjustCalendarDate(ptr long long)
 @ stdcall AllocConsole()
+;@ stub ResolveLocaleName
+@ stdcall -stub -version=0x601+ AppPolicyGetThreadInitializationType(long ptr)
 @ stdcall AllocateUserPhysicalPages(long ptr ptr)
 @ stdcall -stub -version=0x600+ AllocateUserPhysicalPagesNuma(ptr ptr ptr long)
 @ stdcall -stub -version=0x600+ ApplicationRecoveryFinished(long)

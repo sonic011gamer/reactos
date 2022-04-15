@@ -166,10 +166,10 @@
 @ stdcall wcscspn() msvcrt.wcscspn
 @ stdcall wcslen() msvcrt.wcslen
 @ stdcall wcsncat() msvcrt.wcsncat
-@ stub wcsncat_s
+@ stdcall wcsncat_s() msvcrt.wcsncat_s
 @ stdcall wcsncmp() msvcrt.wcsncmp
 @ stdcall wcsncpy() msvcrt.wcsncpy
-@ stub wcsncpy_s
+@ stdcall -version=0x600+ wcsncpy_s() msvcrt.wcsncpy_s
 @ stub wcsnlen
 @ stdcall wcspbrk() msvcrt.wcspbrk
 @ stdcall wcsspn() msvcrt.wcsspn
