@@ -1,6 +1,6 @@
 
-#include "dwmapi.h"
-#include <psdk/winnls.h>
+#include "dwmapi_private.h"
+
 BOOL
 WINAPI
 DllMain(HANDLE hDll,
