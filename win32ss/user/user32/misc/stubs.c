@@ -718,8 +718,8 @@ WINAPI
 IsThreadDesktopComposited(VOID)
 {
     UNIMPLEMENTED;
-    return TRUE;
-} 
+    return FALSE;
+}
 
 BOOL
 WINAPI

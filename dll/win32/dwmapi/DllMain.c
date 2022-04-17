@@ -1,5 +1,5 @@
 
-#include "dwmapi.h"
+#include "dwmapi_private.h"
 
 BOOL
 WINAPI
