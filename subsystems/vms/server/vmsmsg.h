@@ -1,0 +1,2 @@
+
+#define VMSSRV_FIRST_API_NUMBER     0
