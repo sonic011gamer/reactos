@@ -3718,6 +3718,10 @@ NtUserSetScrollBarInfo(
     LONG idObject,
     SETSCROLLBARINFO *info);
 
+BOOL
+WINAPI
+IsThreadDesktopComposited(VOID);
+
 #endif /* __WIN32K_NTUSER_H */
 
 /* EOF */
