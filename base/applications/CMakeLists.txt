@@ -1,5 +1,7 @@
 
 add_subdirectory(atactl)
+#add_subdirectory(baresh)
+add_subdirectory(bootpsx)
 add_subdirectory(cacls)
 add_subdirectory(calc)
 add_subdirectory(charmap)
