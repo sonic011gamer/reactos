@@ -8,7 +8,7 @@ list(APPEND SOURCE
 
 add_executable(bootpsx ${SOURCE})
 set_module_type(bootpsx win32gui UNICODE ENTRYPOINT main)
-add_importlibs(bootpsx advapi32 comctl32 user32 shell32 gdi32 msvcrt kernel32 psxss smdll)
+add_importlibs(bootpsx advapi32 comctl32 user32 shell32 gdi32 msvcrt kernel32 psxsrv smdll)
 
 if(MSVC)
     add_importlibs(bootpsx ntdll)

@@ -1,2 +1,3 @@
 
-add_subdirectory(server)
+add_subdirectory(psxsrv)
+add_subdirectory(psxss)
