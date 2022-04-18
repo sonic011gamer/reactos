@@ -1,0 +1,1 @@
+@ stdcall PsxServerInitialization(long ptr)
