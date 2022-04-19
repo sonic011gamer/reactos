@@ -115,6 +115,7 @@
 #define PSX_SYSCALL_APIPORT_COUNT 111
 #endif /* ndef _PSX_SYSCALL_H */
 /* EOF */
+<<<<<<< HEAD
 MESSAGE);
 NTSTATUS STDCALL syscall_getpwuid (PPSX_MAX_MESSAGE);
 NTSTATUS STDCALL syscall_getpwnam (PPSX_MAX_MESSAGE);
@@ -173,3 +174,5 @@ NTSTATUS STDCALL syscall_setuser (PPSX_MAX_MESSAGE);
 NTSTATUS STDCALL syscall_ipcs (PPSX_MAX_MESSAGE);
 #endif /* ndef _SERVER_SYSCALL_H */
 /* EOF */
+=======
+>>>>>>> fe221e3f9bb ([MKSYSTAB] Reintroduce Auto-Syscall generation)
