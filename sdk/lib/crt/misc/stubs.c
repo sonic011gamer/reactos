@@ -35,9 +35,8 @@ unsigned int _get_output_format(void)
    return 0;
 }
 
-//#if _MSVCR_VER>=80
+#if _MSVCR_VER>=80
 
-#if 0
 ULONG CDECL _byteswap_ulong(ULONG l)
 {
    ULONG Outcome;

@@ -23,7 +23,7 @@
 @ stdcall _getdiskfree() msvcrt._getdiskfree
 @ stdcall _getdrive() msvcrt._getdrive
 @ stdcall _getdrives() msvcrt._getdrives
-@ stub _lock_file
+@ stdcall -version=0x601+ _lock_file() msvcrt._lock_file
 @ stdcall _makepath() msvcrt._makepath
 @ stub _makepath_s
 @ stdcall _mkdir() msvcrt._mkdir
@@ -37,7 +37,7 @@
 @ stdcall _umask() msvcrt._umask
 @ stub _umask_s
 @ stdcall _unlink() msvcrt._unlink
-@ stub _unlock_file
+@ stdcall _unlock_file() msvcrt._unlock_file
 @ stdcall _waccess() msvcrt._waccess
 @ stub _waccess_s
 @ stdcall _wchdir() msvcrt._wchdir

@@ -9,9 +9,9 @@
 @ stub _W_Getmonths
 @ stub _W_Gettnames
 @ stub _Wcsftime
-@ stub __daylight
+@ stdcall __daylight() msvcrt.__p__daylight
 @ stub __dstbias
-@ stub __timezone
+@ stdcall __timezone() msvcrt.__p__timezone
 @ stub __tzname
 @ stub _ctime32
 @ stub _ctime32_s
