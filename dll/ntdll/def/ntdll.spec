@@ -446,7 +446,7 @@
 @ stdcall NtQueryIntervalProfile(long ptr)
 @ stdcall NtQueryIoCompletion(long long ptr long ptr)
 @ stdcall NtQueryKey (long long ptr long ptr)
-@ stdcall -stub -version=0x600+ NtQueryLicenseValue(wstr long ptr long long)
+@ stdcall -stub NtQueryLicenseValue(wstr long ptr long long)
 @ stdcall NtQueryMultipleValueKey(long ptr long ptr long ptr)
 @ stdcall NtQueryMutant(long long ptr long ptr)
 @ stdcall NtQueryObject(long long long long long)
@@ -915,9 +915,9 @@
 @ stdcall RtlGetSetBootStatusData(ptr long long ptr long long)
 @ stub -version=0x600+ RtlGetSystemPreferredUILanguages
 @ stdcall RtlGetThreadErrorMode()
-@ stub -version=0x600+ RtlGetThreadLangIdByIndex
-@ stub -version=0x600+ RtlGetThreadPreferredUILanguages
-@ stub -version=0x600+ RtlGetUILanguageInfo
+@ stdcall -stub -version=0x600+ RtlGetThreadLangIdByIndex()
+@ stdcall -stub -version=0x600+ RtlGetThreadPreferredUILanguages()
+@ stdcall -stub -version=0x600+ RtlGetUILanguageInfo()
 @ stdcall RtlGetUnloadEventTrace()
 @ stub -version=0x600+ RtlGetUnloadEventTraceEx
 @ stdcall RtlGetUserInfoHeap(ptr long ptr ptr ptr)
@@ -1085,7 +1085,7 @@
 @ stub -version=0x600+ RtlQueryCriticalSectionOwner
 @ stdcall RtlQueryDepthSList(ptr)
 @ stub -version=0x600+ RtlQueryDynamicTimeZoneInformation
-;@ stub -version=0x600+ RtlQueryElevationFlags
+;@ stdcall -stub -version=0x600+ RtlQueryElevationFlags()
 @ stub -version=0x600+ RtlQueryEnvironmentVariable
 @ stdcall RtlQueryEnvironmentVariable_U(ptr ptr ptr)
 @ stdcall RtlQueryHeapInformation(long long ptr long ptr)
