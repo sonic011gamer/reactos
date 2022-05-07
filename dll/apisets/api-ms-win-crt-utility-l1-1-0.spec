@@ -3,6 +3,8 @@
 
 @ stdcall _lfind() msvcrt._lfind
 @ stub _lfind_s
+@ stdcall _byteswap_ulong() msvcrt._byteswap_ulong
+@ stdcall _byteswap_ushort() msvcrt._byteswap_ushort
 @ stdcall _lrotl() msvcrt._lrotl
 @ stdcall _lrotr() msvcrt._lrotr
 @ stdcall _lsearch() msvcrt._lsearch

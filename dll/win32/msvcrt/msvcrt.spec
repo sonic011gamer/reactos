@@ -305,6 +305,9 @@
 @ stub -version=0x600+ -arch=i386 __libm_sse2_tan
 @ stub -version=0x600+ -arch=i386 __libm_sse2_tanf
 @ extern __mb_cur_max
+
+@ cdecl _byteswap_ulong(long) ntdll.RtlUlongByteSwap
+@ cdecl _byteswap_ushort(long) ntdll.RtlUshortByteSwap
 @ cdecl -arch=i386 __p___argc()
 @ cdecl -arch=i386 __p___argv()
 @ cdecl -arch=i386 __p___initenv()
@@ -1516,6 +1519,7 @@
 @ cdecl strtod(str ptr)
 @ cdecl strtok(str str)
 @ cdecl -version=0x600+ strtok_s(str str ptr)
+@ cdecl -version=0x600+ _get_wide_winmain_command_line()
 @ cdecl strtol(str ptr long)
 @ cdecl strtoul(str ptr long)
 @ cdecl strxfrm(ptr str long)
@@ -1532,6 +1536,7 @@
 @ cdecl time(ptr)
 @ cdecl tmpfile()
 @ stub -version=0x600+ tmpfile_s
+@ cdecl __control87_2(long long ptr ptr)
 @ cdecl tmpnam(ptr)
 @ stub -version=0x600+ tmpnam_s
 @ cdecl tolower(long)
@@ -1567,6 +1572,7 @@
 @ cdecl wcsftime(ptr long wstr ptr)
 @ cdecl wcslen(wstr)
 @ cdecl wcsncat(wstr wstr long)
+@ cdecl __fpe_flt_rounds()
 @ cdecl -version=0x600+ wcsncat_s(wstr long wstr long)
 @ cdecl wcsncmp(wstr wstr long)
 @ cdecl wcsncpy(ptr wstr long)
@@ -1574,9 +1580,11 @@
 @ cdecl -version=0x600+ __stdio_common_vsprintf_s(int64 ptr long str ptr ptr)
 @ cdecl -version=0x600+ wcsnlen(wstr long)
 @ cdecl wcspbrk(wstr wstr)
+@ cdecl _lock_file(ptr)
 @ cdecl wcsrchr(wstr long)
 @ stub -version=0x600+ wcsrtombs
 @ stub -version=0x600+ wcsrtombs_s
+@ cdecl _unlock_file(ptr)
 @ cdecl wcsspn(wstr wstr)
 @ cdecl wcsstr(wstr wstr)
 @ cdecl wcstod(wstr ptr)

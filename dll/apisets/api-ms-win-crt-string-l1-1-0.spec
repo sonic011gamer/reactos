@@ -170,7 +170,7 @@
 @ stdcall wcsncmp() msvcrt.wcsncmp
 @ stdcall wcsncpy() msvcrt.wcsncpy
 @ stdcall -version=0x600+ wcsncpy_s() msvcrt.wcsncpy_s
-@ stub wcsnlen
+@ stdcall -version=0x600+ wcsnlen() msvcrt.wcsnlen
 @ stdcall wcspbrk() msvcrt.wcspbrk
 @ stdcall wcsspn() msvcrt.wcsspn
 @ stdcall wcstok() msvcrt.wcstok

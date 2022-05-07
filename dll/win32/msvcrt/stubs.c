@@ -1,8 +1,46 @@
 
 #include <stubs.h>
+#include <winbase.h>
 #include <debug.h>
 #undef UNIMPLEMENTED
 #define UNIMPLEMENTED __wine_spec_unimplemented_stub("msvcrt.dll", __FUNCTION__)
+
+
+int CDECL __fpe_flt_rounds(void)
+{
+    return 0;
+}
+
+wchar_t* CDECL _get_wide_winmain_command_line(void)
+{
+  static wchar_t *wide_command_line;
+  wchar_t *s;
+
+  if (wide_command_line)
+      return wide_command_line;
+
+  s = GetCommandLineW();
+  while (*s && *s != ' ' && *s != '\t')
+  {
+      if (*s++ == '"')
+      {
+          while (*s && *s++ != '"')
+              ;
+      }
+  }
+
+  while (*s == ' ' || *s == '\t')
+      s++;
+
+  return wide_command_line = s;
+}
+
+int CDECL __control87_2( unsigned int newval, unsigned int mask,
+                         unsigned int *x86_cw, unsigned int *sse2_cw )
+{
+    *sse2_cw = 0;
+    return 1;
+}
 
 int CDECL __stdio_common_vsprintf_s( unsigned __int64 options,
         char *str, size_t count, const char *format,
