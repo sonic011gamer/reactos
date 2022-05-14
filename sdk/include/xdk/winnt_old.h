@@ -4386,13 +4386,13 @@ FORCEINLINE PVOID GetCurrentFiber(VOID)
 #elif defined (_M_ARM64)
 FORCEINLINE struct _TEB * NtCurrentTeb(void)
 {
-    //UNIMPLEMENTED;
-    return 0;
+  //UNIMPLEMENTED;
+  return 0;
 }
 FORCEINLINE PVOID GetCurrentFiber(VOID)
 {
-    //UNIMPLEMENTED;
-    return 0;
+  //UNIMPLEMENTED;
+  return 0;
 }
 #elif defined(_M_PPC)
 FORCEINLINE unsigned long _read_teb_dword(const unsigned long Offset)
