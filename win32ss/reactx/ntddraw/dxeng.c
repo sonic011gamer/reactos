@@ -326,9 +326,9 @@ DxEngGetHdevData(HDEV hDev,
         DPRINT("requested DXEGSHDEVDATA DxEGShDevData_eddg\n");
         retVal = (DWORD_PTR) PDev->pEDDgpl;
         break;
-      case DxEGShDevData_dd_nCount:
-        DPRINT("requested DXEGSHDEVDATA DxEGShDevData_dd_nCount\n");
-        retVal = (DWORD_PTR) PDev->DxDd_nCount;
+      case DxEGShDevData_dd_locks:
+        DPRINT("requested DXEGSHDEVDATA DxEGShDevData_dd_locks\n");
+        retVal = (DWORD_PTR) PDev->cDirectDrawDisableLocks;
         break;
       case DxEGShDevData_dd_flags:
         DPRINT("requested DXEGSHDEVDATA DxEGShDevData_dd_flags\n");
@@ -415,9 +415,10 @@ DxEngSetHdevData(HDEV hDev,
 
     DPRINT("ReactX Calling : DxEngSetHdevData DXEGSHDEVDATA : %ld\n", Type);
 
-    if ( Type == DxEGShDevData_dd_nCount )
+    if ( Type == DxEGShDevData_dd_locks )
     {
-        ((PPDEVOBJ)hDev)->DxDd_nCount = Data;
+        DPRINT1("Assigning value %d\n", Data);
+        ((PPDEVOBJ)hDev)->cDirectDrawDisableLocks = Data;
         retVal = TRUE; // Set
     }
     return retVal;
