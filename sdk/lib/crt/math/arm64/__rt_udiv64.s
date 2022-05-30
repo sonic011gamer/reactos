@@ -1,7 +1,7 @@
 /*
  * PROJECT:     ReactOS CRT library
  * LICENSE:     MIT (https://spdx.org/licenses/MIT)
- * PURPOSE:     Implementation of atan2
+ * PURPOSE:     Implementation of __rt_udiv64
  * COPYRIGHT:   Copyright 2022 Justin Miller<justinmiller100@gmail.com>
  */
 
@@ -9,13 +9,14 @@
 
 #include <kxarm64.h>
 
+    IMPORT __rt_udiv64_worker
+
 /* CODE **********************************************************************/
 
     TEXTAREA
 
-    LEAF_ENTRY atan2
-    /* TODO: add an assert fail call, as this is unimplemented */
-    LEAF_END atan2
+    NESTED_ENTRY __rt_udiv64
+    NESTED_END __rt_udiv64
 
     END
 /* EOF */
