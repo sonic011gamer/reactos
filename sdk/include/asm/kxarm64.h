@@ -1,4 +1,13 @@
 
+#define ENABLE_FRAME_POINTER 1
+
+#undef TRUE
+//#define TRUE 1
+#undef FALSE
+//#define FALSE 0
+
+//#include "kxarmunw.h"
+
 #ifdef _MSC_VER
 
     /* Globals */
@@ -160,6 +169,91 @@ __FuncEndLabel SETS ""
     MEND
 
 #else
+
+/* Compatibility define */
+#define EQU .equ
+
+.macro IMPORT Name
+    /* Ignore */
+.endm
+
+.macro EXPORT Name
+    .global &Name
+.endm
+
+.macro TEXTAREA
+    .section .text, "rx"
+#if defined(_CONTROL_FLOW_GUARD)
+    .align 4
+#else
+    .align 2
+#endif
+.endm
+
+.macro DATAAREA
+    .section .data, "rw"
+.endm
+
+.macro RODATAAREA
+    .section .rdata, "rw"
+.endm
+
+.macro NESTED_ENTRY Name
+FuncName    .equ    &Name
+PrologName  .equ    &Name&_Prolog
+FuncEndName .equ    &Name&_end
+    .global &FuncName
+    .align 2
+    .func &FuncName
+    &FuncName:
+.endm
+
+// FIXME: should go to kxarmunw.h
+.macro PROLOG_END
+    \PrologName:
+.endm
+
+.macro NESTED_END Name
+    &FuncEndName:
+   .endfunc
+.endm
+
+.macro LEAF_ENTRY $FuncName, $AreaName
+    NESTED_ENTRY $FuncName, $AreaName
+.endm
+
+.macro LEAF_END $FuncName
+    NESTED_END $FuncName
+.endm
+
+
+/* Some "intrinsics", see http://codemachine.com/article_armasm.html */
+
+.macro __debugbreak
+    DCD 0xDEFE
+.endm
+
+.macro __assertfail
+    DCD 0xDEFC
+.endm
+
+.macro __fastfail
+    DCD 0xDEFB
+.endm
+
+.macro __rdpmccntr64
+    DCD 0xDEFA
+.endm
+
+.macro __debugservice
+    DCD 0xDEFD
+.endm
+
+.macro __brkdiv0
+    DCD 0xDEF9
+.endm
+
+
 #endif
 
 
