@@ -225,21 +225,21 @@ elseif(ARCH STREQUAL "arm64")
         math/fabsf.c
     )
     list(APPEND LIBCNTPR_MATH_ASM_SOURCE
-        math/arm64atan.s
-        math/arm64atan2.s
-        math/arm64ceil.s
-        math/arm64exp.s
-        math/arm64fabs.s
-        math/arm64fmod.s
-        math/arm64floor.s
-        math/arm64ldexp.s
-        math/arm64log.s
-        math/arm64log10.s
-        math/arm64pow.s
-        math/arm64tan.s
-        math/arm64__rt_sdiv64.s
-        math/arm64__rt_srsh.s
-        math/arm64__rt_udiv64.s
+        math/arm64/atan.s
+        math/arm64/atan2.s
+        math/arm64/ceil.s
+        math/arm64/exp.s
+        math/arm64/fabs.s
+        math/arm64/fmod.s
+        math/arm64/floor.s
+        math/arm64/ldexp.s
+        math/arm64/log.s
+        math/arm64/log10.s
+        math/arm64/pow.s
+        math/arm64/tan.s
+        math/arm64/__rt_sdiv64.s
+        math/arm64/__rt_srsh.s
+        math/arm64/__rt_udiv64.s
     )
     list(APPEND CRT_MATH_ASM_SOURCE
         math/arm64/_logb.s
