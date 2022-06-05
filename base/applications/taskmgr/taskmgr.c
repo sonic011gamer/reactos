@@ -178,7 +178,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
     /* Create the modeless main window and dispatch messages,
      * also handling keyboard accelerators. */
     hMainWnd = CreateDialogW(hInst, (LPCWSTR)IDD_TASKMGR_DIALOG, NULL, TaskManagerWndProc);
-    // ShowWindow(hMainWnd, nCmdShow);
     ShowWindow(hMainWnd, TaskManagerSettings.Maximized ? SW_MAXIMIZE : nCmdShow);
 
     /* Message loop */
@@ -192,8 +191,10 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
         //if (PropSheet_GetCurrentPageHwnd(hMainWnd) == NULL)
         //    break;
 
-        /* Process accelerators */
+        /* Process accelerators - Handled by main window and currently-selected page */
         if (TranslateAcceleratorW(hMainWnd, hAccelTable, &msg))
+            continue;
+        if (TranslateAcceleratorW(g_hPages[TaskManagerSettings.ActiveTabPage], hAccelTable, &msg))
             continue;
 
         /* Process message */
@@ -328,16 +329,16 @@ TaskManagerWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         case ID_WINDOWS_BRINGTOFRONT:
             ApplicationPage_OnWindowsBringToFront();
             break;
-        case ID_APPLICATION_PAGE_SWITCHTO:
+        case ID_APPLICATION_PAGE_SWITCHTO:  // IDC_SWITCHTO
             ApplicationPage_OnSwitchTo();
             break;
-        case ID_APPLICATION_PAGE_ENDTASK:
+        case ID_APPLICATION_PAGE_ENDTASK:   // IDC_ENDTASK
             ApplicationPage_OnEndTask();
             break;
         case ID_APPLICATION_PAGE_GOTOPROCESS:
             ApplicationPage_OnGotoProcess();
             break;
-        case ID_PROCESS_PAGE_ENDPROCESS:
+        case ID_PROCESS_PAGE_ENDPROCESS:    // IDC_ENDPROCESS
             ProcessPage_OnEndProcess();
             break;
         case ID_PROCESS_PAGE_ENDPROCESSTREE:
@@ -432,19 +433,20 @@ TaskManagerWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
             if(IsWindowVisible(hMainWnd))
             {
-              DeleteMenu(hPopupMenu, ID_RESTORE, MF_BYCOMMAND);
+                DeleteMenu(hPopupMenu, ID_RESTORE, MF_BYCOMMAND);
             }
             else
             {
-              SetMenuDefaultItem(hPopupMenu, ID_RESTORE, FALSE);
+                SetMenuDefaultItem(hPopupMenu, ID_RESTORE, FALSE);
             }
 
             if(OnTop)
             {
-              CheckMenuItem(hPopupMenu, ID_OPTIONS_ALWAYSONTOP, MF_BYCOMMAND | MF_CHECKED);
-            } else
+                CheckMenuItem(hPopupMenu, ID_OPTIONS_ALWAYSONTOP, MF_BYCOMMAND | MF_CHECKED);
+            }
+            else
             {
-              CheckMenuItem(hPopupMenu, ID_OPTIONS_ALWAYSONTOP, MF_BYCOMMAND | MF_UNCHECKED);
+                CheckMenuItem(hPopupMenu, ID_OPTIONS_ALWAYSONTOP, MF_BYCOMMAND | MF_UNCHECKED);
             }
 
             SetForegroundWindow(hMainWnd);
