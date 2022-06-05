@@ -167,6 +167,9 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
         return -1;
     }
 
+    /* Initialize the Windows Common Controls DLL */
+    InitCommonControls();
+
     /*
      * Set our shutdown parameters: we want to shutdown the very last,
      * without displaying any end task dialog if needed.
@@ -595,9 +598,6 @@ BOOL OnCreate(HWND hWnd)
 
     SendMessageW(hWnd, WM_SETICON, ICON_BIG, (LPARAM)LoadIconW(hInst, MAKEINTRESOURCEW(IDI_TASKMANAGER)));
 
-    /* Initialize the Windows Common Controls DLL */
-    InitCommonControls();
-
     /* Get the minimum window sizes */
     GetWindowRect(hWnd, &rc);
     nMinimumWidth = (rc.right - rc.left);
@@ -607,6 +607,9 @@ BOOL OnCreate(HWND hWnd)
     hStatusWnd = CreateStatusWindow(WS_VISIBLE|WS_CHILD|WS_CLIPSIBLINGS|SBT_NOBORDERS, L"", hWnd, STATUS_WINDOW);
     if (!hStatusWnd)
         return FALSE;
+
+    /* Save the global window handle */
+    hMainWnd = hWnd;
 
     /* Create the status bar panes */
     nParts[0] = STATUS_SIZE1;
