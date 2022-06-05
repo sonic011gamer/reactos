@@ -23,8 +23,6 @@ typedef struct
     ULONG ProcessId;
 } PROCESS_PAGE_LIST_ITEM, *LPPROCESS_PAGE_LIST_ITEM;
 
-HWND hProcessPage;                      /* Process List Property Page */
-
 HWND hProcessPageListCtrl;              /* Process ListCtrl Window */
 HWND hProcessPageHeaderCtrl;            /* Process Header Control */
 static HWND hProcessPageEndProcessButton;      /* Process End Process button */
@@ -447,7 +445,7 @@ DWORD WINAPI ProcessPageRefreshThread(PVOID Parameter)
         {
             UpdateProcesses();
 
-            if (IsWindowVisible(hProcessPage))
+            if (IsWindowVisible(g_hPages[1]))
                 InvalidateRect(hProcessPageListCtrl, NULL, FALSE);
 
             ProcessPageUpdate();
@@ -989,16 +987,8 @@ DevicePathToDosPath(
 
             if (_wcsnicmp(lpDevicePath, szDeviceName, len) == 0)
             {
-                /* Get the required length, including the NULL terminator */
-                dwRet = _countof(szDrive) + wcslen(lpDevicePath + len);
-
-                if (lpDosPath && (dwLength >= dwRet))
-                {
-                    StringCchPrintfW(lpDosPath, dwLength, L"%s%s",
-                                     szDrive, lpDevicePath + len);
-                }
-
-                break;
+                StringCbPrintfW(lpPath, dwSize, L"%s%s", szDrive, lpPath + len);
+                return TRUE;
             }
         }
     }
@@ -1113,8 +1103,9 @@ GetProcessExecutablePathById(
 
     if (dwProcessId == 0)
         return 0;
+    }
 
-    /* PID = 4 ("System") */
+    /* PID = 4 or "System" */
     if (dwProcessId == 4)
     {
         static const WCHAR szKernelExe[] = L"\\ntoskrnl.exe";
