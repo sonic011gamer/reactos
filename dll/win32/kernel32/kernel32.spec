@@ -33,10 +33,10 @@
 @ stdcall BaseInitAppcompatCacheSupport()
 @ stdcall BaseIsAppcompatInfrastructureDisabled() IsShimInfrastructureDisabled
 @ stdcall -version=0x501-0x502 BaseProcessInitPostImport()
-;@ stdcall -version=0x502 -arch=x86_64 BaseProcessStart()
+;@ stdcall -version=0x502+ -arch=x86_64 BaseProcessStart()
 @ stdcall BaseQueryModuleData(str str ptr ptr ptr) ;check
 @ stub -version=0x600+ BaseThreadInitThunk
-;@ stdcall -version=0x502 -arch=x86_64 BaseThreadStart()
+;@ stdcall -version=0x502+ -arch=x86_64 BaseThreadStart()
 @ stdcall BaseUpdateAppcompatCache(long long long)
 @ stdcall BasepCheckBadapp(long ptr long long long long long long long)
 @ stdcall BasepCheckWinSaferRestrictions(long long long long long long)
