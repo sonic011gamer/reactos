@@ -117,11 +117,7 @@ typedef struct STRUCT(_PEB)
     PTR(PVOID) TlsBitmap;
     ULONG TlsBitmapBits[2];
     PTR(PVOID) ReadOnlySharedMemoryBase;
-#if (NTDDI_VERSION >= NTDDI_LONGHORN)
-    PTR(PVOID) HotpatchInformation;
-#else
     PTR(PVOID) ReadOnlySharedMemoryHeap;
-#endif
     PTR(PVOID*) ReadOnlyStaticServerData;
     PTR(PVOID) AnsiCodePageData;
     PTR(PVOID) OemCodePageData;
@@ -358,9 +354,9 @@ typedef struct STRUCT(_TEB)
         };
     };
 #elif (NTDDI_VERSION >= NTDDI_LONGHORN)
-    BOOLEAN                SpareBool0;
-    BOOLEAN                SpareBool1;
-    BOOLEAN                SpareBool2;
+    BOOLEAN                InDbgPrint;
+    BOOLEAN                FreeStackOnTermination;
+    BOOLEAN                HasFiberData;
     UCHAR                  IdealProcessor;
 #else
     BOOLEAN                InDbgPrint;

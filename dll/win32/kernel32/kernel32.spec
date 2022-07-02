@@ -1,5 +1,5 @@
-@ stdcall -stub -version=0x600+ AcquireSRWLockExclusive(ptr) NTDLL.RtlAcquireSRWLockExclusive
-@ stdcall -stub -version=0x600+ AcquireSRWLockShared(ptr) NTDLL.RtlAcquireSRWLockShared
+@ stdcall -version=0x600+ AcquireSRWLockExclusive() kernel32_vista.AcquireSRWLockExclusive
+@ stdcall -version=0x600+ AcquireSRWLockShared() kernel32_vista.lAcquireSRWLockShared
 @ stdcall ActivateActCtx(ptr ptr)
 @ stdcall AddAtomA(str)
 @ stdcall AddAtomW(wstr)
@@ -472,15 +472,15 @@
 @ stdcall GetFileAttributesW(wstr)
 @ stub -version=0x600+ GetFileBandwidthReservation
 @ stdcall GetFileInformationByHandle(long ptr)
-@ stub -version=0x600+ GetFileInformationByHandleEx
-@ stub -version=0x600+ GetFileMUIInfo
-@ stub -version=0x600+ GetFileMUIPath
+@ stdcall  -version=0x600+ GetFileInformationByHandleEx(long long ptr long) kernel32_vista.GetFileInformationByHandleEx
+@ stdcall -version=0x600+ GetFileMUIInfo(long wstr ptr ptr) kernel32_vista.GetFileMUIInfo
+@ stdcall -version=0x600+ GetFileMUIPath(long wstr wstr ptr wstr ptr ptr) kernel32_vista.GetFileMUIPath
 @ stdcall GetFileSize(long ptr)
 @ stdcall GetFileSizeEx(long ptr)
 @ stdcall GetFileTime(long ptr ptr ptr)
 @ stdcall GetFileType(long)
-@ stub -version=0x600+ GetFinalPathNameByHandleA
-@ stub -version=0x600+ GetFinalPathNameByHandleW
+@ stdcall -version=0x600+ GetFinalPathNameByHandleA() kernel32_vista.GetFinalPathNameByHandleA
+@ stdcall -version=0x600+ GetFinalPathNameByHandleW() kernel32_vista.GetFinalPathNameByHandleW
 @ stdcall GetFirmwareEnvironmentVariableA(str str ptr long)
 @ stdcall GetFirmwareEnvironmentVariableW(wstr wstr ptr long)
 @ stdcall GetFullPathNameA(str long ptr ptr)
@@ -600,7 +600,7 @@
 @ stdcall GetSystemFirmwareTable(long long ptr long)
 @ stdcall GetSystemInfo(ptr)
 @ stdcall GetSystemPowerStatus(ptr)
-@ stub -version=0x600+ GetSystemPreferredUILanguages
+@ stdcall -version=0x600+ GetSystemPreferredUILanguages(long ptr wstr ptr) kernel32_vista.GetSystemPreferredUILanguages
 @ stdcall GetSystemRegistryQuota(ptr ptr)
 @ stdcall GetSystemTime(ptr)
 @ stdcall GetSystemTimeAdjustment(ptr ptr ptr)
@@ -628,21 +628,21 @@
 @ stdcall GetThreadPriorityBoost(long ptr)
 @ stdcall GetThreadSelectorEntry(long long ptr)
 @ stdcall GetThreadTimes(long ptr ptr ptr ptr)
-@ stub -version=0x600+ GetThreadUILanguage
+@ stdcall -version=0x600+ GetThreadUILanguage() kernel32_vista.GetThreadUILanguage
 @ stdcall GetTickCount()
-@ stub -version=0x600+ GetTickCount64
+@ stdcall -version=0x600+ GetTickCount64() kernel32_vista.GetTickCount64
 @ stdcall GetTimeFormatA(long long ptr str ptr long)
 @ stdcall -version=0x600+ GetTimeFormatEx(wstr long ptr wstr wstr long)
 @ stdcall GetTimeFormatW(long long ptr wstr ptr long)
 @ stdcall GetTimeZoneInformation(ptr)
 @ stub -version=0x600+ GetTimeZoneInformationForYear
-@ stub -version=0x600+ GetUILanguageInfo
+@ stdcall -version=0x600+ GetUILanguageInfo(long wstr wstr ptr ptr) kernel32_vista.GetUILanguageInfo
 @ stdcall GetUserDefaultLCID()
 @ stdcall GetUserDefaultLangID()
 @ stdcall -version=0x600+ GetUserDefaultLocaleName(wstr long)
 @ stdcall GetUserDefaultUILanguage()
 @ stdcall GetUserGeoID(long)
-@ stub -version=0x600+ GetUserPreferredUILanguages
+@ stdcall -version=0x600+ GetUserPreferredUILanguages() kernel32_vista.GetUserPreferredUILanguages
 @ stdcall GetVDMCurrentDirectories(long long)
 @ stdcall GetVersion()
 @ stdcall GetVersionExA(ptr)
@@ -703,21 +703,21 @@
 @ stdcall -version=0x351-0x502 HeapUsage(long long long long ptr)
 @ stdcall HeapValidate(long long ptr)
 @ stdcall HeapWalk(long ptr)
-@ stub -version=0x600+ IdnToAscii
-@ stub -version=0x600+ IdnToNameprepUnicode
-@ stub -version=0x600+ IdnToUnicode
+;@ stub -version=0x600+ IdnToAscii
+;@ stub -version=0x600+ IdnToNameprepUnicode
+@ stdcall -version=0x600+ IdnToUnicode(long long long long)
 @ stdcall InitAtomTable(long)
 @ stub -version=0x600+ InitOnceBeginInitialize
 @ stub -version=0x600+ InitOnceComplete
-@ stub -version=0x600+ InitOnceExecuteOnce
+@ stdcall -version=0x600+ InitOnceExecuteOnce() kernel32_vista.InitOnceExecuteOnce
 @ stub -version=0x600+ InitOnceInitialize
-@ stub -version=0x600+ InitializeConditionVariable
+@ stdcall -version=0x600+ InitializeConditionVariable() kernel32_vista.InitializeConditionVariable
 @ stdcall InitializeCriticalSection(ptr)
 @ stdcall InitializeCriticalSectionAndSpinCount(ptr long)
 @ stub -version=0x600+ InitializeCriticalSectionEx
 @ stub -version=0x600+ InitializeProcThreadAttributeList
 @ stdcall InitializeSListHead(ptr) ntdll.RtlInitializeSListHead
-@ stub -version=0x600+ InitializeSRWLock
+@ stdcall -version=0x600+ InitializeSRWLock() kernel32_vista.InitializeSRWLock
 @ stdcall -arch=i386 -ret64 InterlockedCompareExchange64(ptr double double) ntdll.RtlInterlockedCompareExchange64
 @ stdcall -arch=i386 InterlockedCompareExchange (ptr long long)
 @ stdcall -arch=i386 InterlockedDecrement(ptr)
@@ -825,7 +825,7 @@
 @ stub -version=0x600+ NlsUpdateLocale
 @ stub -version=0x600+ NlsUpdateSystemLocale
 @ stub -version=0x600+ NlsWriteEtwEvent
-@ stub -version=0x600+ NormalizeString
+@ stdcall -version=0x600+ NormalizeString() normaliz.NormalizeString
 @ stub -version=0x600+ NotifyUILanguageChange
 @ stdcall OpenConsoleW(wstr long long long)
 @ stdcall -version=0x500-0x502 OpenDataFile(long long)
@@ -1175,8 +1175,8 @@
 @ stub -version=0x600+ WaitForThreadpoolWorkCallbacks
 @ stdcall WaitNamedPipeA (str long)
 @ stdcall WaitNamedPipeW (wstr long)
-@ stub -version=0x600+ WakeAllConditionVariable
-@ stub -version=0x600+ WakeConditionVariable
+@ stdcall -version=0x600+ WakeAllConditionVariable() kernel32_vista.WakeAllConditionVariable
+@ stdcall -version=0x600+ WakeConditionVariable() kernel32_vista.WakeConditionVariable
 @ stub -version=0x600+ WerGetFlags
 @ stub -version=0x600+ WerRegisterFile
 @ stub -version=0x600+ WerRegisterMemoryBlock

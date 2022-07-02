@@ -607,7 +607,7 @@
 @ stdcall RtlAcquirePrivilege(ptr long long ptr)
 @ stdcall RtlAcquireResourceExclusive(ptr long)
 @ stdcall RtlAcquireResourceShared(ptr long)
-@ stdcall -stub -version=0x600+ RtlAcquireSRWLockExclusive(ptr)
+@ stdcall -version=0x600+ RtlAcquireSRWLockExclusive() ntdll_vista.RtlAcquireSRWLockExclusive
 @ stdcall -stub -version=0x600+ RtlAcquireSRWLockShared(ptr)
 @ stdcall RtlActivateActivationContext(long ptr ptr)
 @ stdcall RtlActivateActivationContextEx(long ptr ptr ptr)
@@ -1125,7 +1125,7 @@
 @ stdcall RtlRunDecodeUnicodeString(long ptr)
 @ stdcall RtlRunEncodeUnicodeString(long ptr)
 @ stdcall -stub -version=0x600+ RtlRunOnceBeginInitialize(ptr long ptr)
-@ stdcall -stub -version=0x600+ RtlRunOnceComplete(ptr long ptr)
+@ stdcall -version=0x600+ RtlRunOnceComplete(ptr long ptr) ntdll_vista.RtlRunOnceComplete
 @ stdcall -stub -version=0x600+ RtlRunOnceExecuteOnce(ptr ptr ptr ptr)
 @ stdcall -stub -version=0x600+ RtlRunOnceInitialize(ptr)
 @ stdcall RtlSecondsSince1970ToTime(long ptr)

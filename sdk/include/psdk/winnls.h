@@ -1094,15 +1094,6 @@ NormalizeString(
   _Out_writes_opt_(cwDstLength) LPWSTR lpDstString,
   _In_ int cwDstLength);
 
-int
-WINAPI
-GetStringScripts(
-  _In_ DWORD dwFlags,
-  _In_ LPCWSTR lpString,
-  _In_ int cchString,
-  _Out_writes_opt_(cchScripts) LPWSTR lpScripts,
-  _In_ int cchScripts);
-
 BOOL WINAPI SetProcessPreferredUILanguages(_In_ DWORD, _In_opt_ PCZZWSTR, _Out_opt_ PULONG);
 BOOL WINAPI SetThreadPreferredUILanguages(_In_ DWORD, _In_opt_ PCZZWSTR, _Out_opt_ PULONG);
 BOOL WINAPI VerifyScripts(_In_ DWORD, _In_ LPCWSTR, _In_ int, _In_ LPCWSTR, _In_ int);

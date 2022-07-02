@@ -158,7 +158,7 @@ FILE_INFORMATION_CLASS ConvertToFileInfo[MaximumFileInfoByHandlesClass] =
     FileBasicInformation, FileStandardInformation, FileNameInformation, FileRenameInformation,
     FileDispositionInformation, FileAllocationInformation, FileEndOfFileInformation, FileStreamInformation,
     FileCompressionInformation, FileAttributeTagInformation, FileIdBothDirectoryInformation, (FILE_INFORMATION_CLASS)-1,
-    FileIoPriorityHintInformation, FileRemoteProtocolInformation
+    FileIoPriorityHintInformation
 };
 
 /* Taken from kernel32 */

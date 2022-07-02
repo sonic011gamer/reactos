@@ -13,18 +13,6 @@
 #define NDEBUG
 #include <debug.h>
 
-#ifdef _M_IX86
-C_ASSERT(FIELD_OFFSET(FIBER, ExceptionList) == 0x04);
-C_ASSERT(FIELD_OFFSET(FIBER, StackBase) == 0x08);
-C_ASSERT(FIELD_OFFSET(FIBER, StackLimit) == 0x0C);
-C_ASSERT(FIELD_OFFSET(FIBER, DeallocationStack) == 0x10);
-C_ASSERT(FIELD_OFFSET(FIBER, FiberContext) == 0x14);
-C_ASSERT(FIELD_OFFSET(FIBER, GuaranteedStackBytes) == 0x2E0);
-C_ASSERT(FIELD_OFFSET(FIBER, FlsData) == 0x2E4);
-C_ASSERT(FIELD_OFFSET(FIBER, ActivationContextStackPointer) == 0x2E8);
-C_ASSERT(RTL_FLS_MAXIMUM_AVAILABLE == FLS_MAXIMUM_AVAILABLE);
-#endif // _M_IX86
-
 /* PRIVATE FUNCTIONS **********************************************************/
 
 VOID

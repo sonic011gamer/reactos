@@ -22,7 +22,7 @@ static BOOL bBootAccepted = FALSE;
 
 /* FUNCTIONS *****************************************************************/
 
-#if (_WIN32_WINNT < 0x0600)
+#if (_WIN32_WINNT < 0x0606)
 static
 DWORD
 ScmCopyTree(
@@ -546,7 +546,7 @@ ScmCopyControlSet(
         goto done;
 
     /* Copy the source control set to the destination control set */
-#if (_WIN32_WINNT >= 0x0600)
+#if (_WIN32_WINNT >= 0x0603)
     dwError = RegCopyTreeW(hSourceControlSetKey,
                            NULL,
                            hDestinationControlSetKey);
@@ -595,7 +595,7 @@ ScmDeleteControlSet(
         return dwError;
 
     /* Delete the control set */
-#if (_WIN32_WINNT >= 0x0600)
+#if (_WIN32_WINNT >= 0x0603)
     dwError = RegDeleteTreeW(hControlSetKey,
                              NULL);
 #else

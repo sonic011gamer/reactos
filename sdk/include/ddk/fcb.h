@@ -180,10 +180,8 @@ typedef struct _FCB
 #ifdef USE_FILESIZE_LOCK
         PFAST_MUTEX FileSizeLock;
 #endif
-#if (_WIN32_WINNT < 0x0600)
         } Fcb;
     } Specific;
-#endif
     ULONG EaModificationCount;
     FCB_BUFFERED_LOCKS BufferedLocks;
 #if DBG

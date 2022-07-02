@@ -2367,20 +2367,6 @@ Return Value:
         if (!FlagOn(ShareAccess, FILE_SHARE_WRITE) &&
             !FlagOn(ShareAccess, FILE_SHARE_DELETE)) {
 
-#if (NTDDI_VERSION >= NTDDI_VISTA)
-            //
-            //  See if the user has requested write access.  If so, they cannot share
-            //  read.  There is one exception to this.  We allow autochk to get an
-            //  implicit lock on the volume while still allowing readers.  Once the
-            //  the system is booted, though, we do not allow this type of access.
-            //
-
-            if (FlagOn( *DesiredAccess, (FILE_WRITE_DATA | FILE_APPEND_DATA) ) &&
-                FsRtlAreVolumeStartupApplicationsComplete()) {
-
-                ClearFlag( ShareAccess, FILE_SHARE_READ );
-            }
-#endif
 
             //
             //  Do a quick check here for handles on exclusive open.

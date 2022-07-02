@@ -38,7 +38,7 @@ CopyKey(HKEY hDstKey,
 {
     LONG Error;
 
-#if (_WIN32_WINNT >= 0x0600)
+#if (_WIN32_WINNT >= 0x0603)
     Error = RegCopyTreeW(hSrcKey,
                          NULL,
                          hDstKey);

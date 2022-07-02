@@ -242,7 +242,7 @@ typedef INT
 
 #endif /* (_WIN32_WINNT >= 0x0501) */
 
-#if(_WIN32_WINNT >= 0x0600)
+#if(_WIN32_WINNT >= 0x0602)
 
 #define SIO_BSP_HANDLE          _WSAIOR(IOC_WS2,27)
 #define SIO_BSP_HANDLE_SELECT   _WSAIOR(IOC_WS2,28)
