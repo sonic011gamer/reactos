@@ -1,0 +1,24 @@
+fixme:(dll\win32\comctl32\toolbar.c:5521) hwnd=000401AA wParam 00000001 lParam 00000000
+aclmulti.cpp:62: Unexpected failure (punk->QueryInterface(IID_PPV_ARG(IACList, &fObjects[fObjectCount].pACL)))=80004002.
+err:(dll\win32\shlwapi\autocomp.cpp:51) punk->QueryInterface failed: 0x80004002
+(win32ss\user\ntuser\winpos.c:3446) err: NtUserSetWindowPos bad window handle!
+(win32ss\gdi\gdi32\objects\text.c:569) GdiBCExtTextOut nothing
+(win32ss\user\ntuser\winpos.c:3446) err: NtUserSetWindowPos bad window handle!
+(win32ss\user\ntuser\winpos.c:3446) err: NtUserSetWindowPos bad window handle!
+WARNING:  NtUserLockWindowUpdate at win32ss\user\ntuser\ntstubs.c:914 is UNIMPLEMENTED!
+travellog.cpp:129: Unexpected failure (hResult)=80004005.
+CFSFolder.cpp:911: Unexpected failure (hr)=80004002.
+(dll\ntdll\ldr\ldrinit.c:1887) WARN: Accepting different LOAD_CONFIG size!
+(dll\ntdll\ldr\ldrinit.c:1683) LdrpInitializeProcessCompat: Found guid for winver 0x600 in manifest from C:\Users\Administrator\Desktop\chrome32_50.0.2661.75\chrome.exe
+(sdk\lib\rtl\heap.c:4082) RtlSetHeapInformation() needs to enable LFH
+(drivers\ksfilter\ks\connectivity.c:281) ZwOpenKey() failed with status 0xc0000034
+(sdk\lib\drivers\sound\mmixer\controls.c:481) MMixerCountMixerControls PinId 11 is not connected by any node
+(sdk\lib\rtl\heap.c:4082) RtlSetHeapInformation() needs to enable LFH
+(dll\ntdll\ldr\ldrinit.c:1887) WARN: Accepting different LOAD_CONFIG size!
+(dll\ntdll\ldr\ldrinit.c:1683) LdrpInitializeProcessCompat: Found guid for winver 0x600 in manifest from C:\Users\Administrator\Desktop\chrome32_50.0.2661.75\chrome.exe
+(sdk\lib\rtl\heap.c:4082) RtlSetHeapInformation() needs to enable LFH
+(drivers\ksfilter\ks\connectivity.c:281) ZwOpenKey() failed with status 0xc0000034
+(sdk\lib\drivers\sound\mmixer\controls.c:481) MMixerCountMixerControls PinId 11 is not connected by any node
+(sdk\lib\rtl\heap.c:4082) RtlSetHeapInformation() needs to enable LFH
+(ntoskrnl\ob\obhandle.c:958) ACCESS_SYSTEM_SECURITY not validated!
+(sdk\lib\rtl\heap.c:4082) RtlSetHeapInformation() needs to enable LFH
