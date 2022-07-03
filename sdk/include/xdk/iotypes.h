@@ -1294,7 +1294,7 @@ typedef enum _FILE_INFORMATION_CLASS {
   FileIdFullDirectoryInformation,
   FileValidDataLengthInformation,
   FileShortNameInformation,
-#if (NTDDI_VERSION >= NTDDI_VISTA)
+#if 1//(NTDDI_VERSION >= NTDDI_VISTA)
   FileIoCompletionNotificationInformation,
   FileIoStatusBlockRangeInformation,
   FileIoPriorityHintInformation,
@@ -1305,7 +1305,7 @@ typedef enum _FILE_INFORMATION_CLASS {
   FileNormalizedNameInformation,
   FileNetworkPhysicalNameInformation,
 #endif
-#if (NTDDI_VERSION >= NTDDI_WIN7)
+#if 1//(NTDDI_VERSION >= NTDDI_7)
   FileIdGlobalTxDirectoryInformation,
   FileIsRemoteDeviceInformation,
   FileAttributeCacheInformation,

@@ -929,7 +929,7 @@ INT WINAPI GetDateFormatA( LCID lcid, DWORD dwFlags, const SYSTEMTIME* lpTime,
                                 lpFormat, lpDateStr, cchOut);
 }
 
-#if _WIN32_WINNT >= 0x600
+#if (_WIN32_WINNT >= 0x502) /* NT ReactOS hack, allow some NT6+ functions! */
 /******************************************************************************
  * GetDateFormatEx [KERNEL32.@]
  *
@@ -1037,7 +1037,7 @@ INT WINAPI GetTimeFormatA(LCID lcid, DWORD dwFlags, const SYSTEMTIME* lpTime,
                                 lpFormat, lpTimeStr, cchOut);
 }
 
-#if _WIN32_WINNT >= 0x600
+#if (_WIN32_WINNT >= 0x502) /* NT ReactOS hack, allow some NT6+ functions! */
 /******************************************************************************
  * GetTimeFormatEx [KERNEL32.@]
  *
@@ -1431,7 +1431,7 @@ error:
   return 0;
 }
 
-#if _WIN32_WINNT >= 0x600
+#if (_WIN32_WINNT >= 0x502) /* NT ReactOS hack, allow some NT6+ functions! */
 /**************************************************************************
  *              GetNumberFormatEx	(KERNEL32.@)
  */
@@ -1847,7 +1847,7 @@ error:
   return 0;
 }
 
-#if _WIN32_WINNT >= 0x600
+#if (_WIN32_WINNT >= 0x502) /* NT ReactOS hack, allow some NT6+ functions! */
 /***********************************************************************
  *            GetCurrencyFormatEx (KERNEL32.@)
  */
@@ -2029,7 +2029,7 @@ BOOL WINAPI EnumDateFormatsW(DATEFMT_ENUMPROCW proc, LCID lcid, DWORD flags)
     return NLS_EnumDateFormats(&ctxt);
 }
 
-#if _WIN32_WINNT >= 0x600
+#if (_WIN32_WINNT >= 0x502) /* NT ReactOS hack, allow some NT6+ functions! */
 /**************************************************************************
  *              EnumDateFormatsExEx	(KERNEL32.@)
  */
@@ -2153,7 +2153,7 @@ BOOL WINAPI EnumTimeFormatsW(TIMEFMT_ENUMPROCW proc, LCID lcid, DWORD flags)
     return NLS_EnumTimeFormats(&ctxt);
 }
 
-#if _WIN32_WINNT >= 0x600
+#if (_WIN32_WINNT >= 0x502) /* NT ReactOS hack, allow some NT6+ functions! */
 /**************************************************************************
  *              EnumTimeFormatsEx	(KERNEL32.@)
  */
@@ -2401,7 +2401,7 @@ BOOL WINAPI EnumCalendarInfoExW( CALINFO_ENUMPROCEXW calinfoproc,LCID locale,
   return NLS_EnumCalendarInfo(&ctxt);
 }
 
-#if _WIN32_WINNT >= 0x600
+#if (_WIN32_WINNT >= 0x502) /* NT ReactOS hack, allow some NT6+ functions! */
 /******************************************************************************
  *		EnumCalendarInfoExEx	[KERNEL32.@]
  */
@@ -2535,7 +2535,7 @@ int WINAPI GetCalendarInfoW(LCID Locale, CALID Calendar, CALTYPE CalType,
         LOCALE_SABBREVMONTHNAME13,
         LOCALE_SYEARMONTH,
         0, /* CAL_ITWODIGITYEARMAX */
-#if (WINVER >= 0x0600) /* ReactOS */
+#if (WINVER >= 0x0502) /* NT ReactOS hack, allow some NT6+ functions! */
         LOCALE_SSHORTESTDAYNAME1,
         LOCALE_SSHORTESTDAYNAME2,
         LOCALE_SSHORTESTDAYNAME3,
@@ -2792,7 +2792,7 @@ int WINAPI GetCalendarInfoW(LCID Locale, CALID Calendar, CALTYPE CalType,
     return 0;
 }
 
-#if _WIN32_WINNT >= 0x600
+#if (_WIN32_WINNT >= 0x502) /* NT ReactOS hack, allow some NT6+ functions! */
 /*********************************************************************
  *	GetCalendarInfoEx				(KERNEL32.@)
  */

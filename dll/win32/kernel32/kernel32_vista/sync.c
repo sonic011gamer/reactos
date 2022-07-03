@@ -5,28 +5,7 @@
 
 VOID
 NTAPI
-RtlInitializeConditionVariable(OUT PRTL_CONDITION_VARIABLE ConditionVariable);
-
-VOID
-NTAPI
 RtlWakeConditionVariable(IN OUT PRTL_CONDITION_VARIABLE ConditionVariable);
-
-VOID
-NTAPI
-RtlWakeAllConditionVariable(IN OUT PRTL_CONDITION_VARIABLE ConditionVariable);
-
-NTSTATUS
-NTAPI
-RtlSleepConditionVariableCS(IN OUT PRTL_CONDITION_VARIABLE ConditionVariable,
-                            IN OUT PRTL_CRITICAL_SECTION CriticalSection,
-                            IN PLARGE_INTEGER TimeOut OPTIONAL);
-
-NTSTATUS
-NTAPI
-RtlSleepConditionVariableSRW(IN OUT PRTL_CONDITION_VARIABLE ConditionVariable,
-                             IN OUT PRTL_SRWLOCK SRWLock,
-                             IN PLARGE_INTEGER TimeOut OPTIONAL,
-                             IN ULONG Flags);
 
 VOID
 NTAPI

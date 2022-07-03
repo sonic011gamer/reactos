@@ -612,6 +612,101 @@ GetFileAttributesExW(LPCWSTR lpFileName,
   return TRUE;
 }
 
+/***********************************************************************
+*             GetFileInformationByHandleEx (KERNEL32.@)
+*/
+BOOL WINAPI GetFileInformationByHandleEx( HANDLE handle, FILE_INFO_BY_HANDLE_CLASS class,
+                                          LPVOID info, DWORD size )
+{
+    NTSTATUS status;
+    IO_STATUS_BLOCK io;
+
+    switch (class)
+    {
+    case FileStreamInfo:
+      UNIMPLEMENTED;
+      break;
+    case FileCompressionInfo:
+      UNIMPLEMENTED;
+      break;
+    case FileAttributeTagInfo:
+      UNIMPLEMENTED;
+      break;
+    case FileRemoteProtocolInfo:
+      UNIMPLEMENTED;
+      break;
+    case FileFullDirectoryInfo:
+      UNIMPLEMENTED;
+      break;
+    case FileFullDirectoryRestartInfo:
+      UNIMPLEMENTED;
+      break;
+    case FileStorageInfo:
+      UNIMPLEMENTED;
+      break;
+    case FileAlignmentInfo:
+      UNIMPLEMENTED;
+      break;
+    case FileIdExtdDirectoryInfo:
+      UNIMPLEMENTED;
+      break;
+    case FileIdExtdDirectoryRestartInfo:
+        FIXME( "%p, %u, %p, %u\n", handle, class, info, size );
+        SetLastError( ERROR_CALL_NOT_IMPLEMENTED );
+        return FALSE;
+
+    case FileBasicInfo:
+        status = NtQueryInformationFile( handle, &io, info, size, FileBasicInformation );
+        break;
+
+    case FileStandardInfo:
+        status = NtQueryInformationFile( handle, &io, info, size, FileStandardInformation );
+        break;
+
+    case FileNameInfo:
+        status = NtQueryInformationFile( handle, &io, info, size, FileNameInformation );
+        break;
+
+    //case FileIdInfo:
+    //    status = NtQueryInformationFile( handle, &io, info, size, FileIdInformation );
+    //    break;
+
+    case FileIdBothDirectoryRestartInfo:
+    case FileIdBothDirectoryInfo:
+        status = NtQueryDirectoryFile( handle, NULL, NULL, NULL, &io, info, size,
+                                       FileIdBothDirectoryInformation, FALSE, NULL,
+                                       (class == FileIdBothDirectoryRestartInfo) );
+        break;
+
+    case FileRenameInfo:
+      UNIMPLEMENTED;
+      break;
+    case FileDispositionInfo:
+      UNIMPLEMENTED;
+      break;
+    case FileAllocationInfo:
+      UNIMPLEMENTED;
+      break;
+    case FileIoPriorityHintInfo:
+      UNIMPLEMENTED;
+      break;
+    case FileEndOfFileInfo:
+      UNIMPLEMENTED;
+      break;
+    default:
+        SetLastError( ERROR_INVALID_PARAMETER );
+        return FALSE;
+    }
+
+    if (status != STATUS_SUCCESS)
+    {
+        SetLastError( RtlNtStatusToDosError( status ) );
+        return FALSE;
+    }
+    return TRUE;
+}
+
+
 /*
  * @implemented
  */

@@ -9,10 +9,6 @@
 
 #include <k32_vista.h>
 
-#if _WIN32_WINNT != _WIN32_WINNT_VISTA
-#error "This file must be compiled with _WIN32_WINNT == _WIN32_WINNT_VISTA"
-#endif
-
 // This is defined only in ntifs.h
 #define REPARSE_DATA_BUFFER_HEADER_SIZE   FIELD_OFFSET(REPARSE_DATA_BUFFER, GenericReparseBuffer)
 
@@ -633,10 +629,23 @@ GetFileMUIPath(
     return FALSE;
 }
 
+/******************************************************************************
+ *           ResolveLocaleName (KERNEL32.@)
+ */
+
+INT WINAPI ResolveLocaleName(LPCWSTR name, LPWSTR localename, INT len)
+{
+    //FIXME("stub: %s, %p, %d\n", wine_dbgstr_w(name), localename, len);
+
+    SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+    return 0;
+}
+
+
 /*
  * @unimplemented
  */
-#if 0 // This is Windows 7+
+#if 1 // This is Windows 7+
 BOOL
 WINAPI
 GetProcessPreferredUILanguages(
@@ -654,7 +663,7 @@ GetProcessPreferredUILanguages(
 /*
 * @unimplemented
 */
-BOOL
+/*BOOL
 WINAPI
 GetSystemPreferredUILanguages(
     DWORD dwFlags,
@@ -665,12 +674,12 @@ GetSystemPreferredUILanguages(
     DPRINT1("%x %p %p %p\n", dwFlags, pulNumLanguages, pwszLanguagesBuffer, pcchLanguagesBuffer);
     SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
     return FALSE;
-}
+}*/
 
 /*
  * @unimplemented
  */
-BOOL
+/*BOOL
 WINAPI
 GetThreadPreferredUILanguages(
     DWORD dwFlags,
@@ -681,7 +690,7 @@ GetThreadPreferredUILanguages(
     DPRINT1("%x %p %p %p\n", dwFlags, pulNumLanguages, pwszLanguagesBuffer, pcchLanguagesBuffer);
     SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
     return FALSE;
-}
+}*/
 
 /*
  * @unimplemented
@@ -715,7 +724,7 @@ GetUILanguageInfo(
 
 /*
  * @unimplemented
- */
+ *
 BOOL
 WINAPI
 GetUserPreferredUILanguages(
@@ -727,12 +736,12 @@ GetUserPreferredUILanguages(
     DPRINT1("%x %p %p %p\n", dwFlags, pulNumLanguages, pwszLanguagesBuffer, pcchLanguagesBuffer);
     SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
     return FALSE;
-}
+} */
 
 /*
  * @unimplemented
  */
-#if 0 // Tis is Windows 7+
+#if 1 // Tis is Windows 7+
 BOOL
 WINAPI
 SetProcessPreferredUILanguages(
@@ -748,7 +757,7 @@ SetProcessPreferredUILanguages(
 
 /*
  * @unimplemented
- */
+
 BOOL
 WINAPI
 SetThreadPreferredUILanguages(
@@ -761,4 +770,4 @@ SetThreadPreferredUILanguages(
     SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
     return FALSE;
 }
-
+ &*/

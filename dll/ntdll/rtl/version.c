@@ -150,6 +150,31 @@ RtlGetNtVersionNumbers(OUT PULONG pMajorVersion,
     }
 }
 
+/***********************************************************************
+ *           RtlGetProductInfo    (NTDLL.@)
+ *
+ * Gives info about the current Windows product type, in a format compatible
+ * with the given Windows version
+ *
+ * Returns TRUE if the input is valid, FALSE otherwise
+ */
+BOOLEAN WINAPI RtlGetProductInfo(DWORD dwOSMajorVersion, DWORD dwOSMinorVersion, DWORD dwSpMajorVersion,
+                                 DWORD dwSpMinorVersion, PDWORD pdwReturnedProductType)
+{
+
+    if (!pdwReturnedProductType)
+        return FALSE;
+
+    if (dwOSMajorVersion < 6)
+    {
+        *pdwReturnedProductType = PRODUCT_UNDEFINED;
+        return FALSE;
+    }
+        *pdwReturnedProductType = PRODUCT_ULTIMATE_N;
+
+    return TRUE;
+}
+
 /*
  * @implemented
  * @note User-mode version of RtlGetVersion in ntoskrnl/rtl/misc.c

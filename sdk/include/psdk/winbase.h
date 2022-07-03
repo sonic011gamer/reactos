@@ -559,7 +559,7 @@ extern "C" {
 #define QUERY_ACTCTX_FLAG_ACTCTX_IS_HMODULE 0x00000008
 #define QUERY_ACTCTX_FLAG_ACTCTX_IS_ADDRESS 0x00000010
 #define QUERY_ACTCTX_FLAG_NO_ADDREF 0x80000000
-#if (_WIN32_WINNT >= 0x0600)
+#if (_WIN32_WINNT >= 0x502) /* NT ReactOS hack, allow some NT6+ functions! */
 #define SYMBOLIC_LINK_FLAG_DIRECTORY 0x1
 #endif
 #endif /* (_WIN32_WINNT >= 0x0501) */
@@ -572,7 +572,7 @@ extern "C" {
 #endif
 #define FLS_OUT_OF_INDEXES 0xFFFFFFFF
 #define STACK_SIZE_PARAM_IS_A_RESERVATION 0x00010000
-#if (_WIN32_WINNT >= 0x0600)
+#if (_WIN32_WINNT >= 0x502) /* NT ReactOS hack, allow some NT6+ functions! */
 #define MAX_RESTART_CMD_LINE 0x800
 #define RESTART_CYCLICAL 0x1
 #define RESTART_NOTIFY_SOLUTION 0x2
@@ -964,7 +964,7 @@ typedef struct _WIN32_STREAM_ID {
 	WCHAR cStreamName[ANYSIZE_ARRAY];
 } WIN32_STREAM_ID, *LPWIN32_STREAM_ID;
 
-#if (_WIN32_WINNT >= 0x0600)
+#if (_WIN32_WINNT >= 0x502) /* NT ReactOS hack, allow some NT6+ functions! */
 
 typedef enum _FILE_ID_TYPE {
     FileIdType,
@@ -1383,7 +1383,7 @@ typedef enum _COMPUTER_NAME_FORMAT {
 } COMPUTER_NAME_FORMAT;
 #endif /* (_WIN32_WINNT >= 0x0500) */
 
-#if (_WIN32_WINNT >= 0x0600)
+#if (_WIN32_WINNT >= 0x502) /* NT ReactOS hack, allow some NT6+ functions! */
 typedef RTL_SRWLOCK SRWLOCK, *PSRWLOCK;
 typedef RTL_CONDITION_VARIABLE CONDITION_VARIABLE, *PCONDITION_VARIABLE;
 #endif
@@ -1438,7 +1438,7 @@ typedef LONG(CALLBACK *PTOP_LEVEL_EXCEPTION_FILTER)(LPEXCEPTION_POINTERS);
 typedef PTOP_LEVEL_EXCEPTION_FILTER LPTOP_LEVEL_EXCEPTION_FILTER;
 typedef void(APIENTRY *PAPCFUNC)(ULONG_PTR);
 typedef void(CALLBACK *PTIMERAPCROUTINE)(PVOID,DWORD,DWORD);
-#if (_WIN32_WINNT >= 0x0600)
+#if (_WIN32_WINNT >= 0x502) /* NT ReactOS hack, allow some NT6+ functions! */
 typedef DWORD (WINAPI *APPLICATION_RECOVERY_CALLBACK)(PVOID);
 #endif
 

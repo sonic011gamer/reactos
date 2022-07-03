@@ -127,6 +127,9 @@
 #include <arch/mips/arcbios.h>
 #endif
 
+/* Create variable for universal adjustment */
+#define TARGET_VERSION _WIN32_WINNT_WIN7
+
 VOID __cdecl BootMain(IN PCCH CmdLine);
 VOID LoadOperatingSystem(IN OperatingSystemItem* OperatingSystem);
 #ifdef HAS_OPTION_MENU_EDIT_CMDLINE
