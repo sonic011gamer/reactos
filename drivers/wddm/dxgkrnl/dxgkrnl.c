@@ -8,5 +8,7 @@ DriverEntry(
     IN PDRIVER_OBJECT DriverObject,
     IN PUNICODE_STRING RegistryPath)
 {
+    DPRINT1("Starting DXGKRNL!");
+    __debugbreak();
     return TRUE;
 } // end DriverEntry()

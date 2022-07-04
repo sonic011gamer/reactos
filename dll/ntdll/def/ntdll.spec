@@ -1846,7 +1846,7 @@
 @ cdecl _vscwprintf(wstr ptr)
 @ cdecl _vsnprintf(ptr long str ptr)
 @ cdecl _vsnwprintf(ptr long wstr ptr)
-@ stdcall -stub -version=0x600+ _vswprintf()
+@ stdcall -stub -version=0x600+ _vswprintf(ptr wstr ptr)
 @ cdecl _wcsicmp(wstr wstr)
 @ cdecl _wcslwr(wstr)
 @ cdecl _wcsnicmp(wstr wstr long)

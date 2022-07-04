@@ -1548,6 +1548,11 @@ KeGetRecommendedSharedDataAlignment(VOID)
     return KeLargestCacheLine;
 }
 
+ULONG KeQueryMaximumProcessorCount()
+{
+    return 1;
+}
+
 VOID
 NTAPI
 KiFlushTargetEntireTb(IN PKIPI_CONTEXT PacketContext,

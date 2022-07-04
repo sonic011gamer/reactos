@@ -41,7 +41,7 @@
 #define VER_PRODUCTVERSION_DW               (0x06030000 | VER_PRODUCTBUILD)
 #endif
 
-
+#if 0
 //
 // Windows NT 6.1.7601.17514
 //
@@ -51,9 +51,9 @@
 #define VER_PRODUCTMINORVERSION             1
 #define VER_PRODUCTVERSION_W                (0x0601)
 #define VER_PRODUCTVERSION_DW               (0x06010000 | VER_PRODUCTBUILD)
+#endif
 
-
-#if 0
+#if 1
 //
 // Windows NT 6.0.6000.16386
 //

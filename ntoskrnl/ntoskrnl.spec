@@ -700,7 +700,7 @@
 @ stdcall -stub -version=0x601+ KeQueryActiveProcessorCountEx(long)
 @ stdcall KeQueryActiveProcessors()
 @ stdcall -arch=i386,arm KeQueryInterruptTime()
-@ stdcall -stub -version=0x600+ KeQueryMaximumProcessorCount()
+@ stdcall -version=0x600+ KeQueryMaximumProcessorCount()
 ;@ cdecl -arch=x86_64 KeQueryMultiThreadProcessorSet
 ;@ cdecl -arch=x86_64 KeQueryPrcbAddress
 @ stdcall KeQueryPriorityThread(ptr)
@@ -1701,7 +1701,7 @@
 @ varargs swprintf_s(ptr long wstr)
 @ cdecl _vsnprintf()
 @ cdecl _vsnwprintf()
-;@ cdecl -stub -version=0x600+ _vswprintf(ptr wstr ptr)
+@ cdecl -stub -version=0x600+ _vswprintf(ptr wstr ptr)
 @ cdecl _wcsicmp()
 @ cdecl _wcslwr()
 @ cdecl _wcsnicmp()

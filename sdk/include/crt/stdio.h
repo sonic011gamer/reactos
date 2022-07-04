@@ -944,7 +944,7 @@ extern _CRTIMP int _commode;
   _CRTIMP int __cdecl vswscanf (const wchar_t *,const wchar_t *,va_list);
 #endif
   _CRTIMP int __cdecl _swprintf(wchar_t *_Dest,const wchar_t *_Format,...);
-  _CRTIMP int __cdecl _vswprintf(wchar_t *_Dest,const wchar_t *_Format,va_list _Args);
+ // _CRTIMP int __cdecl _vswprintf(wchar_t *_Dest,const wchar_t *_Format,va_list _Args);
 
 #ifndef RC_INVOKED
 #include <vadefs.h>
