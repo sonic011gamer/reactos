@@ -305,12 +305,6 @@ WdmAudGetMidiInDeviceCount(VOID);
 ULONG
 WdmAudGetMidiOutDeviceCount(VOID);
 
-NTSTATUS
-WdmAudGetPnpNameByIndexAndType(
-    IN ULONG DeviceIndex,
-    IN SOUND_DEVICE_TYPE DeviceType,
-    OUT LPWSTR *Device);
-
 
 /* sup.c */
 

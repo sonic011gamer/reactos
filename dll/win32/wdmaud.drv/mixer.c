@@ -12,7 +12,7 @@
 #include <samplerate.h>
 #include <float_cast.h>
 
-#define NDEBUG
+#define YDEBUG
 #include <debug.h>
 #include <mmebuddy_debug.h>
 
@@ -513,7 +513,7 @@ WriteFileEx_Remixer(
     }
 
     ZeroMemory(&DeviceInfo, sizeof(WDMAUD_DEVICE_INFO));
-    DeviceInfo.hDevice = Handle;
+    DeviceInfo.DeviceHandle = Handle;
     DeviceInfo.DeviceType = WAVE_OUT_DEVICE_TYPE; //FIXME
     DeviceInfo.Header.FrameExtent = BufferLength;
     DeviceInfo.Header.DataUsed = BufferLength;

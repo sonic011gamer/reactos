@@ -161,6 +161,8 @@ UnlistSoundDeviceInstance(
 MMRESULT
 CreateSoundDeviceInstance(
     IN  PSOUND_DEVICE SoundDevice,
+    IN  UINT DeviceId,
+    IN  PWAVEFORMATEX WaveFormat,
     OUT PSOUND_DEVICE_INSTANCE* SoundDeviceInstance)
 {
     MMRESULT Result;
@@ -209,6 +211,9 @@ CreateSoundDeviceInstance(
 
     (*SoundDeviceInstance)->LoopsRemaining = 0;
 
+    /* Store requested format */
+    (*SoundDeviceInstance)->WaveFormatEx = *WaveFormat;
+
     /* Create the streaming thread (TODO - is this for wave only?) */
     Result = CreateSoundThread(&(*SoundDeviceInstance)->Thread);
     if ( ! MMSUCCESS(Result) )
@@ -225,8 +230,17 @@ CreateSoundDeviceInstance(
         return TranslateInternalMmResult(Result);
     }
 
-    /* Try and open the device */
-    Result = FunctionTable->Open(SoundDevice, (&(*SoundDeviceInstance)->Handle));
+    /* Initialize audio device */
+    Result = FunctionTable->Init();
+    if ( ! MMSUCCESS(Result) )
+    {
+        UnlistSoundDeviceInstance(*SoundDeviceInstance);
+        FreeSoundDeviceInstance(*SoundDeviceInstance);
+        return TranslateInternalMmResult(Result);
+    }
+
+    /* Try to open the device */
+    Result = FunctionTable->Open(*SoundDeviceInstance, DeviceId, WaveFormat, (&(*SoundDeviceInstance)->Handle));
     if ( ! MMSUCCESS(Result) )
     {
         UnlistSoundDeviceInstance(*SoundDeviceInstance);

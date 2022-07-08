@@ -140,7 +140,6 @@ MmeOpenDevice(
     UINT Message;
     PSOUND_DEVICE SoundDevice;
     PSOUND_DEVICE_INSTANCE SoundDeviceInstance;
-    LPWAVEFORMATEX Format = NULL;
 
     SND_TRACE(L"Opening device");
 
@@ -153,10 +152,8 @@ MmeOpenDevice(
 
     if (DeviceType == WAVE_IN_DEVICE_TYPE || DeviceType == WAVE_OUT_DEVICE_TYPE)
     {
-        Format = OpenParameters->lpFormat;
-
         /* Does this device support the format? */
-        Result = QueryWaveDeviceFormatSupport(SoundDevice, Format, sizeof(WAVEFORMATEX));
+        Result = QueryWaveDeviceFormatSupport(SoundDevice, OpenParameters->lpFormat, sizeof(WAVEFORMATEX));
         if ( ! MMSUCCESS(Result) )
         {
             SND_ERR(L"Format not supported\n");
@@ -172,16 +169,9 @@ MmeOpenDevice(
     VALIDATE_MMSYS_PARAMETER( PrivateHandle );
 
     /* Create a sound device instance and open the sound device */
-    Result = CreateSoundDeviceInstance(SoundDevice, &SoundDeviceInstance);
+    Result = CreateSoundDeviceInstance(SoundDevice, DeviceId, OpenParameters->lpFormat, &SoundDeviceInstance);
     if ( ! MMSUCCESS(Result) )
         return TranslateInternalMmResult(Result);
-
-    Result = SetWaveDeviceFormat(SoundDeviceInstance, DeviceId, Format, sizeof(WAVEFORMATEX));
-    if ( ! MMSUCCESS(Result) )
-    {
-        /* TODO: Destroy sound instance */
-        return TranslateInternalMmResult(Result);
-    }
 
     /* Store the device instance pointer in the private handle */
     *PrivateHandle = (DWORD_PTR)SoundDeviceInstance;

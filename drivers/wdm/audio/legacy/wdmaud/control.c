@@ -104,7 +104,7 @@ WdmAudControlDeviceState(
     Property.Id = KSPROPERTY_CONNECTION_STATE;
     Property.Flags = KSPROPERTY_TYPE_SET;
 
-    State = DeviceInfo->u.State;
+    State = DeviceInfo->State;
 
     Status = KsSynchronousIoControlDevice(FileObject, KernelMode, IOCTL_KS_PROPERTY, (PVOID)&Property, sizeof(KSPROPERTY), (PVOID)&State, sizeof(KSSTATE), &BytesReturned);
 
@@ -207,7 +207,7 @@ WdmAudFrameSize(
     if (NT_SUCCESS(Status))
     {
         /* Store framesize */
-        DeviceInfo->u.FrameSize = Framing.FrameSize;
+        DeviceInfo->FrameSize = Framing.FrameSize;
     }
 
     /* Release file object */
@@ -229,7 +229,7 @@ WdmAudGetDeviceInterface(
     ULONG Size, Length;
 
     /* get device interface string input length */
-    Size = DeviceInfo->u.Interface.DeviceInterfaceStringSize;
+    Size = DeviceInfo->DeviceInterfaceStringSize;
 
    /* get mixer info */
    Status = WdmAudGetPnpNameByIndexAndType(DeviceInfo->DeviceIndex, DeviceInfo->DeviceType, &Device);
@@ -247,18 +247,18 @@ WdmAudGetDeviceInterface(
     if (!Size)
     {
         /* store device interface size */
-        DeviceInfo->u.Interface.DeviceInterfaceStringSize = Length;
+        DeviceInfo->DeviceInterfaceStringSize = Length;
     }
     else if (Size < Length)
     {
         /* buffer too small */
-        DeviceInfo->u.Interface.DeviceInterfaceStringSize = Length;
+        DeviceInfo->DeviceInterfaceStringSize = Length;
         return SetIrpIoStatus(Irp, STATUS_BUFFER_OVERFLOW, sizeof(WDMAUD_DEVICE_INFO));
     }
     else
     {
         //FIXME SEH
-        RtlMoveMemory(DeviceInfo->u.Interface.DeviceInterfaceString, Device, Length);
+        RtlMoveMemory(DeviceInfo->DeviceInterfaceString, Device, Length);
     }
 
     FreeItem(Device);
@@ -286,7 +286,7 @@ WdmAudResetStream(
         return SetIrpIoStatus(Irp, STATUS_UNSUCCESSFUL, 0);
     }
 
-    ResetStream = DeviceInfo->u.ResetStream;
+    ResetStream = DeviceInfo->ResetStream;
     ASSERT(ResetStream == KSRESET_BEGIN || ResetStream == KSRESET_END);
 
     Status = KsSynchronousIoControlDevice(FileObject, KernelMode, IOCTL_KS_RESET_STATE, (PVOID)&ResetStream, sizeof(KSRESET), NULL, 0, &BytesReturned);
@@ -365,6 +365,7 @@ WdmAudDeviceControl(
             return WdmAudGetMixerEvent(DeviceObject, Irp, DeviceInfo, ClientInfo);
         case IOCTL_RESET_STREAM:
             return WdmAudResetStream(DeviceObject, Irp, DeviceInfo);
+        case IOCTL_INIT_WDMAUD:
         case IOCTL_GETPOS:
         case IOCTL_GETDEVID:
         case IOCTL_GETVOLUME:

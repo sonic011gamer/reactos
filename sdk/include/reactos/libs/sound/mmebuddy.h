@@ -146,14 +146,12 @@ typedef MMRESULT (*MMWAVEQUERYFORMATSUPPORT_FUNC)(
     IN  PWAVEFORMATEX WaveFormat,
     IN  DWORD WaveFormatSize);
 
-typedef MMRESULT (*MMWAVESETFORMAT_FUNC)(
+typedef MMRESULT (*MMINIT_FUNC)(VOID);
+
+typedef MMRESULT (*MMOPEN_FUNC)(
     IN  struct _SOUND_DEVICE_INSTANCE* Instance,
     IN  DWORD DeviceId,
     IN  PWAVEFORMATEX WaveFormat,
-    IN  DWORD WaveFormatSize);
-
-typedef MMRESULT (*MMOPEN_FUNC)(
-    IN  struct _SOUND_DEVICE* SoundDevice,
     OUT PVOID* Handle);
 
 typedef MMRESULT (*MMCLOSE_FUNC)(
@@ -202,11 +200,11 @@ typedef struct _MMFUNCTION_TABLE
         MMGETMIDIINCAPS_FUNC        GetMidiInCapabilities;
     };
 
+    MMINIT_FUNC                     Init;
     MMOPEN_FUNC                     Open;
     MMCLOSE_FUNC                    Close;
 
     MMWAVEQUERYFORMATSUPPORT_FUNC   QueryWaveFormatSupport;
-    MMWAVESETFORMAT_FUNC            SetWaveFormat;
 
     MMMIXERQUERY_FUNC               QueryMixerInfo;
 
@@ -484,6 +482,8 @@ IsValidSoundDeviceInstance(
 MMRESULT
 CreateSoundDeviceInstance(
     IN  PSOUND_DEVICE SoundDevice,
+    IN  UINT DeviceId,
+    IN  PWAVEFORMATEX WaveFormat,
     OUT PSOUND_DEVICE_INSTANCE* SoundDeviceInstance);
 
 MMRESULT

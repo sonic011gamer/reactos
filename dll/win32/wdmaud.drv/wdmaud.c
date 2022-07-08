@@ -14,11 +14,11 @@
 
 #include "wdmaud.h"
 
-#define NDEBUG
+#define YDEBUG
 #include <debug.h>
 #include <mmebuddy_debug.h>
 
-#define USE_MMIXER_LIB
+//#define USE_MMIXER_LIB
 #ifndef USE_MMIXER_LIB
 #define FUNC_NAME(x) x##ByLegacy
 #else
@@ -70,6 +70,7 @@ PopulateWdmDeviceList(
 
         /* Set up our function table */
         ZeroMemory(&FuncTable, sizeof(MMFUNCTION_TABLE));
+        FuncTable.Init = FUNC_NAME(WdmAudOpenKernelSoundDevice);
         FuncTable.GetCapabilities = FUNC_NAME(WdmAudGetCapabilities);
         FuncTable.QueryWaveFormatSupport = QueryWdmWaveDeviceFormatSupport; //FIXME
         FuncTable.Open = FUNC_NAME(WdmAudOpenSoundDevice);
@@ -78,12 +79,10 @@ PopulateWdmDeviceList(
 
         if (DeviceType == MIXER_DEVICE_TYPE)
         {
-            FuncTable.SetWaveFormat = FUNC_NAME(WdmAudSetMixerDeviceFormat);
             FuncTable.QueryMixerInfo = FUNC_NAME(WdmAudQueryMixerInfo);
         }
         else if (DeviceType == WAVE_IN_DEVICE_TYPE || DeviceType == WAVE_OUT_DEVICE_TYPE)
         {
-            FuncTable.SetWaveFormat = FUNC_NAME(WdmAudSetWaveDeviceFormat);
             FuncTable.SetState = FUNC_NAME(WdmAudSetWaveState);
             FuncTable.ResetStream = FUNC_NAME(WdmAudResetStream);
             FuncTable.GetPos = FUNC_NAME(WdmAudGetWavePosition);
@@ -96,7 +95,6 @@ PopulateWdmDeviceList(
         }
         else if (DeviceType == MIDI_IN_DEVICE_TYPE || DeviceType == MIDI_OUT_DEVICE_TYPE)
         {
-            FuncTable.SetWaveFormat = FUNC_NAME(WdmAudSetMixerDeviceFormat);
             FuncTable.SetState = FUNC_NAME(WdmAudSetWaveState);
             FuncTable.GetPos = FUNC_NAME(WdmAudGetWavePosition);
         }
@@ -120,18 +118,18 @@ DriverProc(
 {
     switch ( Message )
     {
-        case DRV_LOAD :
+        case DRV_ENABLE :
         {
-            HANDLE Handle;
             MMRESULT Result;
-            SND_TRACE(L"DRV_LOAD\n");
+            //PWDMAUD_DEVICE_INFO DeviceInfo;
+            SND_TRACE(L"DRV_ENABLE\n");
 
             Result = InitEntrypointMutexes();
 
             if ( ! MMSUCCESS(Result) )
                 return 0L;
 
-            Result = FUNC_NAME(WdmAudOpenSoundDevice)(NULL, &Handle);
+            Result = FUNC_NAME(WdmAudOpenKernelSoundDevice)();
 
             if ( Result != MMSYSERR_NOERROR )
             {
@@ -140,7 +138,30 @@ DriverProc(
 
                 return 0L;
             }
+#if 0
+            /* Initialize wdmaud.sys */
+            DeviceInfo = AllocateDeviceInfo(L"BogusDeviceString");
+            if (!DeviceInfo)
+            {
+                SND_ERR(L"Failed to allocate WDMAUD_DEVICE_INFO structure\n");
+                //UnlistAllSoundDevices();
 
+                return 0L;
+            }
+
+            Result = WdmAudIoControl(DeviceInfo, 0, NULL, IOCTL_INIT_WDMAUD);
+            if ( ! MMSUCCESS( Result ) )
+            {
+                SND_ERR(L"Call to IOCTL_INIT_WDMAUD failed with %x\n", Result);
+                SND_ERR(L"Error %d\n", GetLastError());
+                FreeDeviceInfo(DeviceInfo);
+                //UnlistAllSoundDevices();
+
+                return 0L;
+            }
+
+            FreeDeviceInfo(DeviceInfo);
+#endif
             /* Populate the device lists */
             SND_TRACE(L"Populating device lists\n");
             PopulateWdmDeviceList(WAVE_OUT_DEVICE_TYPE);
@@ -150,14 +171,14 @@ DriverProc(
             PopulateWdmDeviceList(AUX_DEVICE_TYPE);
             PopulateWdmDeviceList(MIXER_DEVICE_TYPE);
 
-            SND_TRACE(L"Initialisation complete\n");
+            SND_TRACE(L"Initialization completed\n");
 
             return 1L;
         }
 
-        case DRV_FREE :
+        case DRV_DISABLE :
         {
-            SND_TRACE(L"DRV_FREE\n");
+            SND_TRACE(L"DRV_DISABLE\n");
 
             FUNC_NAME(WdmAudCleanup)();
 
@@ -172,10 +193,10 @@ DriverProc(
             return 1L;
         }
 
-        case DRV_ENABLE :
-        case DRV_DISABLE :
+        case DRV_LOAD :
+        case DRV_FREE :
         {
-            SND_TRACE(L"DRV_ENABLE / DRV_DISABLE\n");
+            SND_TRACE(L"DRV_LOAD / DRV_FREE\n");
             return 1L;
         }
 

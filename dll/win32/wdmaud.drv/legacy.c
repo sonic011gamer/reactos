@@ -1,11 +1,13 @@
 /*
- * PROJECT:     ReactOS Sound System
- * LICENSE:     GPL - See COPYING in the top level directory
- * FILE:        dll/win32/wdmaud.drv/wdmaud.c
- *
- * PURPOSE:     WDM Audio Driver (User-mode part)
- * PROGRAMMERS: Andrew Greenwood (silverblade@reactos.org)
-                Johannes Anderwald
+ * PROJECT:     ReactOS Audio Subsystem
+ * LICENSE:     GPL-2.0-or-later (https://spdx.org/licenses/GPL-2.0-or-later)
+ * PURPOSE:     WDM Audio Driver Mapper (User-mode part)
+ * COPYRIGHT:   Copyright 2007-2008 Andrew Greenwood (silverblade@reactos.org)
+ *              Copyright 2009-2010 Johannes Anderwald
+ *              Copyright 2022 Oleg Dubinskiy (oleg.dubinskij30@gmail.com)
+ */
+
+/*
  *
  * NOTES:       Looking for wodMessage & co? You won't find them here. Try
  *              the MME Buddy library, which is where these routines are
@@ -15,14 +17,128 @@
 
 #include "wdmaud.h"
 
-#define NDEBUG
+#define YDEBUG
 #include <debug.h>
 #include <mmebuddy_debug.h>
 
-#define KERNEL_DEVICE_NAME      L"\\\\.\\wdmaud"
-
+LPWSTR gpszDeviceInterfaceString = NULL;
 HANDLE KernelHandle = INVALID_HANDLE_VALUE;
 DWORD OpenCount = 0;
+
+PWDMAUD_DEVICE_INFO
+AllocateDeviceInfo(
+    IN LPWSTR DeviceInterfaceString)
+{
+    PWDMAUD_DEVICE_INFO DeviceInfo;
+
+#if 0 // FIXME: For some reason this doesn't work in ReactOS...
+    /* Validate the string */
+    if (IsBadReadPtr(DeviceInterfaceString, 1))
+    {
+        SND_ERR(L"Device interface %ls is invalid\n", DeviceInterfaceString);
+        return NULL;
+    }
+#endif
+
+    /* Allocate a new WDMAUD_DEVICE_INFO structure */
+    DeviceInfo = HeapAlloc(GetProcessHeap(),
+                           HEAP_ZERO_MEMORY, 
+                           sizeof(WDMAUD_DEVICE_INFO));
+    if (!DeviceInfo)
+    {
+        SND_ERR(L"Failed to allocate WDMAUD_DEVICE_INFO structure\n");
+        return NULL;
+    }
+
+    /* Store the string */
+    DeviceInfo->DeviceInterfaceString = DeviceInterfaceString;
+
+    /* Done */
+    return DeviceInfo;
+}
+
+VOID
+FreeDeviceInfo(
+    IN  PWDMAUD_DEVICE_INFO DeviceInfo)
+{
+    if (DeviceInfo)
+    {
+        /* Free WDMAUD_DEVICE_INFO structure */
+        HeapFree(GetProcessHeap(), 0, DeviceInfo);
+    }
+}
+
+/*
+    This is a wrapper around DeviceIoControl which provides control over
+    instantiated sound devices. It waits for I/O to complete (since an
+    instantiated sound device is opened in overlapped mode, this is necessary).
+*/
+MMRESULT
+WdmAudIoControl(
+    IN  PWDMAUD_DEVICE_INFO DeviceInfo,
+    IN OUT OPTIONAL ULONG BufferSize,
+    IN OUT OPTIONAL PVOID Buffer,
+    IN  DWORD IoControlCode)
+{
+    OVERLAPPED Overlapped;
+    BOOLEAN IoResult;
+    DWORD Transferred;
+
+    /* Overlapped I/O is done here - this is used for waiting for completion */
+    ZeroMemory(&Overlapped, sizeof(OVERLAPPED));
+    Overlapped.hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+
+    if ( ! Overlapped.hEvent )
+        return Win32ErrorToMmResult(GetLastError());
+
+    /* Store input data */
+    DeviceInfo->BufferSize = BufferSize;
+    DeviceInfo->Buffer = Buffer;
+
+    /* Talk to the device */
+    IoResult = DeviceIoControl(KernelHandle,
+                               IoControlCode,
+                               DeviceInfo,
+                               sizeof(WDMAUD_DEVICE_INFO),
+                               DeviceInfo,
+                               sizeof(WDMAUD_DEVICE_INFO),
+                               NULL,
+                               &Overlapped);
+
+    /* If failure occurs, make sure it's not just due to the overlapped I/O */
+    if ( ! IoResult )
+    {
+        if ( GetLastError() != ERROR_IO_PENDING )
+        {
+            CloseHandle(Overlapped.hEvent);
+            return Win32ErrorToMmResult(GetLastError());
+        }
+        else
+        {
+            WaitForSingleObject(Overlapped.hEvent, INFINITE);
+        }
+    }
+
+    /* Wait for the I/O to complete */
+    IoResult = GetOverlappedResult(KernelHandle,
+                                   &Overlapped,
+                                   &Transferred,
+                                   TRUE);
+
+    /* Don't need this any more */
+    CloseHandle(Overlapped.hEvent);
+
+    if ( ! IoResult )
+        return Win32ErrorToMmResult(GetLastError());
+
+    /* Store output data */
+    BufferSize = DeviceInfo->BufferSize;
+    Buffer = DeviceInfo->Buffer;
+
+    SND_TRACE(L"Transferred %d bytes in Sync overlapped I/O\n", Transferred);
+
+    return MMSYSERR_NOERROR;
+}
 
 DWORD
 WINAPI
@@ -32,18 +148,23 @@ MixerEventThreadRoutine(
     HANDLE WaitObjects[2];
     DWORD dwResult;
     MMRESULT Result;
-    WDMAUD_DEVICE_INFO DeviceInfo;
+    PWDMAUD_DEVICE_INFO DeviceInfo;
     PSOUND_DEVICE_INSTANCE Instance = (PSOUND_DEVICE_INSTANCE)Parameter;
 
-    /* setup wait objects */
+    /* Setup wait objects */
     WaitObjects[0] = Instance->hNotifyEvent;
     WaitObjects[1] = Instance->hStopEvent;
 
-    /* zero device info */
-    ZeroMemory(&DeviceInfo, sizeof(WDMAUD_DEVICE_INFO));
+    /* Allocate device info */
+    DeviceInfo = AllocateDeviceInfo(gpszDeviceInterfaceString);
+    if (!DeviceInfo)
+    {
+        /* No memory */
+        return 1;
+    }
 
-    DeviceInfo.hDevice = Instance->Handle;
-    DeviceInfo.DeviceType = MIXER_DEVICE_TYPE;
+    DeviceInfo->hDevice = Instance->Handle;
+    DeviceInfo->DeviceType = MIXER_DEVICE_TYPE;
 
     do
     {
@@ -51,39 +172,38 @@ MixerEventThreadRoutine(
 
         if (dwResult == WAIT_OBJECT_0 + 1)
         {
-            /* stop event was signalled */
+            /* Stop event was signalled */
             break;
         }
 
         do
         {
-            Result = SyncOverlappedDeviceIoControl(KernelHandle,
-                                                   IOCTL_GET_MIXER_EVENT,
-                                                   (LPVOID) &DeviceInfo,
-                                                   sizeof(WDMAUD_DEVICE_INFO),
-                                                   (LPVOID) &DeviceInfo,
-                                                   sizeof(WDMAUD_DEVICE_INFO),
-                                                   NULL);
+            Result = WdmAudIoControl(DeviceInfo,
+                                     0,
+                                     NULL,
+                                     IOCTL_GET_MIXER_EVENT);
 
             if (Result == MMSYSERR_NOERROR)
             {
                 DriverCallback(Instance->WinMM.ClientCallback,
                                HIWORD(Instance->WinMM.Flags),
                                Instance->WinMM.Handle,
-                               DeviceInfo.u.MixerEvent.NotificationType,
+                               DeviceInfo->MixerEvent.NotificationType,
                                Instance->WinMM.ClientCallbackInstanceData,
-                               (DWORD_PTR)DeviceInfo.u.MixerEvent.Value,
+                               (DWORD_PTR)DeviceInfo->MixerEvent.Value,
                                0);
             }
         }while(Result == MMSYSERR_NOERROR);
     }while(TRUE);
 
-    /* done */
+    FreeDeviceInfo(DeviceInfo);
+
+    /* Done */
     return 0;
 }
 
 MMRESULT
-WdmAudCleanupByLegacy()
+WdmAudCleanupByLegacy(VOID)
 {
     if (KernelHandle != INVALID_HANDLE_VALUE)
     {
@@ -100,31 +220,40 @@ WdmAudGetNumWdmDevsByLegacy(
     OUT DWORD* DeviceCount)
 {
     MMRESULT Result;
-    WDMAUD_DEVICE_INFO DeviceInfo;
+    PWDMAUD_DEVICE_INFO DeviceInfo;
 
     VALIDATE_MMSYS_PARAMETER( KernelHandle != INVALID_HANDLE_VALUE );
     VALIDATE_MMSYS_PARAMETER( IS_VALID_SOUND_DEVICE_TYPE(DeviceType) );
     VALIDATE_MMSYS_PARAMETER( DeviceCount );
+    SND_TRACE(L"Size of char is %lu\n", sizeof(char));
+    SND_TRACE(L"WDMAUD - GetNumWdmDevs DeviceType %u\n", DeviceType);
+    SND_TRACE(L"Size of WDMAUD_DEVICE_INFO is %lu\n", sizeof(WDMAUD_DEVICE_INFO));
+    DeviceInfo = AllocateDeviceInfo(gpszDeviceInterfaceString);
+    if (!DeviceInfo)
+    {
+        /* No memory */
+        *DeviceCount = 0;
+        return MMSYSERR_NOMEM;
+    }
 
-    ZeroMemory(&DeviceInfo, sizeof(WDMAUD_DEVICE_INFO));
-    DeviceInfo.DeviceType = DeviceType;
+    DeviceInfo->DeviceType = DeviceType;
 
-    Result = SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IOCTL_GETNUMDEVS_TYPE,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           NULL);
+    Result = WdmAudIoControl(DeviceInfo,
+                             0,
+                             NULL,
+                             IOCTL_GETNUMDEVS_TYPE);
 
     if ( ! MMSUCCESS( Result ) )
     {
-        SND_ERR(L"Call to IOCTL_GETNUMDEVS_TYPE failed\n");
+        SND_ERR(L"Call to IOCTL_GETNUMDEVS_TYPE failed with %d\n", GetLastError());
         *DeviceCount = 0;
+        FreeDeviceInfo(DeviceInfo);
         return TranslateInternalMmResult(Result);
     }
 
-    *DeviceCount = DeviceInfo.DeviceCount;
+    *DeviceCount = DeviceInfo->DeviceNumber;
+
+    FreeDeviceInfo(DeviceInfo);
 
     return MMSYSERR_NOERROR;
 }
@@ -138,7 +267,7 @@ WdmAudGetCapabilitiesByLegacy(
 {
     MMRESULT Result;
     MMDEVICE_TYPE DeviceType;
-    WDMAUD_DEVICE_INFO DeviceInfo;
+    PWDMAUD_DEVICE_INFO DeviceInfo;
 
     SND_ASSERT( SoundDevice );
     SND_ASSERT( Capabilities );
@@ -151,111 +280,38 @@ WdmAudGetCapabilitiesByLegacy(
 
     SND_TRACE(L"WDMAUD - GetWdmDeviceCapabilities DeviceType %u DeviceId %u\n", DeviceType, DeviceId);
 
-    ZeroMemory(&DeviceInfo, sizeof(WDMAUD_DEVICE_INFO));
-    DeviceInfo.DeviceType = DeviceType;
-    DeviceInfo.DeviceIndex = DeviceId;
+    DeviceInfo = AllocateDeviceInfo(gpszDeviceInterfaceString);
+    if (!DeviceInfo)
+    {
+        /* No memory */
+        Capabilities = NULL;
+        return MMSYSERR_NOMEM;
+    }
 
-    Result = SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IOCTL_GETCAPABILITIES,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           NULL);
+    DeviceInfo->DeviceType = DeviceType;
+    DeviceInfo->DeviceIndex = DeviceId;
+
+    Result = WdmAudIoControl(DeviceInfo,
+                             CapabilitiesSize,
+                             Capabilities,
+                             IOCTL_GETCAPABILITIES);
+
+    FreeDeviceInfo(DeviceInfo);
 
     if ( ! MMSUCCESS(Result) )
     {
+        SND_ERR(L"Call to IOCTL_GETCAPABILITIES failed with %d\n", GetLastError());
+        Capabilities = NULL;
         return TranslateInternalMmResult(Result);
-    }
-
-    /* This is pretty much a big hack right now */
-    switch ( DeviceType )
-    {
-        case MIXER_DEVICE_TYPE:
-        {
-            LPMIXERCAPSW MixerCaps = (LPMIXERCAPSW) Capabilities;
-
-            DeviceInfo.u.MixCaps.szPname[MAXPNAMELEN-1] = L'\0';
-            CopyWideString(MixerCaps->szPname, DeviceInfo.u.MixCaps.szPname);
-
-            MixerCaps->cDestinations = DeviceInfo.u.MixCaps.cDestinations;
-            MixerCaps->fdwSupport = DeviceInfo.u.MixCaps.fdwSupport;
-            MixerCaps->vDriverVersion = DeviceInfo.u.MixCaps.vDriverVersion;
-            MixerCaps->wMid = DeviceInfo.u.MixCaps.wMid;
-            MixerCaps->wPid = DeviceInfo.u.MixCaps.wPid;
-            break;
-        }
-        case WAVE_OUT_DEVICE_TYPE :
-        {
-            LPWAVEOUTCAPSW WaveOutCaps = (LPWAVEOUTCAPSW) Capabilities;
-
-            DeviceInfo.u.WaveOutCaps.szPname[MAXPNAMELEN-1] = L'\0';
-            WaveOutCaps->wMid = DeviceInfo.u.WaveOutCaps.wMid;
-            WaveOutCaps->wPid = DeviceInfo.u.WaveOutCaps.wPid;
-
-            WaveOutCaps->vDriverVersion = DeviceInfo.u.WaveOutCaps.vDriverVersion;
-            CopyWideString(WaveOutCaps->szPname, DeviceInfo.u.WaveOutCaps.szPname);
-
-            WaveOutCaps->dwFormats = DeviceInfo.u.WaveOutCaps.dwFormats;
-            WaveOutCaps->wChannels = DeviceInfo.u.WaveOutCaps.wChannels;
-            WaveOutCaps->dwSupport = DeviceInfo.u.WaveOutCaps.dwSupport;
-            break;
-        }
-        case WAVE_IN_DEVICE_TYPE :
-        {
-            LPWAVEINCAPSW WaveInCaps = (LPWAVEINCAPSW) Capabilities;
-
-            DeviceInfo.u.WaveInCaps.szPname[MAXPNAMELEN-1] = L'\0';
-
-            WaveInCaps->wMid = DeviceInfo.u.WaveInCaps.wMid;
-            WaveInCaps->wPid = DeviceInfo.u.WaveInCaps.wPid;
-
-            WaveInCaps->vDriverVersion = DeviceInfo.u.WaveInCaps.vDriverVersion;
-            CopyWideString(WaveInCaps->szPname, DeviceInfo.u.WaveInCaps.szPname);
-
-            WaveInCaps->dwFormats = DeviceInfo.u.WaveInCaps.dwFormats;
-            WaveInCaps->wChannels = DeviceInfo.u.WaveInCaps.wChannels;
-            WaveInCaps->wReserved1 = 0;
-            break;
-        }
-        case MIDI_IN_DEVICE_TYPE :
-        {
-            LPMIDIINCAPSW MidiInCaps = (LPMIDIINCAPSW)Capabilities;
-
-            DeviceInfo.u.MidiInCaps.szPname[MAXPNAMELEN-1] = L'\0';
-
-            MidiInCaps->vDriverVersion = DeviceInfo.u.MidiInCaps.vDriverVersion;
-            MidiInCaps->wMid = DeviceInfo.u.MidiInCaps.wMid;
-            MidiInCaps->wPid = DeviceInfo.u.MidiInCaps.wPid;
-            MidiInCaps->dwSupport = DeviceInfo.u.MidiInCaps.dwSupport;
-
-            CopyWideString(MidiInCaps->szPname, DeviceInfo.u.MidiInCaps.szPname);
-            break;
-        }
-        case MIDI_OUT_DEVICE_TYPE :
-        {
-            LPMIDIOUTCAPSW MidiOutCaps = (LPMIDIOUTCAPSW)Capabilities;
-
-            DeviceInfo.u.MidiOutCaps.szPname[MAXPNAMELEN-1] = L'\0';
-
-            MidiOutCaps->vDriverVersion = DeviceInfo.u.MidiOutCaps.vDriverVersion;
-            MidiOutCaps->wMid = DeviceInfo.u.MidiOutCaps.wMid;
-            MidiOutCaps->wPid = DeviceInfo.u.MidiOutCaps.wPid;
-            MidiOutCaps->dwSupport = DeviceInfo.u.MidiOutCaps.dwSupport;
-
-            CopyWideString(MidiOutCaps->szPname, DeviceInfo.u.MidiOutCaps.szPname);
-            break;
-        }
     }
 
     return MMSYSERR_NOERROR;
 }
 
 MMRESULT
-WdmAudOpenSoundDeviceByLegacy(
-    IN PSOUND_DEVICE SoundDevice,
-    OUT PVOID *Handle)
+WdmAudOpenKernelSoundDeviceByLegacy(VOID)
 {
+    DWORD dwSize;
     HDEVINFO hDevInfo;
     SP_DEVICE_INTERFACE_DATA DeviceInterfaceData;
     GUID SWBusGuid = {STATIC_KSCATEGORY_WDMAUD};
@@ -263,7 +319,7 @@ WdmAudOpenSoundDeviceByLegacy(
 
     if ( KernelHandle == INVALID_HANDLE_VALUE )
     {
-        hDevInfo = SetupDiGetClassDevsW(&SWBusGuid, NULL, NULL,  DIGCF_DEVICEINTERFACE| DIGCF_PRESENT);
+        hDevInfo = SetupDiGetClassDevsW(&SWBusGuid, NULL, NULL,  DIGCF_DEVICEINTERFACE | DIGCF_PRESENT);
         if (!hDevInfo)
         {
             // failed
@@ -278,7 +334,9 @@ WdmAudOpenSoundDeviceByLegacy(
             return MMSYSERR_ERROR;
         }
 
-        DeviceInterfaceDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA_W)HeapAlloc(GetProcessHeap(), 0, MAX_PATH * sizeof(WCHAR) + sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA_W));
+        SetupDiGetDeviceInterfaceDetailW(hDevInfo,  &DeviceInterfaceData, NULL, 0, &dwSize, NULL);
+
+        DeviceInterfaceDetailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA_W)HeapAlloc(GetProcessHeap(), 0, dwSize);
         if (!DeviceInterfaceDetailData)
         {
             // failed
@@ -287,21 +345,24 @@ WdmAudOpenSoundDeviceByLegacy(
         }
 
         DeviceInterfaceDetailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA_W);
-        if (!SetupDiGetDeviceInterfaceDetailW(hDevInfo,  &DeviceInterfaceData, DeviceInterfaceDetailData,MAX_PATH * sizeof(WCHAR) + sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA_W), NULL, NULL))
+        if (!SetupDiGetDeviceInterfaceDetailW(hDevInfo,  &DeviceInterfaceData, DeviceInterfaceDetailData, dwSize, &dwSize, NULL))
         {
             // failed
             HeapFree(GetProcessHeap(), 0, DeviceInterfaceDetailData);
             SetupDiDestroyDeviceInfoList(hDevInfo);
             return MMSYSERR_ERROR;
         }
-        SND_TRACE(L"Opening wdmaud device '%s'\n",DeviceInterfaceDetailData->DevicePath);
-        KernelHandle = CreateFileW(DeviceInterfaceDetailData->DevicePath,
-            GENERIC_READ | GENERIC_WRITE,
-            0,
-            NULL,
-            OPEN_EXISTING,
-            FILE_FLAG_OVERLAPPED,
-            NULL);
+
+        gpszDeviceInterfaceString = DeviceInterfaceDetailData->DevicePath;
+
+        SND_TRACE(L"Opening wdmaud device '%s'\n", gpszDeviceInterfaceString);
+        KernelHandle = CreateFileW(gpszDeviceInterfaceString,
+                                   GENERIC_READ | GENERIC_WRITE,
+                                   0,
+                                   NULL,
+                                   OPEN_EXISTING,
+                                   FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED,
+                                   NULL);
 
         HeapFree(GetProcessHeap(), 0, DeviceInterfaceDetailData);
         SetupDiDestroyDeviceInfoList(hDevInfo);
@@ -317,14 +378,143 @@ WdmAudOpenSoundDeviceByLegacy(
 }
 
 MMRESULT
+WdmAudOpenSoundDeviceByLegacy(
+    IN PSOUND_DEVICE_INSTANCE SoundDeviceInstance,
+    IN DWORD DeviceId,
+    IN PWAVEFORMATEX WaveFormat,
+    OUT PVOID *Handle)
+{
+    MMRESULT Result;
+    HANDLE hThread;
+    MMDEVICE_TYPE DeviceType;
+    PSOUND_DEVICE SoundDevice;
+    PWDMAUD_DEVICE_INFO DeviceInfo;
+
+    Result = GetSoundDeviceFromInstance(SoundDeviceInstance, &SoundDevice);
+    SND_ASSERT( SoundDevice );
+
+    if ( ! MMSUCCESS(Result) )
+    {
+        return TranslateInternalMmResult(Result);
+    }
+
+    if ( OpenCount == 0 )
+    {
+        return MMSYSERR_NOERROR;
+    }
+
+    SND_ASSERT( KernelHandle != INVALID_HANDLE_VALUE );
+
+    Result = GetSoundDeviceType(SoundDevice, &DeviceType);
+    SND_ASSERT( Result == MMSYSERR_NOERROR );
+
+    if ( ! MMSUCCESS(Result) )
+        return Result;
+
+    SND_TRACE(L"WDMAUD - OpenWdmSoundDevice DeviceType %u\n", DeviceType);
+
+    if (DeviceType == MIXER_DEVICE_TYPE)
+    {
+        SoundDeviceInstance->hNotifyEvent = CreateEventW(NULL, FALSE, FALSE, NULL);
+        if ( ! SoundDeviceInstance->hNotifyEvent )
+            return MMSYSERR_NOMEM;
+
+        if (SoundDeviceInstance->Handle != NULL)
+        {
+            /* Device is already opened */
+            return MMSYSERR_NOERROR;
+        }
+
+        SoundDeviceInstance->hStopEvent = CreateEventW(NULL, FALSE, FALSE, NULL);
+        if ( ! SoundDeviceInstance->hStopEvent )
+            return MMSYSERR_NOMEM;
+    }
+
+    DeviceInfo = AllocateDeviceInfo(gpszDeviceInterfaceString);
+    if (!DeviceInfo)
+    {
+        /* No memory */
+        *Handle = NULL;
+        return MMSYSERR_NOMEM;
+    }
+
+    DeviceInfo->DeviceType = DeviceType;
+    DeviceInfo->DeviceIndex = DeviceId;
+
+    Result = WdmAudIoControl(DeviceInfo,
+                             sizeof(WAVEFORMATEX),
+                             WaveFormat,
+                             IOCTL_OPEN_WDMAUD);
+
+    if ( ! MMSUCCESS( Result ) )
+    {
+        SND_ERR(L"Call to IOCTL_OPEN_WDMAUD failed with %d\n", GetLastError());
+        *Handle = NULL;
+        FreeDeviceInfo(DeviceInfo);
+        return TranslateInternalMmResult(Result);
+    }
+
+    if (DeviceType == MIXER_DEVICE_TYPE)
+    {
+        hThread = CreateThread(NULL, 0, MixerEventThreadRoutine, (LPVOID)SoundDeviceInstance, 0, NULL);
+        if (  hThread )
+        {
+            CloseHandle(hThread);
+        }
+    }
+
+    *Handle = DeviceInfo->hDevice;
+
+    if (DeviceType == WAVE_IN_DEVICE_TYPE || DeviceType == WAVE_OUT_DEVICE_TYPE)
+    {
+        /* Now determine framing requirements */
+        Result = WdmAudIoControl(DeviceInfo,
+                                 0,
+                                 NULL,
+                                 IOCTL_GETFRAMESIZE);
+
+        if ( MMSUCCESS(Result) )
+        {
+            if (DeviceInfo->FrameSize)
+            {
+                SoundDeviceInstance->FrameSize = DeviceInfo->FrameSize * 2;
+                SoundDeviceInstance->BufferCount = WaveFormat->nAvgBytesPerSec / SoundDeviceInstance->FrameSize;
+                SND_TRACE(L"FrameSize %u BufferCount %u\n", SoundDeviceInstance->FrameSize, SoundDeviceInstance->BufferCount);
+            }
+        }
+        else
+        {
+            /* Use a default of 100 buffers */
+            SoundDeviceInstance->BufferCount = 100;
+        }
+
+        /* Now acquire resources */
+        DeviceInfo->State = KSSTATE_ACQUIRE;
+        WdmAudIoControl(DeviceInfo, 0, NULL, IOCTL_SETDEVICE_STATE);
+
+        /* Pause the pin */
+        DeviceInfo->State = KSSTATE_PAUSE;
+        WdmAudIoControl(DeviceInfo, 0, NULL, IOCTL_SETDEVICE_STATE);
+
+        /* Start the pin */
+        DeviceInfo->State = KSSTATE_RUN;
+        WdmAudIoControl(DeviceInfo, 0, NULL, IOCTL_SETDEVICE_STATE);
+    }
+
+    FreeDeviceInfo(DeviceInfo);
+
+    return MMSYSERR_NOERROR;
+}
+
+MMRESULT
 WdmAudCloseSoundDeviceByLegacy(
     IN  struct _SOUND_DEVICE_INSTANCE* SoundDeviceInstance,
     IN  PVOID Handle)
 {
-    WDMAUD_DEVICE_INFO DeviceInfo;
     MMRESULT Result;
     MMDEVICE_TYPE DeviceType;
     PSOUND_DEVICE SoundDevice;
+    PWDMAUD_DEVICE_INFO DeviceInfo;
 
     Result = GetSoundDeviceFromInstance(SoundDeviceInstance, &SoundDevice);
 
@@ -343,52 +533,46 @@ WdmAudCloseSoundDeviceByLegacy(
     Result = GetSoundDeviceType(SoundDevice, &DeviceType);
     SND_ASSERT( Result == MMSYSERR_NOERROR );
 
+    SND_TRACE(L"WDMAUD - CloseWdmSoundDevice DeviceType %u\n", DeviceType);
+
     if (SoundDeviceInstance->Handle != (PVOID)KernelHandle)
     {
-        ZeroMemory(&DeviceInfo, sizeof(WDMAUD_DEVICE_INFO));
-
-        DeviceInfo.DeviceType = DeviceType;
-        DeviceInfo.hDevice = SoundDeviceInstance->Handle;
-
-         /* First stop the stream */
-         if (DeviceType != MIXER_DEVICE_TYPE)
-         {
-             DeviceInfo.u.State = KSSTATE_PAUSE;
-             SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IOCTL_SETDEVICE_STATE,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                            sizeof(WDMAUD_DEVICE_INFO),
-                                            NULL);
-
-             DeviceInfo.u.State = KSSTATE_ACQUIRE;
-             SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IOCTL_SETDEVICE_STATE,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                            sizeof(WDMAUD_DEVICE_INFO),
-                                            NULL);
-
-
-             DeviceInfo.u.State = KSSTATE_STOP;
-             SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IOCTL_SETDEVICE_STATE,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                            sizeof(WDMAUD_DEVICE_INFO),
-                                            NULL);
+        DeviceInfo = AllocateDeviceInfo(gpszDeviceInterfaceString);
+        if (!DeviceInfo)
+        {
+            /* No memory */
+            return MMSYSERR_NOMEM;
         }
 
-        SyncOverlappedDeviceIoControl(KernelHandle,
-                                      IOCTL_CLOSE_WDMAUD,
-                                      (LPVOID) &DeviceInfo,
-                                      sizeof(WDMAUD_DEVICE_INFO),
-                                      (LPVOID) &DeviceInfo,
-                                      sizeof(WDMAUD_DEVICE_INFO),
-                                      NULL);
+        DeviceInfo->DeviceType = DeviceType;
+        DeviceInfo->hDevice = SoundDeviceInstance->Handle;
+
+        /* First stop the stream */
+        if (DeviceType == WAVE_IN_DEVICE_TYPE || DeviceType == WAVE_OUT_DEVICE_TYPE)
+        {
+             DeviceInfo->State = KSSTATE_PAUSE;
+             WdmAudIoControl(DeviceInfo, 0, NULL, IOCTL_SETDEVICE_STATE);
+
+             DeviceInfo->State = KSSTATE_ACQUIRE;
+             WdmAudIoControl(DeviceInfo, 0, NULL, IOCTL_SETDEVICE_STATE);
+
+             DeviceInfo->State = KSSTATE_STOP;
+             WdmAudIoControl(DeviceInfo, 0, NULL, IOCTL_SETDEVICE_STATE);
+        }
+
+        /* Then close device handle */
+        WdmAudIoControl(DeviceInfo,
+                        0,
+                        NULL,
+                        IOCTL_CLOSE_WDMAUD);
+
+        FreeDeviceInfo(DeviceInfo);
+
+        if ( ! MMSUCCESS(Result) )
+        {
+            SND_ERR(L"Call to IOCTL_CLOSE_WDMAUD failed with %d\n", GetLastError());
+            return Result;
+        }
     }
 
     if (DeviceType == MIXER_DEVICE_TYPE)
@@ -405,189 +589,6 @@ WdmAudCloseSoundDeviceByLegacy(
         CloseHandle(KernelHandle);
         KernelHandle = INVALID_HANDLE_VALUE;
     }
-
-    return MMSYSERR_NOERROR;
-}
-
-MMRESULT
-WdmAudSetMixerDeviceFormatByLegacy(
-    IN  PSOUND_DEVICE_INSTANCE Instance,
-    IN  DWORD DeviceId,
-    IN  PWAVEFORMATEX WaveFormat,
-    IN  DWORD WaveFormatSize)
-{
-    MMRESULT Result;
-    WDMAUD_DEVICE_INFO DeviceInfo;
-    HANDLE hThread;
-
-    Instance->hNotifyEvent = CreateEventW(NULL, FALSE, FALSE, NULL);
-    if ( ! Instance->hNotifyEvent )
-        return MMSYSERR_NOMEM;
-
-    if (Instance->Handle != NULL)
-    {
-        /* device is already open */
-        return MMSYSERR_NOERROR;
-    }
-
-    Instance->hStopEvent = CreateEventW(NULL, FALSE, FALSE, NULL);
-    if ( ! Instance->hStopEvent )
-        return MMSYSERR_NOMEM;
-
-    ZeroMemory(&DeviceInfo, sizeof(WDMAUD_DEVICE_INFO));
-    DeviceInfo.DeviceType = MIXER_DEVICE_TYPE;
-    DeviceInfo.DeviceIndex = DeviceId;
-    DeviceInfo.u.hNotifyEvent = Instance->hNotifyEvent;
-
-    Result = SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IOCTL_OPEN_WDMAUD,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           NULL);
-
-    if ( ! MMSUCCESS(Result) )
-    {
-        CloseHandle(Instance->hNotifyEvent);
-        CloseHandle(Instance->hStopEvent);
-        return TranslateInternalMmResult(Result);
-    }
-
-    hThread = CreateThread(NULL, 0, MixerEventThreadRoutine, (LPVOID)Instance, 0, NULL);
-    if (  hThread )
-    {
-        CloseHandle(hThread);
-    }
-
-    /* Store sound device handle instance handle */
-    Instance->Handle = (PVOID)DeviceInfo.hDevice;
-
-    return MMSYSERR_NOERROR;
-}
-
-MMRESULT
-WdmAudSetWaveDeviceFormatByLegacy(
-    IN  PSOUND_DEVICE_INSTANCE Instance,
-    IN  DWORD DeviceId,
-    IN  PWAVEFORMATEX WaveFormat,
-    IN  DWORD WaveFormatSize)
-{
-    MMRESULT Result;
-    PSOUND_DEVICE SoundDevice;
-    PVOID Identifier;
-    WDMAUD_DEVICE_INFO DeviceInfo;
-    MMDEVICE_TYPE DeviceType;
-
-    Result = GetSoundDeviceFromInstance(Instance, &SoundDevice);
-
-    if ( ! MMSUCCESS(Result) )
-    {
-        return TranslateInternalMmResult(Result);
-    }
-
-    Result = GetSoundDeviceIdentifier(SoundDevice, &Identifier);
-
-    if ( ! MMSUCCESS(Result) )
-    {
-        return TranslateInternalMmResult(Result);
-    }
-
-    if (Instance->Handle != NULL)
-    {
-        /* device is already open */
-        return MMSYSERR_NOERROR;
-    }
-
-    Result = GetSoundDeviceType(SoundDevice, &DeviceType);
-
-    SND_ASSERT( Result == MMSYSERR_NOERROR );
-
-    ZeroMemory(&DeviceInfo, sizeof(WDMAUD_DEVICE_INFO));
-    DeviceInfo.DeviceType = DeviceType;
-    DeviceInfo.DeviceIndex = DeviceId;
-    DeviceInfo.u.WaveFormatEx.cbSize = sizeof(WAVEFORMATEX); //WaveFormat->cbSize;
-    DeviceInfo.u.WaveFormatEx.wFormatTag = WaveFormat->wFormatTag;
-#ifdef USERMODE_MIXER
-    DeviceInfo.u.WaveFormatEx.nChannels = 2;
-    DeviceInfo.u.WaveFormatEx.nSamplesPerSec = 44100;
-    DeviceInfo.u.WaveFormatEx.nBlockAlign = 4;
-    DeviceInfo.u.WaveFormatEx.nAvgBytesPerSec = 176400;
-    DeviceInfo.u.WaveFormatEx.wBitsPerSample = 16;
-#else
-    DeviceInfo.u.WaveFormatEx.nChannels = WaveFormat->nChannels;
-    DeviceInfo.u.WaveFormatEx.nSamplesPerSec = WaveFormat->nSamplesPerSec;
-    DeviceInfo.u.WaveFormatEx.nBlockAlign = WaveFormat->nBlockAlign;
-    DeviceInfo.u.WaveFormatEx.nAvgBytesPerSec = WaveFormat->nAvgBytesPerSec;
-    DeviceInfo.u.WaveFormatEx.wBitsPerSample = (DeviceInfo.u.WaveFormatEx.nAvgBytesPerSec * 8) / (DeviceInfo.u.WaveFormatEx.nSamplesPerSec * DeviceInfo.u.WaveFormatEx.nChannels);
-#endif
-
-    Result = SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IOCTL_OPEN_WDMAUD,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           NULL);
-
-    if ( ! MMSUCCESS(Result) )
-    {
-        return TranslateInternalMmResult(Result);
-    }
-
-    if (WaveFormatSize >= sizeof(WAVEFORMAT))
-    {
-        /* Store format */
-        Instance->WaveFormatEx.wFormatTag = WaveFormat->wFormatTag;
-        Instance->WaveFormatEx.nChannels = WaveFormat->nChannels;
-        Instance->WaveFormatEx.nSamplesPerSec = WaveFormat->nSamplesPerSec;
-        Instance->WaveFormatEx.nBlockAlign = WaveFormat->nBlockAlign;
-        Instance->WaveFormatEx.nAvgBytesPerSec = WaveFormat->nAvgBytesPerSec;
-    }
-
-    /* store details */
-    Instance->WaveFormatEx.cbSize = sizeof(WAVEFORMATEX);
-    Instance->WaveFormatEx.wBitsPerSample = (DeviceInfo.u.WaveFormatEx.nAvgBytesPerSec * 8) / (DeviceInfo.u.WaveFormatEx.nSamplesPerSec * DeviceInfo.u.WaveFormatEx.nChannels);
-
-    /* Store sound device handle instance handle */
-    Instance->Handle = (PVOID)DeviceInfo.hDevice;
-
-    /* Now determine framing requirements */
-    Result = SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IOCTL_GETFRAMESIZE,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           NULL);
-
-    if ( MMSUCCESS(Result) )
-    {
-        if (DeviceInfo.u.FrameSize)
-        {
-            Instance->FrameSize = DeviceInfo.u.FrameSize * 2;
-            Instance->BufferCount = WaveFormat->nAvgBytesPerSec / Instance->FrameSize;
-            SND_TRACE(L"FrameSize %u BufferCount %u\n", Instance->FrameSize, Instance->BufferCount);
-        }
-    }
-    else
-    {
-        // use a default of 100 buffers
-        Instance->BufferCount = 100;
-    }
-
-    /* Now acquire resources */
-    DeviceInfo.u.State = KSSTATE_ACQUIRE;
-    SyncOverlappedDeviceIoControl(KernelHandle, IOCTL_SETDEVICE_STATE, (LPVOID) &DeviceInfo, sizeof(WDMAUD_DEVICE_INFO), (LPVOID) &DeviceInfo, sizeof(WDMAUD_DEVICE_INFO), NULL);
-
-    /* pause the pin */
-    DeviceInfo.u.State = KSSTATE_PAUSE;
-    SyncOverlappedDeviceIoControl(KernelHandle, IOCTL_SETDEVICE_STATE, (LPVOID) &DeviceInfo, sizeof(WDMAUD_DEVICE_INFO), (LPVOID) &DeviceInfo, sizeof(WDMAUD_DEVICE_INFO), NULL);
-
-    /* start the pin */
-    DeviceInfo.u.State = KSSTATE_RUN;
-    SyncOverlappedDeviceIoControl(KernelHandle, IOCTL_SETDEVICE_STATE, (LPVOID) &DeviceInfo, sizeof(WDMAUD_DEVICE_INFO), (LPVOID) &DeviceInfo, sizeof(WDMAUD_DEVICE_INFO), NULL);
-
 
     return MMSYSERR_NOERROR;
 }
@@ -644,10 +645,12 @@ WdmAudCommitWaveBufferByLegacy(
     Result = GetSoundDeviceType(SoundDevice, &DeviceType);
     SND_ASSERT( Result == MMSYSERR_NOERROR );
 
-    DeviceInfo = (PWDMAUD_DEVICE_INFO)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(WDMAUD_DEVICE_INFO));
+    SND_TRACE(L"WDMAUD - CommitWaveBuffer DeviceType %u\n", DeviceType);
+
+    DeviceInfo = AllocateDeviceInfo(gpszDeviceInterfaceString);
     if (!DeviceInfo)
     {
-        // no memory
+        /* No memory */
         return MMSYSERR_NOMEM;
     }
 
@@ -663,13 +666,13 @@ WdmAudCommitWaveBufferByLegacy(
     DeviceInfo->hDevice = Handle;
     DeviceInfo->DeviceType = DeviceType;
 
-
-    // create completion event
+    /* Create completion event */
     Overlap->Standard.hEvent = Handle = CreateEventW(NULL, FALSE, FALSE, NULL);
     if (Overlap->Standard.hEvent == NULL)
     {
-        // no memory
-        HeapFree(GetProcessHeap(), 0, DeviceInfo);
+        /* No memory */
+        SND_ERR(L"Failed to create event handle");
+        FreeDeviceInfo(DeviceInfo);
         return MMSYSERR_NOMEM;
     }
 
@@ -689,7 +692,7 @@ WdmAudCommitWaveBufferByLegacy(
             WaitForSingleObjectEx (KernelHandle, INFINITE, TRUE);
     }
 
-    // close event handle
+    /* Close event handle */
     CloseHandle(Handle);
 
     return MMSYSERR_NOERROR;
@@ -702,7 +705,7 @@ WdmAudSetWaveStateByLegacy(
 {
     MMRESULT Result;
     PSOUND_DEVICE SoundDevice;
-    WDMAUD_DEVICE_INFO DeviceInfo;
+    PWDMAUD_DEVICE_INFO DeviceInfo;
     MMDEVICE_TYPE DeviceType;
     HANDLE Handle;
 
@@ -719,21 +722,34 @@ WdmAudSetWaveStateByLegacy(
     Result = GetSoundDeviceInstanceHandle(SoundDeviceInstance, &Handle);
     SND_ASSERT( Result == MMSYSERR_NOERROR );
 
-    ZeroMemory(&DeviceInfo, sizeof(WDMAUD_DEVICE_INFO));
-    DeviceInfo.hDevice = Handle;
-    DeviceInfo.DeviceType = DeviceType;
+    SND_TRACE(L"WDMAUD - SetWaveState DeviceType %u\n", DeviceType);
+
+    DeviceInfo = AllocateDeviceInfo(gpszDeviceInterfaceString);
+    if (!DeviceInfo)
+    {
+        /* No memory */
+        return MMSYSERR_NOMEM;
+    }
+
+    DeviceInfo->hDevice = Handle;
+    DeviceInfo->DeviceType = DeviceType;
 
     if (bStart)
-        DeviceInfo.u.State = KSSTATE_RUN;
+        DeviceInfo->State = KSSTATE_RUN;
     else
-        DeviceInfo.u.State = KSSTATE_PAUSE;
-    Result = SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IOCTL_SETDEVICE_STATE,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           NULL);
+        DeviceInfo->State = KSSTATE_PAUSE;
+    Result = WdmAudIoControl(DeviceInfo,
+                             0,
+                             NULL,
+                             IOCTL_SETDEVICE_STATE);
+
+    FreeDeviceInfo(DeviceInfo);
+
+    if ( ! MMSUCCESS(Result) )
+    {
+        SND_ERR(L"Call to IOCTL_SETDEVICE_STATE failed with %d\n", GetLastError());
+        return Result;
+    }
 
     return Result;
 }
@@ -746,61 +762,8 @@ WdmAudGetDeviceInterfaceStringByLegacy(
     IN  DWORD  InterfaceLength,
     OUT  DWORD * InterfaceSize)
 {
-    WDMAUD_DEVICE_INFO DeviceInfo;
-    MMRESULT Result;
-
-    ZeroMemory(&DeviceInfo, sizeof(WDMAUD_DEVICE_INFO));
-    DeviceInfo.DeviceType = DeviceType;
-    DeviceInfo.DeviceIndex = DeviceId;
-
-
-    Result = SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IOCTL_QUERYDEVICEINTERFACESTRING,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           NULL);
-
-
-    if ( ! MMSUCCESS(Result) )
-    {
-        return TranslateInternalMmResult(Result);
-    }
-
-
-    if (!Interface)
-    {
-        SND_ASSERT(InterfaceSize);
-
-        *InterfaceSize = DeviceInfo.u.Interface.DeviceInterfaceStringSize;
-        return MMSYSERR_NOERROR;
-    }
-
-    if (InterfaceLength < DeviceInfo.u.Interface.DeviceInterfaceStringSize)
-    {
-        /* buffer is too small */
-        return MMSYSERR_MOREDATA;
-    }
-
-    DeviceInfo.u.Interface.DeviceInterfaceStringSize = InterfaceLength;
-    DeviceInfo.u.Interface.DeviceInterfaceString = Interface;
-
-    Result = SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IOCTL_QUERYDEVICEINTERFACESTRING,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           NULL);
-
-    if (  MMSUCCESS(Result) && InterfaceLength > 2)
-    {
-        Interface[1] = L'\\';
-        Interface[InterfaceLength-1] = L'\0';
-    }
-
-    return Result;
+    /* Unused */
+    return MMSYSERR_NOTSUPPORTED;
 }
 
 MMRESULT
@@ -810,7 +773,7 @@ WdmAudGetWavePositionByLegacy(
 {
     MMRESULT Result;
     PSOUND_DEVICE SoundDevice;
-    WDMAUD_DEVICE_INFO DeviceInfo;
+    PWDMAUD_DEVICE_INFO DeviceInfo;
     MMDEVICE_TYPE DeviceType;
     HANDLE Handle;
 
@@ -827,29 +790,37 @@ WdmAudGetWavePositionByLegacy(
     Result = GetSoundDeviceInstanceHandle(SoundDeviceInstance, &Handle);
     SND_ASSERT( Result == MMSYSERR_NOERROR );
 
-    ZeroMemory(&DeviceInfo, sizeof(WDMAUD_DEVICE_INFO));
-    DeviceInfo.hDevice = Handle;
-    DeviceInfo.DeviceType = DeviceType;
+    SND_TRACE(L"WDMAUD - GetWavePosition DeviceType %u\n", DeviceType);
 
-    Result = SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IOCTL_OPEN_WDMAUD,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           NULL);
+    DeviceInfo = AllocateDeviceInfo(gpszDeviceInterfaceString);
+    if (!DeviceInfo)
+    {
+        /* No memory */
+        return MMSYSERR_NOMEM;
+    }
+
+    DeviceInfo->hDevice = Handle;
+    DeviceInfo->DeviceType = DeviceType;
+
+    Result = WdmAudIoControl(DeviceInfo,
+                             0,
+                             NULL,
+                             IOCTL_GETPOS);
 
     if ( ! MMSUCCESS(Result) )
     {
+        SND_ERR(L"Call to IOCTL_GETPOS failed with %d\n", GetLastError());
+        FreeDeviceInfo(DeviceInfo);
         return TranslateInternalMmResult(Result);
     }
 
     Time->wType = TIME_BYTES;
-    Time->u.cb = (DWORD)DeviceInfo.u.Position;
+    Time->u.cb = (DWORD)DeviceInfo->Position;
+
+    FreeDeviceInfo(DeviceInfo);
 
     return MMSYSERR_NOERROR;
 }
-
 
 MMRESULT
 WdmAudResetStreamByLegacy(
@@ -859,24 +830,38 @@ WdmAudResetStreamByLegacy(
 {
     MMRESULT Result;
     HANDLE Handle;
-    WDMAUD_DEVICE_INFO DeviceInfo;
+    PWDMAUD_DEVICE_INFO DeviceInfo;
 
     Result = GetSoundDeviceInstanceHandle(SoundDeviceInstance, &Handle);
     SND_ASSERT( Result == MMSYSERR_NOERROR );
 
-    ZeroMemory(&DeviceInfo, sizeof(WDMAUD_DEVICE_INFO));
-    DeviceInfo.hDevice = Handle;
-    DeviceInfo.DeviceType = DeviceType;
-    DeviceInfo.u.ResetStream = (bStartReset ? KSRESET_BEGIN : KSRESET_END);
+    SND_TRACE(L"WDMAUD - ResetWaveStream DeviceType %u\n", DeviceType);
 
-    Result = SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IOCTL_RESET_STREAM,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           NULL);
-    return Result;
+    DeviceInfo = AllocateDeviceInfo(gpszDeviceInterfaceString);
+    if (!DeviceInfo)
+    {
+        /* No memory */
+        return MMSYSERR_NOMEM;
+    }
+
+    DeviceInfo->hDevice = Handle;
+    DeviceInfo->DeviceType = DeviceType;
+    DeviceInfo->ResetStream = (bStartReset ? KSRESET_BEGIN : KSRESET_END);
+
+    Result = WdmAudIoControl(DeviceInfo,
+                             0,
+                             NULL,
+                             IOCTL_RESET_STREAM);
+
+    FreeDeviceInfo(DeviceInfo);
+
+    if ( ! MMSUCCESS(Result) )
+    {
+        SND_ERR(L"Call to IOCTL_RESET_STREAM failed with %d\n", GetLastError());
+        return TranslateInternalMmResult(Result);
+    }
+
+    return MMSYSERR_NOERROR;
 }
 
 MMRESULT
@@ -888,72 +873,58 @@ WdmAudQueryMixerInfoByLegacy(
     IN DWORD Flags)
 {
     MMRESULT Result;
-    WDMAUD_DEVICE_INFO DeviceInfo;
+    PWDMAUD_DEVICE_INFO DeviceInfo;
     HANDLE Handle;
     DWORD IoControlCode;
-    LPMIXERLINEW MixLine;
-    LPMIXERLINECONTROLSW MixControls;
-    LPMIXERCONTROLDETAILS MixDetails;
-
-    SND_TRACE(L"uMsg %x Flags %x\n", uMsg, Flags);
 
     Result = GetSoundDeviceInstanceHandle(SoundDeviceInstance, &Handle);
     SND_ASSERT( Result == MMSYSERR_NOERROR );
 
-    ZeroMemory(&DeviceInfo, sizeof(WDMAUD_DEVICE_INFO));
-    DeviceInfo.hDevice = Handle;
-    DeviceInfo.DeviceIndex = DeviceId;
-    DeviceInfo.DeviceType = MIXER_DEVICE_TYPE;
-    DeviceInfo.Flags = Flags;
+    SND_TRACE(L"WDMAUD - QueryMixerInfo: uMsg %x Flags %x\n", uMsg, Flags);
 
-    MixLine = (LPMIXERLINEW)Parameter;
-    MixControls = (LPMIXERLINECONTROLSW)Parameter;
-    MixDetails = (LPMIXERCONTROLDETAILS)Parameter;
+    DeviceInfo = AllocateDeviceInfo(gpszDeviceInterfaceString);
+    if (!DeviceInfo)
+    {
+        /* No memory */
+        return MMSYSERR_NOMEM;
+    }
+
+    DeviceInfo->hDevice = Handle;
+    DeviceInfo->DeviceIndex = DeviceId;
+    DeviceInfo->DeviceType = MIXER_DEVICE_TYPE;
+    DeviceInfo->Flags = Flags;
 
     switch(uMsg)
     {
         case MXDM_GETLINEINFO:
-            RtlCopyMemory(&DeviceInfo.u.MixLine, MixLine, sizeof(MIXERLINEW));
             IoControlCode = IOCTL_GETLINEINFO;
             break;
         case MXDM_GETLINECONTROLS:
-            RtlCopyMemory(&DeviceInfo.u.MixControls, MixControls, sizeof(MIXERLINECONTROLSW));
             IoControlCode = IOCTL_GETLINECONTROLS;
             break;
-       case MXDM_SETCONTROLDETAILS:
-            RtlCopyMemory(&DeviceInfo.u.MixDetails, MixDetails, sizeof(MIXERCONTROLDETAILS));
+        case MXDM_SETCONTROLDETAILS:
             IoControlCode = IOCTL_SETCONTROLDETAILS;
             break;
-       case MXDM_GETCONTROLDETAILS:
-            RtlCopyMemory(&DeviceInfo.u.MixDetails, MixDetails, sizeof(MIXERCONTROLDETAILS));
+        case MXDM_GETCONTROLDETAILS:
             IoControlCode = IOCTL_GETCONTROLDETAILS;
             break;
-       default:
-           SND_ASSERT(0);
-           return MMSYSERR_NOTSUPPORTED;
+        default:
+            SND_ASSERT(0);
+            return MMSYSERR_NOTSUPPORTED;
     }
 
-    Result = SyncOverlappedDeviceIoControl(KernelHandle,
-                                           IoControlCode,
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           (LPVOID) &DeviceInfo,
-                                           sizeof(WDMAUD_DEVICE_INFO),
-                                           NULL);
+    Result = WdmAudIoControl(DeviceInfo,
+                             sizeof(Parameter),
+                             Parameter,
+                             IoControlCode);
+
+    FreeDeviceInfo(DeviceInfo);
 
     if ( ! MMSUCCESS(Result) )
     {
-        return Result;
+        SND_ERR(L"Call to %d failed with %d\n", IoControlCode, GetLastError());
+        return TranslateInternalMmResult(Result);
     }
 
-    switch(uMsg)
-    {
-        case MXDM_GETLINEINFO:
-        {
-            RtlCopyMemory(MixLine, &DeviceInfo.u.MixLine, sizeof(MIXERLINEW));
-            break;
-        }
-    }
-
-    return Result;
+    return MMSYSERR_NOERROR;
 }

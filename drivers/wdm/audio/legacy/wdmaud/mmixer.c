@@ -729,18 +729,18 @@ WdmAudWaveCapabilities(
     if (DeviceInfo->DeviceType == WAVE_IN_DEVICE_TYPE)
     {
         /* get capabilities */
-        Status = MMixerWaveInCapabilities(&MixerContext, DeviceInfo->DeviceIndex, &DeviceInfo->u.WaveInCaps);
+        Status = MMixerWaveInCapabilities(&MixerContext, DeviceInfo->DeviceIndex, &DeviceInfo->Data);
     }
     else if (DeviceInfo->DeviceType == WAVE_OUT_DEVICE_TYPE)
     {
         /* get capabilities */
-        Status = MMixerWaveOutCapabilities(&MixerContext, DeviceInfo->DeviceIndex, &DeviceInfo->u.WaveOutCaps);
+        Status = MMixerWaveOutCapabilities(&MixerContext, DeviceInfo->DeviceIndex, &DeviceInfo->Data);
     }
 
     if (Status == MM_STATUS_SUCCESS)
         return STATUS_SUCCESS;
     else
-        return Status;
+        return STATUS_UNSUCCESSFUL;
 }
 
 NTSTATUS
@@ -835,7 +835,7 @@ WdmAudControlOpenWave(
     Context.DeviceExtension = (PWDMAUD_DEVICE_EXTENSION)DeviceObject->DeviceExtension;
     Context.DeviceType = DeviceInfo->DeviceType;
 
-    Status = MMixerOpenWave(&MixerContext, DeviceInfo->DeviceIndex, DeviceInfo->DeviceType == WAVE_IN_DEVICE_TYPE, &DeviceInfo->u.WaveFormatEx, CreatePinCallback, &Context, &DeviceInfo->hDevice);
+    Status = MMixerOpenWave(&MixerContext, DeviceInfo->DeviceIndex, DeviceInfo->DeviceType == WAVE_IN_DEVICE_TYPE, &DeviceInfo->Data, CreatePinCallback, &Context, &DeviceInfo->hDevice);
 
     if (Status == MM_STATUS_SUCCESS)
         return SetIrpIoStatus(Irp, STATUS_SUCCESS, sizeof(WDMAUD_DEVICE_INFO));

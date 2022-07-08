@@ -54,6 +54,9 @@ WriteFileEx_Remixer(
     IN  LPOVERLAPPED_COMPLETION_ROUTINE CompletionRoutine);
 
 MMRESULT
+WdmAudOpenKernelSoundDeviceByMMixer(VOID);
+
+MMRESULT
 WdmAudGetCapabilitiesByMMixer(
     IN  PSOUND_DEVICE SoundDevice,
     IN  DWORD DeviceId,
@@ -62,7 +65,9 @@ WdmAudGetCapabilitiesByMMixer(
 
 MMRESULT
 WdmAudOpenSoundDeviceByMMixer(
-    IN  struct _SOUND_DEVICE* SoundDevice,
+    IN  struct _SOUND_DEVICE_INSTANCE* SoundDeviceInstance,
+    IN  DWORD DeviceId,
+    IN  PWAVEFORMATEX WaveFormat,
     OUT PVOID* Handle);
 
 MMRESULT
@@ -99,26 +104,12 @@ WdmAudGetControlDetails(
     IN ULONG Flags);
 
 MMRESULT
-WdmAudSetWaveDeviceFormatByMMixer(
-    IN  PSOUND_DEVICE_INSTANCE Instance,
-    IN  DWORD DeviceId,
-    IN  PWAVEFORMATEX WaveFormat,
-    IN  DWORD WaveFormatSize);
-
-MMRESULT
 WdmAudGetDeviceInterfaceStringByMMixer(
     IN  MMDEVICE_TYPE DeviceType,
     IN  DWORD DeviceId,
     IN  LPWSTR Interface,
     IN  DWORD  InterfaceLength,
     OUT  DWORD * InterfaceSize);
-
-MMRESULT
-WdmAudSetMixerDeviceFormatByMMixer(
-    IN  PSOUND_DEVICE_INSTANCE Instance,
-    IN  DWORD DeviceId,
-    IN  PWAVEFORMATEX WaveFormat,
-    IN  DWORD WaveFormatSize);
 
 MMRESULT
 WdmAudQueryMixerInfoByMMixer(
@@ -157,6 +148,24 @@ WdmAudCleanupByMMixer(VOID);
 
 /* legacy.c */
 
+PWDMAUD_DEVICE_INFO
+AllocateDeviceInfo(
+    IN  LPWSTR DeviceInterfaceString);
+
+VOID
+FreeDeviceInfo(
+    IN  PWDMAUD_DEVICE_INFO DeviceInfo);
+
+MMRESULT
+WdmAudIoControl(
+    IN  PWDMAUD_DEVICE_INFO DeviceInfo,
+    IN OUT OPTIONAL ULONG DataSize,
+    IN OUT OPTIONAL PVOID Data,
+    IN  DWORD IoControlCode);
+
+MMRESULT
+WdmAudOpenKernelSoundDeviceByLegacy(VOID);
+
 MMRESULT
 WdmAudCleanupByLegacy(VOID);
 
@@ -169,7 +178,9 @@ WdmAudGetCapabilitiesByLegacy(
 
 MMRESULT
 WdmAudOpenSoundDeviceByLegacy(
-    IN PSOUND_DEVICE SoundDevice,
+    IN  struct _SOUND_DEVICE_INSTANCE* SoundDeviceInstance,
+    IN  DWORD DeviceId,
+    IN  PWAVEFORMATEX WaveFormat,
     OUT PVOID *Handle
 );
 
@@ -187,26 +198,12 @@ WdmAudGetDeviceInterfaceStringByLegacy(
     OUT  DWORD * InterfaceSize);
 
 MMRESULT
-WdmAudSetMixerDeviceFormatByLegacy(
-    IN  PSOUND_DEVICE_INSTANCE Instance,
-    IN  DWORD DeviceId,
-    IN  PWAVEFORMATEX WaveFormat,
-    IN  DWORD WaveFormatSize);
-
-MMRESULT
 WdmAudQueryMixerInfoByLegacy(
     IN  struct _SOUND_DEVICE_INSTANCE* SoundDeviceInstance,
     IN DWORD DeviceId,
     IN UINT uMsg,
     IN LPVOID Parameter,
     IN DWORD Flags);
-
-MMRESULT
-WdmAudSetWaveDeviceFormatByLegacy(
-    IN  PSOUND_DEVICE_INSTANCE Instance,
-    IN  DWORD DeviceId,
-    IN  PWAVEFORMATEX WaveFormat,
-    IN  DWORD WaveFormatSize);
 
 MMRESULT
 WdmAudSetWaveStateByLegacy(
