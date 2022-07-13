@@ -2680,18 +2680,6 @@ ExFreePoolWithTag(IN PVOID P,
     //
     Tag = Entry->PoolTag;
     if (Tag & PROTECTED_POOL) Tag &= ~PROTECTED_POOL;
-
-    //
-    // Check block tag
-    //
-    if (TagToFree && TagToFree != Tag)
-    {
-        DPRINT1("Freeing pool - invalid tag specified: %.4s != %.4s\n", (char*)&TagToFree, (char*)&Tag);
-#if DBG
-        KeBugCheckEx(BAD_POOL_CALLER, 0x0A, (ULONG_PTR)P, Tag, TagToFree);
-#endif
-    }
-
     //
     // Track the removal of this allocation
     //
