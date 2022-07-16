@@ -75,6 +75,8 @@ list(APPEND SOURCE
     client/file/rw.c
     client/file/tape.c
     client/file/volume.c
+    client/reg/hkcr.c
+    client/reg/reg.c
     wine/actctx.c
     wine/comm.c
     wine/lzexpand.c
