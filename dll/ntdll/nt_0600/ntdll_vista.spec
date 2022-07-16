@@ -7,6 +7,7 @@
 @ stdcall RtlAcquireSRWLockShared(ptr)
 @ stdcall RtlReleaseSRWLockShared(ptr)
 @ stdcall RtlAcquireSRWLockExclusive(ptr)
+@ stdcall RtlQueryPerformanceCounter(ptr)
 @ stdcall RtlReleaseSRWLockExclusive(ptr)
 @ stdcall RtlRunOnceInitialize(ptr)
 @ stdcall RtlRunOnceBeginInitialize(ptr long ptr)

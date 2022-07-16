@@ -106,7 +106,7 @@ extern "C" {
     _Out_writes_z_(_SizeInBytes) char *_Dst,
     _In_ size_t _SizeInBytes,
     _In_z_ const char *_Src);
-
+/* 
   _Check_return_wat_
   _CRTIMP
   errno_t
@@ -116,7 +116,7 @@ extern "C" {
     _In_ size_t _DstSizeInChars,
     _In_z_ const char *_Src,
     _In_ size_t _MaxCount);
-
+*/
   _Check_return_wat_
   _CRTIMP
   errno_t

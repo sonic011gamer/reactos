@@ -695,7 +695,6 @@ RtlQueryAtomInAtomTable(
     return Status;
 }
 
-
 /*
  * @private - only used by NtQueryInformationAtom
  */
