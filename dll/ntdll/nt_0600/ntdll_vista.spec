@@ -14,6 +14,7 @@
 @ stdcall RtlRunOnceExecuteOnce(ptr ptr ptr ptr)
 @ stdcall RtlTryAcquireSRWLockExclusive(ptr)
 @ stdcall RtlTryAcquireSRWLockShared(ptr)
+@ stdcall RtlCompareUnicodeStrings(ptr long ptr long long)
 @ stdcall TpAllocCleanupGroup(ptr)
 @ stdcall TpAllocPool(ptr ptr)
 @ stdcall TpAllocTimer(ptr ptr ptr ptr)
