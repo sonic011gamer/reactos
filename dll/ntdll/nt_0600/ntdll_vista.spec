@@ -15,3 +15,5 @@
 
 @ stdcall RtlConnectToSm(ptr ptr long ptr) SmConnectToSm
 @ stdcall RtlSendMsgToSm(ptr ptr) SmSendMsgToSm
+
+@ stdcall RtlCompareUnicodeStrings(ptr long ptr long long)

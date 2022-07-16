@@ -26,10 +26,6 @@ RegisterPowerSettingNotification
 UnregisterPowerSettingNotification
 CloseTouchInputHandle
 
-;IPHLPAPI
-GetIfTable2
-FreeMibTable
-
 ;ESENT
 JetSetSystemParameterW
 JetCreateInstanceW
@@ -41,8 +37,7 @@ JetBeginSessionW
 
 ; CfgMgr32
 CM_Get_DevNode_PropertyW
-;PowerProf
-PowerDeterminePlatformRoleEx
+
 ; SetupAPI
 SetDiGetDevicePropertyW
 
@@ -93,7 +88,11 @@ NdfCreateWebIncident
 NdfCloseIncident
 
 ;MF
+MFEnumDeviceSources
+MFGetService
+MFCreateDeviceSource
 ;MFPLAT
 ;MFREADWRITE
+MFCreateSourceReaderFromMediaSource
 ;BTHPROPS
 ;BLUETOOTHAPIS
