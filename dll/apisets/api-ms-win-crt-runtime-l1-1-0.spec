@@ -83,10 +83,7 @@
 @ stdcall _statusfp() msvcrt._statusfp
 @ stub _statusfp2
 @ stdcall _strerror() msvcrt._strerror
-@ cdecl -version=0x600+ _strerror_s(ptr long str) msvcrt._strerror_s
 @ stub _wassert
-@ cdecl -version=0x600+ __wcserror_s(ptr long wstr) msvcrt._wcserror_s
-@ stub _wcserror_s
 @ stdcall _wperror() msvcrt._wperror
 @ stdcall _wsystem() msvcrt._wsystem
 @ stdcall abort() msvcrt.abort

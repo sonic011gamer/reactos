@@ -127,7 +127,6 @@
 @ stdcall fgetwc() msvcrt.fgetwc
 @ stdcall fgetws() msvcrt.fgetws
 @ stdcall fopen() msvcrt.fopen
-@ cdecl -version=0x600+ _wfopen_s(ptr wstr wstr) msvcrt.fopen_s
 @ stdcall fputc() msvcrt.fputc
 @ stdcall fputs() msvcrt.fputs
 @ stdcall fputwc() msvcrt.fputwc
