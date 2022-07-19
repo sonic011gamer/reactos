@@ -754,6 +754,12 @@ RegisterTouchWindow(HWND  hwnd,
     return TRUE;
 }
 
+BOOL CloseTouchInputHandle(
+  LPARAM hTouchInput
+)
+{
+ return TRUE;
+}
 PVOID // HPOWERNOTIFY
 WINAPI
 RegisterPowerSettingNotification(HANDLE hRecipient,
@@ -779,5 +785,16 @@ UnregisterPowerSettingNotification(HANDLE Handle) // HPOWERNOTIFY
 {
     UNIMPLEMENTED;
     return TRUE;
+}
+
+
+/*
+ * @implemented
+ */
+BOOL
+WINAPI
+SetProcessDPIAware()
+{
+    return FALSE;
 }
 
