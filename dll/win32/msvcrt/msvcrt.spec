@@ -1562,4 +1562,32 @@
 @ varargs wprintf(wstr)
 @ stub -version=0x600+ wprintf_s
 @ varargs wscanf(wstr)
+; I gotta implement all of these
 @ stub -version=0x600+ wscanf_s
+@ stub -version=0x600+ _calloc_base
+@ stub -version=0x600+ _aligned_msize
+@ stub -version=0x600+ _free_base
+@ stub -version=0x600+ _get_heap_handle
+@ stub -version=0x600+ _malloc_base
+@ stub -version=0x600+ _realloc_base
+@ stub -version=0x600+ _recalloc
+@ stub -version=0x600+ wctype
+@ stub -version=0x600+ ___lc_locale_name_func
+@ stub -version=0x600+ _configthreadlocale
+@ stub -version=0x600+ _lock_locales
+@ stub -version=0x600+ _unlock_locales
+@ stub -version=0x600+ _get_stream_buffer_pointers
+@ stub -version=0x600+ _configure_narrow_argv
+@ stub -version=0x600+ _configure_wide_argv
+@ stub -version=0x600+ _crt_atexit
+@ stub -version=0x600+ _execute_onexit_table
+@ stub -version=0x600+ _get_initial_narrow_environment
+@ stub -version=0x600+ _get_initial_wide_environment
+@ stub -version=0x600+ _initialize_narrow_environment
+@ stub -version=0x600+ _initialize_onexit_table
+@ stub -version=0x600+ _initialize_wide_environment
+@ stub -version=0x600+ _invalid_parameter_noinfo
+@ stub -version=0x600+ _invalid_parameter_noinfo_noreturn
+@ stub -version=0x600+ _register_onexit_function
+@ stub -version=0x600+ _register_thread_local_exe_atexit_callback
+@ stub -version=0x600+ _set_app_type
