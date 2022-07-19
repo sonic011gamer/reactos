@@ -3,7 +3,6 @@
 
 @ cdecl -version=0x600+ _aligned_msize(ptr long long) msvcrt._aligned_msize
 @ stdcall _aligned_malloc() msvcrt._aligned_malloc
-@ stub _aligned_msize
 @ stdcall _aligned_offset_malloc() msvcrt._aligned_offset_malloc
 @ stdcall _aligned_offset_realloc() msvcrt._aligned_offset_realloc
 @ stub _aligned_offset_recalloc
