@@ -11,7 +11,6 @@
 @ cdecl -version=0x600+ _isalnum_l(long ptr) msvcrt._isalnum_l
 @ cdecl -version=0x600+ _isalpha_l(long ptr) msvcrt._isalpha_l
 @ stub _isblank_l
-@ cdecl -version=0x600+ _iscntrl_l(long ptr) msvcrt._iscntrl_l
 @ stdcall _isctype() msvcrt._isctype
 @ cdecl -version=0x600+ _iscntrl_l(long ptr) msvcrt._iscntrl_l
 @ cdecl -version=0x600+ _isctype_l(long long ptr) msvcrt._isctype_l
