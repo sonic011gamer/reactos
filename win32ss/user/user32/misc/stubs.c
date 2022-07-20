@@ -753,13 +753,14 @@ RegisterTouchWindow(HWND  hwnd,
     UNIMPLEMENTED;
     return TRUE;
 }
-
+#if 0
 BOOL CloseTouchInputHandle(
   LPARAM hTouchInput
 )
 {
  return TRUE;
 }
+#endif
 PVOID // HPOWERNOTIFY
 WINAPI
 RegisterPowerSettingNotification(HANDLE hRecipient,
