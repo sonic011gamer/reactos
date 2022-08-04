@@ -217,6 +217,9 @@ DirectDrawEnumerateExA(LPDDENUMCALLBACKEXA lpCallback,
     DWORD privateDWFlags = 0;
     CHAR strMsg[RC_STRING_MAX_SIZE];
     HRESULT retVal = DDERR_INVALIDPARAMS;
+	
+	UNREFERENCED_PARAMETER(EnumerateAttachedSecondaries);
+	UNREFERENCED_PARAMETER(privateDWFlags);
 
     DX_WINDBG_trace();
 
