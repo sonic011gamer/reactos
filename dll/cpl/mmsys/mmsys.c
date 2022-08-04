@@ -448,6 +448,8 @@ MMSYS_InstallDevice(HDEVINFO hDevInfo, PSP_DEVINFO_DATA pspDevInfoData)
     WCHAR szBuffer[MAX_PATH];
     HINF hInf;
     PVOID Context;
+    BOOL Result;
+    SC_HANDLE hSCManager, hService;
     WCHAR WaveName[20];
     HKEY hKey;
     DWORD BufferSize;
@@ -483,17 +485,17 @@ MMSYS_InstallDevice(HDEVINFO hDevInfo, PSP_DEVINFO_DATA pspDevInfoData)
         return ERROR_GEN_FAILURE;
     }
 
-    SetupInstallFromInfSectionW(NULL,
-                                hInf,
-                                L"AUDIO_Inst.NT",
-                                SPINST_ALL,
-                                NULL,
-	                            NULL,
-                                SP_COPY_NEWER,
-                                SetupDefaultQueueCallbackW,
-                                Context,
-                                NULL,
-                                NULL);
+    Result = SetupInstallFromInfSectionW(NULL,
+                                         hInf,
+                                         L"AUDIO_Inst.NT",
+                                         SPINST_ALL,
+                                         NULL,
+                                         NULL,
+                                         SP_COPY_NEWER,
+                                         SetupDefaultQueueCallbackW,
+                                         Context,
+                                         NULL,
+                                         NULL);
 
 
     SetupTermDefaultQueueCallback(Context);
@@ -513,7 +515,6 @@ MMSYS_InstallDevice(HDEVINFO hDevInfo, PSP_DEVINFO_DATA pspDevInfoData)
         InstallSoftwareBusPnpEnumerator(szBuffer, L"ROOT\\SWENUM\0");
     }
 
-<<<<<<< HEAD
     hSCManager = OpenSCManagerW(NULL, NULL, SC_MANAGER_CONNECT);
     if (!hSCManager)
     {
@@ -531,7 +532,7 @@ MMSYS_InstallDevice(HDEVINFO hDevInfo, PSP_DEVINFO_DATA pspDevInfoData)
     }
     CloseServiceHandle(hSCManager);
 
-    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Drivers32", 0, GENERIC_READ | GENERIC_WRITE, &hKey) == ERROR_SUCCESS)
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Drivers32", 0, KEY_READ | KEY_WRITE, &hKey) == ERROR_SUCCESS)
     {
         Length = GetSystemDirectoryW(szBuffer, _countof(szBuffer));
         if (!Length || Length >= _countof(szBuffer) - CONST_STR_LEN(L"\\wdmaud.drv"))
