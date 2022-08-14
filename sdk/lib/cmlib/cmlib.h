@@ -59,7 +59,9 @@
     #define STATUS_NOT_IMPLEMENTED           ((NTSTATUS)0xC0000002)
     #define STATUS_NO_MEMORY                 ((NTSTATUS)0xC0000017)
     #define STATUS_INSUFFICIENT_RESOURCES    ((NTSTATUS)0xC000009A)
+    #define STATUS_INVALID_PARAMETER         ((NTSTATUS)0xC000000D)
     #define STATUS_REGISTRY_CORRUPT          ((NTSTATUS)0xC000014C)
+    #define STATUS_REGISTRY_IO_FAILED        ((NTSTATUS)0xC000014D)
     #define STATUS_NOT_REGISTRY_FILE         ((NTSTATUS)0xC000015C)
     #define STATUS_REGISTRY_RECOVERED        ((NTSTATUS)0x40000009)
 
@@ -202,12 +204,74 @@
 #endif
 #endif
 
-#define TAG_CM     '  MC'
-#define TAG_KCB    'bkMC'
-#define TAG_CMHIVE 'vHMC'
-#define TAG_CMSD   'DSMC'
+#define TAG_CM             '  MC'
+#define TAG_KCB            'bkMC'
+#define TAG_CMHIVE         'vHMC'
+#define TAG_CMSD           'DSMC'
+#define TAG_REGISTRY_STACK 'sRMC'
 
 #define CMAPI NTAPI
+
+//
+// Check Registry status type definition
+//
+typedef ULONG CM_CHECK_REGISTRY_STATUS;
+
+//
+// Check Registry flags
+//
+#define CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES        0x0
+#define CM_CHECK_REGISTRY_PURGE_VOLATILES             0x1
+#define CM_CHECK_REGISTRY_BOOTLOADER_PURGE_VOLATILES  0x4
+#define CM_CHECK_REGISTRY_VALIDATE_HIVE               0x10
+
+//
+// Check Registry status codes
+//
+#define CM_CHECK_REGISTRY_GOOD                         0
+#define CM_CHECK_REGISTRY_SD_INVALID                   800
+#define CM_CHECK_REGISTRY_HIVE_CORRUPT_SIGNATURE       900
+#define CM_CHECK_REGISTRY_BIN_SIZE_OR_OFFSET_CORRUPT   905
+#define CM_CHECK_REGISTRY_BIN_SIGNATURE_HEADER_CORRUPT 1000
+#define CM_CHECK_REGISTRY_BAD_FREE_CELL                1005
+#define CM_CHECK_REGISTRY_BAD_ALLOC_CELL               1010
+#define CM_CHECK_REGISTRY_ALLOCATE_MEM_STACK_FAIL      2000
+#define CM_CHECK_REGISTRY_ROOT_CELL_NOT_FOUND          2005
+#define CM_CHECK_REGISTRY_BAD_LEXICOGRAPHICAL_ORDER    2010
+#define CM_CHECK_REGISTRY_NODE_NOT_FOUND               2015
+#define CM_CHECK_REGISTRY_SUBKEY_NOT_FOUND             2020
+#define CM_CHECK_REGISTRY_TREE_TOO_MANY_LEVELS         2025
+#define CM_CHECK_REGISTRY_KEY_CELL_NOT_ALLOCATED       3000
+#define CM_CHECK_REGISTRY_CELL_DATA_NOT_FOUND          3005
+#define CM_CHECK_REGISTRY_CELL_SIZE_NOT_SANE           3010
+#define CM_CHECK_REGISTRY_KEY_NAME_LENGTH_ZERO         3015
+#define CM_CHECK_REGISTRY_KEY_TOO_BIG_THAN_CELL        3020
+#define CM_CHECK_REGISTRY_BAD_KEY_NODE_PARENT          3025
+#define CM_CHECK_REGISTRY_BAD_KEY_NODE_SIGNATURE       3030
+#define CM_CHECK_REGISTRY_KEY_CLASS_UNALLOCATED        4000
+#define CM_CHECK_REGISTRY_VALUE_LIST_UNALLOCATED       5000
+#define CM_CHECK_REGISTRY_VALUE_LIST_DATA_NOT_FOUND    5005
+#define CM_CHECK_REGISTRY_VALUE_LIST_SIZE_NOT_SANE     5010
+#define CM_CHECK_REGISTRY_VALUE_CELL_NIL               6000
+#define CM_CHECK_REGISTRY_VALUE_CELL_UNALLOCATED       6005
+#define CM_CHECK_REGISTRY_VALUE_CELL_DATA_NOT_FOUND    6010
+#define CM_CHECK_REGISTRY_VALUE_CELL_SIZE_NOT_SANE     6015
+#define CM_CHECK_REGISTRY_CORRUPT_VALUE_DATA           6020
+#define CM_CHECK_REGISTRY_DATA_CELL_NOT_ALLOCATED      6025
+#define CM_CHECK_REGISTRY_BAD_KEY_VALUE_SIGNATURE      6030
+#define CM_CHECK_REGISTRY_STABLE_KEYS_ON_VOLATILE      7000
+#define CM_CHECK_REGISTRY_SUBKEYS_LIST_UNALLOCATED     7005
+#define CM_CHECK_REGISTRY_CORRUPT_SUBKEYS_INDEX        7010
+#define CM_CHECK_REGISTRY_BAD_SUBKEY_COUNT             7015
+#define CM_CHECK_REGISTRY_KEY_INDEX_CELL_UNALLOCATED   7020
+#define CM_CHECK_REGISTRY_CORRUPT_LEAF_ON_ROOT         7025
+#define CM_CHECK_REGISTRY_CORRUPT_LEAF_SIGNATURE       7030
+#define CM_CHECK_REGISTRY_CORRUPT_KEY_INDEX_SIGNATURE  7035
+
+//
+// Check Registry success macro
+//
+#define CM_CHECK_REGISTRY_SUCCESS(StatusCode) ((ULONG)(StatusCode) == CM_CHECK_REGISTRY_GOOD)
 
 #include <wine/unicode.h>
 #include <wchar.h>
@@ -444,6 +508,11 @@ HvWriteHive(
 
 BOOLEAN
 CMAPI
+HvSyncHiveFromRecover(
+    _In_ PHHIVE RegistryHive);
+
+BOOLEAN
+CMAPI
 HvTrackCellRef(
     IN OUT PHV_TRACK_CELL_REF CellRef,
     IN PHHIVE Hive,
@@ -479,6 +548,70 @@ ULONG CMAPI
 HvpHiveHeaderChecksum(
    PHBASE_BLOCK HiveHeader);
 
+//
+// Registry Self-Heal Routines
+//
+BOOLEAN
+CMAPI
+CmIsSelfHealEnabled(VOID);
+
+BOOLEAN
+CMAPI
+CmpRepairParentKey(
+    _Inout_ PHHIVE Hive,
+    _In_ HCELL_INDEX TargetKey,
+    _In_ HCELL_INDEX ParentKey);
+
+BOOLEAN
+CMAPI
+CmpRepairParentNode(
+    _Inout_ PHHIVE Hive,
+    _In_ HCELL_INDEX DirtyCell,
+    _In_ HCELL_INDEX ParentCell,
+    _Inout_ PCELL_DATA CellData);
+
+BOOLEAN
+CMAPI
+CmpRepairKeyNodeSignature(
+    _Inout_ PHHIVE Hive,
+    _In_ HCELL_INDEX DirtyCell,
+    _Inout_ PCELL_DATA CellData);
+
+BOOLEAN
+CMAPI
+CmpRepairClassOfNodeKey(
+    _Inout_ PHHIVE Hive,
+    _In_ HCELL_INDEX DirtyCell,
+    _Inout_ PCELL_DATA CellData);
+
+BOOLEAN
+CMAPI
+CmpRepairValueList(
+    _Inout_ PHHIVE Hive,
+    _In_ HCELL_INDEX CurrentCell);
+
+BOOLEAN
+CMAPI
+CmpRepairValueListCount(
+    _Inout_ PHHIVE Hive,
+    _In_ HCELL_INDEX CurrentCell,
+    _In_ ULONG ListCountIndex,
+    _Inout_ PCELL_DATA ValueListData);
+
+BOOLEAN
+CMAPI
+CmpRepairSubKeyCounts(
+    _Inout_ PHHIVE Hive,
+    _In_ HCELL_INDEX CurrentCell,
+    _In_ ULONG Count,
+    _Inout_ PCELL_DATA CellData);
+
+BOOLEAN
+CMAPI
+CmpRepairSubKeyList(
+    _Inout_ PHHIVE Hive,
+    _In_ HCELL_INDEX CurrentCell,
+    _Inout_ PCELL_DATA CellData);
 
 /* Old-style Public "Cmlib" functions */
 
@@ -487,12 +620,28 @@ CmCreateRootNode(
    PHHIVE Hive,
    PCWSTR Name);
 
-VOID CMAPI
-CmPrepareHive(
-   PHHIVE RegistryHive);
-
 
 /* NT-style Public Cm functions */
+
+//
+// Check Registry Routines
+//
+CM_CHECK_REGISTRY_STATUS
+NTAPI
+HvValidateBin(
+    _In_ PHHIVE Hive,
+    _In_ PHBIN Bin);
+
+CM_CHECK_REGISTRY_STATUS
+NTAPI
+HvValidateHive(
+    _In_ PHHIVE Hive);
+
+CM_CHECK_REGISTRY_STATUS
+NTAPI
+CmCheckRegistry(
+    _In_ PCMHIVE RegistryHive,
+    _In_ ULONG Flags);
 
 //
 // Cell Index Routines
@@ -549,6 +698,24 @@ CmpMarkIndexDirty(
 //
 // Name Functions
 //
+LONG
+NTAPI
+CmpCompareBothCompressedNames(
+    _In_ PWCHAR FirstCompressedName,
+    _In_ ULONG FirstCompressedNameLength,
+    _In_ PWCHAR SecondCompressedName,
+    _In_ ULONG SecondCompressedNameLength
+);
+
+LONG
+NTAPI
+CmpCompareDistinctNames(
+    _In_ PWSTR FirstName,
+    _In_ ULONG FirstNameLength,
+    _In_ PWSTR SecondName,
+    _In_ ULONG SecondNameLength
+);
+
 LONG
 NTAPI
 CmpCompareCompressedName(

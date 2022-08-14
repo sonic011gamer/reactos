@@ -63,21 +63,18 @@ CmpFree(
 }
 
 BOOLEAN
-RegImportBinaryHive(
-    _In_ PVOID ChunkBase,
-    _In_ ULONG ChunkSize)
+RegInitializeSystemHive(
+    _In_ PCMHIVE CmHive,
+    _In_ PVOID ChunkBase)
 {
     NTSTATUS Status;
-    PCM_KEY_NODE KeyNode;
+    CM_CHECK_REGISTRY_STATUS CmStatusCode;
 
-    TRACE("RegImportBinaryHive(%p, 0x%lx)\n", ChunkBase, ChunkSize);
-
-    /* Allocate and initialize the hive */
-    CmSystemHive = FrLdrTempAlloc(sizeof(CMHIVE), 'eviH');
-    Status = HvInitialize(GET_HHIVE(CmSystemHive),
+    /* Initialize the hive */
+    Status = HvInitialize(GET_HHIVE(CmHive),
                           HINIT_FLAT, // HINIT_MEMORY_INPLACE
                           0,
-                          0,
+                          HFILE_TYPE_PRIMARY,
                           ChunkBase,
                           CmpAllocate,
                           CmpFree,
@@ -88,6 +85,34 @@ RegImportBinaryHive(
                           1,
                           NULL);
     if (!NT_SUCCESS(Status))
+    {
+        return FALSE;
+    }
+
+    /* Now check the hive and purge volatile data */
+    CmStatusCode = CmCheckRegistry(CmHive, CM_CHECK_REGISTRY_BOOTLOADER_PURGE_VOLATILES | CM_CHECK_REGISTRY_VALIDATE_HIVE);
+    if (!CM_CHECK_REGISTRY_SUCCESS(CmStatusCode))
+    {
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+BOOLEAN
+RegImportBinaryHive(
+    _In_ PVOID ChunkBase,
+    _In_ ULONG ChunkSize)
+{
+    BOOLEAN Success;
+    PCM_KEY_NODE KeyNode;
+
+    TRACE("RegImportBinaryHive(%p, 0x%lx)\n", ChunkBase, ChunkSize);
+
+    /* Allocate and initialize the hive */
+    CmSystemHive = FrLdrTempAlloc(sizeof(CMHIVE), 'eviH');
+    Success = RegInitializeSystemHive(CmSystemHive, ChunkBase);
+    if (!Success)
     {
         ERR("Corrupted hive %p!\n", ChunkBase);
         FrLdrTempFree(CmSystemHive, 'eviH');
