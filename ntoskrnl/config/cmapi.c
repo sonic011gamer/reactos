@@ -1939,6 +1939,7 @@ CmFlushKey(IN PCM_KEY_CONTROL_BLOCK Kcb,
            IN BOOLEAN ExclusiveLock)
 {
     PCMHIVE CmHive;
+    CM_CHECK_REGISTRY_STATUS CheckStatus;
     NTSTATUS Status = STATUS_SUCCESS;
     PHHIVE Hive;
 
@@ -1957,6 +1958,11 @@ CmFlushKey(IN PCM_KEY_CONTROL_BLOCK Kcb,
     }
     else
     {
+        /* Make sure the registry hive we're going to flush is OK */
+        // FIXME: CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES | CM_CHECK_REGISTRY_VALIDATE_HIVE (HvValidateHive is currently broken)
+        CheckStatus = CmCheckRegistry(CmHive, CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES);
+        ASSERT(CM_CHECK_REGISTRY_SUCCESS(CheckStatus));
+
         /* Don't touch the hive */
         CmpLockHiveFlusherExclusive(CmHive);
 
@@ -2054,7 +2060,7 @@ CmLoadKey(IN POBJECT_ATTRIBUTES TargetKey,
                             &ClientSecurityContext,
                             &Allocate,
                             &CmHive,
-                            0);
+                            CM_CHECK_REGISTRY_PURGE_VOLATILES);
 
     /* Get rid of the security context */
     SeDeleteClientSecurity(&ClientSecurityContext);
@@ -2639,8 +2645,9 @@ CmSaveKey(IN PCM_KEY_CONTROL_BLOCK Kcb,
           IN HANDLE FileHandle,
           IN ULONG Flags)
 {
+    CM_CHECK_REGISTRY_STATUS CheckStatus;
     NTSTATUS Status = STATUS_SUCCESS;
-    PCMHIVE KeyHive = NULL;
+    PCMHIVE KeyHive = NULL, HiveToValidate = NULL;
     PAGED_CODE();
 
     DPRINT("CmSaveKey(0x%08X, 0x%08X, %lu)\n", Kcb, FileHandle, Flags);
@@ -2648,6 +2655,9 @@ CmSaveKey(IN PCM_KEY_CONTROL_BLOCK Kcb,
     /* Lock the registry and KCB */
     CmpLockRegistry();
     CmpAcquireKcbLockShared(Kcb);
+
+    /* Get the hive for validation */
+    HiveToValidate = (PCMHIVE)Kcb->KeyHive;
 
     if (Kcb->Delete)
     {
@@ -2663,6 +2673,11 @@ CmSaveKey(IN PCM_KEY_CONTROL_BLOCK Kcb,
         goto Cleanup;
     }
 
+    /* Make sure this control block has a sane hive */
+    // FIXME: CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES | CM_CHECK_REGISTRY_VALIDATE_HIVE (HvValidateHive is currently broken)
+    CheckStatus = CmCheckRegistry(HiveToValidate, CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES);
+    ASSERT(CM_CHECK_REGISTRY_SUCCESS(CheckStatus));
+
     /* Create a new hive that will hold the key */
     Status = CmpInitializeHive(&KeyHive,
                                HINIT_CREATE,
@@ -2673,7 +2688,7 @@ CmSaveKey(IN PCM_KEY_CONTROL_BLOCK Kcb,
                                NULL,
                                NULL,
                                NULL,
-                               0);
+                               CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES);
     if (!NT_SUCCESS(Status)) goto Cleanup;
 
     /* Copy the key recursively into the new hive */
@@ -2695,6 +2710,14 @@ Cleanup:
     /* Free the hive */
     if (KeyHive) CmpDestroyHive(KeyHive);
 
+    if (NT_SUCCESS(Status))
+    {
+        /* Before we say goodbye, make sure the hive is still OK */
+        // FIXME: CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES | CM_CHECK_REGISTRY_VALIDATE_HIVE (HvValidateHive is currently broken)
+        CheckStatus = CmCheckRegistry(HiveToValidate, CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES);
+        ASSERT(CM_CHECK_REGISTRY_SUCCESS(CheckStatus));
+    }
+
     /* Release the locks */
     CmpReleaseKcbLock(Kcb);
     CmpUnlockRegistry();
@@ -2708,7 +2731,8 @@ CmSaveMergedKeys(IN PCM_KEY_CONTROL_BLOCK HighKcb,
                  IN PCM_KEY_CONTROL_BLOCK LowKcb,
                  IN HANDLE FileHandle)
 {
-    PCMHIVE KeyHive = NULL;
+    CM_CHECK_REGISTRY_STATUS CheckStatus;
+    PCMHIVE KeyHive = NULL, LowHiveToValidate = NULL, HighHiveToValidate = NULL;
     NTSTATUS Status = STATUS_SUCCESS;
 
     PAGED_CODE();
@@ -2720,12 +2744,23 @@ CmSaveMergedKeys(IN PCM_KEY_CONTROL_BLOCK HighKcb,
     CmpAcquireKcbLockShared(HighKcb);
     CmpAcquireKcbLockShared(LowKcb);
 
+    /* Get the high and low hives for validation */
+    HighHiveToValidate = (PCMHIVE)HighKcb->KeyHive;
+    LowHiveToValidate = (PCMHIVE)LowKcb->KeyHive;
+
     if (LowKcb->Delete || HighKcb->Delete)
     {
         /* The source key has been deleted, do nothing */
         Status = STATUS_KEY_DELETED;
         goto done;
     }
+
+    /* Make sure that both the high and low precedence hives are OK */
+    // FIXME: CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES | CM_CHECK_REGISTRY_VALIDATE_HIVE (HvValidateHive is currently broken)
+    CheckStatus = CmCheckRegistry(HighHiveToValidate, CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES);
+    ASSERT(CM_CHECK_REGISTRY_SUCCESS(CheckStatus));
+    CheckStatus = CmCheckRegistry(LowHiveToValidate, CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES);
+    ASSERT(CM_CHECK_REGISTRY_SUCCESS(CheckStatus));
 
     /* Create a new hive that will hold the key */
     Status = CmpInitializeHive(&KeyHive,
@@ -2737,7 +2772,7 @@ CmSaveMergedKeys(IN PCM_KEY_CONTROL_BLOCK HighKcb,
                                NULL,
                                NULL,
                                NULL,
-                               0);
+                               CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES);
     if (!NT_SUCCESS(Status))
         goto done;
 
@@ -2769,6 +2804,16 @@ done:
     /* Free the hive */
     if (KeyHive)
         CmpDestroyHive(KeyHive);
+
+    if (NT_SUCCESS(Status))
+    {
+        /* Check those hives again before we say goodbye */
+        // FIXME: CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES | CM_CHECK_REGISTRY_VALIDATE_HIVE (HvValidateHive is currently broken)
+        CheckStatus = CmCheckRegistry(HighHiveToValidate, CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES);
+        ASSERT(CM_CHECK_REGISTRY_SUCCESS(CheckStatus));
+        CheckStatus = CmCheckRegistry(LowHiveToValidate, CM_CHECK_REGISTRY_DONT_PURGE_VOLATILES);
+        ASSERT(CM_CHECK_REGISTRY_SUCCESS(CheckStatus));
+    }
 
     /* Release the locks */
     CmpReleaseKcbLock(LowKcb);
