@@ -29,6 +29,9 @@ DBG_DEFAULT_CHANNEL(REGISTRY);
 static PCMHIVE CmSystemHive;
 static HCELL_INDEX SystemRootCell;
 
+ULONG CmpBootType;
+BOOLEAN CmSelfHeal = TRUE;
+
 PHHIVE SystemHive = NULL;
 HKEY CurrentControlSetKey = NULL;
 
@@ -68,6 +71,7 @@ RegImportBinaryHive(
     _In_ ULONG ChunkSize)
 {
     NTSTATUS Status;
+    ULONG CheckCode;
     PCM_KEY_NODE KeyNode;
 
     TRACE("RegImportBinaryHive(%p, 0x%lx)\n", ChunkBase, ChunkSize);
@@ -90,6 +94,14 @@ RegImportBinaryHive(
     if (!NT_SUCCESS(Status))
     {
         ERR("Corrupted hive %p!\n", ChunkBase);
+        FrLdrTempFree(CmSystemHive, 'eviH');
+        return FALSE;
+    }
+
+    CheckCode = CmCheckRegistry(CmSystemHive, CM_CHECK_REGISTRY_PURGE_VOLATILES | CM_CHECK_REGISTRY_BOOTLOADER_PURGE_VOLATILES);
+    if (CheckCode != 0)
+    {
+        ERR("Corrupted hive %p, status code %lu!\n", ChunkBase, CheckCode);
         FrLdrTempFree(CmSystemHive, 'eviH');
         return FALSE;
     }
