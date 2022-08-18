@@ -60,7 +60,7 @@ static struct
 NTSTATUS NTAPI
 PsxInitializeSessions (VOID)
 {
-    debug_print (L"PSXSS: ->%s", __FUNCTION__);
+    debug_print ("PSXSS: ->%s\n", __FUNCTION__);
     /* Initalize the attributes */
     Sessions.NextFreeId = 0;
     Sessions.Count = 0;
@@ -95,7 +95,7 @@ PsxCreateSessionObjects (
         pRequest->Header.ClientId.UniqueProcess
         );
 #endif
-    debug_print (L"PSXSS: %s: %s", __FUNCTION__, NameBuffer);
+    debug_print ("PSXSS: %s: %S\n", __FUNCTION__, NameBuffer);
     RtlInitUnicodeString (& Name, NameBuffer);
     InitializeObjectAttributes (& Oa, & Name, 0, NULL, NULL);
     RtlZeroMemory (& Sqos, sizeof Sqos);
@@ -114,7 +114,7 @@ PsxCreateSessionObjects (
 	      );
     if (!NT_SUCCESS(Status))
     {
-        debug_print (L"PSXSS: %s: NtConnectPort failed with %08x\n", __FUNCTION__, Status);
+        debug_print ("PSXSS: %s: NtConnectPort failed with %08x\n", __FUNCTION__, Status);
         return Status;
     }
     /* TODO:  */
@@ -128,7 +128,7 @@ PsxCreateSessionObjects (
         pRequest->Header.ClientId.UniqueProcess
     );.
     #endif
-    debug_print (L"PSXSS: : %s", __FUNCTION__, NameBuffer);
+    debug_print ("PSXSS: %s : %S\n", __FUNCTION__, NameBuffer);
     RtlInitUnicodeString (& Name, NameBuffer); 
     InitializeObjectAttributes (& Oa, & Name, 0, 0, 0);
     Status = NtOpenSection (
@@ -139,7 +139,7 @@ PsxCreateSessionObjects (
     if (!NT_SUCCESS(Status))
     {
         NtClose (pSession->TerminalChannel.hPort);
-        debug_print (L"PSXSS: %s: NtOpenSection failed with %08x\n", __FUNCTION__, Status);
+        debug_print ("PSXSS: %s: NtOpenSection failed with %08x\n", __FUNCTION__, Status);
         return Status;
     }
     pSession->TerminalChannel.Section.BaseAddress = NULL;
@@ -160,7 +160,7 @@ PsxCreateSessionObjects (
     {
         NtClose (pSession->TerminalChannel.hPort);
         NtClose (pSession->TerminalChannel.Section.Handle);
-        debug_print (L"PSXSS: %s: NtMapViewOfSection failed with %08x\n", __FUNCTION__, Status);
+        debug_print ("PSXSS: %s: NtMapViewOfSection failed with %08x\n", __FUNCTION__, Status);
         return Status;
     }
     return Status;
@@ -186,12 +186,12 @@ PsxCreateSession (
 {
     PPSX_SESSION Session = NULL;
 
-    debug_print (L"PSXSS: ->%s", __FUNCTION__);
+    debug_print ("PSXSS: ->%s\n", __FUNCTION__);
     /* Create the PSX_SESSION object */
     Session = RtlAllocateHeap (Server.Heap, 0, sizeof (PSX_SESSION));
     if (NULL == Session)
     {
-        debug_print (L"PSXSS: %s: failed to create a new session object", __FUNCTION__);
+        debug_print ("PSXSS: %s: failed to create a new session object\n", __FUNCTION__);
         return STATUS_MEMORY_NOT_ALLOCATED;
     }
     RtlZeroMemory (Session, sizeof (PSX_SESSION));
@@ -214,7 +214,7 @@ PsxCreateSession (
     if (INVALID_HANDLE_VALUE == Session->Heap)
     {
         RtlFreeHeap (Server.Heap, 0, Session);
-        debug_print (L"PSX: %s: failed to create a new heap for session # %d", __FUNCTION__, Session->Id);
+        debug_print ("PSXSS: %s: failed to create a new heap for session # %d\n", __FUNCTION__, Session->Id);
         return STATUS_MEMORY_NOT_ALLOCATED;
     }
     RtlInitializeCriticalSection ((PRTL_CRITICAL_SECTION)& Session->Lock);
@@ -233,7 +233,7 @@ PsxCreateSession (
     ++ Sessions.Count;
     UNLOCK_ALL_SESSIONS;
     /* DONE */
-    debug_print (L"%s: session # %d created", __FUNCTION__, Session->Id);
+    debug_print ("PSXSS: %s: session # %d created\n", __FUNCTION__, Session->Id);
     Session->Status = SESSION_STATUS_READY;
     return STATUS_SUCCESS;
 }
@@ -273,7 +273,7 @@ PsxTerminateSession (
     /* Delete the old PSX_SESSION object */
     RtlFreeHeap (Server.Heap, 0, Session);
     /* DONE */
-    debug_print(L"PSX: session # %d deleted", Id);
+    debug_print("PSXSS: session # %d deleted\n", Id);
     return STATUS_SUCCESS;
 }
 

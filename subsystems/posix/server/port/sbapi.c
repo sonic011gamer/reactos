@@ -63,7 +63,7 @@ SbApiPortListener (PVOID pArg)
     PSX_MAX_MESSAGE  Request;
     //PPSX_MAX_MESSAGE Reply = NULL;
 
-    debug_print (L"PSXSS: ->%s pArg=%d", TEXT(__FUNCTION__), (ULONG) pArg);
+    debug_print ("PSXSS: ->%s pArg=%d\n", __FUNCTION__, (ULONG) pArg);
 
     RtlZeroMemory (& Request, sizeof Request);
     /* TODO */

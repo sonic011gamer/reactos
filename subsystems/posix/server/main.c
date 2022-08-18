@@ -49,11 +49,11 @@ int main (int argc, char * argv[])
 {
     INT c;
 
-    debug_print(L"POSIX+ Subsystem for ReactOS ");
+    debug_print("POSIX+ Subsystem for ReactOS\n");
 
     if (STATUS_SUCCESS == PsxServerInitialization(0,NULL))
     {
-        debug_print(L"PSXSS: server active");
+        debug_print("PSXSS: server active\n");
         while (TRUE)
         {
            // c = getch();
@@ -63,7 +63,7 @@ int main (int argc, char * argv[])
     }
     else
     {
-        debug_print(L"PSXSS: Subsystem initialization failed.\n");
+        debug_print("PSXSS: Subsystem initialization failed.\n");
     }
     return 0;
 }

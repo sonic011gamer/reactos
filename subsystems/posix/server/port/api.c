@@ -43,7 +43,7 @@ ProcessConnectionRequest (PLPC_MAX_MESSAGE pRequest)
     HANDLE                 hConnectedPort;
     ULONG                  ulPortIdentifier;
 
-    debug_print (L"PSXSS: ->%s", __FUNCTION__);
+    debug_print ("PSXSS: ->%s\n", __FUNCTION__);
     /* Check if the caller is a process */
     Status = PsxCheckConnectionRequest (
                 pConnectData,
@@ -60,13 +60,12 @@ ProcessConnectionRequest (PLPC_MAX_MESSAGE pRequest)
 		    NULL
 		    );
         if (!NT_SUCCESS(Status))
-	{
-            debug_print(
-	        L"PSXSS: %s: NtAcceptConnectPort failed with status=%08x",
-		__FUNCTION__,
-		Status
-		);
-	}
+        {
+            debug_print("PSXSS: %s: NtAcceptConnectPort failed with status=%08x\n",
+                        __FUNCTION__,
+                        Status
+                        );
+        }
         return STATUS_UNSUCCESSFUL;
     }
     /* OK, accept the connection */
@@ -80,22 +79,22 @@ ProcessConnectionRequest (PLPC_MAX_MESSAGE pRequest)
 		);
     if (!NT_SUCCESS(Status))
     {
-        debug_print(L"PSXSS: %s: NtAcceptConnectPort failed with status=%08x", __FUNCTION__, Status);
+        debug_print("PSXSS: %s: NtAcceptConnectPort failed with status=%08x\n", __FUNCTION__, Status);
         return Status;
     }
     Status = PsxCreateProcess (pRequest,hConnectedPort,ulPortIdentifier);
     if (!NT_SUCCESS(Status))
     {
-        debug_print(L"PSXSS: %s: PsxCreateProcess failed with status=%08x", __FUNCTION__, Status);
+        debug_print("PSXSS: %s: PsxCreateProcess failed with status=%08x\n", __FUNCTION__, Status);
         return Status;
     }
     Status = NtCompleteConnectPort (hConnectedPort);
     if (!NT_SUCCESS(Status))
     {
-        debug_print(L"PSXSS: %s: NtCompleteConnectPort failed with status=%08x", __FUNCTION__, Status);
+        debug_print("PSXSS: %s: NtCompleteConnectPort failed with status=%08x\n", __FUNCTION__, Status);
         return Status;
     }
-    debug_print (L"PSXSS: <-%s", __FUNCTION__);
+    debug_print ("PSXSS: <-%s\n", __FUNCTION__);
     return STATUS_SUCCESS;
 }
 /**********************************************************************
@@ -107,7 +106,7 @@ ProcessConnectionRequest (PLPC_MAX_MESSAGE pRequest)
 PRIVATE NTSTATUS NTAPI
 ProcessRequest (PPSX_MAX_MESSAGE pRequest)
 {
-    debug_print (L"PSXSS: ->%s", __FUNCTION__);
+    debug_print ("PSXSS: ->%s\n", __FUNCTION__);
 
     if (pRequest->PsxHeader.Procedure < PSX_SYSCALL_APIPORT_COUNT)
     {
@@ -138,7 +137,7 @@ ApiPortListener (PVOID pArg)
     PPSX_MAX_MESSAGE Reply = NULL;
     BOOL             NullReply = FALSE;
 
-    debug_print (L"PSXSS: ->%s pArg=%d", __FUNCTION__, ulIndex);
+    debug_print ("PSXSS: ->%s pArg=%d\n", __FUNCTION__, ulIndex);
 
     while (TRUE)
     {

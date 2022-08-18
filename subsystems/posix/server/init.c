@@ -90,11 +90,10 @@ PdxCreateDirectory (
                 );
     if (!NT_SUCCESS(Status))
     {
-        debug_print(
-          L"PSXSS: %s directory creation failed (Status = %08x)",
-          Server.Directory[ulIndex].wsName,
-          Status
-          );
+        debug_print("PSXSS: %S directory creation failed (Status = %08x)\n",
+                    Server.Directory[ulIndex].wsName,
+                    Status
+                    );
 
     }
     return Status;
@@ -155,10 +154,9 @@ PdxInitializeListener (ULONG ulIndex)
                 );
     if (!NT_SUCCESS(Status))
     {
-        debug_print(
-            L"PSXSS: Unable to create port \"%s\": Status %08x\n",
-            Server.Port[ulIndex].wsName,
-            Status);
+        debug_print("PSXSS: Unable to create port \"%S\": Status %08x\n",
+                    Server.Port[ulIndex].wsName,
+                    Status);
         return Status;
     }
     /*
@@ -185,11 +183,10 @@ PdxInitializeListener (ULONG ulIndex)
         if (!NT_SUCCESS(Status))
 #endif
         {
-            debug_print(
-                L"PSXSS: Unable to create a server thread for port \"%s\": Status %08x\n",
-                Server.Port[ulIndex].wsName,
-                Status
-                );
+            debug_print("PSXSS: Unable to create a server thread for port \"%S\": Status %08x\n",
+                        Server.Port[ulIndex].wsName,
+                        Status
+                        );
             NtClose (Server.Port[ulIndex].hObject);
             return Status;
         }
@@ -246,10 +243,11 @@ PdxRunServer (VOID)
             if (!NT_SUCCESS(Status))
 #endif
             {
-                debug_print(
-                    L"PSXSS: "__FUNCTION__": NtResumeThread failed with Status = %08x",
-                    Status
-                    );
+                debug_print("PSXSS: %s: NtResumeThread(%p) failed with Status = %08x\n",
+                            __FUNCTION__,
+                            Server.Port[ulIndex].ThreadInfo[ulThreadIndex].hObject,
+                            Status
+                            );
                 return Status;
             }
         }
