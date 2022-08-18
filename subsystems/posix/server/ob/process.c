@@ -33,9 +33,9 @@
 NTSTATUS NTAPI
 PsxInitializeProcesses (VOID)
 {
-    debug_print (L"PSXSS: ->%s", __FUNCTION__);
+    debug_print ("PSXSS: ->%s\n", __FUNCTION__);
     /* TODO */
-    debug_print (L"PSXSS: <-%s", __FUNCTION__);
+    debug_print ("PSXSS: <-%s\n", __FUNCTION__);
     return STATUS_SUCCESS;
 }
 /**********************************************************************
@@ -48,9 +48,9 @@ PsxCreateProcess (
     ULONG            ulPortIdentifier
     )
 {
-    debug_print (L"PSXSS: ->%s", __FUNCTION__);
+    debug_print ("PSXSS: ->%s\n", __FUNCTION__);
     /* TODO */
-    debug_print (L"PSXSS: <-%s", __FUNCTION__);
+    debug_print ("PSXSS: <-%s\n", __FUNCTION__);
     return STATUS_SUCCESS;
 }
 /* EOF */

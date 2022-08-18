@@ -170,7 +170,7 @@ PsxCreateSession (
     IN    ULONG               ulPortIdentifier
     );
 
-VOID NTAPI debug_print (LPWSTR Template, ...);
+VOID NTAPI debug_print (LPSTR Template, ...);
 NTSTATUS NTAPI PsxInitializeSessions (VOID); /* ob/session.c */
 NTSTATUS NTAPI
 PsxCreateProcess (

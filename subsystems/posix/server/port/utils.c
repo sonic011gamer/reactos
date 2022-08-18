@@ -44,23 +44,21 @@ PsxCheckConnectionRequest (
     /* Check if the caller is ConnectionType */
     if (ConnectionType != pConnectData->ConnectionType)
     {
-        debug_print(
-	    L"PSXSS: %s: ConnectionType=%d, expected %d",
-	    TEXT(__FUNCTION__),
-	    pConnectData->ConnectionType,
-	    ConnectionType
-	    );
+        debug_print("PSXSS: %s: ConnectionType=%d, expected %d\n",
+                    __FUNCTION__,
+                    pConnectData->ConnectionType,
+                    ConnectionType
+                    );
         return STATUS_UNSUCCESSFUL;
     }
     /* Check if the LPC protocol version matches */
     if (PSX_LPC_PROTOCOL_VERSION != pConnectData->Version)
     {
-        debug_print(
-	    L"PSXSS: %s: Version=%d, expected %d",
-	    TEXT(__FUNCTION__),
-            pConnectData->Version,
-	    PSX_LPC_PROTOCOL_VERSION
-	    );
+        debug_print("PSXSS: %s: Version=%d, expected %d\n",
+                    __FUNCTION__,
+                    pConnectData->Version,
+                    PSX_LPC_PROTOCOL_VERSION
+                    );
         pConnectData->Version = PSX_LPC_PROTOCOL_VERSION;
         return STATUS_UNSUCCESSFUL;
     }

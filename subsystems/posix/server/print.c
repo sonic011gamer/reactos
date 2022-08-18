@@ -1,16 +1,17 @@
 /* $Id: print.c,v 1.3 2002/10/29 04:45:54 rex Exp $ */
-#define UNICODE
 #include <windows.h>
-VOID NTAPI debug_print (LPWSTR Template, ...)
+#include <stdio.h>
+#include <debug.h>
+VOID NTAPI debug_print (LPSTR Template, ...)
 {
-   WCHAR   Buffer [1024];
+   CHAR   Buffer [1024];
    va_list ArgumentPointer;
    
    va_start(ArgumentPointer, Template);
-   vswprintf(Buffer, Template, ArgumentPointer);
+   vsprintf(Buffer, Template, ArgumentPointer);
    va_end(ArgumentPointer);
 #ifdef __PSXSS_ON_W32__
-   _putws (Buffer);
+   printf("%s", Buffer);
 #else
 #error TODO
 #endif
