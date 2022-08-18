@@ -32,8 +32,12 @@
 #define ___VIOSTOR_H__
 
 #include <ntddk.h>
+#include <ata.h>
 #include <storport.h>
 #include <ntddscsi.h>
+
+#define NDEBUG
+#include <debug.h>
 
 #include "osdep.h"
 #include "virtio_pci.h"

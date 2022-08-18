@@ -40,7 +40,7 @@ BOOLEAN IsCrashDumpMode;
 PVOID TraceContext;
 #endif
 
-sp_DRIVER_INITIALIZE DriverEntry;
+//sp_DRIVER_INITIALIZE DriverEntry;
 HW_INITIALIZE        VirtIoHwInitialize;
 HW_STARTIO           VirtIoStartIo;
 HW_FIND_ADAPTER      VirtIoFindAdapter;
@@ -203,6 +203,7 @@ VOID WppCleanupRoutine(PVOID arg1) {
 
 
 ULONG
+NTAPI
 DriverEntry(
     IN PVOID  DriverObject,
     IN PVOID  RegistryPath
@@ -487,9 +488,13 @@ VirtIoFindAdapter(
     ConfigInfo->MaximumTransferLength = ConfigInfo->NumberOfPhysicalBreaks * PAGE_SIZE;
     ConfigInfo->NumberOfPhysicalBreaks++;
     adaptExt->max_tx_length = ConfigInfo->MaximumTransferLength;
-
+#if 0 /* Im not fixing this fucking call, i have these functions properly implemented but no */
     num_cpus = KeQueryActiveProcessorCountEx(ALL_PROCESSOR_GROUPS);
     max_cpus = KeQueryMaximumProcessorCountEx(ALL_PROCESSOR_GROUPS);
+#else
+    num_cpus = 0;
+    max_cpus = 0;
+#endif
     /* Set num_cpus and max_cpus to some sane values, to keep Static Driver Verification happy */
     num_cpus = max(1, num_cpus);
     max_cpus = max(1, max_cpus);
@@ -708,7 +713,7 @@ VirtIoHwInitialize(
 {
     PADAPTER_EXTENSION adaptExt;
     BOOLEAN            ret = FALSE;
-    ULONGLONG          guestFeatures = 0;
+    //ULONGLONG          guestFeatures = 0;
     PERF_CONFIGURATION_DATA perfData = { 0 };
     ULONG              status = STOR_STATUS_SUCCESS;
     MESSAGE_INTERRUPT_INFORMATION msi_info = { 0 };
@@ -793,7 +798,7 @@ VirtIoHwInitialize(
                     adaptExt->perfFlags |= STOR_PERF_INTERRUPT_MESSAGE_RANGES;
                     perfData.FirstRedirectionMessageNumber = 1;
                     perfData.LastRedirectionMessageNumber = perfData.FirstRedirectionMessageNumber + adaptExt->num_queues - 1;
-                    ASSERT(perfData.lastRedirectionMessageNumber < adaptExt->num_affinity);
+                    ASSERT(perfData.LastRedirectionMessageNumber < adaptExt->num_affinity);
                 }
                 if (CHECKFLAG(perfData.Flags, STOR_PERF_CONCURRENT_CHANNELS)) {
                     adaptExt->perfFlags |= STOR_PERF_CONCURRENT_CHANNELS;
@@ -879,7 +884,7 @@ CompletePendingRequests(
                 if (entry) {
                     pblk_req req = CONTAINING_RECORD(entry, blk_req, list_entry);
                     PSCSI_REQUEST_BLOCK  currSrb = (PSCSI_REQUEST_BLOCK)req->req;
-                    PSRB_EXTENSION currSrbExt = SRB_EXTENSION(currSrb);
+                    //PSRB_EXTENSION currSrbExt = SRB_EXTENSION(currSrb);
                     if (currSrb) {
                         CompleteRequestWithStatus(DeviceExtension, (PSRB_TYPE)currSrb, SRB_STATUS_BUS_RESET);
                         element->srb_cnt--;
@@ -1416,6 +1421,7 @@ RhelScsiGetInquiryData(
 
     PINQUIRYDATA InquiryData = NULL;
     ULONG dataLen = 0;
+    UCHAR len;
     UCHAR SrbStatus = SRB_STATUS_INVALID_LUN;
     PCDB cdb = SRB_CDB(Srb);
     PADAPTER_EXTENSION adaptExt = NULL;
@@ -1476,7 +1482,8 @@ RhelScsiGetInquiryData(
         }
 
         if(dataLen >= 0x18) {
-            UCHAR len = strlen(adaptExt->sn);
+            len = strlen(adaptExt->sn);
+             UNREFERENCED_PARAMETER(len);
             SerialPage->PageLength = min(BLOCK_SERIAL_STRLEN, len);
             RhelDbgPrint(TRACE_LEVEL_INFORMATION, "PageLength = %d (%d)\n", SerialPage->PageLength, len);
             StorPortCopyMemory(&SerialPage->SerialNumber, &adaptExt->sn, SerialPage->PageLength);
@@ -1492,7 +1499,7 @@ RhelScsiGetInquiryData(
 
         PVPD_IDENTIFICATION_PAGE       IdentificationPage = NULL;
         PVPD_IDENTIFICATION_DESCRIPTOR IdentificationDescr = NULL;
-        UCHAR len = 0;
+        len = 0;
 
         IdentificationPage = (PVPD_IDENTIFICATION_PAGE)SRB_DATA_BUFFER(Srb);
         memset(IdentificationPage, 0, sizeof(VPD_IDENTIFICATION_PAGE));
@@ -1802,7 +1809,7 @@ RhelScsiVerify(
     ULONG                 blocks;
     PADAPTER_EXTENSION adaptExt= (PADAPTER_EXTENSION)DeviceExtension;
     PCDB cdb = SRB_CDB(Srb);
-    ULONG srbdatalen = 0;
+    //ULONG srbdatalen = 0;
 
     if (!cdb)
         return SRB_STATUS_ERROR;

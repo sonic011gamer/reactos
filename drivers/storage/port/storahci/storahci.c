@@ -1173,11 +1173,11 @@ DriverEntry (
     hwInitializationData.HwInitializationDataSize = sizeof(HW_INITIALIZATION_DATA);
 
     // identity required miniport entry point routines
-    hwInitializationData.HwStartIo = AhciHwStartIo;
-    hwInitializationData.HwResetBus = AhciHwResetBus;
-    hwInitializationData.HwInterrupt = AhciHwInterrupt;
-    hwInitializationData.HwInitialize = AhciHwInitialize;
-    hwInitializationData.HwFindAdapter = AhciHwFindAdapter;
+//    hwInitializationData.HwStartIo = AhciHwStartIo;
+ //   hwInitializationData.HwResetBus = AhciHwResetBus;
+  //  hwInitializationData.HwInterrupt = AhciHwInterrupt;
+   // hwInitializationData.HwInitialize = AhciHwInitialize;
+    //hwInitializationData.HwFindAdapter = AhciHwFindAdapter;
 
     // adapter specific information
     hwInitializationData.TaggedQueuing = TRUE;

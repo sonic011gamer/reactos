@@ -58,7 +58,7 @@ RhelDoFlush(
     ULONGLONG           pa = 0ULL;
 
     ULONG               QueueNumber = 0;
-    ULONG               OldIrql = 0;
+   // ULONG               OldIrql = 0;
     ULONG               MessageId = 0;
     BOOLEAN             result = FALSE;
     bool                notify = FALSE;
@@ -155,7 +155,7 @@ RhelDoReadWrite(PVOID DeviceExtension,
     ULONGLONG           pa = 0ULL;
 
     ULONG               QueueNumber = 0;
-    ULONG               OldIrql = 0;
+   // ULONG               OldIrql = 0;
     ULONG               MessageId = 0;
     BOOLEAN             result = FALSE;
     bool                notify = FALSE;
@@ -254,7 +254,7 @@ RhelDoUnMap(
     ULONGLONG           pa = 0ULL;
 
     ULONG               QueueNumber = 0;
-    ULONG               OldIrql = 0;
+   // ULONG               OldIrql = 0;
     ULONG               MessageId = 0;
     BOOLEAN             result = FALSE;
     BOOLEAN             notify = FALSE;
@@ -371,7 +371,7 @@ RhelGetSerialNumber(
 )
 {
     ULONG               QueueNumber = 0;
-    ULONG               OldIrql = 0;
+   // ULONG               OldIrql = 0;
     ULONG               MessageId = 1;
     STOR_LOCK_HANDLE    LockHandle = { 0 };
     struct virtqueue    *vq = NULL;
@@ -683,9 +683,9 @@ VioStorVQLock(
                 StorPortAcquireSpinLock(DeviceExtension, DpcLock, &adaptExt->dpc[MessageID - 1], LockHandle);
             }
             else {
-                ULONG oldIrql = 0;
-                StorPortAcquireMSISpinLock(DeviceExtension, (adaptExt->msix_one_vector ? 0 : MessageID), &oldIrql);
-                LockHandle->Context.OldIrql = (KIRQL)oldIrql;
+                ULONG OldIrql = 0;
+                StorPortAcquireMSISpinLock(DeviceExtension, (adaptExt->msix_one_vector ? 0 : MessageID), &OldIrql);
+                LockHandle->Context.OldIrql = (KIRQL)OldIrql;
             }
         }
         else {
