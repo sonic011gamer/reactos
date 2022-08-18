@@ -473,11 +473,14 @@ StorPortAllocateRegistryBuffer(
     _In_ PVOID HwDeviceExtension,
     _In_ PULONG Length)
 {
-    DPRINT1("StorPortAllocateRegistryBuffer()\n");
-    UNIMPLEMENTED;
-    return NULL;
-}
+    DPRINT1("StorPortAllocateRegistryBuffer: Just making a bullshit buffer");
+    PUCHAR Buffer;
 
+    /* Nuu buffer for you */
+    Buffer = ExAllocatePoolWithTag(NonPagedPool, (SIZE_T)&Length, 0x42526c50);
+
+    return Buffer;
+}
 
 /*
  * @unimplemented
@@ -491,6 +494,7 @@ StorPortBusy(
 {
     DPRINT1("StorPortBuzy()\n");
     UNIMPLEMENTED;
+    __debugbreak();
     return FALSE;
 }
 
@@ -508,8 +512,76 @@ StorPortCompleteRequest(
     _In_ UCHAR Lun,
     _In_ UCHAR SrbStatus)
 {
-    DPRINT1("StorPortCompleteRequest()\n");
+    DPRINT1("StorPortCompleteRequest: ");
     UNIMPLEMENTED;
+    __debugbreak();
+    #if 0
+    PFDO_DEVICE_EXTENSION DeviceExtension;
+    //PSTORPORT_LUN_EXTENSION LunExtension;
+    //PSCSI_REQUEST_BLOCK_INFO SrbInfo;
+    PLIST_ENTRY ListEntry;
+
+    DPRINT("ScsiPortCompleteRequest() called\n");
+
+    DeviceExtension = CONTAINING_RECORD(HwDeviceExtension,
+                                        SCSI_PORT_DEVICE_EXTENSION,
+                                        MiniPortDeviceExtension);
+
+    /* Go through all buses */
+    for (UINT8 pathId = 0; pathId < DeviceExtension->NumberOfBuses; pathId++)
+    {
+        PSCSI_BUS_INFO bus = &DeviceExtension->Buses[pathId];
+
+        /* Go through all logical units */
+        for (PLIST_ENTRY lunEntry = bus->LunsListHead.Flink;
+             lunEntry != &bus->LunsListHead;
+             lunEntry = lunEntry->Flink)
+        {
+            LunExtension = CONTAINING_RECORD(lunEntry, SCSI_PORT_LUN_EXTENSION, LunEntry);
+
+            /* Now match what caller asked with what we are at now */
+            if ((PathId == SP_UNTAGGED || PathId == LunExtension->PathId) &&
+                (TargetId == SP_UNTAGGED || TargetId == LunExtension->TargetId) &&
+                (Lun == SP_UNTAGGED || Lun == LunExtension->Lun))
+            {
+                /* Yes, that's what caller asked for. Complete abort requests */
+                if (LunExtension->CompletedAbortRequests)
+                {
+                    /* TODO: Save SrbStatus in this request */
+                    DPRINT1("Completing abort request without setting SrbStatus!\n");
+
+                    /* Issue a notification request */
+                    ScsiPortNotification(RequestComplete,
+                                         HwDeviceExtension,
+                                         LunExtension->CompletedAbortRequests);
+                }
+
+                /* Complete the request using our helper */
+                SpiCompleteRequest(HwDeviceExtension,
+                                   &LunExtension->SrbInfo,
+                                   SrbStatus);
+
+                /* Go through the queue and complete everything there too */
+                ListEntry = LunExtension->SrbInfo.Requests.Flink;
+                while (ListEntry != &LunExtension->SrbInfo.Requests)
+                {
+                    /* Get the actual SRB info entry */
+                    SrbInfo = CONTAINING_RECORD(ListEntry,
+                                                SCSI_REQUEST_BLOCK_INFO,
+                                                Requests);
+
+                    /* Complete it */
+                    SpiCompleteRequest(HwDeviceExtension,
+                                       SrbInfo,
+                                       SrbStatus);
+
+                    /* Advance to the next request in queue */
+                    ListEntry = SrbInfo->Requests.Flink;
+                }
+            }
+        }
+    }
+    #endif
 }
 
 
@@ -579,6 +651,7 @@ StorPortDeviceBusy(
 {
     DPRINT1("StorPortDeviceBusy()\n");
     UNIMPLEMENTED;
+    __debugbreak();
     return FALSE;
 }
 
@@ -597,6 +670,7 @@ StorPortDeviceReady(
 {
     DPRINT1("StorPortDeviceReady()\n");
     UNIMPLEMENTED;
+    __debugbreak();
     return FALSE;
 }
 
@@ -614,6 +688,7 @@ StorPortExtendedFunction(
     DPRINT1("StorPortExtendedFunction(%d %p ...)\n",
             FunctionCode, HwDeviceExtension);
     UNIMPLEMENTED;
+    __debugbreak();
     return STATUS_NOT_IMPLEMENTED;
 }
 
@@ -630,6 +705,8 @@ StorPortFreeDeviceBase(
 {
     DPRINT1("StorPortFreeDeviceBase(%p %p)\n",
             HwDeviceExtension, MappedAddress);
+        UNIMPLEMENTED;
+    __debugbreak();
 }
 
 
@@ -645,6 +722,7 @@ StorPortFreeRegistryBuffer(
 {
     DPRINT1("StorPortFreeRegistryBuffer()\n");
     UNIMPLEMENTED;
+    __debugbreak();
 }
 
 
@@ -778,6 +856,7 @@ StorPortGetLogicalUnit(
 {
     DPRINT1("StorPortGetLogicalUnit()\n");
     UNIMPLEMENTED;
+    __debugbreak();
     return NULL;
 }
 
@@ -828,7 +907,6 @@ StorPortGetPhysicalAddress(
 
     PhysicalAddress = MmGetPhysicalAddress(VirtualAddress);
     *Length = 1;
-//    UNIMPLEMENTED;
 
 //    *Length = 0;
 //    PhysicalAddress.QuadPart = (LONGLONG)0;
@@ -849,6 +927,7 @@ StorPortGetScatterGatherList(
 {
     DPRINT1("StorPortGetScatterGatherList()\n");
     UNIMPLEMENTED;
+    __debugbreak();
     return NULL;
 }
 
@@ -936,6 +1015,7 @@ StorPortGetVirtualAddress(
     DPRINT1("StorPortGetVirtualAddress(%p %I64x)\n",
             HwDeviceExtension, PhysicalAddress.QuadPart);
     UNIMPLEMENTED;
+    __debugbreak();
     return NULL;
 }
 
@@ -1218,6 +1298,7 @@ StorPortPause(
 {
     DPRINT1("StorPortPause()\n");
     UNIMPLEMENTED;
+    __debugbreak();
     return FALSE;
 }
 
@@ -1237,6 +1318,7 @@ StorPortPauseDevice(
 {
     DPRINT1("StorPortPauseDevice()\n");
     UNIMPLEMENTED;
+    __debugbreak();
     return FALSE;
 }
 
@@ -1271,6 +1353,7 @@ StorPortReady(
 {
     DPRINT1("StorPortReady()\n");
     UNIMPLEMENTED;
+    __debugbreak();
     return FALSE;
 }
 
@@ -1291,6 +1374,7 @@ StorPortRegistryRead(
 {
     DPRINT1("StorPortRegistryRead()\n");
     UNIMPLEMENTED;
+    __debugbreak();
     return FALSE;
 }
 
@@ -1311,6 +1395,7 @@ StorPortRegistryWrite(
 {
     DPRINT1("StorPortRegistryWrite()\n");
     UNIMPLEMENTED;
+    __debugbreak();
     return FALSE;
 }
 
@@ -1326,6 +1411,7 @@ StorPortResume(
 {
     DPRINT1("StorPortResume()\n");
     UNIMPLEMENTED;
+    __debugbreak();
     return FALSE;
 }
 
@@ -1344,6 +1430,7 @@ StorPortResumeDevice(
 {
     DPRINT1("StorPortResumeDevice()\n");
     UNIMPLEMENTED;
+    __debugbreak();
     return FALSE;
 }
 
@@ -1404,6 +1491,7 @@ StorPortSetDeviceQueueDepth(
 {
     DPRINT1("StorPortSetDeviceQueueDepth()\n");
     UNIMPLEMENTED;
+    __debugbreak();
     return FALSE;
 }
 
@@ -1434,6 +1522,7 @@ StorPortSynchronizeAccess(
 {
     DPRINT1("StorPortSynchronizeAccess()\n");
     UNIMPLEMENTED;
+    __debugbreak();
 }
 
 
@@ -1452,6 +1541,8 @@ StorPortValidateRange(
     _In_ BOOLEAN InIoSpace)
 {
     DPRINT1("StorPortValidateRange()\n");
+    UNIMPLEMENTED;
+    __debugbreak();
     return TRUE;
 }
 
