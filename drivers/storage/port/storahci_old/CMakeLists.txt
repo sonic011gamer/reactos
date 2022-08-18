@@ -1,12 +1,7 @@
 add_definitions(-DDEBUG)
 
 list(APPEND SOURCE
-    common.c
-    entrypts.c
-    hbastat.c
-    io.c
-    pnppower.c
-    util.c)
+    storahci.c)
 
 add_library(storahci MODULE ${SOURCE} storahci.rc)
 
