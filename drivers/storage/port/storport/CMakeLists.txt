@@ -17,7 +17,6 @@ add_library(storport MODULE
     ${PCH_SKIP_SOURCE}
     storport.rc
     ${CMAKE_CURRENT_BINARY_DIR}/storport.def)
-
 add_pch(storport precomp.h "${PCH_SKIP_SOURCE}")
 set_module_type(storport kernelmodedriver)
 add_importlibs(storport ntoskrnl hal)
