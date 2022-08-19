@@ -25,10 +25,6 @@
 
 #include <psx/lpcproto.h>
 
-#ifdef __PSXSS_ON_W32__
-#include <windows.h>
-#endif
-
 #define NAME_BUFFER_SIZE 64
 
 /* PSXSS GLOBAL DATA */

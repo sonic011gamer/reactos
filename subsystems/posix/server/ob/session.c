@@ -26,7 +26,6 @@
  * --------------------------------------------------------------------
  */
 #include "../include/psxss.h"
-#include <windows.h>
 
 #define   LOCK_ALL_SESSIONS RtlEnterCriticalSection((PRTL_CRITICAL_SECTION)& Sessions.Lock)
 #define UNLOCK_ALL_SESSIONS RtlLeaveCriticalSection((PRTL_CRITICAL_SECTION)& Sessions.Lock)

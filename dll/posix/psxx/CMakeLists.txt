@@ -13,6 +13,6 @@ add_library(psxx MODULE
 	${CMAKE_CURRENT_BINARY_DIR}/psxx_stubs.c)
 
 set_module_type(psxx win32dll ENTRYPOINT DllMain)
-add_importlibs(psxx kernel32 ntdll msvcrt gdi32)
+add_importlibs(psxx ntdll)
 add_dependencies(psxx psdk)
 add_cd_file(TARGET psxx DESTINATION reactos/system32 FOR all)

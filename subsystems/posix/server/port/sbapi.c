@@ -67,12 +67,7 @@ SbApiPortListener (PVOID pArg)
 
     RtlZeroMemory (& Request, sizeof Request);
     /* TODO */
-#ifdef __PSXSS_ON_W32__
-    Sleep(30000);
-    TerminateThread(GetCurrentThread(),Status);
-#else
     NtTerminateThread(NtCurrentThread(),Status);
-#endif
 
     return 0;
 }
