@@ -229,7 +229,11 @@ DriverEntry(
     RhelDbgPrint(TRACE_LEVEL_ERROR, " Viostor driver started...built on %s %s\n", __DATE__, __TIME__);
     IsCrashDumpMode = FALSE;
     if (RegistryPath == NULL) {
+#ifndef __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_INFORMATION, " DriverEntry: Crash dump mode\n");
+#else
+        RhelDbgPrint(TRACE_LEVEL_INFORMATION, " DriverEntry: Crash dump mode\n", 0);
+#endif
         IsCrashDumpMode = TRUE;
     }
 
@@ -398,7 +402,11 @@ VirtIoFindAdapter(
         pPciComHeader = &adaptExt->pci_config;
         if ( (pPciComHeader->Status & PCI_STATUS_CAPABILITIES_LIST) == 0)
         {
+#ifndef __REACTOS__
            RhelDbgPrint(TRACE_LEVEL_FATAL, " NO CAPABILITIES_LIST\n");
+#else
+           RhelDbgPrint(TRACE_LEVEL_FATAL, " NO CAPABILITIES_LIST\n", 0);
+#endif
         }
         else
         {
@@ -428,7 +436,11 @@ VirtIoFindAdapter(
            }
            else
            {
+#ifndef __REACTOS__
               RhelDbgPrint(TRACE_LEVEL_FATAL, " NOT A PCI_DEVICE_TYPE\n");
+#else
+              RhelDbgPrint(TRACE_LEVEL_FATAL, " NOT A PCI_DEVICE_TYPE\n", 0);
+#endif
            }
         }
     }
@@ -705,7 +717,11 @@ RhelSetGuestFeatures(
     }
 
     if (!NT_SUCCESS(virtio_set_features(&adaptExt->vdev, guestFeatures))) {
+#ifndef __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_FATAL, " virtio_set_features failed\n");
+#else
+        RhelDbgPrint(TRACE_LEVEL_FATAL, " virtio_set_features failed\n", 0);
+#endif
         return;
     }
     RhelDbgPrint(TRACE_LEVEL_VERBOSE, " Host Features %llu gust features %llu\n", adaptExt->features, guestFeatures);
@@ -749,11 +765,19 @@ VirtIoHwInitialize(
 
     if (adaptExt->msix_vectors >= (adaptExt->num_queues + 1U)) {
         /* initialize queues with a MSI vector per queue */
+#ifndef  __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_INFORMATION, (" Using a unique MSI vector per queue\n"));
+#else
+        RhelDbgPrint(TRACE_LEVEL_INFORMATION, " Using a unique MSI vector per queue\n", 0);
+#endif
         adaptExt->msix_one_vector = FALSE;
     } else {
         /* if we don't have enough vectors, use one for all queues */
+#ifndef  __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_INFORMATION, (" Using one MSI vector for all queues\n"));
+#else
+        RhelDbgPrint(TRACE_LEVEL_INFORMATION, " Using one MSI vector for all queues\n", 0);
+#endif
         adaptExt->msix_one_vector = TRUE;
     }
 
@@ -761,8 +785,11 @@ VirtIoHwInitialize(
         LogError(DeviceExtension,
                 SP_INTERNAL_ADAPTER_ERROR,
                 __LINE__);
-
+#ifndef  __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_FATAL, (" Cannot find snd virtual queue\n"));
+#else
+        RhelDbgPrint(TRACE_LEVEL_FATAL, " Cannot find snd virtual queue\n", 0);
+#endif
         virtio_add_status(&adaptExt->vdev, VIRTIO_CONFIG_S_FAILED);
         return ret;
     }
@@ -904,7 +931,11 @@ CompletePendingRequests(
         StorPortResume(DeviceExtension);
     }
     else {
+#ifndef __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_ERROR, "RESET IN THE PROGRESS !!!!\n");
+#else
+        RhelDbgPrint(TRACE_LEVEL_ERROR, "RESET IN THE PROGRESS !!!!\n", 0);
+#endif
     }
     adaptExt->reset_in_progress = FALSE;
 }
@@ -1100,7 +1131,11 @@ VirtIoStartIo(
         case SCSIOP_UNMAP: {
             SRB_SET_SRB_STATUS(Srb, SRB_STATUS_PENDING);
             if (!RhelDoUnMap(DeviceExtension, (PSRB_TYPE)Srb)) {
+#ifndef __REACTOS__
                 RhelDbgPrint(TRACE_LEVEL_FATAL, "RhelDoUnMap failed.\n");
+#else
+                RhelDbgPrint(TRACE_LEVEL_FATAL, "RhelDoUnMap failed.\n", 0);
+#endif
                 CompleteRequestWithStatus(DeviceExtension, (PSRB_TYPE)Srb, SRB_STATUS_ERROR);
             }
             return TRUE;
@@ -1133,7 +1168,11 @@ VirtIoInterrupt(
 
     RhelDbgPrint(TRACE_LEVEL_VERBOSE, " IRQL (%d)\n", KeGetCurrentIrql());
     if (adaptExt->removed == TRUE) {
+#ifndef __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_ERROR, " Interrupt on removed device)");
+#else
+        RhelDbgPrint(TRACE_LEVEL_ERROR, " Interrupt on removed device)", 0);
+#endif
         return FALSE;
     }
     intReason = virtio_read_isr_status(&adaptExt->vdev);
@@ -1192,7 +1231,11 @@ VirtIoAdapterControl(
     switch (ControlType) {
 
     case ScsiQuerySupportedControlTypes: {
+#ifndef __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_VERBOSE, " ScsiQuerySupportedControlTypes\n");
+#else
+        RhelDbgPrint(TRACE_LEVEL_VERBOSE, " ScsiQuerySupportedControlTypes\n", 0);
+#endif
         ControlTypeList = (PSCSI_SUPPORTED_CONTROL_TYPE_LIST)Parameters;
         AdjustedMaxControlType =
             (ControlTypeList->MaxControlType < 5) ?
@@ -1206,7 +1249,11 @@ VirtIoAdapterControl(
         break;
     }
     case ScsiStopAdapter: {
+#ifndef __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_VERBOSE, " ScsiStopAdapter\n");
+#else
+        RhelDbgPrint(TRACE_LEVEL_VERBOSE, " ScsiStopAdapter\n", 0);
+#endif
         if (adaptExt->removed == TRUE) {
             RhelShutDown(DeviceExtension);
         }
@@ -1214,11 +1261,19 @@ VirtIoAdapterControl(
         break;
     }
     case ScsiRestartAdapter: {
+#ifndef __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_VERBOSE, " ScsiRestartAdapter\n");
+#else
+        RhelDbgPrint(TRACE_LEVEL_VERBOSE, " ScsiRestartAdapter\n", 0);
+#endif
         RhelShutDown(DeviceExtension);
         if (!VirtIoHwReinitialize(DeviceExtension))
         {
+#ifndef __REACTOS__
            RhelDbgPrint(TRACE_LEVEL_FATAL, " ScsiRestartAdapter Cannot reinitialize HW\n");
+#else
+           RhelDbgPrint(TRACE_LEVEL_FATAL, " ScsiRestartAdapter Cannot reinitialize HW\n", 0);
+#endif
            break;
         }
         adaptExt->removed = FALSE;
@@ -1347,7 +1402,11 @@ VirtIoBuildIo(
 
     sgList = StorPortGetScatterGatherList(DeviceExtension, Srb);
     if (!sgList) {
+#ifndef __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_ERROR, " no SGL\n");
+#else
+        RhelDbgPrint(TRACE_LEVEL_ERROR, " no SGL\n", 0);
+#endif
         CompleteRequestWithStatus(DeviceExtension, (PSRB_TYPE)Srb, SRB_STATUS_BAD_FUNCTION);
         return FALSE;
     }
@@ -1479,7 +1538,11 @@ RhelScsiGetInquiryData(
 
         if (!adaptExt->sn_ok) {
             if (!RhelGetSerialNumber(DeviceExtension, Srb)) {
+#ifndef __REACTOS__
                 RhelDbgPrint(TRACE_LEVEL_ERROR, "RhelGetSerialNumber failed.\n");
+#else
+                RhelDbgPrint(TRACE_LEVEL_ERROR, "RhelGetSerialNumber failed.\n", 0);
+#endif
                 return SRB_STATUS_ERROR;
             }
             return SRB_STATUS_PENDING;
@@ -1513,7 +1576,11 @@ RhelScsiGetInquiryData(
 
         if (!adaptExt->sn_ok) {
             if (!RhelGetSerialNumber(DeviceExtension, Srb)) {
+#ifndef __REACTOS__
                 RhelDbgPrint(TRACE_LEVEL_ERROR, "RhelGetSerialNumber failed.\n");
+#else
+                RhelDbgPrint(TRACE_LEVEL_ERROR, "RhelGetSerialNumber failed.\n", 0);
+#endif
                 return SRB_STATUS_ERROR;
             }
             return SRB_STATUS_PENDING;
@@ -1886,7 +1953,11 @@ DeviceChangeNotification(
                                 0,
                                 NULL,
                                 NULL);
+#ifndef __REACTOS__
      RhelDbgPrint(TRACE_LEVEL_FATAL, " StorPortStateChangeDetected.\n");
+#else
+     RhelDbgPrint(TRACE_LEVEL_FATAL, " StorPortStateChangeDetected.\n", 0);
+#endif
 }
 
 BOOLEAN
@@ -1983,10 +2054,18 @@ UCHAR DeviceToSrbStatus(UCHAR status)
     case VIRTIO_BLK_S_OK:
         return SRB_STATUS_SUCCESS;
     case VIRTIO_BLK_S_IOERR:
+#ifndef __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_ERROR, " VIRTIO_BLK_S_IOERR\n");
+#else
+        RhelDbgPrint(TRACE_LEVEL_ERROR, " VIRTIO_BLK_S_IOERR\n", 0);
+#endif
         return SRB_STATUS_ERROR;
     case VIRTIO_BLK_S_UNSUPP:
+#ifndef __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_ERROR, " VIRTIO_BLK_S_UNSUPP\n");
+#else
+        RhelDbgPrint(TRACE_LEVEL_ERROR, " VIRTIO_BLK_S_UNSUPP\n", 0);
+#endif
         return SRB_STATUS_INVALID_REQUEST;
     }
     RhelDbgPrint(TRACE_LEVEL_FATAL, " Unknown device status %x\n", status);

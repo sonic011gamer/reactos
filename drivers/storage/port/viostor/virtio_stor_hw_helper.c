@@ -580,11 +580,19 @@ RhelGetDiskGeometry(
     adaptExt->features = virtio_get_features(&adaptExt->vdev);
 
     if (CHECKBIT(adaptExt->features, VIRTIO_BLK_F_BARRIER)) {
+#ifndef __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_INFORMATION, " VIRTIO_BLK_F_BARRIER\n");
+#else
+        RhelDbgPrint(TRACE_LEVEL_INFORMATION, " VIRTIO_BLK_F_BARRIER\n", 0);
+#endif
     }
 
     if (CHECKBIT(adaptExt->features, VIRTIO_BLK_F_RO)) {
+#ifndef __REACTOS__
         RhelDbgPrint(TRACE_LEVEL_INFORMATION, " VIRTIO_BLK_F_RO\n");
+#else
+        RhelDbgPrint(TRACE_LEVEL_INFORMATION, " VIRTIO_BLK_F_RO\n", 0);
+#endif
     }
 
     if (CHECKBIT(adaptExt->features, VIRTIO_BLK_F_SIZE_MAX)) {
