@@ -24,6 +24,7 @@
 #include <ndk/umfuncs.h>
 
 #include <psx/lpcproto.h>
+#include <sm/smmsg.h>
 
 #define NAME_BUFFER_SIZE 64
 

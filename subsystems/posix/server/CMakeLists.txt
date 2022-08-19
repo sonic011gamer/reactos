@@ -2,6 +2,7 @@
 
 include_directories(${REACTOS_SOURCE_DIR}/subsystems/win32/csrss/include)
 include_directories(${REACTOS_SOURCE_DIR}/sdk/include/reactos/subsys/posix)
+include_directories(${REACTOS_SOURCE_DIR}/sdk/include/reactos/subsys)
 
 spec2def(psxss.exe psxss.spec ADD_IMPORTLIB)
 
