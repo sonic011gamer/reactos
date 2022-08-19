@@ -10,6 +10,7 @@
  *    2002-03-19 EA added stub file generation
  *    2002-04-06 EA added to the CVS repository
  */
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -240,9 +241,12 @@ METHOD_TYPE psx_include_prologue (int self, PPARSER_CONTEXT context)
 METHOD_TYPE psx_include_iter (int self, PPARSER_CONTEXT context)
 {
     char interface [PARSER_CONTEXT_INTERFACE_SIZE*2];
+    char *p;
 
     sprintf (interface, "%s%s", proxy_name_prefix, context->interface);
-    fprintf (mf[self].fp, "#define %s %d\n", strupr(interface), context->id ++);
+    for (p = interface; *p; ++p)
+        *p = toupper(*p);
+    fprintf (mf[self].fp, "#define %s %d\n", interface, context->id ++);
 
     return METHOD_SUCCESS;
 }

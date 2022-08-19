@@ -128,7 +128,7 @@ ProcessRequest (PPSX_MAX_MESSAGE pRequest)
 ULONG NTAPI
 SessionPortListener (PVOID pArg)
 {
-    ULONG            ulIndex = (ULONG) pArg;
+    ULONG            ulIndex = (ULONG)(ULONG_PTR)pArg;
     NTSTATUS         Status;
     LPC_TYPE         RequestType;
     //ULONG            PortIdentifier;

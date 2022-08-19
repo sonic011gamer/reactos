@@ -67,6 +67,7 @@ PsxInitializeSessions (VOID)
     RtlInitializeCriticalSection ((PRTL_CRITICAL_SECTION)& Sessions.Lock);
     return STATUS_SUCCESS;
 }
+#if 0
 /**********************************************************************
  *    PsxCreateSessionObjects/1					PRIVATE
  *
@@ -164,6 +165,7 @@ PsxCreateSessionObjects (
     }
     return Status;
 }
+#endif
 /**********************************************************************
  *    PsxCreateSession/3
  *

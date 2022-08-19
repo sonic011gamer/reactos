@@ -37,6 +37,7 @@ ProcessConnectionRequest (PPSX_MESSAGE pRequest)
 {
     return STATUS_NOT_IMPLEMENTED;
 }
+#if 0
 /**********************************************************************
  *	ProcessRequest/				PRIVATE
  */
@@ -45,6 +46,7 @@ ProcessRequest (PPSX_MESSAGE pRequest)
 {
     return STATUS_NOT_IMPLEMENTED;
 }
+#endif
 /**********************************************************************
  *	SbApiPortListener/1
  *
