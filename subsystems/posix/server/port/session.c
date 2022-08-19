@@ -125,7 +125,7 @@ ProcessRequest (PPSX_MAX_MESSAGE pRequest)
  * RETURN VALUE
  *	None.
  */
-VOID NTAPI
+ULONG NTAPI
 SessionPortListener (PVOID pArg)
 {
     ULONG            ulIndex = (ULONG) pArg;
@@ -190,5 +190,7 @@ SessionPortListener (PVOID pArg)
 #else
     NtTerminateThread(NtCurrentThread(),Status);
 #endif
+
+    return 0;
 }
 /* EOF */
