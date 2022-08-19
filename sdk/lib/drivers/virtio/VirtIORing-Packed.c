@@ -35,7 +35,11 @@
 #include "virtio.h"
 #include "kdebugprint.h"
 #include "virtio_ring.h"
+#ifndef __REACTOS__
 #include "windows\virtio_ring_allocation.h"
+#else
+#include "windows/virtio_ring_allocation.h"
+#endif
 
 #include <pshpack1.h>
 

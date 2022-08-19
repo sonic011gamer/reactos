@@ -36,7 +36,11 @@
 #include "kdebugprint.h"
 #include "virtio_ring.h"
 #include "virtio_pci_common.h"
+#ifndef __REACTOS__
 #include "windows\virtio_ring_allocation.h"
+#else
+#include "windows/virtio_ring_allocation.h"
+#endif
 
 #ifdef WPP_EVENT_TRACING
 #include "VirtIOPCILegacy.tmh"
@@ -49,7 +53,11 @@
 /////////////////////////////////////////////////////////////////////////////////////
 void vio_legacy_dump_registers(VirtIODevice *vdev)
 {
+#ifndef __REACTOS__
     DPrintf(5, ("%s\n", __FUNCTION__));
+#else
+    DPrintf(5, "%s\n", __FUNCTION__);
+#endif
 
     DPrintf(0, "[VIRTIO_PCI_HOST_FEATURES] = %x\n", ioread32(vdev, vdev->addr + VIRTIO_PCI_HOST_FEATURES));
     DPrintf(0, "[VIRTIO_PCI_GUEST_FEATURES] = %x\n", ioread32(vdev, vdev->addr + VIRTIO_PCI_GUEST_FEATURES));

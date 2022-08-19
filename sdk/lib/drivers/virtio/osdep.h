@@ -16,8 +16,17 @@
 
 #include <ntddk.h>
 
+#ifdef __REACTOS__
+#ifdef __GNUC__
+#undef FORCEINLINE
+#define FORCEINLINE __attribute__((__always_inline__))
+#endif
+#endif
+
+#ifndef __REACTOS__
 #if !defined(ENOSPC)
 #define ENOSPC 1
+#endif
 #endif
 
 #if !defined(__cplusplus) && !defined(bool)
@@ -29,5 +38,4 @@
 #define true TRUE
 #endif
 
-#define inline __forceinline
 #define SMP_CACHE_BYTES 64

@@ -39,7 +39,11 @@
 #include "kdebugprint.h"
 #include "virtio_ring.h"
 #include "virtio_pci_common.h"
+#ifndef __REACTOS__
 #include "windows\virtio_ring_allocation.h"
+#else
+#include "windows/virtio_ring_allocation.h"
+#endif
 #include <stddef.h>
 
 #ifdef WPP_EVENT_TRACING
@@ -186,7 +190,11 @@ static void vio_modern_reset(VirtIODevice *vdev)
     while (ioread8(vdev, &vdev->common->device_status)) {
         u16 val;
         if (pci_read_config_word(vdev, 0, &val) || val == 0xffff) {
+#ifndef __REACTOS__
             DPrintf(0, ("PCI config space is not readable, probably the device is removed\n"));
+#else
+            DPrintf(0, "PCI config space is not readable, probably the device is removed\n", 0);
+#endif
             break;
         }
         vdev_sleep(vdev, 1);
@@ -211,7 +219,11 @@ static NTSTATUS vio_modern_set_features(VirtIODevice *vdev, u64 features)
     vring_transport_features(vdev, &features);
 
     if (!virtio_is_feature_enabled(features, VIRTIO_F_VERSION_1)) {
+#ifndef __REACTOS__
         DPrintf(0, ("virtio: device uses modern interface but does not have VIRTIO_F_VERSION_1\n"));
+#else
+        DPrintf(0, "virtio: device uses modern interface but does not have VIRTIO_F_VERSION_1\n", 0);
+#endif
         return STATUS_INVALID_PARAMETER;
     }
 
