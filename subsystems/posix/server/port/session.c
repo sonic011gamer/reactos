@@ -185,11 +185,7 @@ SessionPortListener (PVOID pArg)
             break;
         }
     }
-#ifdef __PSXSS_ON_W32__
-    TerminateThread(GetCurrentThread(),Status);
-#else
     NtTerminateThread(NtCurrentThread(),Status);
-#endif
 
     return 0;
 }

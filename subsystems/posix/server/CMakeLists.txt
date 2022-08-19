@@ -5,8 +5,6 @@ include_directories(${REACTOS_SOURCE_DIR}/sdk/include/reactos/subsys/posix)
 
 spec2def(psxss.exe psxss.spec ADD_IMPORTLIB)
 
-add_definitions(-D__PSXSS_ON_W32__)
-
 list(APPEND SOURCE
     include/psxss.h
     init.c
@@ -30,9 +28,9 @@ add_executable(psxss
     psxss.rc
     ${CMAKE_CURRENT_BINARY_DIR}/psxss.def)
 
-set_module_type(psxss nativecui ENTRYPOINT main)
-target_link_libraries(psxss ${PSEH_LIB} smlib)
-add_importlibs(psxss smdll ntdll csrsrv msvcrt kernel32)
+set_module_type(psxss nativecui)
+target_link_libraries(psxss ${PSEH_LIB} smlib nt)
+add_importlibs(psxss smdll ntdll)
 add_pch(psxss include/psxss.h SOURCE)
 add_dependencies(psxss psdk bugcodes)
 add_cd_file(TARGET psxss DESTINATION reactos/system32 FOR all)

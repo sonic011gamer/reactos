@@ -30,8 +30,6 @@
  *      20020323 (Emanuele Aliberti)
  *              Converted to Win32 for testing it using NT LPC.
  */
-#include <windows.h>
-//#include <reactos/buildno.h>
 #include "include/psxss.h"
 
 /*** EXTERNAL ********************************************************/
@@ -44,8 +42,7 @@ PsxServerInitialization (
 
 /*** ENTRY POINT *****************************************************/
 
-#ifdef __PSXSS_ON_W32__ // W32 PSXSS.EXE
-int main (int argc, char * argv[])
+int _main (int argc, char * argv[])
 {
     INT c;
 
@@ -67,24 +64,4 @@ int main (int argc, char * argv[])
     }
     return 0;
 }
-#else /* Native PSXSS.EXE */
-VOID NtProcessStartup (PPEB Peb)
-{
-    UNICODE_STRING Banner;
-
-    RtlInitUnicodeString (& Banner, L"POSIX+ Subsystem for ReactOS ");
-    NtDisplayString(& Banner);
-
-    if (STATUS_SUCCESS == PsxServerInitialization(0,NULL))
-    {
-        DbgPrint("PSXSS: server active\n");
-        /* TODO */
-    }
-    else
-    {
-        DbgPrint("PSXSS: Subsystem initialization failed.\n");
-    }
-    NtTerminateProcess (NtCurrentProcess(), 0);
-}
-#endif
 /* EOF */

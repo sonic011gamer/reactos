@@ -2,10 +2,6 @@
 //#define NDEBUG
 #include <debug.h>
 
-#ifdef __PSXSS_ON_W32__
-#include <windows.h>
-#endif
-
 SERVER Server =
 {
      /* .Heap */
@@ -168,20 +164,17 @@ PdxInitializeListener (ULONG ulIndex)
           ulThreadIndex ++
           )
     {
-#ifdef __PSXSS_ON_W32__
-        Server.Port[ulIndex].ThreadInfo[ulThreadIndex].hObject =
-            CreateThread (
-                NULL,
-                0,
-                Server.Port[ulIndex].EntryPoint,
-                (PVOID) ulIndex,
-                CREATE_SUSPENDED,
-                & Server.Port[ulIndex].ThreadInfo[ulThreadIndex].Id
-                );
-        if (NULL == Server.Port[ulIndex].ThreadInfo[ulThreadIndex].hObject)
-#else
+        Status = RtlCreateUserThread(NtCurrentProcess(),
+                                     NULL,
+                                     TRUE,
+                                     0,
+                                     0,
+                                     0,
+                                     Server.Port[ulIndex].EntryPoint,
+                                     (PVOID)(ULONG_PTR)ulIndex,
+                                     &Server.Port[ulIndex].ThreadInfo[ulThreadIndex].hObject,
+                                     NULL);
         if (!NT_SUCCESS(Status))
-#endif
         {
             debug_print("PSXSS: Unable to create a server thread for port \"%S\": Status %08x\n",
                         Server.Port[ulIndex].wsName,
@@ -236,12 +229,8 @@ PdxRunServer (VOID)
              ulThreadIndex ++
              )
         {
-#ifdef __PSXSS_ON_W32__
-            if (0xFFFFFFFF == ResumeThread (Server.Port[ulIndex].ThreadInfo[ulThreadIndex].hObject))
-#else
             Status = NtResumeThread (Server.Port[ulIndex].ThreadInfo[ulThreadIndex].hObject, NULL);
             if (!NT_SUCCESS(Status))
-#endif
             {
                 debug_print("PSXSS: %s: NtResumeThread(%p) failed with Status = %08x\n",
                             __FUNCTION__,
