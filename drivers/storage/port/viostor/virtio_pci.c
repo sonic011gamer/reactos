@@ -31,11 +31,20 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+
+#ifndef __REACTOS__
 #include "osdep.h"
 #include "virtio_pci.h"
 #include "virtio_stor_utils.h"
 #include "virtio_stor_hw_helper.h"
 #include "virtio_stor.h"
+#else
+#include "virtio_stor_utils.h"
+#include "virtio_stor_hw_helper.h"
+#include "virtio_stor.h"
+#include "osdep.h"
+#include "virtio_pci.h"
+#endif
 
 #if defined(EVENT_TRACING)
 #include "virtio_pci.tmh"
