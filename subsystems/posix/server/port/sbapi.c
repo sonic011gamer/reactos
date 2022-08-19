@@ -54,7 +54,7 @@ ProcessRequest (PPSX_MESSAGE pRequest)
  * NOTE
  *	what is this port for? Is "Sb" for "shared block"?
  */
-VOID NTAPI
+ULONG NTAPI
 SbApiPortListener (PVOID pArg)
 {
     NTSTATUS         Status;
@@ -73,5 +73,7 @@ SbApiPortListener (PVOID pArg)
 #else
     NtTerminateThread(NtCurrentThread(),Status);
 #endif
+
+    return 0;
 }
 /* EOF */

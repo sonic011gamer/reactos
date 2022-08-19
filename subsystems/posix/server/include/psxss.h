@@ -85,9 +85,9 @@ typedef NTSTATUS (NTAPI *PSX_SYSTEM_CALL)(PPSX_MAX_MESSAGE);
 extern PSX_SYSTEM_CALL SystemCall []; /* server/call/syscall.c */
 
 /* Listener's Threads */
-VOID NTAPI ApiPortListener (PVOID);
-VOID NTAPI SbApiPortListener (PVOID);
-VOID NTAPI SessionPortListener (PVOID);
+ULONG NTAPI ApiPortListener (PVOID);
+ULONG NTAPI SbApiPortListener (PVOID);
+ULONG NTAPI SessionPortListener (PVOID);
 
 /* TERMINAL OBJECT */
 

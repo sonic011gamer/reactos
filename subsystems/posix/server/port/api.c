@@ -126,7 +126,7 @@ ProcessRequest (PPSX_MAX_MESSAGE pRequest)
  *	The thread to process messages from the \POSIX+\ApiPort
  *	LPC port. Mostly used by PSXDLL.DLL.
  */
-VOID NTAPI
+ULONG NTAPI
 ApiPortListener (PVOID pArg)
 {
     ULONG            ulIndex = (ULONG) pArg;
@@ -190,5 +190,7 @@ ApiPortListener (PVOID pArg)
 #else
     NtTerminateThread(NtCurrentThread(),Status);
 #endif
+
+    return 0;
 }
 /* EOF */

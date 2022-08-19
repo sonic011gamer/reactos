@@ -30,17 +30,17 @@ SERVER Server =
         {   INVALID_HANDLE_VALUE,
             L"\\"PSX_NS_SUBSYSTEM_DIRECTORY_NAME"\\"PSX_NS_API_PORT_NAME,
             {0,0,NULL},
-            (PTHREAD_START_ROUTINE)ApiPortListener
+            ApiPortListener
         },
         {   INVALID_HANDLE_VALUE,
             L"\\"PSX_NS_SUBSYSTEM_DIRECTORY_NAME"\\"PSX_NS_SBAPI_PORT_NAME,
             {0,0,NULL},
-            (PTHREAD_START_ROUTINE)SbApiPortListener
+            SbApiPortListener
         },
         {   INVALID_HANDLE_VALUE,
             L"\\"PSX_NS_SUBSYSTEM_DIRECTORY_NAME"\\"PSX_NS_SESSIONAPI_PORT_NAME,
             {0,0,NULL},
-            (PTHREAD_START_ROUTINE)SessionPortListener
+            SessionPortListener
         }
     }
 };
@@ -173,7 +173,7 @@ PdxInitializeListener (ULONG ulIndex)
             CreateThread (
                 NULL,
                 0,
-                (PTHREAD_START_ROUTINE) Server.Port[ulIndex].EntryPoint,
+                Server.Port[ulIndex].EntryPoint,
                 (PVOID) ulIndex,
                 CREATE_SUSPENDED,
                 & Server.Port[ulIndex].ThreadInfo[ulThreadIndex].Id
