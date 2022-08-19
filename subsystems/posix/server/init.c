@@ -219,6 +219,8 @@ PdxRunServer (VOID)
     NTSTATUS Status;
     ULONG    ulIndex;
     ULONG    ulThreadIndex;
+    HANDLE SmApiPort;
+
 	Status = 0;
     for ( ulIndex = 0;
           (ulIndex < (sizeof Server.Port / sizeof Server.Port[0]));
@@ -241,6 +243,19 @@ PdxRunServer (VOID)
             }
         }
     }
+
+    Status = SmConnectToSm(&Server.Port[1].usName,
+                           Server.Port[1].hObject,
+                           IMAGE_SUBSYSTEM_POSIX_CUI,
+                           &SmApiPort);
+    if (!NT_SUCCESS(Status))
+    {
+        debug_print("PSXSS: %s: SmConnectToSm() failed with Status = %08x\n",
+                    __FUNCTION__,
+                    Status);
+        return Status;
+    }
+
     return STATUS_SUCCESS;
 }
 /**********************************************************************

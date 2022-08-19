@@ -59,16 +59,46 @@ ProcessRequest (PPSX_MESSAGE pRequest)
 ULONG NTAPI
 SbApiPortListener (PVOID pArg)
 {
-    NTSTATUS         Status;
-    Status = 0;
-   // ULONG            PortIdentifier;
-    PSX_MAX_MESSAGE  Request;
-    //PPSX_MAX_MESSAGE Reply = NULL;
+    ULONG ulIndex = (ULONG)(ULONG_PTR)pArg;
+    NTSTATUS Status;
+    SB_API_MSG ReceiveMsg;
+    PSB_API_MSG ReplyMsg = NULL;
+    ULONG MessageType;
+    PVOID PortContext;
 
-    debug_print ("PSXSS: ->%s pArg=%d\n", __FUNCTION__, (ULONG) pArg);
+    debug_print ("PSXSS: ->%s pArg=%d\n", __FUNCTION__, ulIndex);
 
-    RtlZeroMemory (& Request, sizeof Request);
-    /* TODO */
+    while (TRUE)
+    {
+        Status = NtReplyWaitReceivePort(Server.Port[ulIndex].hObject,
+                                        &PortContext,
+                                        &ReplyMsg->h,
+                                        &ReceiveMsg.h);
+        if (!NT_SUCCESS(Status))
+        {
+            debug_print("PSXSS: %s: NtReplyWaitReceivePort() failed with Status %08lx\n",
+                        __FUNCTION__,
+                        Status);
+            continue;
+        }
+
+        MessageType = ReceiveMsg.h.u2.s2.Type;
+        debug_print("PSXSS: %s: got MessageType 0x%x\n", __FUNCTION__, MessageType);
+        switch (MessageType)
+        {
+        case LPC_CONNECTION_REQUEST:
+        {
+            HANDLE hConnectedPort;
+            ULONG ulPortIdentifier;
+            /* FIXME: this is all wrong! */
+            ProcessConnectionRequest(NULL);
+            NtAcceptConnectPort(&hConnectedPort, &ulPortIdentifier, &ReceiveMsg.h, TRUE, NULL, NULL);
+            NtCompleteConnectPort(hConnectedPort);
+            continue;
+        }
+        }
+    }
+
     NtTerminateThread(NtCurrentThread(),Status);
 
     return 0;
