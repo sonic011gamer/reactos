@@ -42,7 +42,7 @@ int bDebugPrint = 1;
 
 static NDIS_SPIN_LOCK CrashLock;
 
-static KBUGCHECK_REASON_CALLBACK_ROUTINE ParaNdis_OnBugCheck;
+//static KBUGCHECK_REASON_CALLBACK_ROUTINE ParaNdis_OnBugCheck;
 static VOID NTAPI ParaNdis_OnBugCheck(
     IN KBUGCHECK_CALLBACK_REASON Reason,
     IN PKBUGCHECK_REASON_CALLBACK_RECORD Record,
