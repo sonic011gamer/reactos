@@ -17,7 +17,7 @@ list(APPEND SOURCE
 
 add_library(netkvm MODULE ${SOURCE} wxp/parandis.rc)
 target_link_libraries(netkvm virtio)
-set_module_type(netkvm kernelmodedriver)
+set_module_type(netkvm kernelmodedriver ENTRYPOINT DriverEntry)
 add_importlibs(netkvm ndis ntoskrnl hal)
 add_cd_file(TARGET netkvm DESTINATION reactos/system32/drivers FOR all)
 add_driver_inf(netkvm netkvm.inf)
@@ -25,9 +25,11 @@ add_driver_inf(netkvm netkvm.inf)
 if(NOT MSVC)
     target_compile_options(netkvm PRIVATE
         -Wno-unused-function
+        -Wno-unused-variable
         -Wno-unknown-pragmas
         -Wno-pointer-sign
         -Wno-pointer-to-int-cast
+        -Wno-incompatible-pointer-types
         -Wno-int-to-pointer-cast
         -Wno-attributes)
 endif()
