@@ -11,3 +11,8 @@ unsigned int __cdecl _controlfp(unsigned int newval, unsigned int mask)
 {
     return _control87(newval, mask & ~_EM_DENORMAL);
 }
+
+unsigned int __cdecl _controlfp_s(unsigned int *cur, unsigned int newval, unsigned int mask)
+{
+    return 0;
+}
