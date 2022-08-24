@@ -834,16 +834,6 @@ KiDispatchException(IN PEXCEPTION_RECORD ExceptionRecord,
             Context.Eip--;
             break;
 
-        /* Internal exception */
-        case KI_EXCEPTION_ACCESS_VIOLATION:
-
-            /* Set correct code */
-            ExceptionRecord->ExceptionCode = STATUS_ACCESS_VIOLATION;
-            if (PreviousMode == UserMode)
-            {
-                /* FIXME: Handle no execute */
-            }
-            break;
     }
 
     /* Sanity check */

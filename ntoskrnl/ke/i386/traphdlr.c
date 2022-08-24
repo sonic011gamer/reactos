@@ -1405,12 +1405,6 @@ KiTrap0EHandler(IN PKTRAP_FRAME TrapFrame)
     /* Either kernel or user trap (non VDM) so dispatch exception */
     if (Status == STATUS_ACCESS_VIOLATION)
     {
-        /* This status code is repurposed so we can recognize it later */
-        KiDispatchException2Args(KI_EXCEPTION_ACCESS_VIOLATION,
-                                 TrapFrame->Eip,
-                                 MI_IS_WRITE_ACCESS(TrapFrame->ErrCode),
-                                 Cr2,
-                                 TrapFrame);
     }
     else if ((Status == STATUS_GUARD_PAGE_VIOLATION) ||
              (Status == STATUS_STACK_OVERFLOW))

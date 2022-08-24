@@ -480,8 +480,6 @@ InPageException:
     jmp PageFaultReturn
 
 AccessViolation:
-    /* Use more proper status code */
-    mov eax, KI_EXCEPTION_ACCESS_VIOLATION
 
 SpecialCode:
     /* Setup a normal page fault exception */

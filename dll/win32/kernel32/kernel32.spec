@@ -935,6 +935,7 @@
 @ stdcall RequestWakeupLatency(long)
 @ stdcall ResetEvent(long)
 @ stdcall ResetWriteWatch(ptr long)
+@ stdcall -version=0x601+ -stub GetProcessPreferredUILanguages(long ptr ptr ptr)
 @ stdcall RestoreLastError(long) ntdll.RtlRestoreLastWin32Error
 @ stdcall ResumeThread(long)
 @ stdcall -version=0x600+ ResolveLocaleName(wstr wstr long) kernel32_vista.ResolveLocaleName

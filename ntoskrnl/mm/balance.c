@@ -188,7 +188,7 @@ MmInsertLRULastModifiedPage(PFN_NUMBER Page)
     MiInsertLastLRUPage(MiGetPfnEntry(Page), &ModifiedLRUPfnListHead);
 
     /* Keep modified page count low */
-    if (InterlockedIncrementUL(&MmModifiedPageCount) > 200)
+    if (InterlockedIncrementUL((ULONG*)&MmModifiedPageCount) > 200)
     {
         KeSetEvent(&MiWritePageEvent, IO_NO_INCREMENT, FALSE);
     }
@@ -199,7 +199,7 @@ VOID
 MmRemoveLRUModifiedPage(PFN_NUMBER Page)
 {
     MiRemoveLRUPage(MiGetPfnEntry(Page), &ModifiedLRUPfnListHead);
-    InterlockedDecrementUL(&MmModifiedPageCount);
+    InterlockedDecrementUL((ULONG*)&MmModifiedPageCount);
 }
 
 _IRQL_requires_max_(DISPATCH_LEVEL)

@@ -274,17 +274,6 @@ KiDispatchException(IN PEXCEPTION_RECORD ExceptionRecord,
             /* Decrement RIP by one */
             Context.Rip--;
             break;
-
-        /* Internal exception */
-        case KI_EXCEPTION_ACCESS_VIOLATION:
-
-            /* Set correct code */
-            ExceptionRecord->ExceptionCode = STATUS_ACCESS_VIOLATION;
-            if (PreviousMode == UserMode)
-            {
-                /* FIXME: Handle no execute */
-            }
-            break;
     }
 
     /* Handle kernel-mode first, it's simpler */
