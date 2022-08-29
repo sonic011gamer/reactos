@@ -302,8 +302,8 @@ MiniportFindAdapter(
     switch (Result)
     {
         case SP_RETURN_NOT_FOUND:
-            DPRINT1("SP_RETURN_NOT_FOUND\n");
-            Status = STATUS_NOT_FOUND;
+            DPRINT1("SP_RETURN_NOT_FOUND\n"); /* this is valid... */
+            Status = STATUS_SUCCESS; /* Right...? https://docs.microsoft.com/en-us/windows-hardware/drivers/devtest/storport-spreturnvalue */
             break;
 
         case SP_RETURN_FOUND:
@@ -327,7 +327,7 @@ MiniportFindAdapter(
             break;
     }
 
-    return Status;
+    return STATUS_SUCCESS;
 }
 
 

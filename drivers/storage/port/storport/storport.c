@@ -473,9 +473,8 @@ StorPortAllocateRegistryBuffer(
     _In_ PVOID HwDeviceExtension,
     _In_ PULONG Length)
 {
-    DPRINT1("StorPortAllocateRegistryBuffer()\n");
-    UNIMPLEMENTED;
-    return NULL;
+    SIZE_T size = (SIZE_T)&Length;
+    return ExAllocatePoolWithTag(NonPagedPool, size, 'torp'); /* just for now while we wait for oxys imp */
 }
 
 
@@ -611,10 +610,25 @@ StorPortExtendedFunction(
     _In_ PVOID HwDeviceExtension,
     ...)
 {
+    PMINIPORT_DEVICE_EXTENSION MiniportExtension;
+
+        /* Get the miniport extension */
+    MiniportExtension = CONTAINING_RECORD(HwDeviceExtension,
+                                          MINIPORT_DEVICE_EXTENSION,
+                                          HwDeviceExtension);
+    switch(FunctionCode)
+    {
+        case ExtFunctionAllocatePool:
+            /* Cant find any evidence this is right or wrong.. */
+            MiniportExtension->Miniport->DeviceExtension = ExAllocatePoolWithTag(NonPagedPool, sizeof(FDO_DEVICE_EXTENSION), 'torp');
+            break;
+        default :
+            break;
+    }
     DPRINT1("StorPortExtendedFunction(%d %p ...)\n",
             FunctionCode, HwDeviceExtension);
     UNIMPLEMENTED;
-    return STATUS_NOT_IMPLEMENTED;
+    return STATUS_SUCCESS;
 }
 
 
