@@ -48,7 +48,8 @@ list(APPEND SOURCE
 add_library(ws2_32 MODULE
     ${SOURCE}
     ws2_32.rc
-    ${CMAKE_CURRENT_BINARY_DIR}/ws2_32.def)
+    ${CMAKE_CURRENT_BINARY_DIR}/ws2_32.def
+    ${CMAKE_CURRENT_BINARY_DIR}/ws2_32_stubs.c)
 
 set_module_type(ws2_32 win32dll)
 target_link_libraries(ws2_32 ${PSEH_LIB})
