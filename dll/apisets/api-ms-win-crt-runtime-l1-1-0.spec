@@ -19,93 +19,93 @@
 @ stdcall __threadhandle() msvcrt.__threadhandle
 @ stdcall __threadid() msvcrt.__threadid
 @ stdcall __wcserror() msvcrt.__wcserror
-@ stub __wcserror_s
+@ stdcall  __wcserror_s() msvcrt.__wcserror_s
 @ stdcall _assert() msvcrt._assert
 @ stdcall _beginthread() msvcrt._beginthread
 @ stdcall _beginthreadex() msvcrt._beginthreadex
 @ stdcall _c_exit() msvcrt._c_exit
 @ stdcall _cexit() msvcrt._cexit
 @ stdcall -arch=i386,x86_64 _clearfp() msvcrt._clearfp
-@ stub _configure_narrow_argv
-@ stub _configure_wide_argv
+@ stdcall _configure_narrow_argv() msvcrt._configure_narrow_argv
+@ stdcall _configure_wide_argv() msvcrt._configure_wide_argv
 @ stdcall -arch=i386,x86_64 _control87() msvcrt._control87
 @ stdcall _controlfp() msvcrt._controlfp
-@ stub _controlfp_s
+@ stdcall  _controlfp_s() msvcrt._controlfp_s
 @ stub _crt_at_quick_exit
-@ stub _crt_atexit
+@ stdcall _crt_atexit() msvcrt._crt_atexit
 @ stub _crt_debugger_hook
 @ stdcall _endthread() msvcrt._endthread
 @ stdcall _endthreadex() msvcrt._endthreadex
 @ stdcall _errno() msvcrt._errno
-@ stub -version=0x600+ _execute_onexit_table
+@ stdcall -version=0x600+ _execute_onexit_table() msvcrt._execute_onexit_table
 @ stdcall _exit() msvcrt._exit
 @ stdcall -arch=i386 _fpieee_flt() msvcrt._fpieee_flt
 @ stdcall -stub -arch=x86_64 _fpieee_flt() # ucrtbase._fpieee_flt (msvcrt x64 doesn't have this!)
 @ stdcall _fpreset() msvcrt._fpreset
-@ stub _get_doserrno
-@ stub _get_errno
-@ stub _get_initial_narrow_environment
-@ stub _get_initial_wide_environment
-@ stub _get_invalid_parameter_handler
-@ stub _get_narrow_winmain_command_line
-@ stub _get_pgmptr
-@ stub _get_terminate
-@ stub _get_thread_local_invalid_parameter_handler
-@ stub _get_wide_winmain_command_line
-@ stub _get_wpgmptr
+@ stdcall _get_doserrno() msvcrt._get_doserrno
+@ stdcall _get_errno() msvcrt._get_errno
+@ stdcall _get_initial_narrow_environment() msvcrt._get_initial_narrow_environment
+@ stdcall _get_initial_wide_environment() msvcrt._get_initial_wide_environment
+@ stdcall -stub _get_invalid_parameter_handler()
+@ stdcall _get_narrow_winmain_command_line() msvcrt._get_narrow_winmain_command_line
+@ stdcall _get_pgmptr() msvcrt._get_pgmptr
+@ stdcall _get_terminate() msvcrt._get_terminate
+@ stdcall _get_thread_local_invalid_parameter_handler() msvcrt._get_thread_local_invalid_parameter_handler
+@ stdcall _get_wide_winmain_command_line() msvcrt._get_wide_winmain_command_line
+@ stdcall _get_wpgmptr() msvcrt._get_wpgmptr
 @ stdcall _getdllprocaddr() msvcrt._getdllprocaddr
 @ stdcall _getpid() msvcrt._getpid
-@ stub _initialize_narrow_environment
-@ stub -version=0x600+ _initialize_onexit_table
-@ stub _initialize_wide_environment
+@ stdcall _initialize_narrow_environment() msvcrt._initialize_narrow_environment
+@ stdcall  -version=0x600+ _initialize_onexit_table() msvcrt._initialize_onexit_table
+@ stdcall _initialize_wide_environment() msvcrt._initialize_wide_environment
 @ stdcall _initterm() msvcrt._initterm
-@ stub _initterm_e
-@ stub _invalid_parameter_noinfo
-@ stub _invalid_parameter_noinfo_noreturn
-@ stub _invoke_watson
-@ stub _query_app_type
-@ stub -version=0x600+ _register_onexit_function
-@ stub _register_thread_local_exe_atexit_callback
+@ stdcall _initterm_e() msvcrt._initterm_e
+@ stdcall -stub _invalid_parameter_noinfo() msvcrt._invalid_parameter_noinfo
+@ stdcall -stub _invalid_parameter_noinfo_noreturn() msvcrt._invalid_parameter_noinfo_noreturn
+@ stdcall -stub _invoke_watson(ptr ptr)
+@ stdcall -stub _query_app_type(ptr ptr)
+@ stdcall  -version=0x600+ _register_onexit_function() msvcrt._register_onexit_function
+@ stdcall _register_thread_local_exe_atexit_callback() msvcrt._register_thread_local_exe_atexit_callback
 @ stdcall _resetstkoflw() msvcrt._resetstkoflw
 @ cdecl -version=0x600+ _seh_filter_dll() msvcrt.__CppXcptFilter
 @ cdecl -version=0x600+ _seh_filter_exe() msvcrt._XcptFilter
-@ stub _set_abort_behavior
-@ stub _set_app_type
-@ stub _set_controlfp
-@ stub _set_doserrno
-@ stub _set_errno
+@ stdcall _set_abort_behavior() msvcrt._set_abort_behavior
+@ stdcall _set_app_type() msvcrt._set_app_type
+@ stdcall _set_controlfp() msvcrt._set_controlfp
+@ stdcall _set_doserrno() msvcrt._set_doserrno
+@ stdcall _set_errno() msvcrt._set_errno
 @ stdcall _set_error_mode() msvcrt._set_error_mode
-@ stub _set_invalid_parameter_handler
-@ stub _set_new_handler
-@ stub _set_thread_local_invalid_parameter_handler
+@ stdcall -stub  _set_invalid_parameter_handler()
+@ stdcall -stub _set_new_handler(ptr)
+@ stdcall -stub _set_thread_local_invalid_parameter_handler()
 @ stdcall _seterrormode() msvcrt._seterrormode
 @ stdcall _sleep() msvcrt._sleep
 @ stdcall _statusfp() msvcrt._statusfp
-@ stub _statusfp2
+@ stdcall -stub _statusfp2(ptr ptr)
 @ stdcall _strerror() msvcrt._strerror
-@ stub _strerror_s
-@ stub _wassert
+@ stdcall _strerror_s() msvcrt._strerror_s
+@ stdcall _wassert() msvcrt._wassert
 @ stdcall _wcserror() msvcrt._wcserror
-@ stub _wcserror_s
+@ stdcall _wcserror_s() msvcrt._wcserror_s
 @ stdcall _wperror() msvcrt._wperror
 @ stdcall _wsystem() msvcrt._wsystem
 @ stdcall abort() msvcrt.abort
 @ stdcall exit() msvcrt.exit
 @ stub feclearexcept
-@ stub fegetenv
-@ stub fegetexceptflag
-@ stub fegetround
-@ stub feholdexcept
-@ stub fesetenv
-@ stub fesetexceptflag
-@ stub fesetround
-@ stub fetestexcept
+@ stdcall -stub fegetenv(ptr)
+@ stdcall -stub fegetexceptflag(ptr)
+@ stdcall -stub fegetround(ptr)
+@ stdcall -stub feholdexcept(ptr)
+@ stdcall -stub fesetenv(ptr)
+@ stdcall -stub fesetexceptflag(ptr)
+@ stdcall -stub fesetround(ptr)
+@ stdcall -stub fetestexcept(ptr)
 @ stdcall perror() msvcrt.perror
-@ stub quick_exit
+@ stdcall -stub quick_exit(long)
 @ stdcall raise() msvcrt.raise
-@ stub set_terminate
+@ stdcall -arch=i386 set_terminate() msvcrt.set_terminate
 @ stdcall signal() msvcrt.signal
 @ stdcall strerror() msvcrt.strerror
-@ stub strerror_s
+@ stdcall strerror_s() msvcrt.strerror_s
 @ stdcall system() msvcrt.system
-@ stub terminate
+@ stdcall terminate() msvcrt.terminate

@@ -344,8 +344,21 @@
 @ stub -version=0x600+ __strncnt
 @ cdecl -stub -version=0x600+ __stdio_common_vfprintf(int64 ptr str ptr ptr)
 @ cdecl -stub -version=0x600+ __stdio_common_vsnprintf_s(int64 ptr long long str ptr ptr)
+@ cdecl -stub -version=0x600+ __stdio_common_vfprintf_p(int64 ptr long long str ptr ptr)
 @ cdecl -stub -version=0x600+ __stdio_common_vsnwprintf_s(int64 ptr long long wstr ptr ptr)
 @ cdecl -stub -norelay -version=0x600+ __stdio_common_vsprintf(int64 ptr long str ptr ptr)
+@ cdecl -stub -version=0x600+ __stdio_common_vfprintf_s(int64 ptr str ptr ptr) ; just holders for now
+@ cdecl -stub -version=0x600+ __stdio_common_vfwscanf(int64 ptr str ptr ptr) ; just holders for now
+@ cdecl -stub -version=0x600+ __stdio_common_vsprintf_p(int64 ptr str ptr ptr) ; just holders for now
+@ cdecl -stub -version=0x600+ __stdio_common_vsprintf_s(int64 ptr str ptr ptr) ; just holders for now
+@ cdecl -stub -version=0x600+ __stdio_common_vsscanf(int64 ptr str ptr ptr) ; just holders for now
+@ cdecl -stub -version=0x600+ __stdio_common_vswprintf_p(int64 ptr str ptr ptr) ; just holders for now
+@ cdecl -stub -version=0x600+ __stdio_common_vswprintf_s(int64 ptr str ptr ptr) ; just holders for now
+@ cdecl -stub -version=0x600+ __stdio_common_vswscanf(int64 ptr str ptr ptr) ; just holders for now
+@ cdecl -stub -version=0x600+ __stdio_common_vfscanf(int64 ptr str ptr ptr) ; just holders for now
+@ cdecl -stub -version=0x600+ __stdio_common_vfwprintf(int64 ptr str ptr ptr) ; just holders for now
+@ cdecl -stub -version=0x600+ __stdio_common_vfwprintf_s(int64 ptr str ptr ptr) ; just holders for now
+@ cdecl -stub -version=0x600+ __stdio_common_vfwprintf_p(int64 ptr str ptr ptr) ; just holders for now
 @ cdecl -stub -version=0x600+ __stdio_common_vswprintf(int64 ptr long wstr ptr ptr)
 @ cdecl __threadhandle() kernel32.GetCurrentThread
 @ cdecl __threadid() kernel32.GetCurrentThreadId
@@ -970,10 +983,11 @@
 @ stdcall -arch=i386 _seh_longjmp_unwind(ptr)
 @ cdecl -arch=i386 -version=0x600+ _seh_filter_dll(long ptr)
 @ stub -arch=i386 _set_SSE2_enable
-@ stub -version=0x600+ _set_controlfp
+@ cdecl -stub -version=0x600+ _set_controlfp(long long)
 @ cdecl -version=0x600+ _set_doserrno(long)
 @ cdecl -version=0x600+ _set_errno(long)
 @ cdecl _set_error_mode(long)
+@ cdecl -stub _set_abort_behavior(long long)
 @ stub -version=0x600+ _set_fileinfo
 @ cdecl -version=0x600+ _set_fmode(long)
 @ cdecl -version=0x600+ _set_new_mode(long) MSVCRT__set_new_mode
@@ -1594,3 +1608,12 @@
 @ stub -version=0x600+ wprintf_s
 @ varargs wscanf(wstr)
 @ stub -version=0x600+ wscanf_s
+
+;@ stdcall _get_invalid_parameter_handler
+@ stub _get_narrow_winmain_command_line
+@ stub _get_terminate
+@ stub _get_thread_local_invalid_parameter_handler
+@ stub _get_wide_winmain_command_line
+
+@ stub _aligned_offset_recalloc
+@ stub _aligned_recalloc
