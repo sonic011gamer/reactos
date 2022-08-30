@@ -903,7 +903,14 @@ SetProcessPreferredUILanguages(
     return FALSE;
 }
 #endif
-
+BOOL 
+WINAPI
+SetDefaultDllDirectories(
+  DWORD DirectoryFlags
+)
+{
+    return TRUE;
+}
 /*
  * @unimplemented
  */

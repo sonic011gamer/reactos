@@ -868,6 +868,7 @@
 @ stdcall Process32NextW (ptr ptr)
 @ stdcall ProcessIdToSessionId(long ptr)
 @ stdcall PulseEvent(long)
+@ stdcall -version=0x601+ SetDefaultDllDirectories() kernel32_vista.SetDefaultDllDirectories
 @ stdcall PurgeComm(long long)
 @ stub -version=0x600+ QueryActCtxSettingsW
 @ stdcall QueryActCtxW(long ptr ptr long ptr long ptr)

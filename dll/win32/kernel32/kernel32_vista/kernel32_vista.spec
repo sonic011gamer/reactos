@@ -18,7 +18,7 @@
 @ stdcall WakeConditionVariable(ptr)
 
 @ stdcall InitializeCriticalSectionEx(ptr long long)
-
+@ stdcall -version=0x601+ SetDefaultDllDirectories(long) 
 @ stdcall ApplicationRecoveryFinished(long)
 @ stdcall ApplicationRecoveryInProgress(ptr)
 @ stdcall CreateSymbolicLinkA(str str long)
