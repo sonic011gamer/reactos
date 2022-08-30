@@ -79,6 +79,8 @@
 @ stdcall -stub -version=0x600+ EtwEventWriteStartScenario()
 @ stdcall -stub -version=0x600+ EtwEventWriteString()
 @ stdcall -stub -version=0x600+ EtwEventWriteTransfer()
+@ stdcall -stub -version=0x600+ RtlQueryPerformanceCounters(ptr)
+@ stdcall -stub -version=0x600+ RtlQueryPerformanceCounter(ptr)
 @ stdcall -version=0x502 EtwFlushTraceA(double str ptr)
 @ stdcall -version=0x502 EtwFlushTraceW(double wstr ptr)
 @ stdcall EtwGetTraceEnableFlags(double)
