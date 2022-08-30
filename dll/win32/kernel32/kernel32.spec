@@ -2188,3 +2188,5 @@
 @ stub -version=0x602+ timeGetDevCaps	 
 @ stub -version=0x602+ timeGetSystemTime	 
 @ stub -version=0x602+ timeGetTime	 
+@ stdcall -stub -version=0x601+ K32GetProcessImageFileNameW(ptr ptr ptr)
+@ stdcall -stub -version=0x601+ K32GetPerformanceInfo(ptr long)

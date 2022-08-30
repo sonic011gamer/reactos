@@ -1390,13 +1390,6 @@ __INTRIN_INLINE unsigned short __cdecl _byteswap_ushort(unsigned short value)
 	return retval;
 }
 
-__INTRIN_INLINE unsigned long __cdecl _byteswap_ulong(unsigned long value)
-{
-	unsigned long retval;
-	__asm__("bswapl %[retval]" : [retval] "=r" (retval) : "[retval]" (value));
-	return retval;
-}
-
 #ifdef __x86_64__
 __INTRIN_INLINE unsigned long long _byteswap_uint64(unsigned long long value)
 {

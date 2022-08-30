@@ -468,3 +468,7 @@
 756 stub -noname DeleteFileThumbnail
 757 stdcall -version=0x600+ SHGetStockIconInfo(long long ptr)
 @   stdcall -version=0x600+ SHOpenWithDialog(ptr ptr)
+@   stdcall -version=0xA00+ -stub GetCurrentProcessExplicitAppUserModelID(ptr)
+@   stdcall -version=0xA00+ -stub SHCreateItemFromParsingName(ptr ptr ptr)
+@   stdcall -version=0xA00+ -stub SHQueryUserNotificationState(ptr ptr ptr)
+@   stdcall -version=0xA00+ -stub SetCurrentProcessExplicitAppUserModelID(ptr ptr ptr ptr)
