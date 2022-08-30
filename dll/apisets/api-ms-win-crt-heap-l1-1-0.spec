@@ -6,9 +6,9 @@
 @ stdcall -version=0x600+ _aligned_msize() msvcrt._aligned_msize
 @ stdcall _aligned_offset_malloc() msvcrt._aligned_offset_malloc
 @ stdcall _aligned_offset_realloc() msvcrt._aligned_offset_realloc
-@ stub _aligned_offset_recalloc
+@ stdcall _aligned_offset_recalloc() msvcrt._aligned_offset_recalloc
 @ stdcall _aligned_realloc() msvcrt._aligned_realloc
-@ stub _aligned_recalloc
+@ stdcall _aligned_recalloc() msvcrt._aligned_recalloc
 @ stdcall _callnewh() msvcrt._callnewh
 @ stdcall -version=0x600+ _calloc_base() msvcrt._calloc_base
 @ stdcall _expand() msvcrt._expand
