@@ -100,6 +100,7 @@ list(APPEND PCH_SKIP_SOURCE
     wine/shlmenu.c
     wine/shpolicy.c
     vista.c
+    ${CMAKE_CURRENT_BINARY_DIR}/shell32.def
     ${CMAKE_CURRENT_BINARY_DIR}/shell32_stubs.c)
 
 file(GLOB_RECURSE shell32_rc_deps res/*.*)
