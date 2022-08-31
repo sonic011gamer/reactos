@@ -356,7 +356,7 @@
 @ cdecl -stub -version=0x600+ __stdio_common_vswprintf_s(int64 ptr str ptr ptr) ; just holders for now
 @ cdecl -stub -version=0x600+ __stdio_common_vswscanf(int64 ptr str ptr ptr) ; just holders for now
 @ cdecl -stub -version=0x600+ __stdio_common_vfscanf(int64 ptr str ptr ptr) ; just holders for now
-@ cdecl -stub -version=0x600+ __stdio_common_vfwprintf(int64 ptr str ptr ptr) ; just holders for now
+@ cdecl -stub -version=0x600+ __stdio_common_vfwprintf(int64 ptr str ptr ptr) 
 @ cdecl -stub -version=0x600+ __stdio_common_vfwprintf_s(int64 ptr str ptr ptr) ; just holders for now
 @ cdecl -stub -version=0x600+ __stdio_common_vfwprintf_p(int64 ptr str ptr ptr) ; just holders for now
 @ cdecl -stub -version=0x600+ __stdio_common_vswprintf(int64 ptr long wstr ptr ptr)
