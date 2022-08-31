@@ -313,7 +313,7 @@
 313 stdcall SHGetPathFromIDList(ptr ptr) SHGetPathFromIDListA
 314 stdcall SHGetPathFromIDListA(ptr ptr)
 315 stdcall SHGetPathFromIDListW(ptr ptr)
-@   stdcall -stub -version=0x600+ SHGetPropertyStoreForWindow(ptr long ptr)
+@   stdcall -version=0x600+ SHGetPropertyStoreForWindow(ptr long ptr)
 316 stdcall SHGetSettings(ptr long)
 317 stdcall SHGetSpecialFolderLocation(long long ptr)
 318 stdcall SHGetSpecialFolderPathA(long ptr long long)
@@ -472,3 +472,4 @@
 @   stdcall -version=0xA00+ -stub SHCreateItemFromParsingName(ptr ptr ptr)
 @   stdcall -version=0xA00+ -stub SHQueryUserNotificationState(ptr ptr ptr)
 @   stdcall -version=0xA00+ -stub SetCurrentProcessExplicitAppUserModelID(ptr ptr ptr ptr)
+@ stdcall -version=0x600+ -stub SHGetPropertyStoreFromParsingName(long ptr long long ptr)
