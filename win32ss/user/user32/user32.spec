@@ -72,7 +72,7 @@
 67 stdcall CloseClipboard() NtUserCloseClipboard
 68 stdcall CloseDesktop(long) NtUserCloseDesktop
 @  stub -version=0x601+ CloseGestureInfoHandle
-@  stdcall -version=0x601+ CloseTouchInputHandle(ptr)
+@  stdcall -stub -version=0x601+ CloseTouchInputHandle(ptr)
 69 stdcall CloseWindow(long)
 70 stdcall CloseWindowStation(long) NtUserCloseWindowStation
 71 stdcall CopyAcceleratorTableA(long ptr long)
