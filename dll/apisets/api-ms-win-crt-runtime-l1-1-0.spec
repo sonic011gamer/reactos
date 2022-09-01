@@ -37,11 +37,7 @@
 @ stdcall _endthread() msvcrt._endthread
 @ stdcall _endthreadex() msvcrt._endthreadex
 @ stdcall _errno() msvcrt._errno
-<<<<<<< HEAD
 @ stdcall -version=0x601+ _execute_onexit_table() msvcrt._execute_onexit_table
-=======
-@ stub -version=0x600+ _execute_onexit_table
->>>>>>> e871f2ce287 ([APISETS] Fix some apiset stuff and gcc build)
 @ stdcall _exit() msvcrt._exit
 @ stdcall -arch=i386 _fpieee_flt() msvcrt._fpieee_flt
 @ stdcall -stub -arch=x86_64 _fpieee_flt() # ucrtbase._fpieee_flt (msvcrt x64 doesn't have this!)
@@ -59,15 +55,9 @@
 @ stub _get_wpgmptr
 @ stdcall _getdllprocaddr() msvcrt._getdllprocaddr
 @ stdcall _getpid() msvcrt._getpid
-<<<<<<< HEAD
 @ stdcall -version=0x600+ _initialize_narrow_environment() msvcrt._initialize_narrow_environment
 @ stdcall -version=0x600+ _initialize_onexit_table() msvcrt._initialize_onexit_table
 @ stdcall -version=0x600+ _initialize_wide_environment() msvcrt._initialize_wide_environment
-=======
-@ stub _initialize_narrow_environment
-@ stub -version=0x600+ _initialize_onexit_table
-@ stub _initialize_wide_environment
->>>>>>> e871f2ce287 ([APISETS] Fix some apiset stuff and gcc build)
 @ stdcall _initterm() msvcrt._initterm
 @ stdcall -version=0x600+ _initterm_e() msvcrt._initterm_e
 @ stdcall -version=0x600+ _invalid_parameter() msvcrt._invalid_parameter
