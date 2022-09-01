@@ -753,7 +753,7 @@ RegisterTouchWindow(HWND  hwnd,
     UNIMPLEMENTED;
     return TRUE;
 }
-#if 0
+#if 1
 BOOL CloseTouchInputHandle(
   LPARAM hTouchInput
 )
