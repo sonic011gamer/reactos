@@ -20,5 +20,5 @@ WINAPI
 DWriteCreateFactory(DWRITE_FACTORY_TYPE type, REFIID riid, IUnknown **ret)
 {
     UNIMPLEMENTED;
-    return 0;
+    return STATUS_ACCESS_DENIED;
 }
