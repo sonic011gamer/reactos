@@ -10,7 +10,7 @@
 @ stub _ftol2
 @ stub _ftol2_sse
 @ stub _i64tow_s
-@ stub _itow_s
+@ stdcall  -version=0x600+ _itow_s() msvcrt._itow_s
 @ stdcall -arch=i386 -version=0x600+ _local_unwind4() msvcrt._local_unwind4
 @ stub _ltow_s
 @ stub _snprintf_s
