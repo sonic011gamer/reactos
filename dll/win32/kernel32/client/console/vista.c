@@ -255,5 +255,12 @@ WerRegisterMemoryBlock(PVOID pvAddress,
 }
 
 #endif // (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
-
+BOOL GetThreadGroupAffinity(
+  HANDLE          hThread,
+  PGROUP_AFFINITY GroupAffinity
+)
+{
+    GroupAffinity->Group = 0;
+    return TRUE;
+}
 /* EOF */

@@ -67,3 +67,23 @@ BOOL WINAPI GetNamedPipeServerSessionId( HANDLE pipe, ULONG *id )
     return TRUE;
 }
 
+
+BOOL 
+K32QueryWorkingSet(
+        HANDLE hProcess,
+        PVOID  pv,
+        DWORD  cb
+)
+{
+    return TRUE;
+}
+
+BOOL 
+K32QueryWorkingSetEx(
+        HANDLE hProcess,
+        PVOID  pv,
+        DWORD  cb
+)
+{
+    return TRUE;
+}

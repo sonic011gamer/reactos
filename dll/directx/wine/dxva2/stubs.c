@@ -13,5 +13,14 @@ HRESULT DXVA2CreateDirect3DDeviceManager9(
 )
 {
     UNIMPLEMENTED;
-    return 0xC0000001L;
+    return 0;
+}
+
+HRESULT DXVA2CreateVideoService(
+  ULONG_PTR *pDD,
+  REFIID           riid,
+  void             **ppService
+)
+{
+  return 0;
 }

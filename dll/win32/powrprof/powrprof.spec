@@ -57,6 +57,7 @@
 @ stdcall -stub -version=0x600+ PowerWriteValueMax(ptr ptr ptr long)
 @ stdcall -stub -version=0x600+ PowerWriteValueMin(ptr ptr ptr long)
 @ stdcall -stub -version=0x600+ PowerWriteValueUnitsSpecifier(ptr ptr ptr str long)
+@ stdcall -stub -version=0x600+ PowerDeterminePlatformRoleEx(long)
 @ stdcall ReadGlobalPwrPolicy (ptr)
 @ stdcall ReadProcessorPwrScheme (long ptr)
 @ stdcall ReadPwrScheme (long ptr)
