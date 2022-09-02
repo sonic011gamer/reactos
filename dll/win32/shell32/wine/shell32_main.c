@@ -1127,13 +1127,6 @@ INT_PTR CALLBACK AboutAuthorsDlgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM
     return FALSE;
 }
 
-HRESULT WINAPI SHGetPropertyStoreForWindow(HWND hwnd, REFIID riid, void **ppv)
-{
-
-    return 0;
-}
-
-
 /*************************************************************************
  * AboutDlgProc            (internal)
  */
