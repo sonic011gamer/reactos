@@ -55,13 +55,16 @@ GetSectorsPerCluster()
     }
 }
 
-NTSTATUS NTAPI
-NtfsFormat(IN PUNICODE_STRING  DriveRoot,
-           IN FMIFS_MEDIA_FLAG MediaFlag,
-           IN PUNICODE_STRING  Label,
-           IN BOOLEAN          QuickFormat,
-           IN ULONG            ClusterSize,
-           IN PFMIFSCALLBACK   Callback)
+BOOLEAN
+NTAPI
+NtfsFormat(
+    IN PUNICODE_STRING DriveRoot,
+    IN PFMIFSCALLBACK Callback,
+    IN BOOLEAN QuickFormat,
+    IN BOOLEAN BackwardCompatible,
+    IN MEDIA_TYPE MediaType,
+    IN PUNICODE_STRING Label,
+    IN ULONG ClusterSize)
 {
     HANDLE                 DiskHandle;
     OBJECT_ATTRIBUTES      Attributes;
@@ -84,7 +87,7 @@ NtfsFormat(IN PUNICODE_STRING  DriveRoot,
     if (!NT_SUCCESS(Status))
     {
         DPRINT1("NtOpenFile() failed with status 0x%.08x\n", Status);
-        return Status;
+        return FALSE;
     }
 
     // Get length info
@@ -102,7 +105,7 @@ NtfsFormat(IN PUNICODE_STRING  DriveRoot,
     {
         DPRINT1("IOCTL_DISK_GET_LENGTH_INFO failed with status 0x%.08x\n", Status);
         NtClose(DiskHandle);
-        return Status;
+        return FALSE;
     }
 
     // Get disk geometry
@@ -120,7 +123,7 @@ NtfsFormat(IN PUNICODE_STRING  DriveRoot,
     {
         DPRINT1("IOCTL_DISK_GET_DRIVE_GEOMETRY failed with status 0x%.08x\n", Status);
         NtClose(DiskHandle);
-        return Status;
+        return FALSE;
     }
 
     // Initialize progress bar
@@ -164,6 +167,8 @@ NtfsFormat(IN PUNICODE_STRING  DriveRoot,
         NtClose(DiskHandle);
         goto end;
     }
+    
+    DPRINT1("Went through fine\n");
 
 end:
 
@@ -186,17 +191,23 @@ end:
         Callback(DONE, 0, (PVOID)&success);
     }
 
-    return Status;
+    return TRUE;
 }
 
-
-NTSTATUS NTAPI
-NtfsChkdsk(IN PUNICODE_STRING DriveRoot,
-           IN BOOLEAN         FixErrors,
-           IN BOOLEAN         Verbose,
-           IN BOOLEAN         CheckOnlyIfDirty,
-           IN BOOLEAN         ScanDrive,
-           IN PFMIFSCALLBACK  Callback)
+BOOLEAN
+NTAPI
+NtfsChkdsk(
+    IN PUNICODE_STRING DriveRoot,
+    IN PFMIFSCALLBACK Callback,
+    IN BOOLEAN FixErrors,
+    IN BOOLEAN Verbose,
+    IN BOOLEAN CheckOnlyIfDirty,
+    IN BOOLEAN ScanDrive,
+    IN PVOID pUnknown1,
+    IN PVOID pUnknown2,
+    IN PVOID pUnknown3,
+    IN PVOID pUnknown4,
+    IN PULONG ExitStatus)
 {
     // STUB
 
@@ -209,6 +220,7 @@ NtfsChkdsk(IN PUNICODE_STRING DriveRoot,
 
         Callback(OUTPUT, 0, &TextOut);
     }
-
-    return STATUS_SUCCESS;
+    
+    *ExitStatus = (ULONG)STATUS_SUCCESS;
+    return TRUE;
 }
