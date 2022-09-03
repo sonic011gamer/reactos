@@ -9,3 +9,4 @@
 @ cdecl __libm_sse2_pow_precise() 
 @ cdecl __libm_sse2_sin_precise()
 @ cdecl __libm_sse2_sqrt_precise()
+@ cdecl __fpe_flt_rounds()

@@ -208,7 +208,7 @@ RegisterApplicationRestart(IN PCWSTR pwzCommandline  OPTIONAL,
                            IN DWORD dwFlags)
 {
     UNIMPLEMENTED;
-    return E_FAIL;
+    return STATUS_SUCCESS;
 }
 
 
