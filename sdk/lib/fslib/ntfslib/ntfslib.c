@@ -17,7 +17,7 @@
 /* FUNCTIONS *****************************************************************/
 
 VOID
-GetSystemTimeAsFileTime(OUT PFILETIME lpFileTime)
+NtfsGetSystemTimeAsFileTime(OUT PFILETIME lpFileTime)
 {
     LARGE_INTEGER SystemTime;
 
