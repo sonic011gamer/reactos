@@ -176,7 +176,7 @@ BOOL WINAPI DECLSPEC_HOTPATCH GetQueuedCompletionStatusEx( HANDLE port, OVERLAPP
                                                            ULONG count, ULONG *written,
                                                            DWORD timeout, BOOL alertable )
 {
-    return FALSE;
+    return TRUE;
 }
 
 LONG 

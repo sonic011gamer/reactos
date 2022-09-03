@@ -166,3 +166,10 @@ ULONG WINAPI EventUnregister(REGHANDLE RegHandle)
 	UNIMPLEMENTED;
     return ERROR_SUCCESS;
 };  
+
+ULONG WMIAPI CloseTrace(
+    TRACEHANDLE TraceHandle
+)
+{
+  return ERROR_SUCCESS;
+}
