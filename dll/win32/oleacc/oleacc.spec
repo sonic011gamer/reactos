@@ -20,3 +20,4 @@
 @ stdcall LresultFromObject(ptr long ptr)
 @ stdcall ObjectFromLresult(long ptr long ptr)
 @ stdcall WindowFromAccessibleObject(ptr ptr)
+@ stdcall -version=0x601+ PropMgrClient_LookupProp(ptr long long long long long ptr)

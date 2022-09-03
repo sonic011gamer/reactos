@@ -12,7 +12,8 @@ list(APPEND SOURCE
     client.c
     main.c
     propservice.c
-    window.c)
+    window.c
+    stubs.c)
 
 list(APPEND PCH_SKIP_SOURCE
     guid.c

@@ -764,7 +764,7 @@
 704 stdcall UnregisterMessagePumpHook()
 @   stdcall -version=0x600+ UnregisterPowerSettingNotification(ptr)
 @   stdcall -stub -version=0x600+ UnregisterSessionPort()
-@ stub -version=0x601+ UnregisterTouchWindow
+@ stdcall -version=0x601+ UnregisterTouchWindow(ptr)
 705 stdcall UnregisterUserApiHook() NtUserUnregisterUserApiHook
 706 stdcall UpdateLayeredWindow(long long ptr ptr long ptr long ptr long)
 707 stdcall UpdateLayeredWindowIndirect(long ptr)

@@ -2043,5 +2043,11 @@ ChangeWindowMessageFilterEx(HWND hwnd,
     return TRUE;
 }
 
+BOOL UnregisterTouchWindow(
+   HWND hwnd
+)
+{
+    return TRUE;
+}
 /* EOF */
 
