@@ -4,7 +4,7 @@
 @ stub _Exit
 @ stub __control87_2
 @ stdcall __doserrno() msvcrt.__doserrno
-@ stub __fpe_flt_rounds
+@ cdecl __fpe_flt_rounds() msvcrt_wine.__fpe_flt_rounds
 @ stdcall __fpecode() msvcrt.__fpecode
 @ stdcall -arch=i386 __p___argc() msvcrt.__p___argc
 @ stdcall -arch=i386 __p___argv() msvcrt.__p___argv

@@ -1345,3 +1345,5 @@
 @ stdcall -version=0x502+ K32QueryWorkingSet(ptr ptr long)
 @ stdcall -version=0x600+ K32QueryWorkingSetEx(ptr ptr long)
 @ stdcall -version=0x601+ GetThreadGroupAffinity(ptr ptr)
+@ stdcall -stub -version=0x600+ K32GetProcessImageFileNameW()
+@ stdcall -version=0x600+ GetActiveProcessorCount(long)

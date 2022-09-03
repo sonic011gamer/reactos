@@ -1611,10 +1611,10 @@
 @ stub -version=0x600+ wscanf_s
 
 ;@ stdcall _get_invalid_parameter_handler
-@ stub _get_narrow_winmain_command_line
-@ stub _get_terminate
-@ stub _get_thread_local_invalid_parameter_handler
-@ stub _get_wide_winmain_command_line
+@ stdcall -version=0x600+ -stub _get_narrow_winmain_command_line()
+@ stdcall -version=0x600+ -stub _get_terminate()
+@ stdcall -version=0x600+ -stub _get_thread_local_invalid_parameter_handler()
+@ stdcall -version=0x600+ -stub _get_wide_winmain_command_line(ptr ptr ptr)
 
-@ stub _aligned_offset_recalloc
-@ stub _aligned_recalloc
+@ stdcall -version=0x600+ -stub _aligned_offset_recalloc()
+@ stdcall -version=0x600+ -stub _aligned_recalloc()

@@ -30,28 +30,28 @@
 @ stub _get_timezone
 @ stub _get_tzname
 @ stdcall _getsystime() msvcrt._getsystime
-@ stub _gmtime32
-@ stub _gmtime32_s
+@ stdcall _gmtime32()
+@ stdcall _gmtime32_s()
 @ stdcall _gmtime64() msvcrt._gmtime64
 @ stdcall -version=0x600+ _gmtime64_s() msvcrt._gmtime64_s
-@ stub _localtime32
-@ stub _localtime32_s
+@ stdcall _localtime32()
+@ stdcall _localtime32_s()
 @ stdcall _localtime64() msvcrt._localtime64
-@ stub _localtime64_s
-@ stub _mkgmtime32
+@ stdcall _localtime64_s()
+@ stdcall _mkgmtime32()
 @ stdcall _mkgmtime64() msvcrt._mkgmtime64
-@ stub _mktime32
+@ stdcall _mktime32()
 @ stdcall _mktime64() msvcrt._mktime64
 @ stdcall _setsystime() msvcrt._setsystime
 @ stdcall _strdate() msvcrt._strdate
-@ stub _strdate_s
-@ stub _strftime_l
+@ stdcall _strdate_s()
+@ stdcall -stub _strftime_l()
 @ stdcall _strtime() msvcrt._strtime
-@ stub _strtime_s
-@ stub _time32
+@ stdcall _strtime_s()
+@ stdcall _time32()
 @ stdcall _time64() msvcrt._time64
-@ stub _timespec32_get
-@ stub _timespec64_get
+@ stdcall -stub _timespec32_get()
+@ stdcall -stub _timespec64_get()
 @ stdcall _tzset() msvcrt._tzset
 @ stub _utime32
 @ stdcall _utime64() msvcrt._utime64
