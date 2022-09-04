@@ -508,7 +508,8 @@
 @ stdcall GetLogicalDriveStringsW(long ptr)
 @ stdcall GetLogicalDrives()
 @ stdcall GetLogicalProcessorInformation(ptr ptr)
-@ stdcall GetLongPathNameA(str long long)
+@ stdcall GetLogicalProcessorInformationEx(ptr ptr ptr)
+@ stdcall GetLongPathNameA (str long long)
 @ stub -version=0x600+ GetLongPathNameTransactedA
 @ stub -version=0x600+ GetLongPathNameTransactedW
 @ stdcall GetLongPathNameW(wstr long long)
@@ -1229,22 +1230,6 @@
 @ stdcall WaitForMultipleObjectsEx(long ptr long long long)
 @ stdcall WaitForSingleObject(long long)
 @ stdcall WaitForSingleObjectEx(long long long)
-<<<<<<< HEAD
-@ stub -version=0x600+ WaitForThreadpoolIoCallbacks
-@ stub -version=0x600+ WaitForThreadpoolTimerCallbacks
-@ stub -version=0x600+ WaitForThreadpoolWaitCallbacks
-@ stub -version=0x600+ WaitForThreadpoolWorkCallbacks
-@ stdcall WaitNamedPipeA(str long)
-@ stdcall WaitNamedPipeW(wstr long)
-@ stub -version=0x600+ WakeAllConditionVariable
-@ stub -version=0x600+ WakeConditionVariable
-@ stub -version=0x600+ WerGetFlags
-@ stub -version=0x600+ WerRegisterFile
-@ stub -version=0x600+ WerRegisterMemoryBlock
-@ stub -version=0x600+ WerSetFlags
-@ stub -version=0x600+ WerUnregisterFile
-@ stub -version=0x600+ WerUnregisterMemoryBlock
-=======
 @ stdcall -stub -version=0x600+ WaitForThreadpoolIoCallbacks(ptr long)
 @ stdcall -version=0x600+ WaitForThreadpoolTimerCallbacks(ptr long) ntdll_vista.TpWaitForTimer
 @ stdcall -version=0x600+ WaitForThreadpoolWaitCallbacks(ptr long) ntdll_vista.TpWaitForWait
@@ -1259,7 +1244,6 @@
 @ stdcall -stub -version=0x600+ WerSetFlags(long)
 @ stdcall -stub -version=0x600+ WerUnregisterFile(wstr)
 @ stdcall -stub -version=0x600+ WerUnregisterMemoryBlock(ptr)
->>>>>>> 371d5007668 (Grabbing Getequ and refactoring NT6 branch as base)
 @ stub -version=0x600+ WerpCleanupMessageMapping
 @ stub -version=0x600+ WerpInitiateRemoteRecovery
 @ stub -version=0x600+ WerpNotifyLoadStringResource

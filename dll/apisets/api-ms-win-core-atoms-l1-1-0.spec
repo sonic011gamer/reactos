@@ -9,8 +9,8 @@
 @ stdcall GetAtomNameA() kernel32.GetAtomNameA
 @ stdcall GetAtomNameW() kernel32.GetAtomNameW
 @ stdcall GlobalAddAtomA() kernel32.GlobalAddAtomA
-@ stub GlobalAddAtomExA
-@ stub GlobalAddAtomExW
+@ stdcall -stub GlobalAddAtomExA(long long)
+@ stdcall -stub GlobalAddAtomExW(long long)
 @ stdcall GlobalAddAtomW() kernel32.GlobalAddAtomW
 @ stdcall GlobalDeleteAtom() kernel32.GlobalDeleteAtom
 @ stdcall GlobalFindAtomA() kernel32.GlobalFindAtomA

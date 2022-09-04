@@ -805,3 +805,6 @@
 1553 stdcall -stub -version=0x600+ UnknownOrdinal1()
 1554 stdcall -stub -version=0x600+ UnknownOrdinal2()
 2000 stdcall -stub -version=0x600+ UnknownOrdinal3()
+@ stdcall -version=0x600+ AddClipboardFormatListener(long)
+@ stdcall -version=0x600+ RemoveClipboardFormatListener(long)
+@ stdcall -version=0x600+ GetUpdatedClipboardFormats(ptr long ptr)

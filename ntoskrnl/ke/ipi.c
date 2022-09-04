@@ -270,3 +270,17 @@ KeIpiGenericCall(IN PKIPI_BROADCAST_WORKER Function,
     KeLowerIrql(OldIrql);
     return Status;
 }
+
+ULONG KeQueryActiveProcessorCountEx(
+  USHORT GroupNumber
+)
+{
+    return 1;
+}
+
+ULONG KeQueryActiveProcessorCount(
+  PKAFFINITY ActiveProcessors
+)
+{
+    return 1;
+}

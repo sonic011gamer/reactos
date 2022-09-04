@@ -382,7 +382,7 @@ WINAPI
 AddClipboardFormatListener(HWND hwnd)
 {
     UNIMPLEMENTED;
-    return FALSE;
+    return TRUE;
 }
 /*
  * @unimplemented
@@ -392,7 +392,7 @@ WINAPI
 RemoveClipboardFormatListener(HWND hwnd)
 {
     UNIMPLEMENTED;
-    return FALSE;
+    return TRUE;
 }
 
 /*
