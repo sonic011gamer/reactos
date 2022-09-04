@@ -6,7 +6,7 @@
 @ stdcall -version=0x600+ GetDynamicTimeZoneInformation() kernel32.GetDynamicTimeZoneInformation
 @ stdcall GetLocalTime() kernel32.GetLocalTime
 @ stdcall GetLogicalProcessorInformation() kernel32.GetLogicalProcessorInformation
-@ stub GetLogicalProcessorInformationEx
+;@ stub GetLogicalProcessorInformationEx
 @ stdcall GetSystemDirectoryA() kernel32.GetSystemDirectoryA
 @ stdcall GetSystemDirectoryW() kernel32.GetSystemDirectoryW
 @ stdcall GetSystemInfo() kernel32.GetSystemInfo

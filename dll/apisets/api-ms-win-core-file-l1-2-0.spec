@@ -4,7 +4,7 @@
 @ stdcall CompareFileTime() kernel32.CompareFileTime
 @ stdcall CreateDirectoryA() kernel32.CreateDirectoryA
 @ stdcall CreateDirectoryW() kernel32.CreateDirectoryW
-@ stub CreateFile2
+;@ stub CreateFile2
 @ stdcall CreateFileA() kernel32.CreateFileA
 @ stdcall CreateFileW() kernel32.CreateFileW
 @ stdcall DefineDosDeviceW() kernel32.DefineDosDeviceW

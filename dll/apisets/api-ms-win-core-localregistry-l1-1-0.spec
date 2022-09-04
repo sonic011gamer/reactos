@@ -10,7 +10,7 @@
 @ stdcall RegDeleteTreeW() advapi32_vista.RegDeleteTreeW
 @ stdcall RegDeleteValueA() advapi32.RegDeleteValueA
 @ stdcall RegDeleteValueW() advapi32.RegDeleteValueW
-@ stub RegDisablePredefinedCacheEx
+;@ stub RegDisablePredefinedCacheEx
 @ stdcall RegEnumKeyExA() advapi32.RegEnumKeyExA
 @ stdcall RegEnumKeyExW() advapi32.RegEnumKeyExW
 @ stdcall RegEnumValueA() advapi32.RegEnumValueA

@@ -6,7 +6,7 @@
 @ stdcall -version=0x600+ GetErrorMode() kernel32.GetErrorMode
 @ stdcall GetLastError() kernel32.GetLastError
 @ stdcall RaiseException() kernel32.RaiseException
-@ stub RaiseFailFastException
+;@ stub RaiseFailFastException
 @ stdcall RemoveVectoredContinueHandler() kernel32.RemoveVectoredContinueHandler
 @ stdcall RemoveVectoredExceptionHandler() kernel32.RemoveVectoredExceptionHandler
 @ stdcall RestoreLastError() kernel32.RestoreLastError

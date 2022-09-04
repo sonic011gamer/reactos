@@ -4,9 +4,9 @@
 @ stdcall ChangeServiceConfig2A() advapi32.ChangeServiceConfig2A
 @ stdcall ChangeServiceConfigA() advapi32.ChangeServiceConfigA
 @ stdcall ControlService() advapi32.ControlService
-@ stub ControlServiceExA
+;@ stub ControlServiceExA
 @ stdcall CreateServiceA() advapi32.CreateServiceA
-@ stub NotifyServiceStatusChangeA
+;@ stub NotifyServiceStatusChangeA
 @ stdcall OpenSCManagerA() advapi32.OpenSCManagerA
 @ stdcall OpenServiceA() advapi32.OpenServiceA
 @ stdcall QueryServiceConfig2A() advapi32.QueryServiceConfig2A

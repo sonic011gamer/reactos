@@ -55,8 +55,8 @@
 @ stdcall PathIsValidCharA() shlwapi.PathIsValidCharA
 @ stdcall PathIsValidCharW() shlwapi.PathIsValidCharW
 @ stdcall PathMatchSpecA() shlwapi.PathMatchSpecA
-@ stub PathMatchSpecExA
-@ stub PathMatchSpecExW
+;@ stub PathMatchSpecExA
+;@ stub PathMatchSpecExW
 @ stdcall PathMatchSpecW() shlwapi.PathMatchSpecW
 @ stdcall PathParseIconLocationA() shlwapi.PathParseIconLocationA
 @ stdcall PathParseIconLocationW() shlwapi.PathParseIconLocationW

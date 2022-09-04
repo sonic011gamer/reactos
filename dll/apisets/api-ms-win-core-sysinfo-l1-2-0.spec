@@ -6,9 +6,9 @@
 @ stdcall GetComputerNameExW() kernel32.GetComputerNameExW
 @ stdcall GetLocalTime() kernel32.GetLocalTime
 @ stdcall GetLogicalProcessorInformation() kernel32.GetLogicalProcessorInformation
-@ stub GetLogicalProcessorInformationEx
+;@ stub GetLogicalProcessorInformationEx
 @ stdcall GetNativeSystemInfo() kernel32.GetNativeSystemInfo
-@ stub GetOsSafeBootMode
+;@ stub GetOsSafeBootMode
 @ stdcall -version=0x600+ GetProductInfo() kernel32.GetProductInfo
 @ stdcall GetSystemDirectoryA() kernel32.GetSystemDirectoryA
 @ stdcall GetSystemDirectoryW() kernel32.GetSystemDirectoryW

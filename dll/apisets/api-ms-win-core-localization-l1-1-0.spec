@@ -17,7 +17,7 @@
 @ stdcall -version=0x601+ GetNLSVersion() kernel32.GetNLSVersion
 @ stdcall -version=0x601+ GetNLSVersionEx() kernel32.GetNLSVersionEx
 @ stdcall -version=0x601+ GetOEMCP() kernel32.GetOEMCP
-@ stub -version=0x601+ GetProcessPreferredUILanguages
+;@ stub -version=0x601+ GetProcessPreferredUILanguages
 @ stdcall -version=0x601+ GetSystemDefaultLCID() kernel32.GetSystemDefaultLCID
 @ stdcall -version=0x601+ GetSystemDefaultLangID() kernel32.GetSystemDefaultLangID
 @ stdcall -version=0x601+ GetSystemPreferredUILanguages() kernel32.GetSystemPreferredUILanguages

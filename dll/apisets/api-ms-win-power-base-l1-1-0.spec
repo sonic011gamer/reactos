@@ -3,6 +3,6 @@
 
 @ stdcall CallNtPowerInformation() powrprof.CallNtPowerInformation
 @ stdcall GetPwrCapabilities() powrprof.GetPwrCapabilities
-@ stub PowerDeterminePlatformRoleEx
-@ stub PowerRegisterSuspendResumeNotification
-@ stub PowerUnregisterSuspendResumeNotification
+;@ stub PowerDeterminePlatformRoleEx
+;@ stub PowerRegisterSuspendResumeNotification
+;@ stub PowerUnregisterSuspendResumeNotification

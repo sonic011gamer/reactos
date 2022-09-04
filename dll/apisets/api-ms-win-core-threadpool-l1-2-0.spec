@@ -20,17 +20,17 @@
 @ stdcall -version=0x600+ FreeLibraryWhenCallbackReturns() kernel32.FreeLibraryWhenCallbackReturns
 @ stdcall -version=0x600+ IsThreadpoolTimerSet() kernel32.IsThreadpoolTimerSet
 @ stdcall -version=0x600+ LeaveCriticalSectionWhenCallbackReturns() kernel32.LeaveCriticalSectionWhenCallbackReturns
-@ stub QueryThreadpoolStackInformation
+;@ stub QueryThreadpoolStackInformation
 @ stdcall -version=0x600+ ReleaseMutexWhenCallbackReturns() kernel32.ReleaseMutexWhenCallbackReturns
 @ stdcall -version=0x600+ ReleaseSemaphoreWhenCallbackReturns() kernel32.ReleaseSemaphoreWhenCallbackReturns
 @ stdcall -version=0x600+ SetEventWhenCallbackReturns() kernel32.SetEventWhenCallbackReturns
-@ stub SetThreadpoolStackInformation
+;@ stub SetThreadpoolStackInformation
 @ stdcall -version=0x600+ SetThreadpoolThreadMaximum() kernel32.SetThreadpoolThreadMaximum
 @ stdcall -version=0x600+ SetThreadpoolThreadMinimum() kernel32.SetThreadpoolThreadMinimum
 @ stdcall -version=0x600+ SetThreadpoolTimer() kernel32.SetThreadpoolTimer
-@ stub SetThreadpoolTimerEx
+;@ stub SetThreadpoolTimerEx
 @ stdcall -version=0x600+ SetThreadpoolWait() kernel32.SetThreadpoolWait
-@ stub SetThreadpoolWaitEx
+;@ stub SetThreadpoolWaitEx
 @ stdcall -version=0x600+ StartThreadpoolIo() kernel32.StartThreadpoolIo
 @ stdcall -version=0x600+ SubmitThreadpoolWork() kernel32.SubmitThreadpoolWork
 @ stdcall -stub -version=0x600+ TrySubmitThreadpoolCallback()

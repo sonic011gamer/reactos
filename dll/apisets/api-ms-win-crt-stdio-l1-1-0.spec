@@ -23,100 +23,100 @@
 @ stdcall __stdio_common_vswprintf_s() msvcrt.__stdio_common_vswprintf_s
 @ stdcall __stdio_common_vswscanf() msvcrt.__stdio_common_vswscanf
 @ stdcall _chsize() msvcrt._chsize
-@ stub _chsize_s
+;@ stub _chsize_s
 @ stdcall _close() msvcrt._close
 @ stdcall _commit() msvcrt._commit
 @ stdcall _creat() msvcrt._creat
 @ stdcall _dup() msvcrt._dup
 @ stdcall _dup2() msvcrt._dup2
 @ stdcall _eof() msvcrt._eof
-@ stub _fclose_nolock
+;@ stub _fclose_nolock
 @ stdcall _fcloseall() msvcrt._fcloseall
-@ stub _fflush_nolock
-@ stub _fgetc_nolock
+;@ stub _fflush_nolock
+;@ stub _fgetc_nolock
 @ stdcall _fgetchar() msvcrt._fgetchar
-@ stub _fgetwc_nolock
+;@ stub _fgetwc_nolock
 @ stdcall _fgetwchar() msvcrt._fgetwchar
 @ stdcall _filelength() msvcrt._filelength
 @ stdcall _filelengthi64() msvcrt._filelengthi64
 @ stdcall _fileno() msvcrt._fileno
 @ stdcall _flushall() msvcrt._flushall
-@ stub _fputc_nolock
+;@ stub _fputc_nolock
 @ stdcall _fputchar() msvcrt._fputchar
-@ stub _fputwc_nolock
+;@ stub _fputwc_nolock
 @ stdcall _fputwchar() msvcrt._fputwchar
-@ stub _fread_nolock
-@ stub _fread_nolock_s
-@ stub _fseek_nolock
-@ stub _fseeki64
-@ stub _fseeki64_nolock
+;@ stub _fread_nolock
+;@ stub _fread_nolock_s
+;@ stub _fseek_nolock
+;@ stub _fseeki64
+;@ stub _fseeki64_nolock
 @ stdcall _fsopen() msvcrt._fsopen
-@ stub _ftell_nolock
-@ stub _ftelli64
-@ stub _ftelli64_nolock
-@ stub _fwrite_nolock
+;@ stub _ftell_nolock
+;@ stub _ftelli64
+;@ stub _ftelli64_nolock
+;@ stub _fwrite_nolock
 @ stdcall -version=0x600+ _get_fmode() msvcrt._get_fmode
 @ stdcall _get_osfhandle() msvcrt._get_osfhandle
-@ stub _get_printf_count_output
+;@ stub _get_printf_count_output
 @ stdcall -version=0x600+ _get_stream_buffer_pointers() msvcrt._get_stream_buffer_pointers
-@ stub _getc_nolock
+;@ stub _getc_nolock
 @ stdcall _getcwd() msvcrt._getcwd
 @ stdcall _getdcwd() msvcrt._getdcwd
 @ stdcall _getmaxstdio() msvcrt._getmaxstdio
 @ stdcall _getw() msvcrt._getw
-@ stub _getwc_nolock
+;@ stub _getwc_nolock
 @ stdcall _getws() msvcrt._getws
-@ stub _getws_s
+;@ stub _getws_s
 @ stdcall _isatty() msvcrt._isatty
 @ stdcall _kbhit() msvcrt._kbhit
 @ stdcall _locking() msvcrt._locking
 @ stdcall _lseek() msvcrt._lseek
 @ stdcall _lseeki64() msvcrt._lseeki64
 @ stdcall _mktemp() msvcrt._mktemp
-@ stub _mktemp_s
+;@ stub _mktemp_s
 @ stdcall _open() msvcrt._open
 @ stdcall _open_osfhandle() msvcrt._open_osfhandle
 @ stdcall _pclose() msvcrt._pclose
 @ stdcall _pipe() msvcrt._pipe
 @ stdcall _popen() msvcrt._popen
-@ stub _putc_nolock
+;@ stub _putc_nolock
 @ stdcall _putw() msvcrt._putw
-@ stub _putwc_nolock
+;@ stub _putwc_nolock
 @ stdcall _putws() msvcrt._putws
 @ stdcall _read() msvcrt._read
 @ stdcall _rmtmp() msvcrt._rmtmp
 @ stdcall -version=0x600+ _set_fmode() msvcrt._set_fmode
-@ stub _set_printf_count_output
+;@ stub _set_printf_count_output
 @ stdcall _setmaxstdio() msvcrt._setmaxstdio
 @ stdcall _setmode() msvcrt._setmode
 @ stdcall _sopen() msvcrt._sopen
-@ stub _sopen_dispatch
-@ stub _sopen_s
+;@ stub _sopen_dispatch
+;@ stub _sopen_s
 @ stdcall _tell() msvcrt._tell
 @ stdcall _telli64() msvcrt._telli64
 @ stdcall _tempnam() msvcrt._tempnam
-@ stub _ungetc_nolock
-@ stub _ungetwc_nolock
+;@ stub _ungetc_nolock
+;@ stub _ungetwc_nolock
 @ stdcall _wcreat() msvcrt._wcreat
 @ stdcall _wfdopen() msvcrt._wfdopen
 @ stdcall _wfopen() msvcrt._wfopen
-@ stub _wfopen_s
+;@ stub _wfopen_s
 @ stdcall _wfreopen() msvcrt._wfreopen
-@ stub _wfreopen_s
+;@ stub _wfreopen_s
 @ stdcall _wfsopen() msvcrt._wfsopen
 @ stdcall _wmktemp() msvcrt._wmktemp
-@ stub _wmktemp_s
+;@ stub _wmktemp_s
 @ stdcall _wopen() msvcrt._wopen
 @ stdcall _wpopen() msvcrt._wpopen
 @ stdcall _write() msvcrt._write
 @ stdcall _wsopen() msvcrt._wsopen
-@ stub _wsopen_dispatch
-@ stub _wsopen_s
+;@ stub _wsopen_dispatch
+;@ stub _wsopen_s
 @ stdcall _wtempnam() msvcrt._wtempnam
 @ stdcall _wtmpnam() msvcrt._wtmpnam
 @ stdcall -version=0x600+ _wtmpnam_s() msvcrt._wtmpnam_s
 @ stdcall clearerr() msvcrt.clearerr
-@ stub clearerr_s
+;@ stub clearerr_s
 @ stdcall fclose() msvcrt.fclose
 @ stdcall feof() msvcrt.feof
 @ stdcall ferror() msvcrt.ferror
@@ -127,15 +127,15 @@
 @ stdcall fgetwc() msvcrt.fgetwc
 @ stdcall fgetws() msvcrt.fgetws
 @ stdcall fopen() msvcrt.fopen
-@ stub fopen_s
+;@ stub fopen_s
 @ stdcall fputc() msvcrt.fputc
 @ stdcall fputs() msvcrt.fputs
 @ stdcall fputwc() msvcrt.fputwc
 @ stdcall fputws() msvcrt.fputws
 @ stdcall fread() msvcrt.fread
-@ stub fread_s
+;@ stub fread_s
 @ stdcall freopen() msvcrt.freopen
-@ stub freopen_s
+;@ stub freopen_s
 @ stdcall fseek() msvcrt.fseek
 @ stdcall fsetpos() msvcrt.fsetpos
 @ stdcall ftell() msvcrt.ftell
@@ -143,7 +143,7 @@
 @ stdcall getc() msvcrt.getc
 @ stdcall getchar() msvcrt.getchar
 @ stdcall gets() msvcrt.gets
-@ stub gets_s
+;@ stub gets_s
 @ stdcall getwc() msvcrt.getwc
 @ stdcall getwchar() msvcrt.getwchar
 @ stdcall putc() msvcrt.putc
@@ -155,8 +155,8 @@
 @ stdcall setbuf() msvcrt.setbuf
 @ stdcall setvbuf() msvcrt.setvbuf
 @ stdcall tmpfile() msvcrt.tmpfile
-@ stub tmpfile_s
+;@ stub tmpfile_s
 @ stdcall tmpnam() msvcrt.tmpnam
-@ stub tmpnam_s
+;@ stub tmpnam_s
 @ stdcall ungetc() msvcrt.ungetc
 @ stdcall ungetwc() msvcrt.ungetwc

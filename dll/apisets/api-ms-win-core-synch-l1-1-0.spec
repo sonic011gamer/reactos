@@ -35,10 +35,10 @@
 @ stdcall SetCriticalSectionSpinCount() kernel32.SetCriticalSectionSpinCount
 @ stdcall SetEvent() kernel32.SetEvent
 @ stdcall SetWaitableTimer() kernel32.SetWaitableTimer
-@ stub SetWaitableTimerEx
+;@ stub SetWaitableTimerEx
 @ stdcall SleepEx() kernel32.SleepEx
-@ stub TryAcquireSRWLockExclusive
-@ stub TryAcquireSRWLockShared
+;@ stub TryAcquireSRWLockExclusive
+;@ stub TryAcquireSRWLockShared
 @ stdcall TryEnterCriticalSection() kernel32.TryEnterCriticalSection
 @ stdcall WaitForMultipleObjectsEx() kernel32.WaitForMultipleObjectsEx
 @ stdcall WaitForSingleObject() kernel32.WaitForSingleObject

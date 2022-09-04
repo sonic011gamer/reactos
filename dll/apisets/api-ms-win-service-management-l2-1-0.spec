@@ -3,7 +3,7 @@
 
 @ stdcall ChangeServiceConfig2W() advapi32.ChangeServiceConfig2W
 @ stdcall ChangeServiceConfigW() advapi32.ChangeServiceConfigW
-@ stub NotifyServiceStatusChangeW
+;@ stub NotifyServiceStatusChangeW
 @ stdcall QueryServiceConfig2W() advapi32.QueryServiceConfig2W
 @ stdcall QueryServiceConfigW() advapi32.QueryServiceConfigW
 @ stdcall QueryServiceObjectSecurity() advapi32.QueryServiceObjectSecurity

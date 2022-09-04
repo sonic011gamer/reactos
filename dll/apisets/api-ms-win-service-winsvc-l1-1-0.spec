@@ -4,19 +4,19 @@
 @ stdcall ChangeServiceConfig2A() advapi32.ChangeServiceConfig2A
 @ stdcall ChangeServiceConfigA() advapi32.ChangeServiceConfigA
 @ stdcall ControlService() advapi32.ControlService
-@ stub ControlServiceExA
+;@ stub ControlServiceExA
 @ stdcall CreateServiceA() advapi32.CreateServiceA
 @ stdcall I_QueryTagInformation() advapi32.I_QueryTagInformation
-@ stub I_ScBroadcastServiceControlMessage
+;@ stub I_ScBroadcastServiceControlMessage
 @ stdcall I_ScIsSecurityProcess() advapi32.I_ScIsSecurityProcess
 @ stdcall I_ScPnPGetServiceName() advapi32.I_ScPnPGetServiceName
-@ stub I_ScQueryServiceConfig
-@ stub I_ScRpcBindA
-@ stub I_ScRpcBindW
-@ stub I_ScSendPnPMessage
+;@ stub I_ScQueryServiceConfig
+;@ stub I_ScRpcBindA
+;@ stub I_ScRpcBindW
+;@ stub I_ScSendPnPMessage
 @ stdcall I_ScSendTSMessage() advapi32.I_ScSendTSMessage
-@ stub I_ScValidatePnPService
-@ stub NotifyServiceStatusChangeA
+;@ stub I_ScValidatePnPService
+;@ stub NotifyServiceStatusChangeA
 @ stdcall OpenSCManagerA() advapi32.OpenSCManagerA
 @ stdcall OpenServiceA() advapi32.OpenServiceA
 @ stdcall QueryServiceConfig2A() advapi32.QueryServiceConfig2A

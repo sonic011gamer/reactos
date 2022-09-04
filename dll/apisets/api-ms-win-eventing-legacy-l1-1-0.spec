@@ -3,7 +3,7 @@
 
 @ stdcall ControlTraceA() advapi32.ControlTraceA
 @ stdcall EnableTrace() advapi32.EnableTrace
-@ stub EnableTraceEx
+;@ stub EnableTraceEx
 @ stdcall EnumerateTraceGuids() advapi32.EnumerateTraceGuids
 @ stdcall FlushTraceA() advapi32.FlushTraceA
 @ stdcall FlushTraceW() advapi32.FlushTraceW

@@ -3,19 +3,19 @@
 
 @ stdcall -arch=i386 __p__environ() msvcrt.__p__environ
 @ stdcall -arch=i386 __p__wenviron() msvcrt.__p__wenviron
-@ stub _dupenv_s
+;@ stub _dupenv_s
 @ stdcall _putenv() msvcrt._putenv
-@ stub _putenv_s
+;@ stub _putenv_s
 @ stdcall _searchenv() msvcrt._searchenv
-@ stub _searchenv_s
-@ stub _wdupenv_s
+;@ stub _searchenv_s
+;@ stub _wdupenv_s
 @ stdcall _wgetcwd() msvcrt._wgetcwd
 @ stdcall _wgetdcwd() msvcrt._wgetdcwd
 @ stdcall _wgetenv() msvcrt._wgetenv
-@ stub _wgetenv_s
+;@ stub _wgetenv_s
 @ stdcall _wputenv() msvcrt._wputenv
-@ stub _wputenv_s
+;@ stub _wputenv_s
 @ stdcall _wsearchenv() msvcrt._wsearchenv
-@ stub _wsearchenv_s
+;@ stub _wsearchenv_s
 @ stdcall getenv() msvcrt.getenv
-@ stub getenv_s
+;@ stub getenv_s

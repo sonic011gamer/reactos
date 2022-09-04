@@ -15,7 +15,7 @@
 @ stdcall PathCanonicalizeW() shlwapi.PathCanonicalizeW
 @ stdcall PathCommonPrefixA() shlwapi.PathCommonPrefixA
 @ stdcall PathCommonPrefixW() shlwapi.PathCommonPrefixW
-@ stub PathCreateFromUrlAlloc
+;@ stub PathCreateFromUrlAlloc
 @ stdcall PathCreateFromUrlW() shlwapi.PathCreateFromUrlW
 @ stdcall PathFileExistsA() shlwapi.PathFileExistsA
 @ stdcall PathFileExistsW() shlwapi.PathFileExistsW

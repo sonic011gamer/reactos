@@ -11,7 +11,7 @@
 @ stdcall CoDisconnectObject() ole32.CoDisconnectObject
 @ stdcall CoFreeUnusedLibraries() ole32.CoFreeUnusedLibraries
 @ stdcall CoFreeUnusedLibrariesEx() ole32.CoFreeUnusedLibrariesEx
-@ stub CoGetApartmentType
+;@ stub CoGetApartmentType
 @ stdcall CoGetClassObject() ole32.CoGetClassObject
 @ stdcall CoGetCurrentLogicalThreadId() ole32.CoGetCurrentLogicalThreadId
 @ stdcall CoGetInterfaceAndReleaseStream() ole32.CoGetInterfaceAndReleaseStream

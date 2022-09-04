@@ -18,18 +18,18 @@
 @ stdcall AddAuditAccessAce() advapi32.AddAuditAccessAce
 @ stdcall AddAuditAccessAceEx() advapi32.AddAuditAccessAceEx
 @ stdcall AddAuditAccessObjectAce() advapi32.AddAuditAccessObjectAce
-@ stub AddMandatoryAce
-@ stub AddResourceAttributeAce
-@ stub AddScopedPolicyIDAce
+;@ stub AddMandatoryAce
+;@ stub AddResourceAttributeAce
+;@ stub AddScopedPolicyIDAce
 @ stdcall AdjustTokenGroups() advapi32.AdjustTokenGroups
 @ stdcall AdjustTokenPrivileges() advapi32.AdjustTokenPrivileges
 @ stdcall AllocateAndInitializeSid() advapi32.AllocateAndInitializeSid
 @ stdcall AllocateLocallyUniqueId() advapi32.AllocateLocallyUniqueId
 @ stdcall AreAllAccessesGranted() advapi32.AreAllAccessesGranted
 @ stdcall AreAnyAccessesGranted() advapi32.AreAnyAccessesGranted
-@ stub CheckTokenCapability
+;@ stub CheckTokenCapability
 @ stdcall CheckTokenMembership() advapi32.CheckTokenMembership
-@ stub CheckTokenMembershipEx
+;@ stub CheckTokenMembershipEx
 @ stdcall ConvertToAutoInheritPrivateObjectSecurity() advapi32.ConvertToAutoInheritPrivateObjectSecurity
 @ stdcall CopySid() advapi32.CopySid
 @ stdcall CreatePrivateObjectSecurity() advapi32.CreatePrivateObjectSecurity
@@ -48,8 +48,8 @@
 @ stdcall FreeSid() advapi32.FreeSid
 @ stdcall GetAce() advapi32.GetAce
 @ stdcall GetAclInformation() advapi32.GetAclInformation
-@ stub GetAppContainerAce
-@ stub GetCachedSigningLevel
+;@ stub GetAppContainerAce
+;@ stub GetCachedSigningLevel
 @ stdcall GetFileSecurityW() advapi32.GetFileSecurityW
 @ stdcall GetKernelObjectSecurity() advapi32.GetKernelObjectSecurity
 @ stdcall GetLengthSid() advapi32.GetLengthSid
@@ -87,15 +87,15 @@
 @ stdcall ObjectPrivilegeAuditAlarmW() advapi32.ObjectPrivilegeAuditAlarmW
 @ stdcall PrivilegeCheck() advapi32.PrivilegeCheck
 @ stdcall PrivilegedServiceAuditAlarmW() advapi32.PrivilegedServiceAuditAlarmW
-@ stub QuerySecurityAccessMask
+;@ stub QuerySecurityAccessMask
 @ stdcall RevertToSelf() advapi32.RevertToSelf
 @ stdcall SetAclInformation() advapi32.SetAclInformation
-@ stub SetCachedSigningLevel
+;@ stub SetCachedSigningLevel
 @ stdcall SetFileSecurityW() advapi32.SetFileSecurityW
 @ stdcall SetKernelObjectSecurity() advapi32.SetKernelObjectSecurity
 @ stdcall SetPrivateObjectSecurity() advapi32.SetPrivateObjectSecurity
 @ stdcall SetPrivateObjectSecurityEx() advapi32.SetPrivateObjectSecurityEx
-@ stub SetSecurityAccessMask
+;@ stub SetSecurityAccessMask
 @ stdcall SetSecurityDescriptorControl() advapi32.SetSecurityDescriptorControl
 @ stdcall SetSecurityDescriptorDacl() advapi32.SetSecurityDescriptorDacl
 @ stdcall SetSecurityDescriptorGroup() advapi32.SetSecurityDescriptorGroup

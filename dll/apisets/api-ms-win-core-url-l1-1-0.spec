@@ -8,7 +8,7 @@
 @ stdcall ParseURLA() shlwapi.ParseURLA
 @ stdcall ParseURLW() shlwapi.ParseURLW
 @ stdcall PathCreateFromUrlA() shlwapi.PathCreateFromUrlA
-@ stub PathCreateFromUrlAlloc
+;@ stub PathCreateFromUrlAlloc
 @ stdcall PathCreateFromUrlW() shlwapi.PathCreateFromUrlW
 @ stdcall PathIsURLA() shlwapi.PathIsURLA
 @ stdcall PathIsURLW() shlwapi.PathIsURLW

@@ -24,7 +24,7 @@
 @ stdcall GetComputerNameW() kernel32.GetComputerNameW
 @ stdcall GetConsoleWindow() kernel32.GetConsoleWindow
 @ stdcall -version=0x600+ GetDurationFormatEx() kernel32.GetDurationFormatEx
-@ stub GetMaximumProcessorGroupCount
+;@ stub GetMaximumProcessorGroupCount
 @ stdcall -version=0x600+ GetNamedPipeClientProcessId() kernel32.GetNamedPipeClientProcessId
 @ stdcall -version=0x600+ GetNamedPipeServerProcessId() kernel32.GetNamedPipeServerProcessId
 @ stdcall GetShortPathNameA() kernel32.GetShortPathNameA
@@ -45,7 +45,7 @@
 @ stdcall MulDiv() kernel32.MulDiv
 @ stdcall OpenFile() kernel32.OpenFile
 @ stdcall PulseEvent() kernel32.PulseEvent
-@ stub RaiseFailFastException
+;@ stub RaiseFailFastException
 @ stdcall RegisterWaitForSingleObject() kernel32.RegisterWaitForSingleObject
 @ stdcall SetConsoleTitleA() kernel32.SetConsoleTitleA
 @ stdcall SetFileCompletionNotificationModes() kernel32.SetFileCompletionNotificationModes

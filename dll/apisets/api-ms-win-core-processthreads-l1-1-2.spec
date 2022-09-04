@@ -5,7 +5,7 @@
 @ stdcall CreateProcessAsUserW() advapi32.CreateProcessAsUserW
 @ stdcall CreateProcessW() kernel32.CreateProcessW
 @ stdcall CreateRemoteThread() kernel32.CreateRemoteThread
-@ stub CreateRemoteThreadEx
+;@ stub CreateRemoteThreadEx
 @ stdcall CreateThread() kernel32.CreateThread
 @ stdcall -version=0x600+ DeleteProcThreadAttributeList() kernel32.DeleteProcThreadAttributeList
 @ stdcall ExitProcess() kernel32.ExitProcess
@@ -15,17 +15,17 @@
 @ stdcall GetCurrentProcess() kernel32.GetCurrentProcess
 @ stdcall GetCurrentProcessId() kernel32.GetCurrentProcessId
 @ stdcall GetCurrentProcessorNumber() kernel32.GetCurrentProcessorNumber
-@ stub GetCurrentProcessorNumberEx
+;@ stub GetCurrentProcessorNumberEx
 @ stdcall GetCurrentThread() kernel32.GetCurrentThread
 @ stdcall GetCurrentThreadId() kernel32.GetCurrentThreadId
-@ stub GetCurrentThreadStackLimits
+;@ stub GetCurrentThreadStackLimits
 @ stdcall GetExitCodeProcess() kernel32.GetExitCodeProcess
 @ stdcall GetExitCodeThread() kernel32.GetExitCodeThread
 @ stdcall GetPriorityClass() kernel32.GetPriorityClass
 @ stdcall GetProcessHandleCount() kernel32.GetProcessHandleCount
 @ stdcall GetProcessId() kernel32.GetProcessId
 @ stdcall GetProcessIdOfThread() kernel32.GetProcessIdOfThread
-@ stub GetProcessMitigationPolicy
+;@ stub GetProcessMitigationPolicy
 @ stdcall GetProcessPriorityBoost() kernel32.GetProcessPriorityBoost
 @ stdcall GetProcessTimes() kernel32.GetProcessTimes
 @ stdcall GetProcessVersion() kernel32.GetProcessVersion
@@ -34,13 +34,13 @@
 @ stdcall GetThreadContext() kernel32.GetThreadContext
 @ stdcall GetThreadIOPendingFlag() kernel32.GetThreadIOPendingFlag
 @ stdcall GetThreadId() kernel32.GetThreadId
-@ stub GetThreadIdealProcessorEx
-@ stub GetThreadInformation
+;@ stub GetThreadIdealProcessorEx
+;@ stub GetThreadInformation
 @ stdcall GetThreadPriority() kernel32.GetThreadPriority
 @ stdcall GetThreadPriorityBoost() kernel32.GetThreadPriorityBoost
 @ stdcall GetThreadTimes() kernel32.GetThreadTimes
 @ stdcall -version=0x600+ InitializeProcThreadAttributeList() kernel32.InitializeProcThreadAttributeList
-@ stub IsProcessCritical
+;@ stub IsProcessCritical
 @ stdcall IsProcessorFeaturePresent() kernel32.IsProcessorFeaturePresent
 @ stdcall OpenProcess() kernel32.OpenProcess
 @ stdcall OpenProcessToken() advapi32.OpenProcessToken
@@ -52,12 +52,12 @@
 @ stdcall ResumeThread() kernel32.ResumeThread
 @ stdcall SetPriorityClass() kernel32.SetPriorityClass
 @ stdcall -version=0x600+ SetProcessAffinityUpdateMode() kernel32.SetProcessAffinityUpdateMode
-@ stub SetProcessMitigationPolicy
+;@ stub SetProcessMitigationPolicy
 @ stdcall SetProcessPriorityBoost() kernel32.SetProcessPriorityBoost
 @ stdcall SetProcessShutdownParameters() kernel32.SetProcessShutdownParameters
 @ stdcall SetThreadContext() kernel32.SetThreadContext
-@ stub SetThreadIdealProcessorEx
-@ stub SetThreadInformation
+;@ stub SetThreadIdealProcessorEx
+;@ stub SetThreadInformation
 @ stdcall SetThreadPriority() kernel32.SetThreadPriority
 @ stdcall SetThreadPriorityBoost() kernel32.SetThreadPriorityBoost
 @ stdcall SetThreadStackGuarantee() kernel32.SetThreadStackGuarantee

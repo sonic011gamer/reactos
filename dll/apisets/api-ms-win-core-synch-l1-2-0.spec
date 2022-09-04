@@ -15,9 +15,9 @@
 @ stdcall -version=0x600+ CreateSemaphoreExW() kernel32.CreateSemaphoreExW
 @ stdcall -version=0x600+ CreateWaitableTimerExW() kernel32.CreateWaitableTimerExW
 @ stdcall DeleteCriticalSection() kernel32.DeleteCriticalSection
-@ stub DeleteSynchronizationBarrier
+;@ stub DeleteSynchronizationBarrier
 @ stdcall EnterCriticalSection() kernel32.EnterCriticalSection
-@ stub EnterSynchronizationBarrier
+;@ stub EnterSynchronizationBarrier
 @ stdcall -version=0x600+ InitOnceBeginInitialize() kernel32.InitOnceBeginInitialize
 @ stdcall -version=0x600+ InitOnceComplete() kernel32.InitOnceComplete
 @ stdcall -version=0x600+ InitOnceExecuteOnce() kernel32.InitOnceExecuteOnce
@@ -27,7 +27,7 @@
 @ stdcall InitializeCriticalSectionAndSpinCount() kernel32.InitializeCriticalSectionAndSpinCount
 @ stdcall -version=0x600+ InitializeCriticalSectionEx() kernel32.InitializeCriticalSectionEx
 @ stdcall -version=0x600+ InitializeSRWLock() kernel32.InitializeSRWLock
-@ stub InitializeSynchronizationBarrier
+;@ stub InitializeSynchronizationBarrier
 @ stdcall LeaveCriticalSection() kernel32.LeaveCriticalSection
 @ stdcall OpenEventA() kernel32.OpenEventA
 @ stdcall OpenEventW() kernel32.OpenEventW
@@ -42,19 +42,19 @@
 @ stdcall SetCriticalSectionSpinCount() kernel32.SetCriticalSectionSpinCount
 @ stdcall SetEvent() kernel32.SetEvent
 @ stdcall SetWaitableTimer() kernel32.SetWaitableTimer
-@ stub SetWaitableTimerEx
+;@ stub SetWaitableTimerEx
 @ stdcall SignalObjectAndWait() kernel32.SignalObjectAndWait
 @ stdcall Sleep() kernel32.Sleep
 @ stdcall -version=0x600+ SleepConditionVariableCS() kernel32.SleepConditionVariableCS
 @ stdcall -version=0x600+ SleepConditionVariableSRW() kernel32.SleepConditionVariableSRW
 @ stdcall SleepEx() kernel32.SleepEx
-@ stub TryAcquireSRWLockExclusive
-@ stub TryAcquireSRWLockShared
+;@ stub TryAcquireSRWLockExclusive
+;@ stub TryAcquireSRWLockShared
 @ stdcall TryEnterCriticalSection() kernel32.TryEnterCriticalSection
 @ stdcall WaitForMultipleObjectsEx() kernel32.WaitForMultipleObjectsEx
 @ stdcall WaitForSingleObject() kernel32.WaitForSingleObject
 @ stdcall WaitForSingleObjectEx() kernel32.WaitForSingleObjectEx
-@ stub WaitOnAddress
+;@ stub WaitOnAddress
 @ stdcall -version=0x600+ WakeAllConditionVariable() kernel32.WakeAllConditionVariable
 @ stdcall WakeByAddressAll(ptr) ntdll.RtlWakeAddressAll
 @ stdcall WakeByAddressSingle(ptr) ntdll.RtlWakeAddressSingle

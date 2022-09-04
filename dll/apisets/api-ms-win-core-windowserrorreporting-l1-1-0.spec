@@ -5,9 +5,9 @@
 @ stdcall -version=0x600+ GetApplicationRestartSettings() kernel32.GetApplicationRestartSettings
 @ stdcall -version=0x600+ WerRegisterFile() kernel32.WerRegisterFile
 @ stdcall -version=0x600+ WerRegisterMemoryBlock() kernel32.WerRegisterMemoryBlock
-@ stub WerRegisterRuntimeExceptionModule
+;@ stub WerRegisterRuntimeExceptionModule
 @ stdcall -version=0x600+ WerUnregisterFile() kernel32.WerUnregisterFile
 @ stdcall -version=0x600+ WerUnregisterMemoryBlock() kernel32.WerUnregisterMemoryBlock
-@ stub WerUnregisterRuntimeExceptionModule
+;@ stub WerUnregisterRuntimeExceptionModule
 @ stdcall -version=0x600+ WerpNotifyLoadStringResource() kernel32.WerpNotifyLoadStringResource
 @ stdcall -version=0x600+ WerpNotifyUseStringResource() kernel32.WerpNotifyUseStringResource

@@ -3,23 +3,23 @@
 
 @ stdcall RegConnectRegistryA() advapi32.RegConnectRegistryA
 @ stdcall RegConnectRegistryW() advapi32.RegConnectRegistryW
-@ stub RegCopyTreeA
+;@ stub RegCopyTreeA
 @ stdcall RegCreateKeyA() advapi32.RegCreateKeyA
-@ stub RegCreateKeyTransactedA
-@ stub RegCreateKeyTransactedW
+;@ stub RegCreateKeyTransactedA
+;@ stub RegCreateKeyTransactedW
 @ stdcall RegCreateKeyW() advapi32.RegCreateKeyW
 @ stdcall RegDeleteKeyA() advapi32.RegDeleteKeyA
-@ stub RegDeleteKeyTransactedA
-@ stub RegDeleteKeyTransactedW
-@ stub RegDeleteKeyValueA
-@ stub RegDeleteKeyValueW
+;@ stub RegDeleteKeyTransactedA
+;@ stub RegDeleteKeyTransactedW
+;@ stub RegDeleteKeyValueA
+;@ stub RegDeleteKeyValueW
 @ stdcall RegDeleteKeyW() advapi32.RegDeleteKeyW
 @ stdcall RegDisablePredefinedCache() advapi32.RegDisablePredefinedCache
 @ stdcall RegEnumKeyA() advapi32.RegEnumKeyA
 @ stdcall RegEnumKeyW() advapi32.RegEnumKeyW
 @ stdcall RegOpenKeyA() advapi32.RegOpenKeyA
-@ stub RegOpenKeyTransactedA
-@ stub RegOpenKeyTransactedW
+;@ stub RegOpenKeyTransactedA
+;@ stub RegOpenKeyTransactedW
 @ stdcall RegOpenKeyW() advapi32.RegOpenKeyW
 @ stdcall RegOverridePredefKey() advapi32.RegOverridePredefKey
 @ stdcall RegQueryMultipleValuesA() advapi32.RegQueryMultipleValuesA
@@ -30,7 +30,7 @@
 @ stdcall RegReplaceKeyW() advapi32.RegReplaceKeyW
 @ stdcall RegSaveKeyA() advapi32.RegSaveKeyA
 @ stdcall RegSaveKeyW() advapi32.RegSaveKeyW
-@ stub RegSetKeyValueA
+;@ stub RegSetKeyValueA
 @ stdcall RegSetKeyValueW() advapi32_vista.RegSetKeyValueW
 @ stdcall RegSetValueA() advapi32.RegSetValueA
 @ stdcall RegSetValueW() advapi32.RegSetValueW

@@ -28,13 +28,13 @@
 @ stdcall GetConsoleWindow() kernel32.GetConsoleWindow
 @ stdcall -version=0x600+ GetDurationFormatEx() kernel32.GetDurationFormatEx
 @ stdcall -version=0x600+ GetFileAttributesTransactedW() kernel32.GetFileAttributesTransactedW
-@ stub GetFirmwareType
-@ stub GetMaximumProcessorGroupCount
+;@ stub GetFirmwareType
+;@ stub GetMaximumProcessorGroupCount
 @ stdcall -version=0x600+ GetNamedPipeClientProcessId() kernel32.GetNamedPipeClientProcessId
 @ stdcall -version=0x600+ GetNamedPipeServerProcessId() kernel32.GetNamedPipeServerProcessId
-@ stub GetNumaAvailableMemoryNodeEx
+;@ stub GetNumaAvailableMemoryNodeEx
 @ stdcall GetNumaNodeProcessorMask() kernel32.GetNumaNodeProcessorMask
-@ stub GetNumaProcessorNodeEx
+;@ stub GetNumaProcessorNodeEx
 @ stdcall GetShortPathNameA() kernel32.GetShortPathNameA
 @ stdcall GetStartupInfoA() kernel32.GetStartupInfoA
 @ stdcall GetStringTypeExA() kernel32.GetStringTypeExA
@@ -52,11 +52,11 @@
 @ stdcall MoveFileW() kernel32.MoveFileW
 @ stdcall MulDiv() kernel32.MulDiv
 @ stdcall OpenFile() kernel32.OpenFile
-@ stub PowerClearRequest
-@ stub PowerCreateRequest
-@ stub PowerSetRequest
+;@ stub PowerClearRequest
+;@ stub PowerCreateRequest
+;@ stub PowerSetRequest
 @ stdcall PulseEvent() kernel32.PulseEvent
-@ stub RaiseFailFastException
+;@ stub RaiseFailFastException
 @ stdcall RegisterWaitForSingleObject() kernel32.RegisterWaitForSingleObject
 @ stdcall SetConsoleTitleA() kernel32.SetConsoleTitleA
 @ stdcall SetDllDirectoryW() kernel32.SetDllDirectoryW

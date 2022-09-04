@@ -18,7 +18,7 @@
 @ stdcall AddAuditAccessAce() advapi32.AddAuditAccessAce
 @ stdcall AddAuditAccessAceEx() advapi32.AddAuditAccessAceEx
 @ stdcall AddAuditAccessObjectAce() advapi32.AddAuditAccessObjectAce
-@ stub AddMandatoryAce
+;@ stub AddMandatoryAce
 @ stdcall AdjustTokenGroups() advapi32.AdjustTokenGroups
 @ stdcall AdjustTokenPrivileges() advapi32.AdjustTokenPrivileges
 @ stdcall AllocateAndInitializeSid() advapi32.AllocateAndInitializeSid
@@ -26,7 +26,7 @@
 @ stdcall AreAllAccessesGranted() advapi32.AreAllAccessesGranted
 @ stdcall AreAnyAccessesGranted() advapi32.AreAnyAccessesGranted
 @ stdcall CheckTokenMembership() advapi32.CheckTokenMembership
-@ stub ConvertToAutoInheritPrivateObjecSecurity
+;@ stub ConvertToAutoInheritPrivateObjecSecurity
 @ stdcall CopySid() advapi32.CopySid
 @ stdcall CreatePrivateObjectSecurity() advapi32.CreatePrivateObjectSecurity
 @ stdcall CreatePrivateObjectSecurityEx() advapi32.CreatePrivateObjectSecurityEx
@@ -85,9 +85,9 @@
 @ stdcall OpenThreadToken() advapi32.OpenThreadToken
 @ stdcall PrivilegeCheck() advapi32.PrivilegeCheck
 @ stdcall PrivilegedServiceAuditAlarmW() advapi32.PrivilegedServiceAuditAlarmW
-@ stub QuerySecurityAccessMask
+;@ stub QuerySecurityAccessMask
 @ stdcall RegCloseKey() advapi32.RegCloseKey
-@ stub RegCopyTreeW
+;@ stub RegCopyTreeW
 @ stdcall RegCreateKeyExA() advapi32.RegCreateKeyExA
 @ stdcall RegCreateKeyExW() advapi32.RegCreateKeyExW
 @ stdcall RegDeleteKeyExA() advapi32.RegDeleteKeyExA
@@ -96,7 +96,7 @@
 @ stdcall RegDeleteTreeW() advapi32_vista.RegDeleteTreeW
 @ stdcall RegDeleteValueA() advapi32.RegDeleteValueA
 @ stdcall RegDeleteValueW() advapi32.RegDeleteValueW
-@ stub RegDisablePredefinedCacheEx
+;@ stub RegDisablePredefinedCacheEx
 @ stdcall RegEnumKeyExA() advapi32.RegEnumKeyExA
 @ stdcall RegEnumKeyExW() advapi32.RegEnumKeyExW
 @ stdcall RegEnumValueA() advapi32.RegEnumValueA
@@ -105,8 +105,8 @@
 @ stdcall RegGetKeySecurity() advapi32.RegGetKeySecurity
 @ stdcall RegGetValueA() advapi32.RegGetValueA
 @ stdcall RegGetValueW() advapi32.RegGetValueW
-@ stub RegLoadAppKeyA
-@ stub RegLoadAppKeyW
+;@ stub RegLoadAppKeyA
+;@ stub RegLoadAppKeyW
 @ stdcall RegLoadKeyA() advapi32.RegLoadKeyA
 @ stdcall RegLoadKeyW() advapi32.RegLoadKeyW
 @ stdcall -version=0x600+ RegLoadMUIStringA() advapi32.RegLoadMUIStringA
@@ -134,7 +134,7 @@
 @ stdcall SetAclInformation() advapi32.SetAclInformation
 @ stdcall SetFileSecurityW() advapi32.SetFileSecurityW
 @ stdcall SetKernelObjectSecurity() advapi32.SetKernelObjectSecurity
-@ stub SetSecurityAccessMask
+;@ stub SetSecurityAccessMask
 @ stdcall SetSecurityDescriptorControl() advapi32.SetSecurityDescriptorControl
 @ stdcall SetSecurityDescriptorDacl() advapi32.SetSecurityDescriptorDacl
 @ stdcall SetSecurityDescriptorGroup() advapi32.SetSecurityDescriptorGroup

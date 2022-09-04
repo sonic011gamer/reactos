@@ -8,7 +8,7 @@
 @ stdcall GetDriverModuleHandle() winmm.GetDriverModuleHandle
 @ stdcall OpenDriver() winmm.OpenDriver
 @ stdcall SendDriverMessage() winmm.SendDriverMessage
-@ stub mmDrvInstall
+;@ stub mmDrvInstall
 @ stdcall mmioAdvance() winmm.mmioAdvance
 @ stdcall mmioAscend() winmm.mmioAscend
 @ stdcall mmioClose() winmm.mmioClose
@@ -30,4 +30,4 @@
 @ stdcall mmioStringToFOURCCA() winmm.mmioStringToFOURCCA
 @ stdcall mmioStringToFOURCCW() winmm.mmioStringToFOURCCW
 @ stdcall mmioWrite() winmm.mmioWrite
-@ stub sndOpenSound
+;@ stub sndOpenSound

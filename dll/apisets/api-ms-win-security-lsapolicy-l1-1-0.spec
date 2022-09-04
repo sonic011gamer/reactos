@@ -13,7 +13,7 @@
 @ stdcall LsaICLookupSidsWithCreds() advapi32.LsaICLookupSidsWithCreds
 @ stdcall LsaLookupNames2() advapi32.LsaLookupNames2
 @ stdcall LsaLookupSids() advapi32.LsaLookupSids
-@ stub LsaLookupSids2
+;@ stub LsaLookupSids2
 @ stdcall LsaOpenPolicy() advapi32.LsaOpenPolicy
 @ stdcall LsaOpenSecret() advapi32.LsaOpenSecret
 @ stdcall LsaQueryInformationPolicy() advapi32.LsaQueryInformationPolicy
