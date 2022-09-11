@@ -96,11 +96,7 @@ UefiPcBeep(VOID)
 {
 
 }
-PFREELDR_MEMORY_DESCRIPTOR
-UefiMemGetMemoryMap(ULONG *MemoryMapSize)
-{
-    return 0;
-}
+
 VOID
 UefiGetExtendedBIOSData(PULONG ExtendedBIOSDataArea,
                         PULONG ExtendedBIOSDataSize)
@@ -146,11 +142,7 @@ UefiHwDetect(VOID)
 {
     return 0;
 }
-VOID
-UefiPrepareForReactOS(VOID)
-{
 
-}
 VOID
 UefiHwIdle(VOID)
 {
