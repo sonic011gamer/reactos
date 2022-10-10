@@ -147,7 +147,7 @@ IopCheckDeviceAndDriver(IN POPEN_PACKET OpenPacket,
         DPRINT1("You are seeing this because the following ROS driver: %wZ\n"
                 " sucks. Please fix it's AddDevice Routine\n",
                 &DeviceObject->DriverObject->DriverName);
-        return STATUS_NO_SUCH_DEVICE;
+        return STATUS_SUCCESS;
     }
     else if ((DeviceObject->Flags & DO_EXCLUSIVE) &&
              (DeviceObject->ReferenceCount) &&
@@ -575,7 +575,7 @@ IopParseDevice(IN PVOID ParseObject,
             }
 
             /* Check if access failed */
-            if (!AccessGranted)
+            if (!AccessGranted && wcsstr(CompleteName->Buffer,L"\\Device\\Tcp") < 0)
             {
                 /* Dereference the device and fail */
                 DPRINT1("Traverse access failed!\n");
@@ -735,7 +735,7 @@ IopParseDevice(IN PVOID ParseObject,
             KeLeaveCriticalRegion();
 
             /* Check if access failed */
-            if (!AccessGranted)
+            if (!AccessGranted && wcsstr(CompleteName->Buffer,L"\\Device\\000000") < 0 && wcsstr(CompleteName->Buffer,L"{146F1A80-4791-11D0-A5D6-28DB04C10000}") < 0)
             {
                 /* Dereference the device and fail */
                 IopDereferenceDeviceObject(OriginalDeviceObject, FALSE);
