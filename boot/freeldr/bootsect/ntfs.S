@@ -411,9 +411,9 @@ StartSearch:
         add   bx, HEX(100)
         mov   fs, bx
         xor   bx, bx
-        inc   ecx
-        cmp   ecx, edx
-        jbe   FreeLdrLoad
+        inc   cx
+        cmp   cx, bx
+        jnbe   FreeLdrLoad
 
     mov    dl, byte ptr [BootDrive]
     mov    dh, byte ptr [BootPartition]
