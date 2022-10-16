@@ -1620,7 +1620,7 @@ KeFlushEntireTb(IN BOOLEAN Invalid,
         if (AllProcessors == TRUE)
         {
             /* FIXME: TODO */
-            ASSERTMSG("Not yet implemented\n", FALSE);
+            //ASSERTMSG("Not yet implemented\n", FALSE);
         }
     }
 #endif

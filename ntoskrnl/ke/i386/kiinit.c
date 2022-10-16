@@ -439,7 +439,13 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
     ULONG PageDirectory[2];
     PVOID DpcStack;
     KIRQL DummyIrql;
-
+    if(KeNumberProcessors >= 2)
+    {
+        for(;;)
+        {
+            
+        }
+    }
     /* Initialize the Power Management Support for this PRCB */
     PoInitializePrcb(Prcb);
 
@@ -839,15 +845,6 @@ AppCpuInit:
         /* Make the lowest page of the boot and double fault stack read-only */
         KiMarkPageAsReadOnly(P0BootStackData);
         KiMarkPageAsReadOnly(KiDoubleFaultStackData);
-    }
-
-        /* Check if this is the boot CPU */
-    if (Cpu)
-    {
-        for(;;)
-        {
-            
-        }
     }
 
     /* Raise to HIGH_LEVEL */
