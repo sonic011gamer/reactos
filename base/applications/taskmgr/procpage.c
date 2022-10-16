@@ -11,6 +11,8 @@
 
 #include "proclist.h"
 
+#include <strsafe.h>
+
 #include <ndk/psfuncs.h>
 
 #define CMP(x1, x2)\
@@ -164,9 +166,8 @@ ProcessPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         /* Handle the button clicks */
         switch (LOWORD(wParam))
         {
-        case IDC_ENDTASK:
-        case IDC_ENDPROCESS:
-            ProcessPage_OnEndProcess();
+                case IDC_ENDPROCESS:
+                        ProcessPage_OnEndProcess();
         }
         break;
 
@@ -205,6 +206,11 @@ ProcessPageWndProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
     case WM_NOTIFY:
         ProcessPageOnNotify(wParam, lParam);
+        break;
+
+    case WM_KEYDOWN:
+        if (wParam == VK_DELETE)
+            ProcessPage_OnEndProcess();
         break;
     }
 
@@ -981,8 +987,16 @@ DevicePathToDosPath(
 
             if (_wcsnicmp(lpDevicePath, szDeviceName, len) == 0)
             {
-                StringCbPrintfW(lpPath, dwSize, L"%s%s", szDrive, lpPath + len);
-                return TRUE;
+                /* Get the required length, including the NULL terminator */
+                dwRet = _countof(szDrive) + wcslen(lpDevicePath + len);
+
+                if (lpDosPath && (dwLength >= dwRet))
+                {
+                    StringCchPrintfW(lpDosPath, dwLength, L"%s%s",
+                                     szDrive, lpDevicePath + len);
+                }
+
+                break;
             }
         }
     }
@@ -1096,6 +1110,7 @@ GetProcessExecutablePathById(
     DWORD dwRet = 0;
 
     if (dwProcessId == 0)
+    {
         return 0;
     }
 
