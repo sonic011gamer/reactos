@@ -439,13 +439,7 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
     ULONG PageDirectory[2];
     PVOID DpcStack;
     KIRQL DummyIrql;
-    if(KeNumberProcessors >= 2)
-    {
-        for(;;)
-        {
-            
-        }
-    }
+
     /* Initialize the Power Management Support for this PRCB */
     PoInitializePrcb(Prcb);
 
@@ -487,7 +481,7 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
     KiSaveProcessorControlState(&Prcb->ProcessorState);
 
     /* Get cache line information for this CPU */
-    KiGetCacheInformation();
+  //  KiGetCacheInformation();
 
     /* Initialize spinlocks and DPC data */
     KiInitSpinLocks(Prcb, Number);
