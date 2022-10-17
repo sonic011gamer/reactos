@@ -30,3 +30,12 @@ HalStartNextProcessor(IN PLOADER_PARAMETER_BLOCK LoaderBlock,
     /* Always return false on UP systems */
     return FALSE;
 }
+
+#ifndef CONFIG_SMP
+VOID
+FASTCALL
+HalpIpiInterruptHandler(IN PKTRAP_FRAME TrapFrame)
+{
+    /* DO nothing */
+}
+#endif

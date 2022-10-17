@@ -9,6 +9,7 @@
 
 #include <hal.h>
 #include <smp.h>
+#include "smpp.h"
 #define NDEBUG
 #include <debug.h>
 

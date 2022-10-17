@@ -5,6 +5,9 @@
  * COPYRIGHT:   Copyright 2021 Justin Miller <justinmiller100@gmail.com>
  */
 
+#define APIC_IPI_VECTOR      0xE1 // IRQL 29
+
+
 VOID
 HalpInitializeAPStub(PVOID APStubLocation, 
                      KDESCRIPTOR FinalGdt, 
