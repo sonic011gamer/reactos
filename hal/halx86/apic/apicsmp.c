@@ -98,13 +98,13 @@ HalpRequestIpi(KAFFINITY TargetProcessors)
     * - Mode is ALWAYS dependdent on xAPIC+ or legacy APIC
     * -
     */
-    DPRINT1("KAFFINITY is %X\n", TargetProcessors);
+   // DPRINT1("KAFFINITY is %X\n", TargetProcessors);
 
     for (i = 0, Current = 1; i < KeNumberProcessors; i++, Current <<= 1)
     {
         if (TargetProcessors & Current)
         {
-            DPRINT1("Sending IPI to CPU: %X\n", i);
+           // DPRINT1("Sending IPI to CPU: %X\n", i);
             ApicRequestGlobalInterrupt(i, 0, APIC_MT_Fixed,
                 APIC_TGM_Edge, APIC_DSH_Destination);
         }
