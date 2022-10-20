@@ -1,5 +1,5 @@
 
-This is SMDLL: a helper library to talk to the ReactOS session manager (SM).
+This is SMLIB: a helper library to talk to the ReactOS Session Manager (SM).
 
 It should be linked in the following components:
 
@@ -20,23 +20,28 @@ d) system and development utilities to debug/query the SM.
 How a subsystem uses these APIs
 ===============================
 
-Thread #0							Thread #1
+Thread #0                                   Thread #1
+
 - create your own directory (\EXAMPLE)
 - create an event E0
 - create your call back API port (\EXAMPLE\SbApiPort)
   and serving thread T1
-								- wait connection requests on call
-								  back port (\EXAMPLE\SbApiPort)
-- SmConnectApiPort(
-	\EXAMPLE\SbApiPort,
-	hSbApiPort,
-	SUBSYSTEM_ID,
-	& hSmApiPort)
+                                            - wait connection requests on call
+                                            back port (\EXAMPLE\SbApiPort)
+- SmConnectToSm(
+    "\EXAMPLE\SbApiPort",
+    hSbApiPort,
+    SUBSYSTEM_ID,
+    &hSmApiPort);
 - wait for E0
-								- as SM calls back, signal event E0
-- create your API port (\EXAMPLE\ApiPort) and
-  initialize the subsystem
-- call SmCompleteSession (hSmApiPort,
-			  hSbApiPort,
-			  hApiPort)
+                                            - as SM calls back, signal event E0
+
+- create your API port (\EXAMPLE\ApiPort)
+  and initialize the subsystem.
+
+- SmSessionComplete(
+    hSmApiPort,
+    hSbApiPort,
+    hApiPort);
+
 - manage processes etc.
