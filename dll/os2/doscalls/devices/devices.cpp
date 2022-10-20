@@ -55,7 +55,7 @@
       165       ERROR_MONITORS_NOT_SUPPORTED 
  
 */
-APIRET STDCALL DosDevIOCtl(HFILE hDevice, ULONG category, ULONG function,
+APIRET __stdcall DosDevIOCtl(HFILE hDevice, ULONG category, ULONG function,
         PVOID pParams,ULONG cbParmLenMax,PULONG pcbParmLen,
         PVOID pData,ULONG cbDataLenMax,PULONG pcbDataLen)
 {

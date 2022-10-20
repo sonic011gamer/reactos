@@ -1,6 +1,6 @@
 
 add_subdirectory(atactl)
-#add_subdirectory(bepslep)
+add_subdirectory(bepslep)
 add_subdirectory(cacls)
 add_subdirectory(calc)
 add_subdirectory(charmap)

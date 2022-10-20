@@ -1,6 +1,6 @@
 
 #define INCL_DOSPROCESS
-#include <os2.h>
+#include <ros2.h>
 
 void Eingang()
 {
@@ -12,8 +12,5 @@ void Eingang()
 
 void WinMainCRTStartup()
 {
-	int a, b;
-	a= b+3;
-	b=a+3;
 	Eingang();
 }

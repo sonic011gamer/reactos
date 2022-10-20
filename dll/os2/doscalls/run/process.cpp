@@ -18,13 +18,13 @@
 //#if defined (INCL_DOS)
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS
-#include "ros2.h"
+#include <ros2.h>
 
 
-APIRET STDCALL DosSleep(ULONG msec)
+int __stdcall DosSleep(ULONG msec)
 {
-	NT::NTSTATUS stat;
-	NT::TIME Interv;
+	NTSTATUS stat;
+	TIME Interv;
 	Interv.QuadPart= -(10000 * msec);
 	stat = NT::NtDelayExecution( TRUE, &Interv );
 	return 0;
@@ -40,16 +40,16 @@ VOID APIENTRY DosExit(ULONG action, ULONG result)
 	// decide what to do
 	if( action == EXIT_THREAD)
 	{
-		NT::NtTerminateThread( NULL, result );
+		NtTerminateThread( NULL, result );
 	}
 	else	// EXIT_PROCESS
 	{
-		NT::NtTerminateProcess( NULL, result );
+		NtTerminateProcess( NULL, result );
 	}
 }
 
 
-APIRET STDCALL DosCreateThread(PTID ptid, PFNTHREAD pfn,
+APIRET __stdcall DosCreateThread(PTID ptid, PFNTHREAD pfn,
                                    ULONG param, ULONG flag, ULONG cbStack)
 {
 	return ERROR_CALL_NOT_IMPLEMENTED;

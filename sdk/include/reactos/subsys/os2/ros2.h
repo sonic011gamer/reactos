@@ -40,11 +40,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 
-namespace NT
-{
 #include <ddk/ntddk.h>
-#include <napi/types.h>
-}
+#include <windef.h>
 
 
 /* rename all the symbols */
@@ -52,26 +49,18 @@ namespace NT
 #undef	FILE_CREATE
 #define	NT_CREATE_SUSPENDED		CREATE_SUSPENDED
 #undef	CREATE_SUSPENDED
-
+#if 0
 namespace OS2
 {
-#include "os2.h"
+//#include "os2.h"
 }
-
 using namespace OS2;
+#endif
 
-APIRET STDCALL  Dos32Open(PSZ    pszFileName,  PHFILE pHf,
-                            PULONG pulAction,  ULONG  cbFile,
-                            ULONG  ulAttribute,  ULONG  fsOpenFlags,
-                            ULONG  fsOpenMode,  PVOID reserved );  //ULONGPEAOP2 peaop2)
-APIRET STDCALL  Dos32Close(HFILE hFile);
-APIRET STDCALL  Dos32Read(HFILE hFile, PVOID pBuffer,
-                            ULONG cbRead, PULONG pcbActual);
-APIRET STDCALL  Dos32Write(HFILE hFile, PVOID pBuffer,
-                             ULONG cbWrite, PULONG pcbActual);
-ULONG STDCALL DosSleep (ULONG ulInterval);
-ULONG STDCALL DosBeep (ULONG ulFrequency, ULONG ulDuration);
-VOID STDCALL DosExit (ULONG ulAction, ULONG ulResult);
+
+ULONG __stdcall DosSleep (ULONG ulInterval);
+ULONG __stdcall DosBeep (ULONG ulFrequency, ULONG ulDuration);
+VOID __stdcall DosExit (ULONG ulAction, ULONG ulResult);
 
 //ULONG STDCALL DosDevIOCtl (HFILE hDevice, ULONG ulCategory, ULONG ulFunction,
 //    PVOID pParams, ULONG ulParamsLengthMax, PULONG pulParamsLength,
@@ -81,7 +70,7 @@ typedef ULONG foo_TID;
 typedef foo_TID* foo_PTID;
 typedef void (*foo_PFNTHREAD)(ULONG ulThreadArg);
 
-ULONG STDCALL DosCreateThread (foo_PTID ptidThreadID, foo_PFNTHREAD pfnThreadAddr,
+ULONG __stdcall DosCreateThread (foo_PTID ptidThreadID, foo_PFNTHREAD pfnThreadAddr,
     ULONG ulThreadArg, ULONG ulFlags, ULONG ulStackSize);
 
 #ifdef __cplusplus

@@ -17,11 +17,11 @@
 
 #define INCL_DOSFILEMGR
 #define INCL_DOSERRORS
-#include "ros2.h"
+#include <ros2.h>
 
 
 
-APIRET STDCALL  DosOpen(PSZ    pszFileName,  PHFILE pHf,
+APIRET __stdcall  DosOpen(PSZ    pszFileName,  PHFILE pHf,
                             PULONG pulAction,  ULONG  cbFile,
                             ULONG  ulAttribute,  ULONG  fsOpenFlags,
                             ULONG  fsOpenMode,  PVOID reserved )  //ULONGPEAOP2 peaop2)
@@ -124,7 +124,7 @@ IN ULONG EaLength
 
 
 /* close a Handle. seems finished */
-APIRET STDCALL  DosClose(HFILE hFile)
+APIRET __stdcall  DosClose(HFILE hFile)
 {
 	NT::NTSTATUS   nErrCode;
 	nErrCode = NT::ZwClose( (NT::HANDLE)hFile );
@@ -144,7 +144,7 @@ APIRET STDCALL  DosClose(HFILE hFile)
 
 
 
-APIRET STDCALL  DosRead(HFILE hFile, PVOID pBuffer,
+APIRET __stdcall  DosRead(HFILE hFile, PVOID pBuffer,
                             ULONG cbRead, PULONG pcbActual)
 {
 	NT::NTSTATUS        nErrCode;
@@ -167,7 +167,7 @@ APIRET STDCALL  DosRead(HFILE hFile, PVOID pBuffer,
 }
 
 /* Generic write to a stream given by hFile */
-APIRET STDCALL  DosWrite(HFILE hFile, PVOID pBuffer,
+APIRET __stdcall  DosWrite(HFILE hFile, PVOID pBuffer,
                              ULONG cbWrite, PULONG pcbActual)
 { 
 	NT::NTSTATUS         nErrCode;

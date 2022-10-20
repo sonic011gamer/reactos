@@ -201,8 +201,8 @@ typedef CHAR *PCHAR;
 typedef unsigned char BYTE;
 typedef unsigned char *PCH;
 typedef unsigned char *PSZ;
-typedef __const__ unsigned char *PCCH;
-typedef __const__ unsigned char *PCSZ;
+typedef unsigned char *PCCH;
+typedef unsigned char *PCSZ;
 
 #else
 

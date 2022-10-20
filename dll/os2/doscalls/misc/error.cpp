@@ -17,12 +17,7 @@
 
 #define INCL_DOSPROCESS
 #define INCL_DOSERRORS
-#include <os2.h>
-// we need the extra definitions of this file
-namespace NT {
-#include <ddk/ntddbeep.h>
-}
-
+#include <ros2.h>
 
 /*******************************************
  DosBeep generates sound from the        
@@ -43,17 +38,17 @@ namespace NT {
       0         NO_ERROR 
       395       ERROR_INVALID_FREQUENCY 
 *******************************************/
-APIRET STDCALL DosBeep(ULONG freq, ULONG dur)
+APIRET __stdcall DosBeep(ULONG freq, ULONG dur)
 {
-    NT::BEEP_SET_PARAMETERS BeepSetParameters;
-	NT::HANDLE	hBeep;
-	NT::IO_STATUS_BLOCK ComplStatus;
-	NT::UNICODE_STRING unistr; 
-	NT::NTSTATUS stat;
-	NT::OBJECT_ATTRIBUTES oa = {sizeof oa, 0, &unistr, NT::OBJ_CASE_INSENSITIVE, 0, 0};
+    BEEP_SET_PARAMETERS BeepSetParameters;
+	HANDLE	hBeep;
+	IO_STATUS_BLOCK ComplStatus;
+	UNICODE_STRING unistr; 
+	NTSTATUS stat;
+	OBJECT_ATTRIBUTES oa = {sizeof oa, 0, &unistr, OBJ_CASE_INSENSITIVE, 0, 0};
 
 	// init String still bevore use.
-	NT::RtlInitUnicodeString( &unistr, (NT::PWSTR)L"\\\\.\\Beep" );
+	RtlInitUnicodeString( &unistr, (PWSTR)L"\\\\.\\Beep" );
 	
 	if( freq<0x25 || freq>0x7FFF )
 		return ERROR_INVALID_FREQUENCY; //395;	// 
@@ -63,7 +58,7 @@ APIRET STDCALL DosBeep(ULONG freq, ULONG dur)
     BeepSetParameters.Duration  = dur;
 
 	/* open the beep dirver */
-	stat = NT::ZwOpenFile( &hBeep,
+	stat = ZwOpenFile( &hBeep,
 				FILE_READ_DATA | FILE_WRITE_DATA,
 				&oa,
 				&ComplStatus,
@@ -76,15 +71,15 @@ APIRET STDCALL DosBeep(ULONG freq, ULONG dur)
 	}
 	
 	/* actually beep */
-    NT::ZwDeviceIoControlFile(hBeep, 0, // Event
+    ZwDeviceIoControlFile(hBeep, 0, // Event
 					0, // APC-routine
 					0, // UserAPCContext
 					&ComplStatus,   IOCTL_BEEP_SET,
                     &BeepSetParameters,
-                    sizeof(NT::BEEP_SET_PARAMETERS),
+                    sizeof(BEEP_SET_PARAMETERS),
                     NULL,
                     0 );
-    NT::ZwClose(hBeep);
+    ZwClose(hBeep);
 
     return NO_ERROR;
 }
