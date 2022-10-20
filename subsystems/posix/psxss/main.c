@@ -19,10 +19,10 @@ PsxStaticServerThread (PVOID x)
 	PPORT_MESSAGE Reply = NULL;
 	ULONG MessageType = 0;
 
-	DPRINT("psxsrv: %s called\n", __FUNCTION__);
+	DPRINT1("psxsrv: %s called\n", __FUNCTION__);
 
 	MessageType = Request->u2.s2.Type;
-	DPRINT("psxsrv: %s received a message (Type=%d)\n",
+	DPRINT1("psxsrv: %s received a message (Type=%d)\n",
 		__FUNCTION__, MessageType);
 	switch (MessageType)
 	{
