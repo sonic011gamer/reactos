@@ -8,7 +8,7 @@ list(APPEND SOURCE
 
 add_executable(bootpsx ${SOURCE})
 set_module_type(bootpsx win32gui UNICODE ENTRYPOINT main)
-add_importlibs(bootpsx ntdll msvcrt smdll psxdll)
+add_importlibs(bootpsx ntdll msvcrt smdll psxss)
 
 if(MSVC)
     add_importlibs(bootpsx ntdll)
