@@ -1,6 +1,6 @@
 #include "bootpsx.h"
 #include <debug.h>
-CHAR* Holder;
+
 /**********************************************************************
  * PsxCheckSubSystem/1
  */
@@ -38,22 +38,21 @@ PsxBootstrap(VOID)
 	HANDLE         SmApiPort = (HANDLE) 0;
 
 
-	printf("Connecting to the SM: ");
+	DPRINT1("PsxBootstrap: Connecting to the SM: ");
 	Status = SmConnectApiPort (NULL,
 				   (HANDLE) 0,
-				   IMAGE_SUBSYSTEM_UNKNOWN,
+				   IMAGE_SUBSYSTEM_POSIX_CUI,
 				   & SmApiPort);
 	if(!NT_SUCCESS(Status))
 	{
-		fprintf(stderr,"\n%s: SmConnectApiPort failed with 0x%08lx\n",
-				Holder, Status);
+		DPRINT1("PsxBootstrap: SmConnectApiPort failed with %X\n", Status);
 		return Status;
 	}
 	RtlInitUnicodeString (& Program, L"POSIX");
 	Status = SmExecuteProgram (SmApiPort, & Program);
 	if(STATUS_SUCCESS != Status)
 	{
-		fprintf(stderr, "%s: SmExecuteProgram = %08lx\n", Holder, Status);
+		DPRINT1("PsxBootstrap: SmExecuteProgram = %X\n", Status);
 	}
 	NtClose (SmApiPort);
 	return Status;
@@ -70,18 +69,16 @@ int main (int argc, char * argv [])
 	NTSTATUS Status = STATUS_SUCCESS;
 	INT      RetryCount = RETRY_COUNT;
 
-	Holder = argv[0];
 	while(RetryCount > 0)
 	{
-		DPRINT1("tests");
 		Status = PsxCheckSubSystem();
 		if(STATUS_SUCCESS == Status)
 		{
 			if (RETRY_COUNT == RetryCount)
 			{
-				fprintf(stderr,"POSIX already booted.\n");
+				DPRINT1("POSIX already booted.\n");
 			}else{
-				fprintf(stderr,"POSIX booted.\n");
+				DPRINT1("POSIX booted.\n");
 			}
 			break;
 		}else{
