@@ -131,6 +131,12 @@ HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#CC_0108","Clas
 HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#CC_010601","Service",0x00000000,"storahci"
 HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#CC_010601","ClassGUID",0x00000000,"{4D36E96A-E325-11CE-BFC1-08002BE10318}"
 
+HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#VEN_1AF4&DEV_1001","Service",0x00000000,"viostor"
+HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#VEN_1AF4&DEV_1001","ClassGUID",0x00000000,"{4D36E97B-E325-11CE-BFC1-08002BE10318}"
+
+HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#VEN_1AF4&DEV_1042","Service",0x00000000,"viostor"
+HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#VEN_1AF4&DEV_1042","ClassGUID",0x00000000,"{4D36E97B-E325-11CE-BFC1-08002BE10318}"
+
 HKLM,"SYSTEM\CurrentControlSet\Control\SafeBoot","AlternateShell",2,"cmd.exe"
 
 ; Safe Boot drivers
@@ -1832,6 +1838,12 @@ HKLM,"SYSTEM\CurrentControlSet\Services\storahci","ImagePath",0x00020000,"system
 HKLM,"SYSTEM\CurrentControlSet\Services\storahci","Start",0x00010001,0x00000000
 HKLM,"SYSTEM\CurrentControlSet\Services\storahci","Type",0x00010001,0x00000001
 
+; viostor driver
+HKLM,"SYSTEM\CurrentControlSet\Services\viostor","ErrorControl",0x00010001,0x00000001
+HKLM,"SYSTEM\CurrentControlSet\Services\viostor","Group",0x00000000,"SCSI miniport"
+HKLM,"SYSTEM\CurrentControlSet\Services\viostor","ImagePath",0x00020000,"system32\drivers\viostor.sys"
+HKLM,"SYSTEM\CurrentControlSet\Services\viostor","Start",0x00010001,0x00000000
+HKLM,"SYSTEM\CurrentControlSet\Services\viostor","Type",0x00010001,0x00000001
 
 ; MountMgr driver
 HKLM,"SYSTEM\CurrentControlSet\Services\MountMgr","ErrorControl",0x00010001,0x00000001
