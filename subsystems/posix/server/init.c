@@ -255,7 +255,7 @@ PdxRunServer (VOID)
                     Status);
         return Status;
     }
-
+    DPRINT1("THE POSIX SUBSYSTEM HAS BEGUN\n");
     return STATUS_SUCCESS;
 }
 /**********************************************************************

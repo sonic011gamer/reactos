@@ -28,7 +28,7 @@
 #include "../include/psxsrv.h"
 #include <psx/lpcproto.h>
 #include "utils.h"
-
+#include <debug.h>
 /**********************************************************************
  *	ProcessConnectionRequest/				PRIVATE
  *
@@ -136,7 +136,7 @@ ApiPortListener (PVOID pArg)
     PSX_MAX_MESSAGE  Request;
     PPSX_MAX_MESSAGE Reply = NULL;
     BOOL             NullReply = FALSE;
-
+    DPRINT1("ApiPortListener: Entry");
     debug_print ("psxsrv: ->%s pArg=%d\n", __FUNCTION__, ulIndex);
 
     while (TRUE)

@@ -25,7 +25,7 @@
 #define __PSX_FDTABLE_H_INCLUDED__
 
 /* INCLUDES */
-#include <limits.h>
+#include "../limits.h"
 #include <inttypes.h>
 #include <stddef.h>
 #include <psx/safeobj.h>

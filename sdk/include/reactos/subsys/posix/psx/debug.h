@@ -42,7 +42,7 @@
 /* MACROS */
 
 #define __PSX_MODULE__ "psxdll.dll"
-
+#if 0
 #ifndef NDEBUG
 
 #ifdef __PSX_DEBUG_TO_STDERR__
@@ -144,3 +144,4 @@ if((CONDITION)) \
 
 /* EOF */
 
+#endif

@@ -10,7 +10,8 @@
  *              14/05/2002: Created
  */
 
-#include <ddk/ntddk.h>
+
+#include "../psxdll.h"
 #include <unistd.h>
 
 unsigned int sleep(unsigned int seconds)
@@ -22,6 +23,5 @@ unsigned int sleep(unsigned int seconds)
 
  return 0;
 }
-
 /* EOF */
 
