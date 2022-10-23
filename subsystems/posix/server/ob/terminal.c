@@ -1,5 +1,5 @@
 
-#include "../include/psxss.h"
+#include "../include/psxsrv.h"
 
 /**********************************************************************
  *	WriteTerminal/4

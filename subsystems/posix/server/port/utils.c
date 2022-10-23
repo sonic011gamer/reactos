@@ -25,7 +25,7 @@
  *
  * --------------------------------------------------------------------
  */
-#include "../include/psxss.h"
+#include "../include/psxsrv.h"
 #include "utils.h"
 
 /**********************************************************************
@@ -44,7 +44,7 @@ PsxCheckConnectionRequest (
     /* Check if the caller is ConnectionType */
     if (ConnectionType != pConnectData->ConnectionType)
     {
-        debug_print("PSXSS: %s: ConnectionType=%d, expected %d\n",
+        debug_print("psxsrv: %s: ConnectionType=%d, expected %d\n",
                     __FUNCTION__,
                     pConnectData->ConnectionType,
                     ConnectionType
@@ -54,7 +54,7 @@ PsxCheckConnectionRequest (
     /* Check if the LPC protocol version matches */
     if (PSX_LPC_PROTOCOL_VERSION != pConnectData->Version)
     {
-        debug_print("PSXSS: %s: Version=%d, expected %d\n",
+        debug_print("psxsrv: %s: Version=%d, expected %d\n",
                     __FUNCTION__,
                     pConnectData->Version,
                     PSX_LPC_PROTOCOL_VERSION

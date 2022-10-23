@@ -1,5 +1,5 @@
-#ifndef _PSX_PSXSS_H
-#define _PSX_PSXSS_H
+#ifndef _PSX_psxsrv_H
+#define _PSX_psxsrv_H
 
 /* PSDK/NDK Headers */
 #include <stdio.h>
@@ -28,7 +28,7 @@
 
 #define NAME_BUFFER_SIZE 64
 
-/* PSXSS GLOBAL DATA */
+/* psxsrv GLOBAL DATA */
 
 typedef struct _SERVER_DIRECTORY
 {
@@ -38,7 +38,7 @@ typedef struct _SERVER_DIRECTORY
 
 } SERVER_DIRECTORY;
 
-#define PSXSS_THREADS_PER_PORT 2
+#define psxsrv_THREADS_PER_PORT 2
 
 typedef struct _SERVER_PORT
 {
@@ -49,7 +49,7 @@ typedef struct _SERVER_PORT
     struct {
         HANDLE hObject;
         DWORD  Id;
-    } ThreadInfo [PSXSS_THREADS_PER_PORT];
+    } ThreadInfo [psxsrv_THREADS_PER_PORT];
 
 } SERVER_PORT, * PSERVER_PORT;
 
@@ -182,4 +182,4 @@ PsxCreateProcess (
     HANDLE           hConnectedPort,
     ULONG            ulPortIdentifier
     );
-#endif /* ndef _PSX_PSXSS_H */
+#endif /* ndef _PSX_psxsrv_H */

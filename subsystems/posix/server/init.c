@@ -1,4 +1,4 @@
-#include "include/psxss.h"
+#include "include/psxsrv.h"
 //#define NDEBUG
 #include <debug.h>
 
@@ -86,7 +86,7 @@ PdxCreateDirectory (
                 );
     if (!NT_SUCCESS(Status))
     {
-        debug_print("PSXSS: %S directory creation failed (Status = %08x)\n",
+        debug_print("psxsrv: %S directory creation failed (Status = %08x)\n",
                     Server.Directory[ulIndex].wsName,
                     Status
                     );
@@ -150,7 +150,7 @@ PdxInitializeListener (ULONG ulIndex)
                 );
     if (!NT_SUCCESS(Status))
     {
-        debug_print("PSXSS: Unable to create port \"%S\": Status %08x\n",
+        debug_print("psxsrv: Unable to create port \"%S\": Status %08x\n",
                     Server.Port[ulIndex].wsName,
                     Status);
         return Status;
@@ -160,7 +160,7 @@ PdxInitializeListener (ULONG ulIndex)
      * messages sent to this port.
      */
     for ( ulThreadIndex = 0;
-          (ulThreadIndex < PSXSS_THREADS_PER_PORT);
+          (ulThreadIndex < psxsrv_THREADS_PER_PORT);
           ulThreadIndex ++
           )
     {
@@ -176,7 +176,7 @@ PdxInitializeListener (ULONG ulIndex)
                                      NULL);
         if (!NT_SUCCESS(Status))
         {
-            debug_print("PSXSS: Unable to create a server thread for port \"%S\": Status %08x\n",
+            debug_print("psxsrv: Unable to create a server thread for port \"%S\": Status %08x\n",
                         Server.Port[ulIndex].wsName,
                         Status
                         );
@@ -227,14 +227,14 @@ PdxRunServer (VOID)
           ulIndex ++)
     {
         for (ulThreadIndex = 0;
-             (ulThreadIndex < PSXSS_THREADS_PER_PORT);
+             (ulThreadIndex < psxsrv_THREADS_PER_PORT);
              ulThreadIndex ++
              )
         {
             Status = NtResumeThread (Server.Port[ulIndex].ThreadInfo[ulThreadIndex].hObject, NULL);
             if (!NT_SUCCESS(Status))
             {
-                debug_print("PSXSS: %s: NtResumeThread(%p) failed with Status = %08x\n",
+                debug_print("psxsrv: %s: NtResumeThread(%p) failed with Status = %08x\n",
                             __FUNCTION__,
                             Server.Port[ulIndex].ThreadInfo[ulThreadIndex].hObject,
                             Status
@@ -250,7 +250,7 @@ PdxRunServer (VOID)
                            &SmApiPort);
     if (!NT_SUCCESS(Status))
     {
-        debug_print("PSXSS: %s: SmConnectToSm() failed with Status = %08x\n",
+        debug_print("psxsrv: %s: SmConnectToSm() failed with Status = %08x\n",
                     __FUNCTION__,
                     Status);
         return Status;

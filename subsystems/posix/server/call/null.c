@@ -26,7 +26,7 @@
  * --------------------------------------------------------------------
  */
 #define NTOS_MODE_USER
-#include "../include/psxss.h"
+#include "../include/psxsrv.h"
 
 NTSTATUS NTAPI syscall_null (PPSX_MAX_MESSAGE Msg)
 {

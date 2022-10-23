@@ -1,6 +1,6 @@
 /* POSIX+ system calls not yet implemented */
 /* (machine generated: do not edit!) */
-#include "../include/psxss.h"
+#include "../include/psxsrv.h"
 NTSTATUS NTAPI syscall_fork(PPSX_MAX_MESSAGE Msg){Msg->PsxHeader.Status=STATUS_NOT_IMPLEMENTED;return(STATUS_SUCCESS);}
 NTSTATUS NTAPI syscall_authenticateuser(PPSX_MAX_MESSAGE Msg){Msg->PsxHeader.Status=STATUS_NOT_IMPLEMENTED;return(STATUS_SUCCESS);}
 NTSTATUS NTAPI syscall_waitpid(PPSX_MAX_MESSAGE Msg){Msg->PsxHeader.Status=STATUS_NOT_IMPLEMENTED;return(STATUS_SUCCESS);}

@@ -30,18 +30,26 @@
  *      20020323 (Emanuele Aliberti)
  *              Converted to Win32 for testing it using NT LPC.
  */
-#include "include/psxss.h"
-
+#include "include/psxsrv.h"
+#include "../psx.h"
 /*** EXTERNAL ********************************************************/
-
-NTSTATUS NTAPI
-PsxServerInitialization (
-    IN ULONG ArgumentCount,
-    IN PWSTR *ArgumentArray
-    );
 
 /*** ENTRY POINT *****************************************************/
 
+BOOL
+NTAPI
+DllMain(IN HINSTANCE hInstanceDll,
+        IN DWORD dwReason,
+        IN LPVOID lpReserved)
+{
+    /* We don't do much */
+    UNREFERENCED_PARAMETER(hInstanceDll);
+    UNREFERENCED_PARAMETER(dwReason);
+    UNREFERENCED_PARAMETER(lpReserved);
+
+    return TRUE;
+}
+#if 0
 int _main (int argc, char * argv[])
 {
     INT c;
@@ -50,7 +58,7 @@ int _main (int argc, char * argv[])
 
     if (STATUS_SUCCESS == PsxServerInitialization(0,NULL))
     {
-        debug_print("PSXSS: server active\n");
+        debug_print("psxsrv: server active\n");
         while (TRUE)
         {
            // c = getch();
@@ -60,8 +68,9 @@ int _main (int argc, char * argv[])
     }
     else
     {
-        debug_print("PSXSS: Subsystem initialization failed.\n");
+        debug_print("psxsrv: Subsystem initialization failed.\n");
     }
     return 0;
 }
+#endif
 /* EOF */

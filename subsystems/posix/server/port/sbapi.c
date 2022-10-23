@@ -25,7 +25,7 @@
  *
  * --------------------------------------------------------------------
  */
-#include "../include/psxss.h"
+#include "../include/psxsrv.h"
 #include "utils.h"
 
 
@@ -66,7 +66,7 @@ SbApiPortListener (PVOID pArg)
     ULONG MessageType;
     PVOID PortContext;
 
-    debug_print ("PSXSS: ->%s pArg=%d\n", __FUNCTION__, ulIndex);
+    debug_print ("psxsrv: ->%s pArg=%d\n", __FUNCTION__, ulIndex);
 
     while (TRUE)
     {
@@ -76,14 +76,14 @@ SbApiPortListener (PVOID pArg)
                                         &ReceiveMsg.h);
         if (!NT_SUCCESS(Status))
         {
-            debug_print("PSXSS: %s: NtReplyWaitReceivePort() failed with Status %08lx\n",
+            debug_print("psxsrv: %s: NtReplyWaitReceivePort() failed with Status %08lx\n",
                         __FUNCTION__,
                         Status);
             continue;
         }
 
         MessageType = ReceiveMsg.h.u2.s2.Type;
-        debug_print("PSXSS: %s: got MessageType 0x%x\n", __FUNCTION__, MessageType);
+        debug_print("psxsrv: %s: got MessageType 0x%x\n", __FUNCTION__, MessageType);
         switch (MessageType)
         {
         case LPC_CONNECTION_REQUEST:

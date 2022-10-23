@@ -1,5 +1,5 @@
 /* $Id: print.c,v 1.3 2002/10/29 04:45:54 rex Exp $ */
-#include "include/psxss.h"
+#include "include/psxsrv.h"
 #include <stdio.h>
 #include <debug.h>
 VOID NTAPI debug_print (LPSTR Template, ...)
