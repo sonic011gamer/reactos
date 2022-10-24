@@ -10,6 +10,7 @@ list(APPEND SOURCE
 
 add_executable(posixw32 ${SOURCE})
 set_module_type(posixw32 win32cui UNICODE)
-add_importlibs(posixw32 psxdll psxss)
+set_entrypoint(posixw32 main)
+add_importlibs(posixw32 psxdll psxsrv ntdll user32 kernel32 smdll)
 
 add_cd_file(TARGET posixw32 DESTINATION reactos/system32 FOR all)

@@ -19,12 +19,14 @@ void cmd_exit(char*buf)
 
 void cmd_pwd(char * buf)
 {
+  #if 0
   char pwd[1024];
 
   getcwd(pwd,sizeof pwd);
   printf("%s\n",pwd);
+  #endif
 }
-
+#if 0
 void cmd_ls(char*buf)
 {
   char pwd[1024];
@@ -39,8 +41,8 @@ void cmd_ls(char*buf)
   }
   closedir(dir);
 }
-
-int main(int argc,char*argv[])
+#endif
+int main()
 {
   char buf[INPUT_BUFFER_SIZE];
 
@@ -50,9 +52,7 @@ int main(int argc,char*argv[])
     if (gets(buf))
     {
       if (!strcmp("exit",buf))    cmd_exit(buf);
-      else if (!strcmp("pwd",buf)) cmd_pwd(buf);
-      else if (!strcmp("ls",buf)) cmd_ls(buf);
-      else printf("%s: unknown command\n",argv[0]);
+      else printf("%s: unknown command\n");
     }
   }
   return 0;

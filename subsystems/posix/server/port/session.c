@@ -28,7 +28,7 @@
 #include "../include/psxsrv.h"
 #include <psx/lpcproto.h>
 #include "utils.h"
-
+#include <debug.h>
 /**********************************************************************
  *	ProcessConnectionRequest/				PRIVATE
  */
@@ -39,8 +39,7 @@ ProcessConnectionRequest (PLPC_MAX_MESSAGE pRequest)
     NTSTATUS               Status;
     HANDLE                 hConnectedPort;
     ULONG                  ulPortIdentifier;
-
-    debug_print ("psxsrv: ->%s\n", __FUNCTION__);
+    DPRINT1("psxsrv: ->%s\n", __FUNCTION__);
 
     /* Check if the caller is a terminal */
     Status = PsxCheckConnectionRequest (
@@ -66,6 +65,7 @@ ProcessConnectionRequest (PLPC_MAX_MESSAGE pRequest)
 	}
         return STATUS_UNSUCCESSFUL;
     }
+        __debugbreak();
     /* OK, accept the connection */
     Status = NtAcceptConnectPort (
                 & hConnectedPort,
@@ -77,9 +77,10 @@ ProcessConnectionRequest (PLPC_MAX_MESSAGE pRequest)
 		);
     if (!NT_SUCCESS(Status))
     {
-        debug_print("psxsrv: %s: NtAcceptConnectPort failed with status=%08x\n", __FUNCTION__, Status);
+        DPRINT1("psxsrv: %s: NtAcceptConnectPort failed with status=%08x\n", __FUNCTION__, Status);
         return Status;
     }
+    __debugbreak();
     /* OK, now create a new PSX_SESSION object */
     Status = PsxCreateSession (
                 pRequest,
@@ -136,8 +137,8 @@ SessionPortListener (PVOID pArg)
     PPSX_MAX_MESSAGE Reply = NULL;
     BOOL             NullReply = FALSE;
 
-    debug_print ("psxsrv: ->%s pArg=%d\n", __FUNCTION__, ulIndex);
-
+    DPRINT1("psxsrv: ->%s pArg=%d\n", __FUNCTION__, ulIndex);
+    __debugbreak();
     while (TRUE)
     {
         Reply = NULL;
@@ -154,7 +155,7 @@ SessionPortListener (PVOID pArg)
             {
                 break;
             }
-            RequestType = (LPC_TYPE)Request.Header.MessageType;
+            RequestType = (LPC_TYPE)Request.Header.u2.s2.Type;
             switch (RequestType)
             {
             case LPC_CONNECTION_REQUEST:

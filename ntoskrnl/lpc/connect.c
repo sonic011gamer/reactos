@@ -242,7 +242,7 @@ NtSecureConnectPort(OUT PHANDLE PortHandle,
                                      (PVOID*)&Port);
     if (!NT_SUCCESS(Status))
     {
-        DPRINT1("Failed to reference port '%wZ': 0x%lx\n", PortName, Status);
+        DPRINT1("Failed to reference port '%s': 0x%X\n", PortName, Status);
 
         if (CapturedServerSid != ServerSid)
             SepReleaseSid(CapturedServerSid, PreviousMode, TRUE);
@@ -358,7 +358,7 @@ NtSecureConnectPort(OUT PHANDLE PortHandle,
             /* Security failed, dereference and return */
             DPRINT1("SeCreateClientSecurity failed: 0x%lx\n", Status);
             ObDereferenceObject(ClientPort);
-            return Status;
+          //  return Status;
         }
     }
 

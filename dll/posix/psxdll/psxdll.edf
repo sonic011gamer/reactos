@@ -141,24 +141,7 @@ _exit=exit
 
 ;string
 ;forward-exports to NTDLL
-memchr=NTDLL.memchr
-memcmp=NTDLL.memcmp
-memcpy=NTDLL.memcpy
-memmove=NTDLL.memmove
-memset=NTDLL.memset
-strcat=NTDLL.strcat
-strchr=NTDLL.strchr
-strcmp=NTDLL.strcmp
-strcpy=NTDLL.strcpy
-strcspn=NTDLL.strcspn
-strlen=NTDLL.strlen
-strncat=NTDLL.strncat
-strncmp=NTDLL.strncmp
-strncpy=NTDLL.strncpy
-strpbrk=NTDLL.strpbrk
-strrchr=NTDLL.strrchr
-strspn=NTDLL.strspn
-strstr=NTDLL.strstr
+
 ;implemented internally
 strdup
 

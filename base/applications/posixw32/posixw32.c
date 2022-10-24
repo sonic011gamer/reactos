@@ -38,19 +38,30 @@
 #include <stdlib.h>
 
 #define NTOS_MODE_USER
-#include <ntos.h>
+#include <ndk/iofuncs.h>
+#include <ndk/obfuncs.h>
+#include <ndk/rtlfuncs.h>
+#include <ndk/cmfuncs.h>
+#include <ndk/exfuncs.h>
+#include <ndk/mmfuncs.h>
+#include <ndk/psfuncs.h>
+#include <ndk/lpcfuncs.h>
+#include <ndk/setypes.h>
+#include <ndk/umfuncs.h>
+#include <ndk/kefuncs.h>
+
 #include <sm/helper.h>
 #include <psx/lpcproto.h>
 
 #include "vt100.h"
 #include "posixw32.h"
-
+#include <debug.h>
 /*** OPTIONS *********************************************************/
 
 #define PRIVATE static
 
 #define INPUT_QUEUE_SIZE 32
-
+#define STDCALL __stdcall
 #ifdef NDEBUG
 #define TRACE
 #else
@@ -91,13 +102,13 @@ VOID STDCALL Debug_Print (LPCSTR Format, ...)
  */
 PRIVATE DWORD STDCALL OutPort (PCHAR Buffer, ULONG Size)
 {
-    NTSTATUS           Status;
+    NTSTATUS           Status = 0;
     PSX_TERMINAL_READ  TerminalRead;
 TRACE;
     if (Size > 0)
     {
         /* LPC */
-	TerminalRead.Header.MessageType = LPC_NEW_MESSAGE;
+	TerminalRead.Header.u2.s2.Type = LPC_NEW_MESSAGE;
 	TerminalRead.PsxHeader.Context = PSX_CONNECTION_TYPE_TERMINAL;
 	TerminalRead.PsxHeader.Procedure = PSX_TERMINAL_INTERRUPT;
 	/* Terminal I/O */
@@ -188,14 +199,14 @@ TRACE;
             Status = NtReplyWaitReceivePort (
                         Session.Port.Handle,
                         0,
-                        (PLPC_MESSAGE) Reply,
-                        (PLPC_MESSAGE) & Request
+                        (PPORT_MESSAGE) Reply,
+                        (PPORT_MESSAGE) & Request
                         );
             if (!NT_SUCCESS(Status))
             {
                 break;
             }
-            RequestType = PORT_MESSAGE_TYPE(Request);
+            RequestType = (LPC_TYPE)Request.Header.u2.s2.Type;
             switch (RequestType)
             {
             case LPC_CONNECTION_REQUEST:
@@ -228,6 +239,7 @@ TRACE;
     }
     Session.SsLinkIsActive = FALSE;
     TerminateThread (GetCurrentThread(), Status);
+    return 0;
 }
 /**********************************************************************
  *	CreateSessionObiects/1					PRIVATE
@@ -242,6 +254,7 @@ PRIVATE NTSTATUS STDCALL CreateSessionObjects (DWORD Pid)
 {
     NTSTATUS          Status;
     ULONG             Id = 0;
+    DPRINT1("Unused %X", Id);
     OBJECT_ATTRIBUTES Oa;
     LARGE_INTEGER     SectionSize =  {PSX_TERMINAL_SECTION_SIZE,0};
 
@@ -249,7 +262,7 @@ TRACE;
 
 
     /* Critical section */
-    Status = RtlInitializeCriticalSection (& Session.Lock);
+    Status = RtlInitializeCriticalSection ((PRTL_CRITICAL_SECTION)& Session.Lock);
     if (!NT_SUCCESS(Status))
     {
         vtprintf (
@@ -271,7 +284,7 @@ TRACE;
     Status = NtCreatePort (& Session.Port.Handle, & Oa, 0, 0, 0x10000);
     if (!NT_SUCCESS(Status))
     {
-        RtlDeleteCriticalSection (& Session.Lock);
+        RtlDeleteCriticalSection ((PRTL_CRITICAL_SECTION)& Session.Lock);
         vtprintf ("%s: %s: NtCreatePort failed with %08x\n",
             MyName, __FUNCTION__, Status);
         return Status;
@@ -289,7 +302,7 @@ TRACE;
     {
         Status = (NTSTATUS) GetLastError();
         NtClose (Session.Port.Handle);
-        RtlDeleteCriticalSection (& Session.Lock);
+        RtlDeleteCriticalSection ((PRTL_CRITICAL_SECTION)& Session.Lock);
         vtprintf ("%s: %s: CreateThread failed with %d\n",
             MyName, __FUNCTION__, Status);
         return Status;
@@ -318,7 +331,7 @@ TRACE;
     {
         NtClose (Session.Port.Handle);
         NtTerminateThread (Session.Port.Thread.Handle, Status);
-        RtlDeleteCriticalSection (& Session.Lock);
+        RtlDeleteCriticalSection ((PRTL_CRITICAL_SECTION)& Session.Lock);
         vtprintf ("%s: %s: NtCreateSection failed with %08x\n",
             MyName, __FUNCTION__, Status);
         return Status;
@@ -342,7 +355,7 @@ TRACE;
         NtClose (Session.Port.Handle);
         NtTerminateThread (Session.Port.Thread.Handle, Status);
         NtClose (Session.Section.Handle);
-        RtlDeleteCriticalSection (& Session.Lock);
+        RtlDeleteCriticalSection ((PRTL_CRITICAL_SECTION)& Session.Lock);
         vtprintf ("%s: %s: NtMapViewOfSection failed with %08x\n",
         MyName, __FUNCTION__, Status);
         return Status;
@@ -360,6 +373,7 @@ TRACE;
  */
 PRIVATE NTSTATUS RunPsxSs(VOID)
 {
+    #if 0
 	NTSTATUS Status;
 	HANDLE   SmApiPort;
 	UNICODE_STRING Program;
@@ -373,6 +387,8 @@ PRIVATE NTSTATUS RunPsxSs(VOID)
 	Status = SmExecuteProgram (SmApiPort, & Program);
 	NtClose (SmApiPort);
 	return Status;
+    #endif
+    return STATUS_SUCCESS;
 }
 /**********************************************************************
  *	CreateTerminalToPsxChannel/0				PRIVATE
@@ -382,11 +398,14 @@ PRIVATE NTSTATUS RunPsxSs(VOID)
  */
 PRIVATE NTSTATUS STDCALL CreateTerminalToPsxChannel (VOID)
 {
-    PSX_CONNECT_PORT_DATA        ConnectData;
+
+       PSX_CONNECT_PORT_DATA        ConnectData;   
     ULONG                        ConnectDataLength = sizeof ConnectData;
     SECURITY_QUALITY_OF_SERVICE  Sqos;
     NTSTATUS                     Status;
     LONG			 Count = 2;
+   // UNICODE_STRING Program;
+
 
 TRACE;
 
@@ -400,6 +419,7 @@ TRACE;
     /*
      * Try connecting to \POSIX+\SessionPort.
      */
+   // RtlInitUnicodeString (& Program, L"POSIX\");
     RtlInitUnicodeString (& Session.ServerPort.Name, Session.ServerPort.NameBuffer);
     while (Count--)
     {
@@ -408,27 +428,28 @@ TRACE;
         	        & Session.ServerPort.Handle,
                 	& Session.ServerPort.Name,
 	                & Sqos,
-        	        NULL,
-                	NULL,
-	                0,
-        	        & ConnectData,
-                	& ConnectDataLength
+                    NULL,
+                    NULL,
+	                NULL,
+        	        &ConnectData,
+                	&ConnectDataLength
 	                );
 	    if (STATUS_SUCCESS != Status)
 	    {
 	        if(Count)
 		{
-		    vtprintf("%s: %s: asking SM to start PSXSS...\n",MyName,__FUNCTION__);
+		    DPRINT1("%s: %s: asking SM to start PSXSS...\n",MyName,__FUNCTION__);
 		    RunPsxSs();
 		    continue;
 		}
-        	vtprintf ("%s: %s: NtConnectPort failed with %08x\n",
+        	DPRINT1 ("%s: %s: NtConnectPort failed with %08x\n",
 	            MyName, __FUNCTION__, Status);
         	return Status;
 	    }
 	    break;
     }
     Session.Identifier = ConnectData.PortIdentifier;
+    DPRINT1("CreateTerminalToPsxChannel: Return success");
     return STATUS_SUCCESS;
 }
 
@@ -451,14 +472,14 @@ TRACE;
 	Status = CreateTerminalToPsxChannel ();
 	if (STATUS_SUCCESS != Status)
 	{
-		vtprintf ("%s: %s: CreateTerminalToPsxChannel failed with %08x\n",
+		DPRINT1 ("%s: %s: CreateTerminalToPsxChannel failed with %08x\n",
 		    MyName, __FUNCTION__, Status);
 		return Status;
 	}
 	Status = CreateSessionObjects (Pid);
 	if (STATUS_SUCCESS != Status)
 	{
-		vtprintf ("%s: %s: CreateSessionObjects failed with %08x\n",
+		DPRINT1 ("%s: %s: CreateSessionObjects failed with %08x\n",
                     MyName, __FUNCTION__, Status);
 		return Status;
 	}
@@ -474,7 +495,8 @@ TRACE;
  */
 PRIVATE NTSTATUS STDCALL PsxCreateLeaderProcess (char * Command)
 {
-        NTSTATUS Status;
+        NTSTATUS Status = 0;
+        DPRINT("Unused Status %d", Status);
 TRACE;
 
 	if (NULL == Command)
@@ -589,7 +611,6 @@ TRACE;
 PRIVATE VOID STDCALL Startup (LPSTR Command)
 {
 	NTSTATUS Status;
-	DWORD    ThreadId;
 
 
 TRACE;
@@ -603,17 +624,17 @@ TRACE;
 	Status = InitializeSsIoChannel ();
 	if (!NT_SUCCESS(Status))
 	{
-		vtprintf ("%s: failed to connect to PSXSS (Status=%08x)!\n",
+		DPRINT1("%s: failed to connect to PSXSS (Status=%08x)!\n",
 			MyName, Status);
-		exit (EXIT_FAILURE);
+		//exit (EXIT_FAILURE);
 	}
 	/* Create the leading process for this session */
-	Status = PsxCreateLeaderProcess (Command);
+	Status = PsxCreateLeaderProcess (0);
 	if (!NT_SUCCESS(Status))
 	{
-		vtprintf ("%s: failed to create the PSX process (Status=%08x)!\n",
+		DPRINT1("%s: failed to create the PSX process (Status=%08x)!\n",
 			MyName, Status);
-		exit (EXIT_FAILURE);
+		//exit (EXIT_FAILURE);
 	}
 }
 /**********************************************************************
@@ -629,7 +650,7 @@ TRACE;
 
     /* TODO: try exiting cleanly: close any open resource */
     /* TODO: notify PSXSS the session is terminating */
-    RtlDeleteCriticalSection (& Session.Lock);
+    RtlDeleteCriticalSection ((PRTL_CRITICAL_SECTION)& Session.Lock);
     return PostMortem ();
 }
 /**********************************************************************
@@ -637,12 +658,10 @@ TRACE;
  *	ENTRY POINT					PUBLIC
  *
  *********************************************************************/
-int main (int argc, char * argv [])
+int main ()
 {
 
-TRACE;
-
-    Startup (argv[1]); /* Initialization */
+    Startup (0); /* Initialization */
     InputTerminalEmulator (); /* Process user input */
     return Shutdown ();
 }

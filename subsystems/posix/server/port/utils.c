@@ -49,19 +49,10 @@ PsxCheckConnectionRequest (
                     pConnectData->ConnectionType,
                     ConnectionType
                     );
-        return STATUS_UNSUCCESSFUL;
+        pConnectData->ConnectionType = ConnectionType;
+        return STATUS_SUCCESS;
     }
-    /* Check if the LPC protocol version matches */
-    if (PSX_LPC_PROTOCOL_VERSION != pConnectData->Version)
-    {
-        debug_print("psxsrv: %s: Version=%d, expected %d\n",
-                    __FUNCTION__,
-                    pConnectData->Version,
-                    PSX_LPC_PROTOCOL_VERSION
-                    );
-        pConnectData->Version = PSX_LPC_PROTOCOL_VERSION;
-        return STATUS_UNSUCCESSFUL;
-    }
+
     return STATUS_SUCCESS;
 }
 /* EOF */

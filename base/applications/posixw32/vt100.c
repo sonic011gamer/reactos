@@ -141,7 +141,7 @@ vtprintf(char *format, ...)
 vtInitVT100(void)
 {
     int i=0;
-
+    UNREFERENCED_PARAMETER(i);
     cBuffer[0]='\0';
     BufLen=0;
 

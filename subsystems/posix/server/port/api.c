@@ -154,7 +154,7 @@ ApiPortListener (PVOID pArg)
             {
                 break;
             }
-            RequestType = (LPC_TYPE)Request.Header.MessageType;
+            RequestType = (LPC_TYPE)Request.Header.u2.s2.Type;
             switch (RequestType)
             {
             case LPC_CONNECTION_REQUEST:

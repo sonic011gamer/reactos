@@ -17,7 +17,7 @@
 @ stdcall strspn() ntdll.strspn
 @ stdcall strstr() ntdll.strstr
 
-
+@ stub _exit()
 
 ;POSIX
 @ stdcall sleep(long)
