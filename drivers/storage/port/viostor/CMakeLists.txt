@@ -12,6 +12,7 @@ list(APPEND SOURCE
 add_library(viostor MODULE ${SOURCE} virtio_stor.rc)
 
 target_compile_definitions(viostor PUBLIC
+    DEBUG_USE_KDPRINT
     _WIN32_WINNT=0x602
     NTDDI_VERSION=0x06020000) # NTDDI_WIN8
 

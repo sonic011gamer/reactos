@@ -30,14 +30,14 @@
 #ifndef ___VIOSTOR_TRACING_H___
 #define ___VIOSTOR_TRACING_H___
 
-//#define DBG 1
+#define DBG 1
 
 #include <ntddk.h>
 #include <storport.h>
 #include <stdarg.h>
 
-//#define PRINT_DEBUG 1
-//#define COM_DEBUG 1
+#define PRINT_DEBUG 1
+#define COM_DEBUG 1
 
 
 
