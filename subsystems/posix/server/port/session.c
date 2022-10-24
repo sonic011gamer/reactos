@@ -155,7 +155,7 @@ SessionPortListener (PVOID pArg)
             {
                 break;
             }
-            RequestType = (LPC_TYPE)Request.Header.u2.s2.Type;
+            RequestType = (LPC_TYPE)Request.Header.MessageType;
             switch (RequestType)
             {
             case LPC_CONNECTION_REQUEST:

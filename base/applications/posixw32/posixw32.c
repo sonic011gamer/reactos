@@ -108,7 +108,7 @@ TRACE;
     if (Size > 0)
     {
         /* LPC */
-	TerminalRead.Header.u2.s2.Type = LPC_NEW_MESSAGE;
+	TerminalRead.Header.MessageType = LPC_NEW_MESSAGE;
 	TerminalRead.PsxHeader.Context = PSX_CONNECTION_TYPE_TERMINAL;
 	TerminalRead.PsxHeader.Procedure = PSX_TERMINAL_INTERRUPT;
 	/* Terminal I/O */
@@ -206,7 +206,7 @@ TRACE;
             {
                 break;
             }
-            RequestType = (LPC_TYPE)Request.Header.u2.s2.Type;
+            RequestType = (LPC_TYPE)Request.Header.MessageType;
             switch (RequestType)
             {
             case LPC_CONNECTION_REQUEST:

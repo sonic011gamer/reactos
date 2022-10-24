@@ -22,7 +22,7 @@
 #include <ndk/lpctypes.h>
 //#include <wine/winternl.h>
 #include <ndk/rtlfuncs.h>
-#if 0
+
 typedef struct _LPC_MESSAGE {
   USHORT DataSize;
   USHORT MessageSize;
@@ -33,7 +33,7 @@ typedef struct _LPC_MESSAGE {
   ULONG_PTR SectionSize;
   UCHAR Data[ANYSIZE_ARRAY];
 } LPC_MESSAGE, *PLPC_MESSAGE;
-#endif
+
 
 #ifndef PRIVATE
 #define PRIVATE static
@@ -84,7 +84,7 @@ typedef PSX_MESSAGE_HEADER PSX_MESSAGE, * PPSX_MESSAGE;
 typedef struct _PSX_MAX_MESSAGE
 {
     //LPC_MESSAGE_HEADER Header;
-     PORT_MESSAGE Header;
+    LPC_MESSAGE Header;
     PSX_MESSAGE_HEADER PsxHeader;
     BYTE               Data [PSX_MAX_LPC_DATA_SIZE];
 } PSX_MAX_MESSAGE, * PPSX_MAX_MESSAGE;
@@ -93,7 +93,7 @@ typedef struct _PSX_MAX_MESSAGE
 typedef struct _LPC_MAX_MESSAGE
 {
     //LPC_MESSAGE_HEADER Header;
-     PORT_MESSAGE Header;
+    LPC_MESSAGE Header;
     PSX_MESSAGE_HEADER PsxHeader;
     BYTE               Data [PSX_MAX_LPC_DATA_SIZE];
 } LPC_MAX_MESSAGE, * PLPC_MAX_MESSAGE;
@@ -113,7 +113,7 @@ typedef enum {
 typedef struct _PSX_TERMINAL_IO
 {
     //LPC_MESSAGE_HEADER Header;
-     PORT_MESSAGE Header;
+    LPC_MESSAGE Header;
     PSX_MESSAGE_HEADER PsxHeader;
     ULONG              Size;
     ULONG              Offset;
