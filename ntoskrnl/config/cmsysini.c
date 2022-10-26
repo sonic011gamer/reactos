@@ -22,7 +22,6 @@ LIST_ENTRY CmpSelfHealQueueListHead;
 KEVENT CmpLoadWorkerEvent;
 LONG CmpLoadWorkerIncrement;
 PEPROCESS CmpSystemProcess;
-BOOLEAN HvShutdownComplete;
 PVOID CmpRegistryLockCallerCaller, CmpRegistryLockCaller;
 BOOLEAN CmpFlushOnLockRelease;
 BOOLEAN CmpSpecialBootCondition;
@@ -31,6 +30,7 @@ BOOLEAN CmpWasSetupBoot;
 BOOLEAN CmpProfileLoaded;
 BOOLEAN CmpNoVolatileCreates;
 ULONG CmpTraceLevel = 0;
+BOOLEAN HvShutdownComplete = FALSE;
 
 extern LONG CmpFlushStarveWriters;
 extern BOOLEAN CmFirstTime;
@@ -2058,6 +2058,14 @@ CmShutdownSystem(VOID)
 
         ListEntry = ListEntry->Flink;
     }
+
+    /*
+     * As we flushed all the hives on the disk,
+     * tell the system we do not want any further
+     * registry flushing or syncing at this point
+     * since we are shutting down the registry anyway.
+     */
+    HvShutdownComplete = TRUE;
 
     CmpUnlockRegistry();
 }
