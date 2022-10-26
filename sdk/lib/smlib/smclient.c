@@ -295,6 +295,57 @@ SmExecPgm(
 
 /**
  * @brief
+ * This function is used to make the SM start an environment
+ * subsystem server process.
+ *
+ * @param[in]   SmApiPort
+ * Port handle returned by SmConnectToSm().
+ *
+ * @param[in]   DeferedSubsystem
+ * Name of the subsystem to start. This must be one of the subsystems
+ * listed by value's name in the SM registry key
+ * \Registry\SYSTEM\CurrentControlSet\Control\Session Manager\SubSystems
+ * (used by the SM to lookup the corresponding image name).
+ * Default valid names are: "Debug", "Windows", "Posix", "Os2".
+ *
+ * @return
+ * Success status as handed by the SM reply; otherwise a failure
+ * status code.
+ **/
+NTSTATUS
+NTAPI
+SmLoadDeferedSubsystem(
+    _In_ HANDLE SmApiPort,
+    _In_ PUNICODE_STRING DeferedSubsystem)
+{
+    SM_API_MSG SmApiMsg;
+
+#if 0 //def _WIN64 // You can take care of this Timo
+    /* 64-bit SMSS needs to talk to 32-bit processes so do the LPC conversion */
+    if (SmpIsWow64Process())
+    {
+        return SmpWow64LoadDeferedSubsystem(SmApiPort, DeferedSubsystem);
+    }
+#endif
+
+    /* Validate DeferedSubsystem's length */
+    if (DeferedSubsystem->Length >= sizeof(SmApiMsg.u.LoadDefered.Buffer))
+        return STATUS_INVALID_PARAMETER;
+
+    /* Set the message data */
+    SmApiMsg.u.LoadDefered.Length = DeferedSubsystem->Length;
+    RtlCopyMemory(SmApiMsg.u.LoadDefered.Buffer,
+                  DeferedSubsystem->Buffer,
+                  DeferedSubsystem->Length);
+    SmApiMsg.u.LoadDefered.Buffer[SmApiMsg.u.LoadDefered.Length / sizeof(WCHAR)] = UNICODE_NULL;
+
+    /* Send the message and wait for a reply */
+    SmApiMsg.ApiNumber = SmpLoadDeferedSubsystemApi;
+    return SmSendMsgToSm(SmApiPort, &SmApiMsg);
+}
+
+/**
+ * @brief
  * Requests the SM to create a new Terminal Services session
  * and start an initial command.
  *
