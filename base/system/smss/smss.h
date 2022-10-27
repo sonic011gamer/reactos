@@ -33,6 +33,9 @@
 
 #include <ntstrsafe.h>
 
+/* PSEH for SEH Support */
+#include <pseh/pseh2.h>
+
 /* SM Protocol Header */
 #include <sm/smmsg.h>
 
@@ -100,6 +103,11 @@ extern BOOLEAN SmpDebug;
 
 /* FUNCTIONS ******************************************************************/
 
+LONG
+NTAPI
+SmpUnhandledExceptionFilter(
+    _In_ PEXCEPTION_POINTERS ExceptionInfo);
+
 NTSTATUS
 NTAPI
 SmpTerminate(
@@ -134,7 +142,7 @@ SmpReleasePrivilege(
     IN PVOID State
 );
 
-ULONG
+NTSTATUS
 NTAPI
 SmpApiLoop(
     IN PVOID Parameter
