@@ -399,7 +399,7 @@ PRIVATE NTSTATUS RunPsxSs(VOID)
 PRIVATE NTSTATUS STDCALL CreateTerminalToPsxChannel (VOID)
 {
 
-       PSX_CONNECT_PORT_DATA        ConnectData;   
+    PSX_CONNECT_PORT_DATA        ConnectData;   
     ULONG                        ConnectDataLength = sizeof ConnectData;
     SECURITY_QUALITY_OF_SERVICE  Sqos;
     NTSTATUS                     Status;
@@ -416,10 +416,6 @@ TRACE;
      */
     ConnectData.ConnectionType = PSX_CONNECTION_TYPE_TERMINAL;
     ConnectData.Version = PSX_LPC_PROTOCOL_VERSION;
-    /*
-     * Try connecting to \POSIX+\SessionPort.
-     */
-   // RtlInitUnicodeString (& Program, L"POSIX\");
     RtlInitUnicodeString (& Session.ServerPort.Name, Session.ServerPort.NameBuffer);
     while (Count--)
     {
@@ -437,11 +433,9 @@ TRACE;
 	    if (STATUS_SUCCESS != Status)
 	    {
 	        if(Count)
-		{
-		    DPRINT1("%s: %s: asking SM to start PSXSS...\n",MyName,__FUNCTION__);
-		    RunPsxSs();
-		    continue;
-		}
+		    {
+		        DPRINT1("PSXSRV ISNT RUNNING?");
+		    }
         	DPRINT1 ("%s: %s: NtConnectPort failed with %08x\n",
 	            MyName, __FUNCTION__, Status);
         	return Status;

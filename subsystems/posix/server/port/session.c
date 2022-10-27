@@ -38,7 +38,7 @@ ProcessConnectionRequest (PLPC_MAX_MESSAGE pRequest)
     PPSX_CONNECT_PORT_DATA pConnectData = (PPSX_CONNECT_PORT_DATA) & pRequest->Data;
     NTSTATUS               Status;
     HANDLE                 hConnectedPort;
-    ULONG                  ulPortIdentifier;
+    ULONG                  ulPortIdentifier = 0;
     DPRINT1("psxsrv: ->%s\n", __FUNCTION__);
 
     /* Check if the caller is a terminal */
@@ -46,35 +46,43 @@ ProcessConnectionRequest (PLPC_MAX_MESSAGE pRequest)
                 pConnectData,
                 PSX_CONNECTION_TYPE_TERMINAL
 		);
+
+    /* ERROR CHECKING :D */
     if (!NT_SUCCESS(Status))
     {
         Status = NtAcceptConnectPort (
-                    & hConnectedPort,
-		    NULL,
-		    (PPORT_MESSAGE)& pRequest->Header,
-		    FALSE, /* reject connection request */
-		    NULL,
-		    NULL
-		    );
+                    &hConnectedPort,
+		            NULL,
+		            (PPORT_MESSAGE)& pRequest->Header,
+		            FALSE, /* reject connection request */
+		            NULL,
+		            NULL
+		            );
+    
         if (!NT_SUCCESS(Status))
         {
-            debug_print("psxsrv: %s: NtAcceptConnectPort failed with status=%08x\n",
+            DPRINT1("psxsrv: %s: NtAcceptConnectPort failed with status=%08x\n",
                         __FUNCTION__,
                         Status
                         );
-	}
+	    }
         return STATUS_UNSUCCESSFUL;
     }
+
+
+
+
         __debugbreak();
     /* OK, accept the connection */
     Status = NtAcceptConnectPort (
                 & hConnectedPort,
-		& ulPortIdentifier,
-	        (PPORT_MESSAGE)& pRequest->Header,
-		TRUE, /* accept connection request */
-		NULL,
-		NULL
-		);
+		        NULL,
+	           (PPORT_MESSAGE)& pRequest->Header,
+		       TRUE, /* accept connection request */
+		       NULL,
+		       NULL
+		    );
+
     if (!NT_SUCCESS(Status))
     {
         DPRINT1("psxsrv: %s: NtAcceptConnectPort failed with status=%08x\n", __FUNCTION__, Status);
