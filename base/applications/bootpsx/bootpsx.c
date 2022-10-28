@@ -1,4 +1,5 @@
 #include "bootpsx.h"
+#include <sm/smmsg.h>
 #include <debug.h>
 
 /**********************************************************************
@@ -39,20 +40,20 @@ PsxBootstrap(VOID)
 
 
 	DPRINT1("PsxBootstrap: Connecting to the SM: ");
-	Status = SmConnectApiPort (NULL,
+	Status = SmConnectToSm (NULL,
 				   (HANDLE) 0,
-				   IMAGE_SUBSYSTEM_POSIX_CUI,
+				   0,
 				   & SmApiPort);
 	if(!NT_SUCCESS(Status))
 	{
-		DPRINT1("PsxBootstrap: SmConnectApiPort failed with %X\n", Status);
+		DPRINT1("PsxBootstrap: SmConnectToSm failed with %X\n", Status);
 		return Status;
 	}
 	RtlInitUnicodeString (& Program, L"POSIX");
-	Status = SmExecuteProgram (SmApiPort, & Program);
+	Status = SmLoadDeferedSubsystem (SmApiPort, & Program);
 	if(STATUS_SUCCESS != Status)
 	{
-		DPRINT1("PsxBootstrap: SmExecuteProgram = %X\n", Status);
+		DPRINT1("PsxBootstrap: SmLoadDeferedSubsystem = %X\n", Status);
 	}
 	NtClose (SmApiPort);
 	return Status;
