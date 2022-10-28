@@ -41,7 +41,7 @@ PsxBootstrap(VOID)
 
 	DPRINT1("PsxBootstrap: Connecting to the SM: ");
 	Status = SmConnectToSm (NULL,
-				   (HANDLE) 0,
+				    NULL,
 				   0,
 				   & SmApiPort);
 	if(!NT_SUCCESS(Status))

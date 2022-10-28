@@ -8,6 +8,6 @@ list(APPEND SOURCE
 
 add_executable(posixsleep ${SOURCE})
 set_module_type(posixsleep win32cui UNICODE ENTRYPOINT main)
-add_importlibs(posixsleep psxdll psxsrv smdll ntdll kernel32)
-
+add_importlibs(posixsleep psxdll psxsrv ntdll kernel32)
+target_link_libraries(posixsleep smlib)
 add_cd_file(TARGET posixsleep DESTINATION reactos/system32 FOR all)
