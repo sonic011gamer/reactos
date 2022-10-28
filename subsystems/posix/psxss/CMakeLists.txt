@@ -14,6 +14,6 @@ add_executable(psxss
 
 set_module_type(psxss nativecui)
 target_link_libraries(psxss ${PSEH_LIB} smlib nt)
-add_importlibs(psxss psxsrv smdll ntdll)
+add_importlibs(psxss psxsrv ntdll)
 add_dependencies(psxss psdk bugcodes)
 add_cd_file(TARGET psxss DESTINATION reactos/system32 FOR all)

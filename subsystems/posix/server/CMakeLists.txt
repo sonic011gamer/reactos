@@ -31,7 +31,7 @@ add_library(psxsrv MODULE
 
 set_module_type(psxsrv nativedll)
 target_link_libraries(psxsrv ${PSEH_LIB} smlib nt)
-add_importlibs(psxsrv smdll ntdll)
+add_importlibs(psxsrv ntdll)
 add_pch(psxsrv include/psxsrv.h SOURCE)
 add_dependencies(psxsrv psdk bugcodes)
 add_cd_file(TARGET psxsrv DESTINATION reactos/system32 FOR all)
