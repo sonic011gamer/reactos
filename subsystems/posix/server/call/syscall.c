@@ -1,5 +1,5 @@
 /* POSIX+ system calls (machine generated: do not edit!) */
-#include "../include/psxss.h"
+#include "../include/psxsrv.h"
 #include "../include/syscall.h"
 PSX_SYSTEM_CALL SystemCall [] =
 {
