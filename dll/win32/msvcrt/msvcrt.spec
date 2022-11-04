@@ -572,7 +572,7 @@
 @ cdecl _getdcwd(long str long)
 @ cdecl _getdiskfree(long ptr)
 @ cdecl -arch=i386 _getdllprocaddr(long str long)
-@ cdecl -arch=x86_64 -version=0x502 _getdllprocaddr(long str long)
+@ cdecl -arch=x86_64,arm64 -version=0x502 _getdllprocaddr(long str long)
 @ cdecl _getdrive()
 @ cdecl _getdrives() kernel32.GetLogicalDrives
 @ cdecl _getmaxstdio()

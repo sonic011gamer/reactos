@@ -102,6 +102,8 @@ DWORD             symt_ptr2index(struct module* module, const struct symt* sym)
 
     if (c) *c = sym;
     return len + 1;
+#elif __arm64__
+    return 0;
 #else
     return (DWORD)sym;
 #endif

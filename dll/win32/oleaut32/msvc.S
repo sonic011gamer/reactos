@@ -7,6 +7,12 @@
         __assertfail
     LEAF_END call_method
 
+#elif defined(_M_ARM64)
+#include <kxarm64.h>
+
+    LEAF_ENTRY call_method
+
+    LEAF_END call_method
 #elif defined(_M_AMD64)
 
 #include <asm.inc>

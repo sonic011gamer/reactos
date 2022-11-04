@@ -15,8 +15,6 @@
 
     LEAF_ENTRY atan
 
-	__assertfail
-	bx	lr
 
     LEAF_END atan
 
