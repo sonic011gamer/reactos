@@ -593,8 +593,8 @@
 588 stdcall SetCaretBlinkTime(long)
 589 stdcall SetCaretPos(long long)
 590 stdcall SetClassLongA(long long long)
-@ stdcall -arch=x86_64 SetClassLongPtrA(ptr long ptr)
-@ stdcall -arch=x86_64 SetClassLongPtrW(ptr long ptr)
+@ stdcall -arch=x86_64,arm64 SetClassLongPtrA(ptr long ptr)
+@ stdcall -arch=x86_64,arm64 SetClassLongPtrW(ptr long ptr)
 591 stdcall SetClassLongW(long long long)
 592 stdcall SetClassWord(long long long) ; Direct call NtUserSetClassWord
 593 stdcall SetClipboardData(long long)
