@@ -645,6 +645,9 @@ BaseInitializeContext(IN PCONTEXT Context,
 
     /* Give it some room for the Parameter */
     Context->Sp -= sizeof(PVOID);
+#elif defined(_M_ARM64)
+    DPRINT1("Todo: implement win32 inital thread on arm64");
+    DbgBreakPoint();
 #else
 #warning Unknown architecture
     UNIMPLEMENTED;

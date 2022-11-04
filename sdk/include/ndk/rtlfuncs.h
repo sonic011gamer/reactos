@@ -4375,7 +4375,7 @@ RtlEnlargedUnsignedMultiply(
     return Product;
 }
 
-#if defined(_AMD64_) || defined(_IA64_)
+#if defined(_AMD64_) || defined(_IA64_) || defined(_ARM64_)
 static __inline
 LARGE_INTEGER
 NTAPI_INLINE
