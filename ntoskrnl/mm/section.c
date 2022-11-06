@@ -3795,7 +3795,7 @@ NtQuerySection(
             }
             else
             {
-                DPRINT1("Unimplemented code path!");
+                DPRINT("Unimplemented code path!");
             }
 
             _SEH2_TRY
