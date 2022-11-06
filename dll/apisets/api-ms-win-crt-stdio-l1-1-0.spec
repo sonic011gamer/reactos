@@ -48,7 +48,7 @@
 ;@ stub _fread_nolock
 ;@ stub _fread_nolock_s
 ;@ stub _fseek_nolock
-;@ stub _fseeki64
+@ stdcall _fseeki64() msvcrt._fseeki64
 ;@ stub _fseeki64_nolock
 @ stdcall _fsopen() msvcrt._fsopen
 ;@ stub _ftell_nolock

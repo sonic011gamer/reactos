@@ -584,7 +584,7 @@ GetAppliedGPOListA(
 )
 {
     DPRINT1("GetAppliedGPOListA is UNIMPLEMENTED!\n");
-    return ERROR_CALL_NOT_IMPLEMENTED;
+    return STATUS_SUCCESS;
 }
 
 DWORD
@@ -598,5 +598,5 @@ GetAppliedGPOListW(
 )
 {
     DPRINT1("GetAppliedGPOListW is UNIMPLEMENTED!\n");
-    return ERROR_CALL_NOT_IMPLEMENTED;
+    return STATUS_SUCCESS;
 }

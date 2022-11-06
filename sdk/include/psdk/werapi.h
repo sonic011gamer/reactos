@@ -112,13 +112,13 @@ typedef enum _WER_SUBMIT_RESULT
 
 /* #### */
 
-HRESULT WINAPI WerAddExcludedApplication(PCWSTR, BOOL);
+HRESULT WINAPI WerAddExcludedApplication(PCWSTR str, BOOL bool);
 HRESULT WINAPI WerRegisterFile(PCWSTR file, WER_REGISTER_FILE_TYPE regfiletype, DWORD flags);
-HRESULT WINAPI WerRemoveExcludedApplication(PCWSTR, BOOL);
-HRESULT WINAPI WerReportCloseHandle(HREPORT);
-HRESULT WINAPI WerReportCreate(PCWSTR, WER_REPORT_TYPE, PWER_REPORT_INFORMATION, HREPORT*);
-HRESULT WINAPI WerReportSetParameter(HREPORT, DWORD, PCWSTR, PCWSTR);
-HRESULT WINAPI WerReportSubmit(HREPORT, WER_CONSENT, DWORD, PWER_SUBMIT_RESULT);
+HRESULT WINAPI WerRemoveExcludedApplication(PCWSTR str, BOOL bool);
+HRESULT WINAPI WerReportCloseHandle(HREPORT report);
+HRESULT WINAPI WerReportCreate(PCWSTR str , WER_REPORT_TYPE repType, PWER_REPORT_INFORMATION pReportInformation, HREPORT *phReportHandle);
+HRESULT WINAPI WerReportSetParameter(HREPORT report, DWORD dword, PCWSTR str, PCWSTR strtwo);
+HRESULT WINAPI WerReportSubmit(HREPORT report, WER_CONSENT weconst, DWORD dword, PWER_SUBMIT_RESULT result);
 
 #ifdef __cplusplus
 }
