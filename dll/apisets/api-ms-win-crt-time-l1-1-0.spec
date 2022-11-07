@@ -5,10 +5,10 @@
 @ stdcall _Getmonths() msvcrt._Getmonths
 @ stdcall _Gettnames() msvcrt._Gettnames
 @ stdcall _Strftime() msvcrt._Strftime
-;@ stub _W_Getdays
-;@ stub _W_Getmonths
-;@ stub _W_Gettnames
-;@ stub _Wcsftime
+@ stdcall -stub _W_Getdays()
+@ stdcall -stub _W_Getmonths()
+@ stdcall -stub _W_Gettnames()
+@ stdcall  _Wcsftime() msvcrt.wcsftime
 ;@ stub __daylight
 ;@ stub __dstbias
 ;@ stub __timezone
@@ -16,18 +16,18 @@
 ;@ stub _ctime32
 ;@ stub _ctime32_s
 @ stdcall _ctime64() msvcrt._ctime64
-;@ stub _ctime64_s
-;@ stub _difftime32
-;@ stub _difftime64
+@ stdcall _ctime64_s() msvcrt._ctime64_s
+@ stdcall _difftime32() msvcrt._difftime32
+@ stdcall _difftime64() msvcrt._difftime64
 ;@ stub _ftime32
 ;@ stub _ftime32_s
 @ stdcall _ftime64() msvcrt._ftime64
-;@ stub _ftime64_s
+@ stdcall _ftime64_s() msvcrt._ftime64_s
 ;@ stub _futime32
 @ stdcall _futime64() msvcrt._futime64
 ;@ stub _get_daylight
 ;@ stub _get_dstbias
-;@ stub _get_timezone
+@ stdcall -stub _get_timezone(ptr)
 ;@ stub _get_tzname
 @ stdcall _getsystime() msvcrt._getsystime
 @ stdcall _gmtime32()

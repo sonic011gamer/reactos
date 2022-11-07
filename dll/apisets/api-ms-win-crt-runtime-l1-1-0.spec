@@ -15,7 +15,7 @@
 @ stdcall -arch=i386 __p__wpgmptr() msvcrt.__p__wpgmptr
 @ stdcall __pxcptinfoptrs() msvcrt.__pxcptinfoptrs
 ;@ stub __sys_errlist
-;@ stub __sys_nerr
+@ stub __sys_nerr
 @ stdcall __threadhandle() msvcrt.__threadhandle
 @ stdcall __threadid() msvcrt.__threadid
 @ stdcall __wcserror() msvcrt.__wcserror
@@ -31,7 +31,7 @@
 @ stdcall -arch=i386,x86_64 _control87() msvcrt._control87
 @ stdcall _controlfp() msvcrt._controlfp
 @ stdcall -version=0x600+ _controlfp_s() msvcrt._controlfp_s
-;@ stub _crt_at_quick_exit
+@ stdcall _crt_at_quick_exit() msvcrt._crt_at_quick_exit
 @ stdcall -version=0x600+ _crt_atexit() msvcrt._crt_atexit
 ;@ stub _crt_debugger_hook
 @ stdcall _endthread() msvcrt._endthread

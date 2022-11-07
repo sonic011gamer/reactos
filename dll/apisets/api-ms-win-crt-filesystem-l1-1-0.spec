@@ -18,12 +18,12 @@
 ;@ stub _fstat32
 ;@ stub _fstat32i64
 @ stdcall _fstat64() msvcrt._fstat64
-;@ stub _fstat64i32
+@ cdecl -stub _fstat64i32(long ptr)
 @ stdcall _fullpath() msvcrt._fullpath
 @ stdcall _getdiskfree() msvcrt._getdiskfree
 @ stdcall _getdrive() msvcrt._getdrive
 @ stdcall _getdrives() msvcrt._getdrives
-;@ stub _lock_file
+@ stdcall -stub _lock_file(ptr)
 @ stdcall _makepath() msvcrt._makepath
 ;@ stub _makepath_s
 @ stdcall _mkdir() msvcrt._mkdir
@@ -33,23 +33,23 @@
 ;@ stub _stat32
 ;@ stub _stat32i64
 @ stdcall _stat64() msvcrt._stat64
-;@ stub _stat64i32
+@ cdecl -stub  _stat64i32(ptr ptr)
 @ stdcall _umask() msvcrt._umask
 ;@ stub _umask_s
 @ stdcall _unlink() msvcrt._unlink
-;@ stub _unlock_file
+@ stdcall -stub _unlock_file(ptr)
 @ stdcall _waccess() msvcrt._waccess
-;@ stub _waccess_s
+@ stdcall _waccess_s() msvcrt._waccess_s
 @ stdcall _wchdir() msvcrt._wchdir
 @ stdcall _wchmod() msvcrt._wchmod
-;@ stub _wfindfirst32
-;@ stub _wfindfirst32i64
-;@ stub _wfindfirst64
-;@ stub _wfindfirst64i32
-;@ stub _wfindnext32
-;@ stub _wfindnext32i64
-;@ stub _wfindnext64
-;@ stub _wfindnext64i32
+@ cdecl -stub _wfindfirst32(ptr ptr)
+@ cdecl -stub _wfindfirst32i64(ptr ptr)
+@ cdecl -stub _wfindfirst64(ptr ptr)
+@ cdecl -stub _wfindfirst64i32(ptr ptr)
+@ cdecl -stub _wfindnext32(ptr ptr)
+@ cdecl -stub _wfindnext32i64(ptr ptr)
+@ cdecl -stub _wfindnext64(ptr ptr)
+@ cdecl -stub _wfindnext64i32(ptr ptr)
 @ stdcall _wfullpath() msvcrt._wfullpath
 @ stdcall _wmakepath() msvcrt._wmakepath
 @ stdcall -version=0x600+ _wmakepath_s() msvcrt._wmakepath_s

@@ -392,6 +392,7 @@
 @ cdecl -arch=i386 _adj_fptan()
 @ extern -arch=i386 _adjust_fdiv
 @ extern _aexit_rtn
+@ cdecl _except1(long long long long long ptr)
 @ cdecl _aligned_free(ptr)
 @ stub -version=0x600+ _aligned_free_dbg
 @ cdecl _aligned_malloc(long long)
@@ -403,9 +404,10 @@
 @ stub -version=0x600+ _aligned_offset_realloc_dbg
 @ cdecl _aligned_realloc(ptr long long)
 @ stub -version=0x600+ _aligned_realloc_dbg
+@ stdcall -stub strtoll(ptr ptr long)
 @ cdecl _amsg_exit(long)
 @ cdecl _assert(str str long)
-@ cdecl _atodbl(ptr str)
+@ cdecl -stub _atodbl(ptr str)
 @ stub -version=0x600+ _atodbl_l
 @ stub -version=0x600+ _atof_l
 @ stub -version=0x600+ _atoflt_l
@@ -451,7 +453,17 @@
 @ cdecl -version=0x600+ _controlfp_s(ptr long long)
 @ cdecl _copysign( double double )
 @ cdecl -arch=x86_64,arm _copysignf(long long)
+@ cdecl __conio_common_vcprintf(long ptr long)
+@ cdecl -stub __conio_common_vcprintf_p(long ptr long)
+@ cdecl -stub __conio_common_vcprintf_s(long ptr long)
+@ cdecl -stub __conio_common_vcscanf(long ptr long)
+@ cdecl __conio_common_vcwprintf(long ptr long) 
+@ cdecl -stub __conio_common_vcwprintf_p(long ptr long)
+@ cdecl -stub __conio_common_vcwprintf_s(long ptr long)
+@ cdecl -stub __conio_common_vcwscanf(long ptr long)
 @ varargs _cprintf(str)
+@ cdecl _crt_at_quick_exit(ptr)
+@ cdecl -stub atoll(ptr)
 @ stub -version=0x600+ _cprintf_l
 @ stub -version=0x600+ _cprintf_p
 @ stub -version=0x600+ _cprintf_p_l
@@ -1115,7 +1127,7 @@
 @ cdecl _ultoa(long ptr long)
 @ stub -version=0x600+ _ultoa_s
 @ cdecl _ultow(long ptr long)
-@ stub -version=0x600+ _ultow_s(long ptr long long)
+@ stdcall -stub -version=0x600+ _ultow_s(long ptr long long)
 @ cdecl _umask(long)
 @ stub -version=0x600+ _umask_s
 @ cdecl _ungetch(long)
@@ -1255,6 +1267,7 @@
 @ cdecl _wfindnexti64(long ptr)
 @ cdecl _wfopen(wstr wstr)
 @ cdecl -version=0x600+ _wfopen_s(ptr wstr wstr)
+@ cdecl _wdupenv_s(ptr ptr ptr) 
 @ cdecl _wfreopen(wstr wstr ptr)
 @ stub -version=0x600+ _wfreopen_s
 @ cdecl _wfsopen(wstr wstr long)
@@ -1283,7 +1296,7 @@
 @ stub -version=0x600+ _wprintf_p_l
 @ stub -version=0x600+ _wprintf_s_l
 @ cdecl _wputenv(wstr)
-@ stub -version=0x600+ _wputenv_s
+@ stdcall -version=0x600+ _wputenv_s()
 @ cdecl _wremove(wstr)
 @ cdecl _wrename(wstr wstr)
 @ cdecl _write(long ptr long)
@@ -1351,6 +1364,7 @@
 @ cdecl bsearch(ptr ptr long long ptr)
 @ stub -version=0x600+ bsearch_s
 @ stub -version=0x600+ btowc
+@ cdecl -stub -version=0x600+ strtof(ptr ptr)
 @ cdecl calloc(long long)
 @ cdecl ceil(double)
 @ cdecl -arch=x86_64,arm ceilf(long)
@@ -1569,8 +1583,8 @@
 @ cdecl -version=0x600+ vswprintf_s(ptr long wstr ptr)
 @ cdecl vwprintf(wstr ptr)
 @ stub -version=0x600+ vwprintf_s
-@ stub -version=0x600+ wcrtomb
-@ stub -version=0x600+ wcrtomb_s
+@ cdecl -version=0x600+ wcrtomb(ptr long ptr)
+@ cdecl -stub -version=0x600+ wcrtomb_s(ptr long ptr)
 @ cdecl wcscat(wstr wstr)
 @ cdecl -version=0x600+ wcscat_s(wstr long wstr)
 @ cdecl wcschr(wstr long)

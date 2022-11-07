@@ -256,24 +256,6 @@ DwmRegisterThumbnail(HWND dest, HWND src, PHTHUMBNAIL thumbnail_id)
     return E_NOTIMPL;
 }
 
-/**********************************************************************
- *           DwmGetCompositionTimingInfo         (DWMAPI.@)
- *           TODO: UNIMPLEMENTED
- *           Description:
- *           Parameters:
- *           Other notes:
- */
-HRESULT
-WINAPI
-DwmGetCompositionTimingInfo(HWND hwnd, DWM_TIMING_INFO *info)
-{
-    UNIMPLEMENTED;
-    static int i;
-
-    if(!i++) DPRINT("called, Parameters:(%p %p)\n", hwnd, info);
-
-    return E_NOTIMPL;
-}
 
 /**********************************************************************
  *           DwmAttachMilContent         (DWMAPI.@)

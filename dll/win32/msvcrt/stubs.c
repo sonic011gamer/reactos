@@ -3,6 +3,9 @@
 
 #undef UNIMPLEMENTED
 #define UNIMPLEMENTED __wine_spec_unimplemented_stub("msvcrt.dll", __FUNCTION__)
+#include <winbase.h>
+#include <stdlib.h>
+#include <debug.h>
 
 int CDECL __stdio_common_vsprintf_s( unsigned __int64 options,
         char *str, size_t count, const char *format,
@@ -33,13 +36,6 @@ __p__mbcasemap()
     return _mbcasemap;
 }
 
-int _atodbl(
-   void * value,
-   char * str)
-{
-    UNIMPLEMENTED;
-    return 0;
-}
 
 int _ismbbkprint(
    unsigned int c)
@@ -930,3 +926,196 @@ vsnprintf(
     UNIMPLEMENTED;
     return 0;
 }
+
+    // Define operation code values.
+    typedef enum
+    {
+        _FpCodeUnspecified,
+        _FpCodeAdd,
+        _FpCodeSubtract,
+        _FpCodeMultiply,
+        _FpCodeDivide,
+        _FpCodeSquareRoot,
+        _FpCodeRemainder,
+        _FpCodeCompare,
+        _FpCodeConvert,
+        _FpCodeRound,
+        _FpCodeTruncate,
+        _FpCodeFloor,
+        _FpCodeCeil,
+        _FpCodeAcos,
+        _FpCodeAsin,
+        _FpCodeAtan,
+        _FpCodeAtan2,
+        _FpCodeCabs,
+        _FpCodeCos,
+        _FpCodeCosh,
+        _FpCodeExp,
+        _FpCodeFabs,
+        _FpCodeFmod,
+        _FpCodeFrexp,
+        _FpCodeHypot,
+        _FpCodeLdexp,
+        _FpCodeLog,
+        _FpCodeLog10,
+        _FpCodeModf,
+        _FpCodePow,
+        _FpCodeSin,
+        _FpCodeSinh,
+        _FpCodeTan,
+        _FpCodeTanh,
+        _FpCodeY0,
+        _FpCodeY1,
+        _FpCodeYn,
+        _FpCodeLogb,
+        _FpCodeNextafter,
+        _FpCodeNegate,
+        _FpCodeFmin,         // XMMI
+        _FpCodeFmax,         // XMMI
+        _FpCodeConvertTrunc, // XMMI
+        _XMMIAddps,          // XMMI
+        _XMMIAddss,
+        _XMMISubps,
+        _XMMISubss,
+        _XMMIMulps,
+        _XMMIMulss,
+        _XMMIDivps,
+        _XMMIDivss,
+        _XMMISqrtps,
+        _XMMISqrtss,
+        _XMMIMaxps,
+        _XMMIMaxss,
+        _XMMIMinps,
+        _XMMIMinss,
+        _XMMICmpps,
+        _XMMICmpss,
+        _XMMIComiss,
+        _XMMIUComiss,
+        _XMMICvtpi2ps,
+        _XMMICvtsi2ss,
+        _XMMICvtps2pi,
+        _XMMICvtss2si,
+        _XMMICvttps2pi,
+        _XMMICvttss2si,
+        _XMMIAddsubps,       // XMMI for PNI
+        _XMMIHaddps,         // XMMI for PNI
+        _XMMIHsubps,         // XMMI for PNI
+        _XMMIRoundps,        // 66 0F 3A 08
+        _XMMIRoundss,        // 66 0F 3A 0A
+        _XMMIDpps,           // 66 0F 3A 40
+        _XMMI2Addpd,         // XMMI2
+        _XMMI2Addsd,
+        _XMMI2Subpd,
+        _XMMI2Subsd,
+        _XMMI2Mulpd,
+        _XMMI2Mulsd,
+        _XMMI2Divpd,
+        _XMMI2Divsd,
+        _XMMI2Sqrtpd,
+        _XMMI2Sqrtsd,
+        _XMMI2Maxpd,
+        _XMMI2Maxsd,
+        _XMMI2Minpd,
+        _XMMI2Minsd,
+        _XMMI2Cmppd,
+        _XMMI2Cmpsd,
+        _XMMI2Comisd,
+        _XMMI2UComisd,
+        _XMMI2Cvtpd2pi,   // 66 2D
+        _XMMI2Cvtsd2si,   // F2
+        _XMMI2Cvttpd2pi,  // 66 2C
+        _XMMI2Cvttsd2si,  // F2
+        _XMMI2Cvtps2pd,   // 0F 5A
+        _XMMI2Cvtss2sd,   // F3
+        _XMMI2Cvtpd2ps,   // 66
+        _XMMI2Cvtsd2ss,   // F2
+        _XMMI2Cvtdq2ps,   // 0F 5B
+        _XMMI2Cvttps2dq,  // F3
+        _XMMI2Cvtps2dq,   // 66
+        _XMMI2Cvttpd2dq,  // 66 0F E6
+        _XMMI2Cvtpd2dq,   // F2
+        _XMMI2Addsubpd,   // 66 0F D0
+        _XMMI2Haddpd,     // 66 0F 7C
+        _XMMI2Hsubpd,     // 66 0F 7D
+        _XMMI2Roundpd,    // 66 0F 3A 09
+        _XMMI2Roundsd,    // 66 0F 3A 0B
+        _XMMI2Dppd,       // 66 0F 3A 41
+    } _FP_OPERATION_CODE;
+
+double CDECL _except1(DWORD fpe, _FP_OPERATION_CODE op, double arg, double res, DWORD cw, void *unk)
+{
+    return 0;
+}
+
+#include <malloc.h>
+int CDECL _wdupenv_s(wchar_t **buffer, size_t *numberOfElements,
+                     const wchar_t *varname)
+{
+    wchar_t *e = NULL;
+    size_t sz;
+    sz = wcslen(e) + 1;
+    if (!(*buffer = malloc(sz * sizeof(wchar_t))))
+    {
+        if (numberOfElements) *numberOfElements = 0;
+        return *_errno() = ENOMEM;
+    }
+    wcscpy(*buffer, e);
+    if (numberOfElements) *numberOfElements = sz;
+    return 0;
+}
+
+errno_t CDECL _wputenv_s(const wchar_t *name, const wchar_t *value)
+{
+    errno_t ret = 0;
+
+    if (!SetEnvironmentVariableW(name, value[0] ? value : NULL))
+    {
+        /* _putenv returns success on deletion of nonexistent variable */
+        if (GetLastError() != ERROR_ENVVAR_NOT_FOUND)
+        {
+            ret = *_errno();
+        }
+    }
+
+    return ret;
+}
+
+int CDECL _crt_at_quick_exit(void (__cdecl *func)(void))
+{
+
+  return 0;
+ }
+
+/*********************************************************************
+ *      __conio_common_vcprintf (UCRTBASE.@)
+ */
+int CDECL __conio_common_vcprintf(unsigned __int64 options, const char* format,
+                                        _locale_t locale, va_list valist)
+{
+    DPRINT1("__conio_common_vcprintf: print attempt");
+   return 0;
+}
+
+/*********************************************************************
+ *      __conio_common_vcwprintf (UCRTBASE.@)
+ */
+int CDECL __conio_common_vcwprintf(unsigned __int64 options, const wchar_t* format,
+                                         _locale_t locale, va_list valist)
+{
+     DPRINT1("__conio_common_vcwprintf: print attempt");
+    return 0;
+}
+
+typedef struct _Mbstatet
+{ // state of a multibyte translation
+    unsigned long _Wchar;
+    unsigned short _Byte, _State;
+} _Mbstatet;
+
+typedef _Mbstatet mbstate_t;
+
+ size_t CDECL wcrtomb( char *dst, wchar_t ch, mbstate_t *s)
+ {
+
+     return wctomb(dst, ch);
+ }

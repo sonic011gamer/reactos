@@ -6,7 +6,7 @@
  */
 
 #include "dwmapi_private.h"
-//#define NDEBUG
+#define NDEBUG
 #include <debug.h>
 
 /**********************************************************************
@@ -33,7 +33,7 @@ DwmIsCompositionEnabled(_Out_ BOOL *enabled)
     }
 
     CompositionStatus = 0;
-    CompositionStatus = IsThreadDesktopComposited();
+//   CompositionStatus = IsThreadDesktopComposited();
 
     /* Cool if any value is returned that's not 0 let's just say composition */
     if (CompositionStatus > 0)
@@ -44,6 +44,58 @@ DwmIsCompositionEnabled(_Out_ BOOL *enabled)
 
     RtlZeroMemory(enabled,sizeof(BOOL));
     return STATUS_SUCCESS;
+}
+
+static int get_display_frequency(void)
+{
+    DEVMODEA mode;
+
+    memset(&mode, 0, sizeof(mode));
+    mode.dmSize = sizeof(mode);
+    if (EnumDisplaySettingsA(NULL, ENUM_CURRENT_SETTINGS, &mode))
+        return mode.dmDisplayFrequency;
+    else
+    {
+        DPRINT1("Failed to query display frequency, returning a fallback value.\n");
+        return 60;
+    }
+}
+
+/**********************************************************************
+ *           DwmGetCompositionTimingInfo         (DWMAPI.@)
+ *           TODO: UNIMPLEMENTED
+ *           Description:
+ *           Parameters:
+ *           Other notes:
+ */
+HRESULT
+WINAPI
+DwmGetCompositionTimingInfo(HWND hwnd, DWM_TIMING_INFO *info)
+{
+    LARGE_INTEGER performance_frequency;
+    static int i, display_frequency;
+
+    if (!info)
+        return E_INVALIDARG;
+
+    if (info->cbSize != sizeof(DWM_TIMING_INFO))
+        return MILERR_MISMATCHED_SIZE;
+
+    if(!i++) DPRINT1("FIXME: (%p %p)\n", hwnd, info);
+
+    memset(info, 0, info->cbSize);
+    info->cbSize = sizeof(DWM_TIMING_INFO);
+
+    display_frequency = get_display_frequency();
+    info->rateRefresh.uiNumerator = display_frequency;
+    info->rateRefresh.uiDenominator = 1;
+    info->rateCompose.uiNumerator = display_frequency;
+    info->rateCompose.uiDenominator = 1;
+
+    QueryPerformanceFrequency(&performance_frequency);
+    info->qpcRefreshPeriod = performance_frequency.QuadPart / display_frequency;
+
+    return S_OK;
 }
 
 /**********************************************************************

@@ -63,9 +63,9 @@
 ;@ stub _dscale
 ;@ stub _dsign
 ;@ stub _dsin
-;@ stub _dtest
+@ cdecl -stub _dtest(ptr)
 ;@ stub _dunscale
-;@ stub _except1
+@ stdcall _except1() msvcrt._except1
 ;@ stub _fd_int
 ;@ stub _fdclass
 ;@ stub _fdexp

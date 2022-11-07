@@ -100,7 +100,7 @@
 @ stdcall _wcreat() msvcrt._wcreat
 @ stdcall _wfdopen() msvcrt._wfdopen
 @ stdcall _wfopen() msvcrt._wfopen
-;@ stub _wfopen_s
+@ stdcall _wfopen_s() msvcrt._wfopen_s
 @ stdcall _wfreopen() msvcrt._wfreopen
 ;@ stub _wfreopen_s
 @ stdcall _wfsopen() msvcrt._wfsopen
@@ -111,7 +111,7 @@
 @ stdcall _write() msvcrt._write
 @ stdcall _wsopen() msvcrt._wsopen
 ;@ stub _wsopen_dispatch
-;@ stub _wsopen_s
+@ stdcall _wsopen_s() msvcrt._wsopen_s
 @ stdcall _wtempnam() msvcrt._wtempnam
 @ stdcall _wtmpnam() msvcrt._wtmpnam
 @ stdcall -version=0x600+ _wtmpnam_s() msvcrt._wtmpnam_s
