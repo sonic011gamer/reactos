@@ -68,7 +68,7 @@ HRESULT WINAPI EndBufferedPaint(HPAINTBUFFER hPaintBuffer, BOOL fUpdateTarget)
     return S_OK;
 }
 
-#ifndef __REACTOS__
+#if 1 //ifndef __REACTOS__
 
 /***********************************************************************
  *      BufferedPaintClear                                 (UXTHEME.@)
