@@ -344,6 +344,7 @@
 @ stdcall FreeUserPhysicalPages(long long long)
 @ stdcall GenerateConsoleCtrlEvent(long long)
 @ stdcall GetACP()
+@ stdcall -version=0x600+ GetActiveProcessorCount(long) kernel32_vista.GetActiveProcessorCount
 @ stdcall -version=0x600+ GetApplicationRecoveryCallback(ptr ptr ptr ptr ptr)
 @ stub -version=0x600+ GetApplicationRestartSettings
 @ stdcall GetAtomNameA(long ptr long)
@@ -504,6 +505,16 @@
 @ stdcall GetLogicalDriveStringsW(long ptr)
 @ stdcall GetLogicalDrives()
 @ stdcall GetLogicalProcessorInformation(ptr ptr)
+@ stdcall -version=0x601+ GetActiveProcessorGroupCount() kernel32_vista.GetActiveProcessorGroupCount
+@ stdcall -version=0x601+ GetLogicalProcessorInformationEx(ptr ptr ptr) kernel32_vista.GetLogicalProcessorInformationEx
+@ stdcall -version=0x601+ GetMaximumProcessorCount(long) kernel32_vista.GetMaximumProcessorCount
+@ stdcall -version=0x601+ GetMaximumProcessorGroupCount() kernel32_vista.GetMaximumProcessorGroupCount
+@ stdcall -version=0x601+ GetNumaAvailableMemoryNodeEx(long ptr) kernel32_vista.GetNumaAvailableMemoryNodeEx
+@ stdcall -version=0x601+ GetNumaNodeNumberFromHandle(long ptr) kernel32_vista.GetNumaNodeNumberFromHandle
+@ stdcall -version=0x601+ GetNumaNodeProcessorMaskEx(long ptr) kernel32_vista.GetNumaNodeProcessorMaskEx
+@ stdcall -version=0x601+ GetNumaProcessorNodeEx(ptr ptr) kernel32_vista.GetNumaProcessorNodeEx
+@ stdcall -version=0x601+ GetNumaProximityNodeEx(long ptr) kernel32_vista.GetNumaProximityNodeEx
+@ stdcall -version=0x601+ GetProcessGroupAffinity(long ptr ptr) kernel32_vista.GetProcessGroupAffinity
 @ stdcall GetLongPathNameA(str long long)
 @ stub -version=0x600+ GetLongPathNameTransactedA
 @ stub -version=0x600+ GetLongPathNameTransactedW

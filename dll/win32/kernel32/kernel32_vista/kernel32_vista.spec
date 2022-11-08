@@ -66,3 +66,16 @@
 @ stdcall   PowerCreateRequest(ptr)
 @ stdcall   PowerSetRequest(long long)
 @ stdcall   K32GetPerformanceInfo(ptr long)
+
+;SMP
+;@ stdcall GetActiveProcessorCount(long)
+;@ stdcall GetActiveProcessorGroupCount()
+;@ stdcall GetLogicalProcessorInformationEx(ptr ptr ptr)
+;@ stdcall GetMaximumProcessorCount(long)
+;@ stdcall GetMaximumProcessorGroupCount()
+;@ stdcall GetNumaAvailableMemoryNodeEx(long ptr)
+;@ stdcall GetNumaNodeNumberFromHandle(long ptr)
+;@ stdcall GetNumaNodeProcessorMaskEx(long ptr)
+;@ stdcall GetNumaProcessorNodeEx(ptr ptr)
+;@ stdcall GetNumaProximityNodeEx(long ptr)
+;@ stdcall GetProcessGroupAffinity(long ptr ptr)
