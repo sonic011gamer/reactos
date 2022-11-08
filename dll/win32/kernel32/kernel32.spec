@@ -706,9 +706,9 @@
 @ stub -version=0x600+ IdnToNameprepUnicode
 @ stub -version=0x600+ IdnToUnicode
 @ stdcall InitAtomTable(long)
-@ stub -version=0x600+ InitOnceBeginInitialize
-@ stub -version=0x600+ InitOnceComplete
-@ stdcall -version=0x600+ InitOnceExecuteOnce(ptr ptr ptr ptr)
+@ stdcall -version=0x600+ InitOnceBeginInitialize(ptr long ptr ptr) kernel32_vista.InitOnceBeginInitialize
+@ stdcall -version=0x600+ InitOnceComplete(ptr long ptr) kernel32_vista.InitOnceComplete
+@ stdcall -version=0x600+ InitOnceExecuteOnce(ptr ptr ptr ptr) kernel32_vista.InitOnceExecuteOnce
 @ stub -version=0x600+ InitOnceInitialize
 @ stdcall -version=0x600+ InitializeConditionVariable(ptr) ntdll.RtlInitializeConditionVariable
 @ stdcall InitializeCriticalSection(ptr)
