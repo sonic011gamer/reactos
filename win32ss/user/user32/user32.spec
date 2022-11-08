@@ -50,6 +50,7 @@
 49 stdcall CharToOemA(str ptr)
 50 stdcall CharToOemBuffA(str ptr long)
 51 stdcall CharToOemBuffW(wstr ptr long)
+@  stdcall -stub -version=0x600+ CheckDesktopByThreadId(ptr ptr)
 52 stdcall CharToOemW(wstr ptr)
 53 stdcall CharUpperA(str)
 54 stdcall CharUpperBuffA(str long)
@@ -67,6 +68,8 @@
 66 stdcall ClipCursor(ptr) NtUserClipCursor
 67 stdcall CloseClipboard() NtUserCloseClipboard
 68 stdcall CloseDesktop(long) NtUserCloseDesktop
+@  stub -version=0x601+ CloseGestureInfoHandle
+@  stub -version=0x601+ CloseTouchInputHandle
 69 stdcall CloseWindow(long)
 70 stdcall CloseWindowStation(long) NtUserCloseWindowStation
 71 stdcall CopyAcceleratorTableA(long ptr long)
@@ -165,6 +168,8 @@
 164 stdcall DispatchMessageA(ptr)
 165 stdcall DispatchMessageW(ptr)
 166 stdcall DisplayExitWindowsWarnings(long)
+@ stub -version=0x600+ DisplayConfigGetDeviceInfo
+@ stub -version=0x600+ DisplayConfigSetDeviceInfo
 167 stdcall DlgDirListA(long str long long long)
 168 stdcall DlgDirListComboBoxA(long ptr long long long)
 169 stdcall DlgDirListComboBoxW(long ptr long long long)
@@ -193,6 +198,10 @@
 192 stdcall DrawTextExA(long str long ptr long ptr)
 193 stdcall DrawTextExW(long wstr long ptr long ptr)
 194 stdcall DrawTextW(long wstr long ptr long)
+@   stdcall -version=0x601+ DwmGetDxSharedSurface(ptr ptr ptr ptr ptr ptr) user32_vista.DwmGetDxSharedSurface
+@   stdcall -stub -version=0x600+ DwmHintDxUpdate()
+@   stdcall -stub -version=0x600+ DwmStartRedirection(ptr ptr)
+@   stdcall -stub -version=0x600+ DwmStopRedirection()
 195 stdcall EditWndProc(long long long long) EditWndProcA
 196 stdcall EmptyClipboard() NtUserEmptyClipboard
 197 stdcall EnableMenuItem(long long long)
@@ -276,6 +285,7 @@
 # GetDbgTagFlags
 274 stdcall GetDesktopWindow()
 275 stdcall GetDialogBaseUnits()
+@   stdcall -stub -version=0x600+ GetDisplayConfigBufferSizes()
 276 stdcall GetDlgCtrlID(long)
 277 stdcall GetDlgItem(long long)
 278 stdcall GetDlgItemInt(long long ptr long)
@@ -284,6 +294,7 @@
 281 stdcall GetDoubleClickTime() NtUserGetDoubleClickTime
 282 stdcall GetFocus()
 283 stdcall GetForegroundWindow() NtUserGetForegroundWindow
+@   stdcall -stub -version=0x601+ GetGestureInfo()
 284 stdcall GetGUIThreadInfo(long ptr) NtUserGetGUIThreadInfo
 285 stdcall GetGuiResources(long long) NtUserGetGuiResources
 286 stdcall GetIconInfo(long ptr)
@@ -361,6 +372,7 @@
 358 stdcall GetThreadDesktop(long)
 359 stdcall GetTitleBarInfo(long ptr) NtUserGetTitleBarInfo
 360 stdcall GetTopWindow(long)
+@   stub -version=0x601+ GetTouchInputInfo
 361 stdcall GetUpdateRect(long ptr long)
 362 stdcall GetUpdateRgn(long long long)
 363 stdcall GetUserObjectInformationA(long long ptr long ptr)
@@ -368,6 +380,8 @@
 365 stdcall GetUserObjectSecurity (long ptr ptr long ptr)
 366 stdcall GetWinStationInfo(ptr)
 367 stdcall GetWindow(long long)
+@   stdcall -version=0x601+ GetWindowCompositionAttribute(ptr ptr) user32_vista.GetWindowCompositionAttribute
+@   stdcall -stub -version=0x601+ GetWindowCompositionInfo(long long)
 368 stdcall GetWindowContextHelpId(long)
 369 stdcall GetWindowDC(long) NtUserGetWindowDC
 370 stdcall GetWindowInfo(long ptr)
@@ -382,16 +396,19 @@
 377 stdcall GetWindowRect(long ptr)
 378 stdcall GetWindowRgn(long long)
 379 stdcall GetWindowRgnBox(long ptr)
+@   stdcall -stub -version=0x600+ GetWindowRgnEx()
 380 stdcall GetWindowTextA(long ptr long)
 381 stdcall GetWindowTextLengthA(long)
 382 stdcall GetWindowTextLengthW(long)
 383 stdcall GetWindowTextW(long ptr long)
 384 stdcall GetWindowThreadProcessId(long ptr)
 385 stdcall GetWindowWord(long long)
+@   stdcall -version=0x600+ GhostWindowFromHungWindow(ptr) user32_vista.GhostWindowFromHungWindow
 386 stdcall GrayStringA(long long ptr long long long long long long)
 387 stdcall GrayStringW(long long ptr long long long long long long)
 388 stdcall HideCaret(long) NtUserHideCaret
 389 stdcall HiliteMenuItem(long long long long) NtUserHiliteMenuItem
+@   stdcall -version=0x600+ HungWindowFromGhostWindow(ptr) user32_vista.HungWindowFromGhostWindow
 390 stdcall IMPGetIMEA(long ptr)
 391 stdcall IMPGetIMEW(long ptr)
 392 stdcall IMPQueryIMEA(ptr)
@@ -652,6 +669,7 @@
 645 stdcall SetUserObjectInformationW(long long ptr long) NtUserSetObjectInformation
 646 stdcall SetUserObjectSecurity(long ptr ptr)
 647 stdcall SetWinEventHook(long long long ptr long long long)
+@   stdcall -version=0x601+ SetWindowCompositionAttribute(ptr ptr) user32_vista.SetWindowCompositionAttribute
 648 stdcall SetWindowContextHelpId(long long)
 649 stdcall SetWindowLongA(long long long)
 @ stdcall -arch=x86_64,arm64 SetWindowLongPtrA(ptr long ptr)
@@ -709,8 +727,21 @@
 700 stdcall UnregisterClassA(str long)
 701 stdcall UnregisterClassW(wstr long)
 702 stdcall UnregisterDeviceNotification(long)
+@   stdcall -stub -version=0x600+ SfmDxBindSwapChain()
+@   stdcall -stub -version=0x600+ SfmDxOpenSwapChain()
+@   stdcall -stub -version=0x600+ SfmDxQuerySwapChainBindingStatus()
+@   stdcall -stub -version=0x600+ SfmDxReleaseSwapChain()
+@   stdcall -stub -version=0x600+ SfmDxReportPendingBindingsToDwm()
+@   stdcall -stub -version=0x600+ SfmDxSetSwapChainBindingStatus()
+@   stdcall -stub -version=0x600+ SfmDxSetSwapChainStats()
+@ stdcall -version=0x600+ CalculatePopupWindowPosition(ptr long long ptr ptr) user32_vista.CalculatePopupWindowPosition
+@ stdcall -version=0x600+ ChangeWindowMessageFilter(long long) user32_vista.ChangeWindowMessageFilter
+@ stdcall -version=0x600+ ChangeWindowMessageFilterEx(ptr long long ptr) user32_vista.ChangeWindowMessageFilterEx
 703 stdcall UnregisterHotKey(long long) NtUserUnregisterHotKey
 704 stdcall UnregisterMessagePumpHook()
+@   stdcall -version=0x600+ UnregisterPowerSettingNotification() user32_vista.UnregisterPowerSettingNotification
+@   stdcall -stub -version=0x600+ UnregisterSessionPort()
+@ stub -version=0x601+ UnregisterTouchWindow
 705 stdcall UnregisterUserApiHook() NtUserUnregisterUserApiHook
 706 stdcall UpdateLayeredWindow(long long ptr ptr long ptr long ptr long)
 707 stdcall UpdateLayeredWindowIndirect(long ptr)
@@ -748,3 +779,25 @@
 739 varargs wsprintfW(ptr wstr)
 740 stdcall wvsprintfA(ptr str ptr)
 741 stdcall wvsprintfW(ptr wstr ptr)
+1553 stdcall -stub -version=0x600+ UnknownOrdinal1()
+1554 stdcall -stub -version=0x600+ UnknownOrdinal2()
+2000 stdcall -stub -version=0x600+ UnknownOrdinal3()
+
+
+
+; Only vista+
+
+@   stdcall -version=0x600+ InternalGetWindowIcon(ptr long) user32_vista.InternalGetWindowIcon
+@   stdcall -version=0x600+ IsProcessDPIAware() user32_vista.IsProcessDPIAware
+@   stdcall -version=0x600+ IsThreadDesktopComposited() user32_vista.IsThreadDesktopComposited
+@   stdcall -version=0x601+ IsTopLevelWindow(ptr) user32_vista.IsTopLevelWindow
+@   stdcall -version=0x601+ IsTouchWindow(ptr long) user32_vista.IsTouchWindow
+@   stdcall -version=0x600+ IsWindowRedirectedForPrint(ptr) user32_vista.IsWindowRedirectedForPrint
+@   stdcall -version=0x600+ LogicalToPhysicalPoint(ptr ptr) user32_vista.LogicalToPhysicalPoint
+@   stdcall -version=0x600+ OpenThreadDesktop(long long long long) user32_vista.OpenThreadDesktop
+@   stdcall -version=0x600+ PaintMonitor() user32_vista.PaintMonitor
+@   stdcall -version=0x601+ QueryDisplayConfig() user32_vista.QueryDisplayConfig
+@   stdcall -version=0x601+ SetDisplayConfig() user32_vista.SetDisplayConfig
+@   stdcall -version=0x600+ RegisterErrorReportingDialog(long long) user32_vista.RegisterErrorReportingDialog
+@   stdcall -version=0x600+ RegisterFrostWindow(long long) user32_vista.RegisterFrostWindow
+@   stdcall -version=0x600+ RegisterGhostWindow(long long) user32_vista.RegisterGhostWindow
