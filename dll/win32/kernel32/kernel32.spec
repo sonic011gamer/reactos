@@ -1262,3 +1262,26 @@
 ;@ stdcall -arch=x86_64 uaw_wcsicmp(wstr wstr)
 ;@ stdcall -arch=x86_64 uaw_wcslen(wstr)
 ;@ stdcall -arch=x86_64 uaw_wcsrchr(wstr long)
+
+@ stdcall -version=0x600+ K32EnumDeviceDrivers(ptr long ptr) kernel32_vista.K32EnumDeviceDrivers
+@ stdcall -version=0x600+ K32EnumPageFilesA(ptr ptr) kernel32_vista.K32EnumPageFilesA
+@ stdcall -version=0x600+ K32EnumPageFilesW(ptr ptr) kernel32_vista.K32EnumPageFilesW
+@ stdcall -version=0x600+ K32EnumProcessModules(long ptr long ptr) kernel32_vista.K32EnumProcessModules
+@ stdcall -version=0x600+ K32EnumProcessModulesEx(long ptr long ptr long) kernel32_vista.K32EnumProcessModulesEx
+@ stdcall -version=0x600+ K32EnumProcesses(ptr long ptr) kernel32_vista.K32EnumProcesses
+@ stdcall -version=0x600+ K32GetDeviceDriverBaseNameA(ptr ptr long) kernel32_vista.K32GetDeviceDriverBaseNameA
+@ stdcall -version=0x600+ K32GetDeviceDriverBaseNameW(ptr ptr long) kernel32_vista.K32GetDeviceDriverBaseNameW
+@ stdcall -version=0x600+ K32GetDeviceDriverFileNameA(ptr ptr long) kernel32_vista.K32GetDeviceDriverFileNameA
+@ stdcall -version=0x600+ K32GetDeviceDriverFileNameW(ptr ptr long) kernel32_vista.K32GetDeviceDriverFileNameW
+@ stdcall -version=0x600+ K32GetModuleBaseNameA(long long ptr long) kernel32_vista.K32GetModuleBaseNameA
+@ stdcall -version=0x600+ K32GetModuleBaseNameW(long long ptr long) kernel32_vista.K32GetModuleBaseNameW
+@ stdcall -version=0x600+ K32GetModuleFileNameExA(long long ptr long) kernel32_vista.K32GetModuleFileNameExA
+@ stdcall -version=0x600+ K32GetModuleFileNameExW(long long ptr long) kernel32_vista.K32GetModuleFileNameExW
+@ stdcall -version=0x600+ K32GetModuleInformation(long long ptr long) kernel32_vista.K32GetModuleInformation
+@ stdcall -version=0x600+ K32GetProcessMemoryInfo(ptr ptr long) kernel32_vista.K32GetProcessMemoryInfo
+@ stdcall -version=0x600+ PowerClearRequest(long long) kernel32_vista.PowerClearRequest
+@ stdcall -version=0x600+ PowerCreateRequest(ptr) kernel32_vista.PowerCreateRequest
+@ stdcall -version=0x600+ PowerSetRequest(long long) kernel32_vista.PowerSetRequest
+@ stdcall -version=0x600+ K32GetPerformanceInfo(ptr long) kernel32_vista.K32GetPerformanceInfo
+@ stdcall -version=0x600+ K32QueryWorkingSet(ptr ptr long) kernel32_vista.K32QueryWorkingSet
+@ stdcall -version=0x600+ K32QueryWorkingSetEx(ptr ptr long) kernel32_vista.K32QueryWorkingSetEx
