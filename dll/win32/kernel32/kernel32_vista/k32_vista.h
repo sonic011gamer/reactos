@@ -12,11 +12,24 @@
 
 #define NTOS_MODE_USER
 #include <ndk/iofuncs.h>
-#include <ndk/kefuncs.h>
 #include <ndk/obfuncs.h>
 #include <ndk/psfuncs.h>
 #include <ndk/rtlfuncs.h>
-
+#include <ndk/cmfuncs.h>
+#include <ndk/exfuncs.h>
+#include <ndk/iotypes.h>
+#include <ndk/kdtypes.h>
+#include <ndk/kefuncs.h>
+#include <ndk/ketypes.h>
+#include <ndk/ldrfuncs.h>
+#include <ndk/mmfuncs.h>
+#include <ndk/mmtypes.h>
+#include <ndk/obfuncs.h>
+#include <ndk/psfuncs.h>
+#include <ndk/pstypes.h>
+#include <ndk/rtlfuncs.h>
+#include <ndk/setypes.h>
+#include <ndk/umfuncs.h>
 /* CSRSS Headers */
 #include <win/base.h>
 

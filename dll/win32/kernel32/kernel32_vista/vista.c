@@ -729,7 +729,7 @@ GetUserPreferredUILanguages(
 /*
  * @unimplemented
  */
-#if 0 // Tis is Windows 7+
+#if 1 // Tis is Windows 7+
 BOOL
 WINAPI
 SetProcessPreferredUILanguages(
@@ -757,5 +757,144 @@ SetThreadPreferredUILanguages(
     DPRINT1("%x %p %p\n", dwFlags, pwszLanguagesBuffer, pulNumLanguages);
     SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
     return FALSE;
+}
+
+#include <iotypes.h>
+
+/* Quick and dirty table for conversion */
+FILE_INFORMATION_CLASS ConvertToFileInfo[MaximumFileInfoByHandlesClass] =
+{
+    FileBasicInformation, FileStandardInformation, FileNameInformation, FileRenameInformation,
+    FileDispositionInformation, FileAllocationInformation, FileEndOfFileInformation, FileStreamInformation,
+    FileCompressionInformation, FileAttributeTagInformation, FileIdBothDirectoryInformation, (FILE_INFORMATION_CLASS)-1
+};
+
+
+/* Quick implementation, still going farther than Wine implementation */
+BOOL
+WINAPI
+SetFileInformationByHandle(HANDLE hFile,
+                           FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
+                           LPVOID lpFileInformation,
+                           DWORD dwBufferSize)
+{
+    NTSTATUS Status;
+    IO_STATUS_BLOCK IoStatusBlock;
+    FILE_INFORMATION_CLASS FileInfoClass;
+
+    FileInfoClass = (FILE_INFORMATION_CLASS)-1;
+
+    /* Attempt to convert the class */
+    if (FileInformationClass < MaximumFileInfoByHandlesClass)
+    {
+        FileInfoClass = ConvertToFileInfo[FileInformationClass];
+    }
+
+    /* If wrong, bail out */
+    if (FileInfoClass == -1)
+    {
+        SetLastError(ERROR_INVALID_PARAMETER);
+        return FALSE;
+    }
+
+    /* And set the information */
+    Status = NtSetInformationFile(hFile, &IoStatusBlock, lpFileInformation,
+                                  dwBufferSize, FileInfoClass);
+
+    if (!NT_SUCCESS(Status))
+    {
+        BaseSetLastNTError(Status);
+        return FALSE;
+    }
+
+    return TRUE;
+}
+
+
+typedef struct _PERFORMANCE_INFORMATION {
+	DWORD cb;
+	SIZE_T CommitTotal;
+	SIZE_T CommitLimit;
+	SIZE_T CommitPeak;
+	SIZE_T PhysicalTotal;
+	SIZE_T PhysicalAvailable;
+	SIZE_T SystemCache;
+	SIZE_T KernelTotal;
+	SIZE_T KernelPaged;
+	SIZE_T KernelNonpaged;
+	SIZE_T PageSize;
+	DWORD HandleCount;
+	DWORD ProcessCount;
+	DWORD ThreadCount;
+} PERFORMANCE_INFORMATION, *PPERFORMANCE_INFORMATION;
+
+
+/***********************************************************************
+ *         K32GetPerformanceInfo   (kernelbase.@)
+ */
+BOOL WINAPI K32GetPerformanceInfo( PPERFORMANCE_INFORMATION info, DWORD size )
+{
+    SYSTEM_PERFORMANCE_INFORMATION perf;
+    SYSTEM_BASIC_INFORMATION basic;
+    SYSTEM_PROCESS_INFORMATION *process, *spi;
+    DWORD info_size;
+    NTSTATUS status;
+
+    DPRINT1( "(%p, %d)\n", info, size );
+
+    if (size < sizeof(*info))
+    {
+        SetLastError( ERROR_BAD_LENGTH );
+        return FALSE;
+    }
+
+    status = NtQuerySystemInformation( SystemPerformanceInformation, &perf, sizeof(perf), NULL );
+    if (!NT_SUCCESS( status )) return FALSE;
+    status = NtQuerySystemInformation( SystemBasicInformation, &basic, sizeof(basic), NULL );
+    if (!NT_SUCCESS( status )) return FALSE;
+
+    info->cb                 = sizeof(*info);
+    info->CommitTotal        = perf.CommittedPages;
+    info->CommitLimit        = perf.CommitLimit;
+    info->CommitPeak         = perf.PeakCommitment;
+    info->PhysicalTotal      = basic.NumberOfPhysicalPages;
+    info->PhysicalAvailable  = perf.AvailablePages;
+    info->SystemCache        = 0;
+    info->KernelTotal        = perf.PagedPoolPages + perf.NonPagedPoolPages;
+    info->KernelPaged        = perf.PagedPoolPages;
+    info->KernelNonpaged     = perf.NonPagedPoolPages;
+    info->PageSize           = basic.PageSize;
+
+    /* fields from SYSTEM_PROCESS_INFORMATION */
+    NtQuerySystemInformation( SystemProcessInformation, NULL, 0, &info_size );
+    for (;;)
+    {
+        process = HeapAlloc( GetProcessHeap(), 0, info_size );
+        if (!process)
+        {
+            SetLastError( ERROR_OUTOFMEMORY );
+            return FALSE;
+        }
+        status = NtQuerySystemInformation( SystemProcessInformation, process, info_size, &info_size );
+        if (!status) break;
+        HeapFree( GetProcessHeap(), 0, process );
+        if (status != STATUS_INFO_LENGTH_MISMATCH)
+        {
+            SetLastError( RtlNtStatusToDosError( status ) );
+            return FALSE;
+        }
+    }
+    info->HandleCount = info->ProcessCount = info->ThreadCount = 0;
+    spi = process;
+    for (;;)
+    {
+        info->ProcessCount++;
+        info->HandleCount += spi->HandleCount;
+        info->ThreadCount += spi->NumberOfThreads;
+        if (spi->NextEntryOffset == 0) break;
+        spi = (SYSTEM_PROCESS_INFORMATION *)((char *)spi + spi->NextEntryOffset);
+    }
+    HeapFree( GetProcessHeap(), 0, process );
+    return TRUE;
 }
 
