@@ -2787,6 +2787,8 @@ typedef union _RTL_RUN_ONCE {
 typedef DWORD WINAPI RTL_RUN_ONCE_INIT_FN(PRTL_RUN_ONCE, PVOID, PVOID*);
 typedef RTL_RUN_ONCE_INIT_FN *PRTL_RUN_ONCE_INIT_FN;
 
+#if 0
+/* Sorry ehhh this definietion is a little awkward */
 NTSYSAPI
 DWORD
 WINAPI
@@ -2794,7 +2796,7 @@ RtlRunOnceComplete(
     PRTL_RUN_ONCE,
     DWORD,
     PVOID);
-
+#endif
 #endif
 
 #define RTL_CONDITION_VARIABLE_INIT {0}
