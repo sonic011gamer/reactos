@@ -40,3 +40,5 @@
 @ stdcall RegisterApplicationRestart(wstr long)
 @ stdcall SetFileBandwidthReservation(ptr long long long ptr ptr)
 @ stdcall SetThreadPreferredUILanguages(long wstr ptr)
+
+@ stdcall InitializeProcThreadAttributeList(ptr long long ptr)
