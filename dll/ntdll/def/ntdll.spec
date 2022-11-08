@@ -1111,7 +1111,7 @@
 @ stdcall -version=0x600+ RtlReleaseSRWLockExclusive(ptr)
 @ stdcall -version=0x600+ RtlReleaseSRWLockShared(ptr)
 @ stdcall RtlRemoteCall(ptr ptr ptr long ptr long long)
-@ stdcall -version=0x600+ RtlRemovePrivileges(ptr ptr long)
+@ stdcall -version=0x600+ RtlRemovePrivileges(ptr ptr long) ntdll_vista.RtlRemovePrivileges
 @ stdcall RtlRemoveVectoredContinueHandler(ptr)
 @ stdcall RtlRemoveVectoredExceptionHandler(ptr)
 @ stub -version=0x600+ RtlReportException
