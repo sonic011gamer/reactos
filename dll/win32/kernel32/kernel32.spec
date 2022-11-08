@@ -714,8 +714,8 @@
 @ stub -version=0x600+ InitializeConditionVariable
 @ stdcall InitializeCriticalSection(ptr)
 @ stdcall InitializeCriticalSectionAndSpinCount(ptr long)
-@ stub -version=0x600+ InitializeCriticalSectionEx
-@ stub -version=0x600+ InitializeProcThreadAttributeList
+@ stdcall -version=0x600+ InitializeCriticalSectionEx(ptr long long)
+@ stdcall -version=0x600+ InitializeProcThreadAttributeList(ptr long long ptr) kernel32_vista.InitializeProcThreadAttributeList
 @ stdcall InitializeSListHead(ptr) ntdll.RtlInitializeSListHead
 @ stub -version=0x600+ InitializeSRWLock
 @ stdcall -arch=i386 -ret64 InterlockedCompareExchange64(ptr double double) ntdll.RtlInterlockedCompareExchange64
