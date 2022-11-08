@@ -30,7 +30,7 @@
 @ stub _configure_wide_argv
 @ stdcall -arch=i386,x86_64 _control87() msvcrt._control87
 @ stdcall _controlfp() msvcrt._controlfp
-@ stub _controlfp_s
+@ stdcall _controlfp_s() msvcrt._controlfp_s
 @ stub _crt_at_quick_exit
 @ stub _crt_atexit
 @ stub _crt_debugger_hook
