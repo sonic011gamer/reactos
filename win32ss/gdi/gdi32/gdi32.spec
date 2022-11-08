@@ -377,7 +377,10 @@
 377 stdcall GetEnhMetaFileW(wstr)
 378 stdcall GetFontAssocStatus(ptr)
 379 stdcall GetFontData(long long long ptr long)
+@   stdcall -version=0x600+ GetFontFileData(long long int64 ptr long) gdi32_vista.GetFontFileData
+@   stdcall -version=0x600+ GetFontFileInfo(long long ptr long long) gdi32_vista.GetFontFileInfo
 380 stdcall GetFontLanguageInfo(long)
+@   stdcall -version=0x600+ GetFontRealizationInfo(ptr ptr) gdi32_vista.GetFontRealizationInfo
 381 stdcall GetFontResourceInfoW(str ptr ptr long)
 382 stdcall GetFontUnicodeRanges(ptr ptr) NtGdiGetFontUnicodeRanges
 383 stdcall GetGlyphIndicesA(long ptr long ptr long)
@@ -608,3 +611,29 @@
 608 stdcall bMakePathNameW(wstr wstr wstr long)
 609 stdcall cGetTTFFromFOT(long long long long long long long)
 610 stdcall gdiPlaySpoolStream(long long long long long long)
+
+1000 stdcall -stub -version=0x600+ UnknownOrdinal1()
+1001 stdcall -stub -version=0x600+ UnknownOrdinal2()
+1002 stdcall -stub -version=0x600+ UnknownOrdinal3()
+1003 stdcall -stub -version=0x600+ UnknownOrdinal4()
+1004 stdcall -stub -version=0x600+ UnknownOrdinal5()
+1005 stdcall -stub -version=0x601+ UnknownOrdinal6()
+1006 stdcall -stub -version=0x600+ UnknownOrdinal7()
+1007 stdcall -stub -version=0x600+ UnknownOrdinal8()
+1009 stdcall -stub -version=0x600+ UnknownOrdinal9()
+1010 stdcall -stub -version=0x600+ UnknownOrdinal10()
+1011 stdcall -stub -version=0x600+ UnknownOrdinal11()
+1032 stdcall -version=0x601+ BeginGdiRendering() gdi32_vista.BeginGdiRendering
+1057 stdcall -version=0x601+ CreateBitmapFromDxSurface() gdi32_vista.CreateBitmapFromDxSurface
+1058 stdcall -version=0x601+ CreateBitmapFromDxSurface2() gdi32_vista.CreateBitmapFromDxSurface2
+1157 stdcall -version=0x600+ D3DKMTSetProcessSchedulingPriorityClass(ptr ptr) gdi32_vista.D3DKMTSetProcessSchedulingPriorityClass
+1413 stdcall -version=0x601+ EndGdiRendering() gdi32_vista.EndGdiRendering
+; FIXME: Wine DX Dlls need these
+@ stdcall -version=0x600+ D3DKMTCloseAdapter(ptr) gdi32_vista.D3DKMTCloseAdapter
+@ stdcall D3DKMTCreateDCFromMemory(ptr) gdi32_vista.D3DKMTCreateDCFromMemory
+@ stdcall D3DKMTDestroyDCFromMemory(ptr) gdi32_vista.D3DKMTDestroyDCFromMemory
+@ stdcall -version=0x600+ D3DKMTGetPresentHistory(ptr) gdi32_vista.D3DKMTGetPresentHistory
+@ stdcall -version=0x600+ D3DKMTGetPresentQueueEvent(ptr ptr) gdi32_vista.D3DKMTGetPresentQueueEvent
+@ stdcall -version=0x600+ D3DKMTOpenAdapterFromGdiDisplayName(ptr) gdi32_vista.D3DKMTOpenAdapterFromGdiDisplayName
+@ stdcall -version=0x600+ D3DKMTOpenAdapterFromHdc(ptr) gdi32_vista.D3DKMTOpenAdapterFromHdc
+@ stdcall -version=0x600+ D3DKMTQueryAdapterInfo(ptr) gdi32_vista.D3DKMTQueryAdapterInfo
