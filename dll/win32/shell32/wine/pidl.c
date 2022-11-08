@@ -1478,7 +1478,7 @@ HRESULT WINAPI SHGetNameFromIDList(PCIDLIST_ABSOLUTE pidl, SIGDN sigdnName, PWST
     return ret;
 }
 
-#ifndef __REACTOS__
+#if 1// ifndef __REACTOS__
 
 /*************************************************************************
  * SHGetIDListFromObject             [SHELL32.@]
