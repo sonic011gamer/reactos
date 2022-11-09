@@ -636,7 +636,7 @@ GetFileMUIPath(
 /*
  * @unimplemented
  */
-#if 0 // This is Windows 7+
+#if 1// This is Windows 7+
 BOOL
 WINAPI
 GetProcessPreferredUILanguages(
@@ -681,6 +681,18 @@ GetThreadPreferredUILanguages(
     DPRINT1("%x %p %p %p\n", dwFlags, pulNumLanguages, pwszLanguagesBuffer, pcchLanguagesBuffer);
     SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
     return FALSE;
+}
+
+/******************************************************************************
+ *           ResolveLocaleName (KERNEL32.@)
+ */
+
+INT WINAPI ResolveLocaleName(LPCWSTR name, LPWSTR localename, INT len)
+{
+    //FIXME("stub: %s, %p, %d\n", wine_dbgstr_w(name), localename, len);
+
+    SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+    return 0;
 }
 
 /*

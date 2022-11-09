@@ -27,11 +27,11 @@
 @ stdcall _itoa() msvcrt._itoa
 @ stub _itoa_s
 @ stdcall _itow() msvcrt._itow
-@ stub _itow_s
+@ stdcall _itow_s() msvcrt._itow_s
 @ stdcall _ltoa() msvcrt._ltoa
 @ stub _ltoa_s
 @ stdcall _ltow() msvcrt._ltow
-@ stub _ltow_s
+@ stdcall _ltow_s() msvcrt._ltow_s
 @ stub _strtod_l
 @ stub _strtof_l
 @ stdcall _strtoi64() msvcrt._strtoi64
@@ -48,11 +48,11 @@
 @ stdcall _ui64toa() msvcrt._ui64toa
 @ stub _ui64toa_s
 @ stdcall _ui64tow() msvcrt._ui64tow
-@ stub _ui64tow_s
+@ stdcall -version=0x600+ _ui64tow_s() msvcrt._ui64tow_s
 @ stdcall _ultoa() msvcrt._ultoa
 @ stub _ultoa_s
 @ stdcall _ultow() msvcrt._ultow
-@ stub _ultow_s
+@ stdcall -version=0x600+ _ultow_s() msvcrt._ultow_s
 @ stub _wcstod_l
 @ stub _wcstof_l
 @ stdcall _wcstoi64() msvcrt._wcstoi64

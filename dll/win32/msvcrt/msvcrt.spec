@@ -965,8 +965,8 @@
 @ stub -version=0x600+ _snscanf_s_l
 @ varargs _snwprintf(ptr long wstr)
 @ stub -version=0x600+ _snwprintf_l
-@ stub -version=0x600+ _snwprintf_s
-@ stub -version=0x600+ _snwprintf_s_l
+@ stub -version=0x600+ _snwprintf_s ;FIXME: IMP
+@ stub -version=0x600+ _snwprintf_s_l ;FIXME: IMP
 @ varargs _snwscanf(wstr long wstr)
 @ stub -version=0x600+ _snwscanf_l
 @ stub -version=0x600+ _snwscanf_s
@@ -1038,7 +1038,7 @@
 @ stub -version=0x600+ _swprintf_c
 @ stub -version=0x600+ _swprintf_c_l
 @ stub -version=0x600+ _swprintf_p_l
-@ stub -version=0x600+ _swprintf_s_l
+@ stub -version=0x600+ _swprintf_s_l ;FIXME: IMP
 @ stub -version=0x600+ _swscanf_l
 @ stub -version=0x600+ _swscanf_s_l
 @ extern _sys_errlist
@@ -1065,7 +1065,7 @@
 @ cdecl _ultoa(long ptr long)
 @ stub -version=0x600+ _ultoa_s
 @ cdecl _ultow(long ptr long)
-@ stub -version=0x600+ _ultow_s
+@ stub -version=0x600+ _ultow_s ;FIXME: IMP
 @ cdecl _umask(long)
 @ stub -version=0x600+ _umask_s
 @ cdecl _ungetch(long)
@@ -1111,8 +1111,8 @@
 @ stub -version=0x600+ _vsnprintf_c
 @ stub -version=0x600+ _vsnprintf_c_l
 @ stub -version=0x600+ _vsnprintf_l
-@ stub -version=0x600+ _vsnprintf_s
-@ stub -version=0x600+ _vsnprintf_s_l
+@ stub -version=0x600+ _vsnprintf_s ;FIXME IMP
+@ stub -version=0x600+ _vsnprintf_s_l ;FIXME IMP
 @ cdecl _vsnwprintf(ptr long wstr ptr)
 @ stub -version=0x600+ _vsnwprintf_l
 @ stub -version=0x600+ _vsnwprintf_s
@@ -1126,7 +1126,7 @@
 @ stub -version=0x600+ _vswprintf_c_l
 @ stub -version=0x600+ _vswprintf_l
 @ stub -version=0x600+ _vswprintf_p_l
-@ stub -version=0x600+ _vswprintf_s_l
+@ stub -version=0x600+ _vswprintf_s_l ;FIXME: IMP
 @ stub -version=0x600+ _vwprintf_l
 @ stub -version=0x600+ _vwprintf_p
 @ stub -version=0x600+ _vwprintf_p_l
@@ -1253,7 +1253,7 @@
 @ cdecl _wspawnvp(long wstr ptr)
 @ cdecl _wspawnvpe(long wstr ptr ptr)
 @ cdecl _wsplitpath(wstr ptr ptr ptr ptr)
-@ stub -version=0x600+ _wsplitpath_s
+@ stub -version=0x600+ _wsplitpath_s ;FIXME IMP
 @ cdecl _wstat(wstr ptr)
 @ cdecl _wstat64(wstr ptr)
 @ cdecl _wstati64(wstr ptr)
@@ -1411,7 +1411,7 @@
 @ cdecl memchr(ptr long long)
 @ cdecl memcmp(ptr ptr long)
 @ cdecl memcpy(ptr ptr long)
-@ stub -version=0x600+ memcpy_s
+@ stub -version=0x600+ memcpy_s ;FIXME: IMP
 @ cdecl memmove(ptr ptr long)
 @ cdecl -version=0x600+ memmove_s(ptr long ptr long)
 @ cdecl memset(ptr long long)
@@ -1429,7 +1429,7 @@
 @ cdecl putwc(long ptr) fputwc
 @ cdecl putwchar(long) _fputwchar
 @ cdecl qsort(ptr long long ptr)
-@ stub -version=0x600+ qsort_s
+@ stub -version=0x600+ qsort_s ;TODO: IMP
 @ cdecl raise(long)
 @ cdecl rand()
 @ cdecl -version=0x600+ rand_s(ptr)
@@ -1449,7 +1449,7 @@
 @ cdecl sinh(double)
 @ cdecl -arch=x86_64,arm sinhf(long)
 @ varargs sprintf(ptr str)
-@ stub -version=0x600+ sprintf_s
+@ stub -version=0x600+ sprintf_s ;TODO: IMP
 @ cdecl sqrt(double)
 @ cdecl -arch=x86_64,arm sqrtf(long)
 @ cdecl srand(long)
@@ -1484,7 +1484,7 @@
 @ cdecl strtoul(str ptr long)
 @ cdecl strxfrm(ptr str long)
 @ varargs swprintf(ptr wstr)
-@ stub -version=0x600+ swprintf_s
+@ stub -version=0x600+ swprintf_s ;FIXME: IMP
 @ varargs swscanf(wstr wstr)
 @ stub -version=0x600+ swscanf_s
 @ cdecl system(str)
@@ -1514,7 +1514,7 @@
 @ cdecl vsprintf(ptr str ptr)
 @ stub -version=0x600+ vsprintf_s
 @ cdecl vswprintf(ptr wstr ptr)
-@ stub -version=0x600+ vswprintf_s
+@ stub -version=0x600+ vswprintf_s ;FIXME: IMP
 @ cdecl vwprintf(wstr ptr)
 @ stub -version=0x600+ vwprintf_s
 @ stub -version=0x600+ wcrtomb

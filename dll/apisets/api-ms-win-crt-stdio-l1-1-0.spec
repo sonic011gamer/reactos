@@ -4,24 +4,24 @@
 @ stub __acrt_iob_func
 @ stdcall -arch=i386 __p__commode() msvcrt.__p__commode
 @ stdcall -arch=i386 __p__fmode() msvcrt.__p__fmode
-@ stub __stdio_common_vfprintf
-@ stub __stdio_common_vfprintf_p
-@ stub __stdio_common_vfprintf_s
-@ stub __stdio_common_vfscanf
-@ stub __stdio_common_vfwprintf
-@ stub __stdio_common_vfwprintf_p
-@ stub __stdio_common_vfwprintf_s
-@ stub __stdio_common_vfwscanf
-@ stub __stdio_common_vsnprintf_s
-@ stub __stdio_common_vsnwprintf_s
-@ stub __stdio_common_vsprintf
-@ stub __stdio_common_vsprintf_p
-@ stub __stdio_common_vsprintf_s
-@ stub __stdio_common_vsscanf
-@ stub __stdio_common_vswprintf
-@ stub __stdio_common_vswprintf_p
-@ stub __stdio_common_vswprintf_s
-@ stub __stdio_common_vswscanf
+@ stub -version=0x600+ __stdio_common_vfprintf
+@ stub -version=0x600+ __stdio_common_vfprintf_p
+@ stub -version=0x600+ __stdio_common_vfprintf_s
+@ stub -version=0x600+ __stdio_common_vfscanf
+@ stub -version=0x600+ __stdio_common_vfwprintf
+@ stub -version=0x600+ __stdio_common_vfwprintf_p
+@ stub -version=0x600+ __stdio_common_vfwprintf_s
+@ stub -version=0x600+ __stdio_common_vfwscanf
+@ stub -version=0x600+ __stdio_common_vsnprintf_s
+@ stub -version=0x600+ __stdio_common_vsnwprintf_s
+@ stub -version=0x600+ __stdio_common_vsprintf
+@ stub -version=0x600+ __stdio_common_vsprintf_p
+@ stdcall -version=0x600+ __stdio_common_vsprintf_s() msvcrt.vsprintf_s
+@ stub -version=0x600+ __stdio_common_vsscanf
+@ stub -version=0x600+ __stdio_common_vswprintf
+@ stub -version=0x600+ __stdio_common_vswprintf_p
+@ stub -version=0x600+ __stdio_common_vswprintf_s
+@ stub -version=0x600+ __stdio_common_vswscanf
 @ stdcall _chsize() msvcrt._chsize
 @ stub _chsize_s
 @ stdcall _close() msvcrt._close

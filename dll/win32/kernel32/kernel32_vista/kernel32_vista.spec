@@ -66,7 +66,8 @@
 @ stdcall   PowerCreateRequest(ptr)
 @ stdcall   PowerSetRequest(long long)
 @ stdcall   K32GetPerformanceInfo(ptr long)
-
+@ stdcall GetProcessPreferredUILanguages(long ptr ptr ptr)
+@ stdcall ResolveLocaleName(ptr ptr long)
 ;SMP
 ;@ stdcall GetActiveProcessorCount(long)
 ;@ stdcall GetActiveProcessorGroupCount()

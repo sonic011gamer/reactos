@@ -581,6 +581,8 @@
 @ stdcall GetProcessVersion(long)
 @ stdcall GetProcessWorkingSetSize(long ptr ptr)
 @ stdcall GetProcessWorkingSetSizeEx(long ptr ptr long)
+@ stdcall ResolveLocaleName(ptr ptr long) kernel32_vista.ResolveLocaleName
+@ stdcall -version=0x600+ GetProcessPreferredUILanguages(long ptr ptr ptr) kernel32_vista.GetProcessPreferredUILanguages
 @ stdcall -version=0x600+ GetProductInfo() ntdll.RtlGetProductInfo
 @ stdcall GetProfileIntA(str str long)
 @ stdcall GetProfileIntW(wstr wstr long)

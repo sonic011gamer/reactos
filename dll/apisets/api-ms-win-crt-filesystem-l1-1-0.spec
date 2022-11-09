@@ -29,7 +29,7 @@
 @ stdcall _mkdir() msvcrt._mkdir
 @ stdcall _rmdir() msvcrt._rmdir
 @ stdcall _splitpath() msvcrt._splitpath
-@ stub _splitpath_s
+@ stdcall _splitpath_s() msvcrt._splitpath_s
 @ stub _stat32
 @ stub _stat32i64
 @ stdcall _stat64() msvcrt._stat64
@@ -58,7 +58,7 @@
 @ stdcall _wrename() msvcrt._wrename
 @ stdcall _wrmdir() msvcrt._wrmdir
 @ stdcall _wsplitpath() msvcrt._wsplitpath
-@ stub _wsplitpath_s
+@ stdcall -version=0x600+ _wsplitpath_s() msvcrt._wsplitpath_s
 @ stub _wstat32
 @ stub _wstat32i64
 @ stdcall _wstat64() msvcrt._wstat64
