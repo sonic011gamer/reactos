@@ -56,7 +56,7 @@
 @ stdcall _getdllprocaddr() msvcrt._getdllprocaddr
 @ stdcall _getpid() msvcrt._getpid
 @ stub _initialize_narrow_environment
-@ cdecl -stub -version=0xA00+ _initialize_onexit_table(ptr)
+@ cdecl -stub -version=0x600+ _initialize_onexit_table(ptr)
 @ stub _initialize_wide_environment
 @ stdcall _initterm() msvcrt._initterm
 @ cdecl -version=0x600+ _initterm_e(ptr ptr) msvcrt._initterm_e
