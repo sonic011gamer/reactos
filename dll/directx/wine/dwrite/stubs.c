@@ -13,6 +13,6 @@ HRESULT DWriteCreateFactory(
   PVOID          **factory
 )
 {
-    UNIMPLEMENTED;
-    return 0xC0000001L;
+
+  return E_FAIL;
 }

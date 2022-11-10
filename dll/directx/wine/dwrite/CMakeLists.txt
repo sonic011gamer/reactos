@@ -4,11 +4,8 @@ include_directories(${REACTOS_SOURCE_DIR}/sdk/include/reactos/wine)
 spec2def(dwrite.dll dwrite.spec ADD_IMPORTLIB)
 
 list(APPEND SOURCE
-    dwrite.c
+stubs.c
     )
-
-list(APPEND PCH_SKIP_SOURCE
-    stubs.c)
 
 add_library(dwrite MODULE
     ${SOURCE}

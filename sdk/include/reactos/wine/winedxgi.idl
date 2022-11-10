@@ -16,38 +16,19 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
+#pragma makedep header
+
 import "dxgi.idl";
-
-[
-    object,
-    local,
-    uuid(a07ad9ab-fb01-4574-8bfb-0a70a7373f04)
-]
-interface IWineDXGIFactory : IDXGIFactory
-{
-    struct wined3d *get_wined3d();
-}
-
-[
-    object,
-    local,
-    uuid(ab1de34c-2963-4ffd-8493-40f580e510e5)
-]
-interface IWineDXGIAdapter : IDXGIAdapter
-{
-    UINT get_ordinal();
-}
 
 [
     object,
     local,
     uuid(3e1ff30b-c951-48c3-b010-0fb49f3dca71)
 ]
-interface IWineDXGIDevice : IDXGIDevice
+interface IWineDXGIDevice : IDXGIDevice1
 {
-    struct wined3d_device *get_wined3d_device();
     HRESULT create_surface(
-        [in] const DXGI_SURFACE_DESC *desc,
+        [in] struct wined3d_texture *wined3d_texture,
         [in] DXGI_USAGE usage,
         [in] const DXGI_SHARED_RESOURCE *shared_resource,
         [in] IUnknown *outer,
@@ -55,6 +36,7 @@ interface IWineDXGIDevice : IDXGIDevice
     );
     HRESULT create_swapchain(
         [in] struct wined3d_swapchain_desc *desc,
+        [in] BOOL implicit,
         [out] struct wined3d_swapchain **wined3d_swapchain
     );
 }

@@ -7,6 +7,7 @@
 
 #ifndef _CSHELLLIBRARY_H_
 #define _CSHELLLIBRARY_H_
+DEFINE_GUID(CLSID_ShellLibrary, 0xd9b3211d, 0xe57f, 0x4426, 0xaa, 0xef, 0x30, 0xa8, 0x06, 0xad, 0xd3, 0x97);
 
 class CShellLibrary :
     public CComCoClass<CShellLibrary, &CLSID_ShellLibrary>,

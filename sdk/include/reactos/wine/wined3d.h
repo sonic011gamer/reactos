@@ -1752,6 +1752,7 @@ struct wined3d_resource_desc
     enum wined3d_resource_type resource_type;
     enum wined3d_format_id format;
     enum wined3d_multisample_type multisample_type;
+    unsigned int pool;
     unsigned int multisample_quality;
     unsigned int usage;
     unsigned int access;

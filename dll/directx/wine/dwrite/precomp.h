@@ -16,6 +16,7 @@
 #include <objbase.h>
 
 #include <wine/debug.h>
+#include "dwrite_private.h"
 
 typedef enum DWRITE_FACTORY_TYPE {
   DWRITE_FACTORY_TYPE_SHARED,

@@ -48,6 +48,8 @@ HRESULT WINAPI D3D10CreateDevice(IDXGIAdapter *adapter, D3D10_DRIVER_TYPE driver
 
     if (adapter)
     {
+        factory = NULL;
+        #if 0
         IDXGIAdapter_AddRef(adapter);
         hr = IDXGIAdapter_GetParent(adapter, &IID_IDXGIFactory, (void **)&factory);
         if (FAILED(hr))
@@ -55,16 +57,20 @@ HRESULT WINAPI D3D10CreateDevice(IDXGIAdapter *adapter, D3D10_DRIVER_TYPE driver
             WARN("Failed to get dxgi factory, returning %#x\n", hr);
             return hr;
         }
+        #endif
     }
     else
     {
+        hr = 0;
+        #if 0
         hr = CreateDXGIFactory(&IID_IDXGIFactory, (void **)&factory);
         if (FAILED(hr))
         {
             WARN("Failed to create dxgi factory, returning %#x\n", hr);
             return hr;
         }
-
+#endif
+        factory = NULL;
         switch(driver_type)
         {
             case D3D10_DRIVER_TYPE_HARDWARE:
@@ -122,7 +128,7 @@ HRESULT WINAPI D3D10CreateDevice(IDXGIAdapter *adapter, D3D10_DRIVER_TYPE driver
         }
     }
 
-    hr = (PVOID)D3D10CoreCreateDevice(factory, adapter, flags, NULL, device);
+    hr = (HRESULT)D3D10CoreCreateDevice(factory, adapter, flags, 0, device);
     IDXGIAdapter_Release(adapter);
     IDXGIFactory_Release(factory);
     if (FAILED(hr))
@@ -153,7 +159,8 @@ HRESULT WINAPI D3D10CreateDeviceAndSwapChain(IDXGIAdapter *adapter, D3D10_DRIVER
     }
 
     TRACE("Created ID3D10Device %p\n", *device);
-
+    dxgi_device = NULL;
+#if 0
     hr = ID3D10Device_QueryInterface(*device, &IID_IDXGIDevice, (void **)&dxgi_device);
     if (FAILED(hr))
     {
@@ -162,7 +169,7 @@ HRESULT WINAPI D3D10CreateDeviceAndSwapChain(IDXGIAdapter *adapter, D3D10_DRIVER
         *device = NULL;
         return hr;
     }
-
+#endif
     hr = IDXGIDevice_GetAdapter(dxgi_device, &adapter);
     IDXGIDevice_Release(dxgi_device);
     if (FAILED(hr))
@@ -172,7 +179,9 @@ HRESULT WINAPI D3D10CreateDeviceAndSwapChain(IDXGIAdapter *adapter, D3D10_DRIVER
         *device = NULL;
         return hr;
     }
-
+    factory = NULL;
+    hr = 0;
+#if 0
     hr = IDXGIAdapter_GetParent(adapter, &IID_IDXGIFactory, (void **)&factory);
     IDXGIAdapter_Release(adapter);
     if (FAILED(hr))
@@ -182,7 +191,7 @@ HRESULT WINAPI D3D10CreateDeviceAndSwapChain(IDXGIAdapter *adapter, D3D10_DRIVER
         *device = NULL;
         return hr;
     }
-
+#endif
     hr = IDXGIFactory_CreateSwapChain(factory, (IUnknown *)*device, swapchain_desc, swapchain);
     IDXGIFactory_Release(factory);
     if (FAILED(hr))
@@ -215,11 +224,12 @@ HRESULT WINAPI D3D10CreateEffectFromMemory(void *data, SIZE_T data_size, UINT fl
         return E_OUTOFMEMORY;
     }
 
-    object->ID3D10Effect_iface.lpVtbl = &d3d10_effect_vtbl;
+    object->ID3D10Effect_iface.lpVtbl = NULL;
     object->refcount = 1;
     ID3D10Device_AddRef(device);
     object->device = device;
-
+    hr = 0;
+#if 0
     hr = d3d10_effect_parse(object, data, data_size);
     if (FAILED(hr))
     {
@@ -227,7 +237,7 @@ HRESULT WINAPI D3D10CreateEffectFromMemory(void *data, SIZE_T data_size, UINT fl
         IUnknown_Release(&object->ID3D10Effect_iface);
         return hr;
     }
-
+#endif
     *effect = &object->ID3D10Effect_iface;
 
     TRACE("Created ID3D10Effect %p\n", object);
@@ -275,7 +285,8 @@ LPCSTR WINAPI D3D10GetPixelShaderProfile(ID3D10Device *device)
 }
 HRESULT WINAPI D3D10ReflectShader(const void *data, SIZE_T data_size, ID3D10ShaderReflection **reflector)
 {
-     struct d3d10_shader_reflection *object;
+#if 0
+    // struct d3d10_shader_reflection *object;
      
     FIXME("data %p, data_size %lu, reflector %p stub!\n", data, data_size, reflector);
 
@@ -290,8 +301,8 @@ HRESULT WINAPI D3D10ReflectShader(const void *data, SIZE_T data_size, ID3D10Shad
     object->refcount = 1;
 
     *reflector = &object->ID3D10ShaderReflection_iface;
-
-    TRACE("Created ID3D10ShaderReflection %p\n", object);
+#endif
+    TRACE("Created ID3D10ShaderReflection");
 
     return S_OK;
 }
