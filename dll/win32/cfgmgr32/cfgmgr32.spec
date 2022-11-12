@@ -40,7 +40,6 @@
 @ stdcall CM_Enumerate_Enumerators_ExA(long str ptr long long) setupapi.CM_Enumerate_Enumerators_ExA
 @ stdcall CM_Enumerate_Enumerators_ExW(long wstr ptr long long) setupapi.CM_Enumerate_Enumerators_ExW
 @ stub CM_Find_Range # setupapi.CM_Find_Range
-@ stdcall -stub -version=0x600+ CM_Get_DevNode_PropertyW(ptr long ptr ptr ptr long)
 @ stub CM_First_Range # setupapi.CM_First_Range
 @ stdcall CM_Free_Log_Conf(ptr long) setupapi.CM_Free_Log_Conf
 @ stdcall CM_Free_Log_Conf_Ex(ptr long ptr) setupapi.CM_Free_Log_Conf_Ex
@@ -195,6 +194,7 @@
 @ stdcall CM_Unregister_Device_InterfaceW(wstr long) setupapi.CM_Unregister_Device_InterfaceW
 @ stdcall CM_Unregister_Device_Interface_ExA(str long long) setupapi.CM_Unregister_Device_Interface_ExA
 @ stdcall CM_Unregister_Device_Interface_ExW(wstr long long) setupapi.CM_Unregister_Device_Interface_ExW
+@ stdcall -stub -version=0x600+ CM_Get_DevNode_PropertyW(long ptr ptr ptr ptr long)
 
 # Deprecated functions, they are not present in Win2003 SP1
 @ stub CM_Remove_Unmarked_Children # setupapi.CM_Remove_Unmarked_Children

@@ -62,7 +62,7 @@
 @ stdcall CloseEncryptedFileRaw(ptr)
 @ stdcall CloseEventLog(long)
 @ stdcall CloseServiceHandle(long)
-@ stub CloseTrace
+@ stdcall CloseTrace(long)
 @ stdcall CommandLineFromMsiDescriptor(wstr ptr ptr)
 @ stub ComputeAccessTokenFromCodeAuthzLevel
 @ stdcall ControlService(long long ptr)
@@ -217,9 +217,9 @@
 @ stdcall EqualDomainSid(ptr ptr ptr)
 @ stdcall EqualPrefixSid(ptr ptr)
 @ stdcall EqualSid(ptr ptr)
-@ stdcall -stub -version=0x600+ EventRegister(ptr ptr ptr ptr)
-@ stdcall -stub -version=0x600+ EventUnregister(ptr)
-@ stdcall -stub -version=0x600+ EventWrite(ptr ptr long ptr)
+@ stdcall -version=0x600+ EventRegister(ptr ptr ptr ptr)
+@ stdcall -version=0x600+ EventUnregister(ptr)
+@ stdcall -version=0x600+ EventWrite(ptr ptr long ptr)
 @ stdcall FileEncryptionStatusA(str ptr)
 @ stdcall FileEncryptionStatusW(wstr ptr)
 @ stdcall FindFirstFreeAce(ptr ptr)
