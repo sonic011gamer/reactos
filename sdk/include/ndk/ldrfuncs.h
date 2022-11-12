@@ -59,6 +59,11 @@ LdrEnumResources(
     _Out_writes_to_(*ResourceCount,*ResourceCount) LDR_ENUM_RESOURCE_INFO *Resources
 );
 
+/* FIXME FUCK */
+
+NTSTATUS
+NTAPI 
+LdrSetDefaultDllDirectories( ULONG flags );
 
 NTSTATUS
 NTAPI

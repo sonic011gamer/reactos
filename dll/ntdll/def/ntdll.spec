@@ -133,6 +133,7 @@
 @ stdcall KiUserCallbackDispatcher(ptr ptr long) ; CHECKME
 @ stdcall KiUserExceptionDispatcher(ptr ptr)
 @ stdcall -version=0x502 LdrAccessOutOfProcessResource(ptr ptr ptr ptr ptr)
+@ stdcall -version=0x601+ LdrSetDefaultDllDirectories(long) ntdll_vista.LdrSetDefaultDllDirectories
 @ stdcall LdrAccessResource(long ptr ptr ptr)
 @ stdcall -stub -version=0x600+ LdrAddLoadAsDataTable(ptr wstr long ptr)
 @ stdcall LdrAddRefDll(long ptr)

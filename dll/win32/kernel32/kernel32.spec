@@ -571,6 +571,7 @@
 @ stdcall GetProcessWorkingSetSize(long ptr ptr)
 @ stdcall GetProcessWorkingSetSizeEx(long ptr ptr long)
 @ stdcall -version=0x600+ GetProductInfo() ntdll.RtlGetProductInfo
+@ stdcall -version=0x601+ SetDefaultDllDirectories(long)
 @ stdcall GetProfileIntA(str str long)
 @ stdcall GetProfileIntW(wstr wstr long)
 @ stdcall GetProfileSectionA(str ptr long)
