@@ -216,3 +216,12 @@ cleanup:
 
     return result;
 }
+
+LONG WINAPI
+SHGetPropertyStoreForWindow(HWND   hwnd,
+                            REFIID riid,
+                            void   **ppv)
+{
+    UNIMPLEMENTED;
+    return S_OK;
+}

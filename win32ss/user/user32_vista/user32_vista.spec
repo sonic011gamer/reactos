@@ -1,6 +1,7 @@
 @ stdcall ChangeWindowMessageFilter(long long)
 @ stdcall ChangeWindowMessageFilterEx(long long long ptr)
 @ stdcall UnregisterPowerSettingNotification(ptr) 
+@ stdcall RegisterPowerSettingNotification(long long long)
 @ stdcall SetWindowCompositionAttribute(ptr ptr)
 @ stdcall CalculatePopupWindowPosition(ptr long long ptr ptr)
 @ stdcall DwmGetDxSharedSurface(ptr ptr ptr ptr ptr ptr)

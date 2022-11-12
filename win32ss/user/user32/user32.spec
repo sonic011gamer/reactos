@@ -642,6 +642,7 @@
 620 stdcall SetMessageExtraInfo(long)
 621 stdcall SetMessageQueue(long)
 622 stdcall SetParent(long long) NtUserSetParent
+@   stdcall -version=0x600+ SetProcessDPIAware() user32_vista.SetProcessDPIAware
 623 stdcall SetProcessDefaultLayout(long)
 624 stdcall SetProcessWindowStation(long) NtUserSetProcessWindowStation
 625 stdcall SetProgmanWindow (long)
@@ -740,7 +741,8 @@
 @   stdcall -version=0x600+ UnregisterPowerSettingNotification() user32_vista.UnregisterPowerSettingNotification
 @   stdcall -version=0x600+ RegisterPowerSettingNotification() user32_vista.RegisterPowerSettingNotification
 @   stdcall -stub -version=0x600+ UnregisterSessionPort()
-@ stub -version=0x601+ UnregisterTouchWindow
+@ stdcall -version=0x601+ UnregisterTouchWindow() user32_vista.UnregisterTouchWindow
+@ stdcall -version=0x601+ RegisterTouchWindow() user32_vista.RegisterTouchWindow
 705 stdcall UnregisterUserApiHook() NtUserUnregisterUserApiHook
 706 stdcall UpdateLayeredWindow(long long ptr ptr long ptr long ptr long)
 707 stdcall UpdateLayeredWindowIndirect(long ptr)
