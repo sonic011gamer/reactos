@@ -37,7 +37,7 @@
 @ stdcall _endthread() msvcrt._endthread
 @ stdcall _endthreadex() msvcrt._endthreadex
 @ stdcall _errno() msvcrt._errno
-@ cdecl -stub -version=0xA00+ _execute_onexit_table(ptr)
+@ cdecl -stub -version=0x600+ _execute_onexit_table(ptr)
 @ stdcall _exit() msvcrt._exit
 @ stdcall -arch=i386 _fpieee_flt() msvcrt._fpieee_flt
 @ stdcall -stub -arch=x86_64 _fpieee_flt() # ucrtbase._fpieee_flt (msvcrt x64 doesn't have this!)
@@ -67,10 +67,10 @@
 @ cdecl -stub -version=0x600+ _register_onexit_function(ptr ptr)
 @ stub _register_thread_local_exe_atexit_callback
 @ stdcall _resetstkoflw() msvcrt._resetstkoflw
-@ cdecl -version=0xA00+ _seh_filter_dll() msvcrt.__CppXcptFilter
-@ cdecl -version=0xA00+ _seh_filter_exe() msvcrt._XcptFilter
+@ cdecl -version=0x600+ _seh_filter_dll() msvcrt.__CppXcptFilter
+@ cdecl -version=0x600+ _seh_filter_exe() msvcrt._XcptFilter
 @ stub _set_abort_behavior
-@ stub _set_app_type
+@ stdcall -version=0x600+ _set_app_type() msvcrt.__set_app_type
 @ stub _set_controlfp
 @ stub _set_doserrno
 @ stub _set_errno

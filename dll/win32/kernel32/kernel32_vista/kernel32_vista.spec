@@ -45,7 +45,6 @@
 @ stdcall SetThreadPreferredUILanguages(long wstr ptr)
 
 @ stdcall InitializeProcThreadAttributeList(ptr long long ptr)
-
 @ stdcall   K32EnumDeviceDrivers(ptr long ptr)
 @ stdcall -stub K32EnumPageFilesA(ptr ptr)
 @ stdcall -stub K32EnumPageFilesW(ptr ptr)

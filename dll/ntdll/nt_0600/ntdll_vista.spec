@@ -15,3 +15,5 @@
 @ stdcall RtlRemovePrivileges(ptr ptr long)
 @ stdcall RtlGetProductInfo(long long long long ptr)
 @ stdcall LdrSetDefaultDllDirectories(long)
+@ stdcall RtlTryAcquireSRWLockExclusive(ptr)
+@ stdcall RtlTryAcquireSRWLockShared(ptr)

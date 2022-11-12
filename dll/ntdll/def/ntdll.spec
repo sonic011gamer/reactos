@@ -137,10 +137,13 @@
 @ stdcall LdrAccessResource(long ptr ptr ptr)
 @ stdcall -stub -version=0x600+ LdrAddLoadAsDataTable(ptr wstr long ptr)
 @ stdcall LdrAddRefDll(long ptr)
+@ stdcall -version=0x601+ -stub EtwEventSetInformation(int64 long ptr long)
 @ stdcall -version=0x502 LdrAlternateResourcesEnabled()
 @ stdcall -version=0x502 LdrCreateOutOfProcessImage(long ptr ptr ptr)
 @ stdcall -version=0x502 LdrDestroyOutOfProcessImage(ptr)
 @ stdcall LdrDisableThreadCalloutsForDll(long)
+@ stdcall -version=0x600+ RtlTryAcquireSRWLockExclusive(ptr) ntdll_vista.RtlTryAcquireSRWLockExclusive
+@ stdcall -version=0x600+ RtlTryAcquireSRWLockShared(ptr) ntdll_vista.RtlTryAcquireSRWLockShared
 @ stdcall LdrEnumResources(ptr ptr long ptr ptr)
 @ stdcall LdrEnumerateLoadedModules(long ptr long)
 @ stdcall -version=0x501-0x502 LdrFindCreateProcessManifest(long ptr ptr long ptr)

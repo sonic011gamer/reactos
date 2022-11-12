@@ -208,3 +208,10 @@ UnregisterPowerSettingNotification(HANDLE Handle) // HPOWERNOTIFY
     UNIMPLEMENTED;
     return TRUE;
 }
+
+BOOL UnregisterTouchWindow(
+   HWND hwnd
+)
+{
+    return TRUE;
+}

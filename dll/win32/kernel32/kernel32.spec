@@ -201,7 +201,7 @@
 @ stub -version=0x600+ DeleteFileTransactedA
 @ stub -version=0x600+ DeleteFileTransactedW
 @ stdcall DeleteFileW(wstr)
-@ stub -version=0x600+ DeleteProcThreadAttributeList
+@ stdcall -version=0x600+ DeleteProcThreadAttributeList(ptr)
 @ stdcall DeleteTimerQueue(long)
 @ stdcall DeleteTimerQueueEx(long long)
 @ stdcall DeleteTimerQueueTimer(long long long)
@@ -889,12 +889,14 @@
 @ stdcall QueryMemoryResourceNotification(ptr ptr)
 @ stdcall QueryPerformanceCounter(ptr)
 @ stdcall QueryPerformanceFrequency(ptr)
-@ stub -version=0x600+ QueryProcessAffinityUpdateMode
-@ stub -version=0x600+ QueryProcessCycleTime
-@ stub -version=0x600+ QueryThreadCycleTime
+@ stdcall -stub -version=0x600+ QueryProcessAffinityUpdateMode(ptr ptr)
+@ stdcall -stub -version=0x600+ QueryProcessCycleTime(long ptr)
+@ stdcall -stub -version=0x600+ QueryThreadCycleTime(long ptr)
+@ stdcall -stub -version=0x600+ QueryUnbiasedInterruptTime(ptr)
 @ stdcall QueueUserAPC(ptr long long)
 @ stdcall QueueUserWorkItem(ptr ptr long)
 @ stdcall -norelay RaiseException(long long long ptr)
+@ stdcall -stub RaiseFailFastException(ptr ptr long)
 @ stdcall ReOpenFile(ptr long long long)
 @ stdcall ReadConsoleA(long ptr long ptr ptr)
 @ stdcall ReadConsoleInputA(long ptr long ptr)
@@ -1136,6 +1138,8 @@
 @ stdcall Toolhelp32ReadProcessMemory(long ptr ptr long ptr)
 @ stdcall TransactNamedPipe(long ptr long ptr long ptr ptr)
 @ stdcall TransmitCommChar(long long)
+@ stdcall -version=0x600+ TryAcquireSRWLockExclusive(ptr) ntdll_vista.RtlTryAcquireSRWLockExclusive
+@ stdcall -version=0x600+ TryAcquireSRWLockShared(ptr) ntdll_vista.RtlTryAcquireSRWLockShared
 @ stdcall TryEnterCriticalSection(ptr) ntdll.RtlTryEnterCriticalSection
 @ stub -version=0x600+ TrySubmitThreadpoolCallback
 @ stdcall TzSpecificLocalTimeToSystemTime(ptr ptr ptr)
@@ -1151,7 +1155,7 @@
 @ stdcall UnregisterWait(long)
 @ stdcall UnregisterWaitEx(long long)
 @ stub -version=0x600+ UpdateCalendarDayOfWeek
-@ stub -version=0x600+ UpdateProcThreadAttribute
+@ stdcall -version=0x600+ UpdateProcThreadAttribute(ptr long long ptr)
 @ stdcall UpdateResourceA(long str str long ptr long)
 @ stdcall UpdateResourceW(long wstr wstr long ptr long)
 @ stdcall VDMConsoleOperation(long long)
@@ -1298,4 +1302,4 @@
 @ stdcall -version=0x600+ PowerSetRequest(long long) kernel32_vista.PowerSetRequest
 @ stdcall -version=0x600+ K32GetPerformanceInfo(ptr long) kernel32_vista.K32GetPerformanceInfo
 @ stdcall -version=0x600+ K32QueryWorkingSet(ptr ptr long) kernel32_vista.K32QueryWorkingSet
-@ stdcall -version=0x600+ K32QueryWorkingSetEx(ptr ptr long) kernel32_vista.K32QueryWorkingSetEx
+@ stdcall -version=0x600+ K32QueryWorkingSetEx(ptr ptr long)
