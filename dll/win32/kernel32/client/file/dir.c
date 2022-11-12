@@ -964,3 +964,16 @@ Cleanup:
 }
 
 /* EOF */
+
+
+
+/* THIS IS NOT FUCKING OKAY */
+/*
+ * @implemented
+ */
+BOOL
+WINAPI
+SetDefaultDllDirectories(DWORD DirectoryFlags)
+{
+    return LdrSetDefaultDllDirectories( DirectoryFlags );
+}

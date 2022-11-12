@@ -14,3 +14,4 @@
 @ stdcall RtlRunOnceExecuteOnce(ptr ptr ptr ptr)
 @ stdcall RtlRemovePrivileges(ptr ptr long)
 @ stdcall RtlGetProductInfo(long long long long ptr)
+@ stdcall LdrSetDefaultDllDirectories(long)

@@ -584,6 +584,7 @@
 @ stdcall ResolveLocaleName(ptr ptr long) kernel32_vista.ResolveLocaleName
 @ stdcall -version=0x600+ GetProcessPreferredUILanguages(long ptr ptr ptr) kernel32_vista.GetProcessPreferredUILanguages
 @ stdcall -version=0x600+ GetProductInfo() ntdll.RtlGetProductInfo
+@ stdcall -version=0x601+ SetDefaultDllDirectories(long)
 @ stdcall GetProfileIntA(str str long)
 @ stdcall GetProfileIntW(wstr wstr long)
 @ stdcall GetProfileSectionA(str ptr long)
