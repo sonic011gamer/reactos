@@ -1,0 +1,1 @@
+@ stdcall BluetoothGATTGetServices(ptr long long ptr long)

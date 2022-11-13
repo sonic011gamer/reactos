@@ -16,4 +16,5 @@
 @ stdcall RtlGetProductInfo(long long long long ptr)
 @ stdcall LdrSetDefaultDllDirectories(long)
 @ stdcall RtlTryAcquireSRWLockExclusive(ptr)
+@ stdcall EtwEventSetInformation(int64 long ptr long)
 @ stdcall RtlTryAcquireSRWLockShared(ptr)
