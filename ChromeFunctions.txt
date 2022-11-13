@@ -12,18 +12,12 @@ ResolveLocaleName
 TryAcquireSRWLockExclusive
 
 ;SHELL32
-SHGetKnownFolderPath
 SHGetPropertyStoreForWindow
-SHOpenWithDialog
-SHQueryUserNotificationState
 
 ;USER32
-GetDisplayConfigBufferSizes
-QueryDisplayConfig
+
 DisplayConfigGetDeviceInfo
 RegisterTouchWindow
-RegisterPowerSettingNotification
-UnregisterPowerSettingNotification
 CloseTouchInputHandle
 
 ;ESENT
@@ -42,13 +36,6 @@ CM_Get_DevNode_PropertyW
 SetDiGetDevicePropertyW
 
 MISSING DLLS:
-;DWMAPI
-DwmExtendFrameIntoClientArea
-DwmSetWindowAttribute
-DwmGetWindowAttribute
-DwmDefWindowProc
-DwmIsCompositionEnabled
-DwmGetCompositionTimingInfo
 
 ;DWRITE
 DWriteCreateFactory
