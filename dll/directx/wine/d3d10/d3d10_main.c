@@ -24,7 +24,7 @@
 #include "wine/port.h"
 
 #include "d3d10_private.h"
-
+#include <debug.h>
 WINE_DEFAULT_DEBUG_CHANNEL(d3d10);
 
 /* At process attach */
@@ -64,6 +64,8 @@ HRESULT WINAPI D3D10CreateDevice(IDXGIAdapter *adapter, D3D10_DRIVER_TYPE driver
 {
     IDXGIFactory *factory;
     HRESULT hr;
+    DPRINT1("D3D10CreateDevice: Function Entry");
+    __debugbreak();
 
     if (adapter)
     {
