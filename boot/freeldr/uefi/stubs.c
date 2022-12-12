@@ -16,7 +16,12 @@ DriveMapGetBiosDriveNumber(PCSTR DeviceName)
     return 0;
 }
 #endif
+#ifndef _M_ARM
+VOID StallExecutionProcessor(ULONG Microseconds)
+{
 
+}
+#endif
 VOID
 NTAPI
 KeStallExecutionProcessor(ULONG Microseconds)
@@ -146,3 +151,10 @@ UefiInitializeFileSystemSupport(_In_ EFI_HANDLE ImageHandle,
 {
 
 }
+#ifndef _M_ARM
+VOID
+UefiArchSpecificSetup()
+{
+
+}
+#endif

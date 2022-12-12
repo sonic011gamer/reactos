@@ -10,8 +10,9 @@
 #ifndef __cplusplus
 #error ERROR: This file is only supported in C++ compilations!
 #endif
-
+#ifndef _M_ARM
 #include <xmmintrin.h>
+#endif
 #include <assert.h>
 #include <ivec.h>
 #include <crtdefs.h>

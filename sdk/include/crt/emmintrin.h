@@ -12,8 +12,9 @@
 #define _INCLUDED_EMM
 
 #include <crtdefs.h>
+#ifndef _M_ARM
 #include <xmmintrin.h>
-
+#endif
 #if defined(_MSC_VER) && !defined(__clang__)
 
 typedef union _DECLSPEC_INTRIN_TYPE _CRT_ALIGN(16) __m128i
