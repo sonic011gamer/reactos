@@ -22,6 +22,14 @@ UCHAR UiSelectedTextBgColor = COLOR_GRAY;
 CHAR  UiTimeText[260] = "Seconds until highlighted choice will be started automatically:";
 
 /* FUNCTIONS ******************************************************************/
+/*
+ * FillArea()
+ * This function assumes coordinates are zero-based
+ */
+VOID TuiFillArea(ULONG Left, ULONG Top, ULONG Right, ULONG Bottom, CHAR FillChar, UCHAR Attr /* Color Attributes */)
+{
+
+}
 
 BOOLEAN
 UiInitialize(IN BOOLEAN ShowUi)
@@ -161,3 +169,4 @@ UiDisplayMenu(
 }
 
 #endif // _M_ARM
+ 

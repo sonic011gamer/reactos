@@ -199,10 +199,12 @@ MiniTuiDrawMenu(
     /* No GUI status bar text, just minimal text. Show the menu header. */
     if (MenuInfo->MenuHeader)
     {
+        #ifndef _M_ARM
         UiVtbl.DrawText(0,
                         MenuInfo->Top - 2,
                         MenuInfo->MenuHeader,
                         ATTR(UiMenuFgColor, UiMenuBgColor));
+        #endif
     }
 
     /* Draw the menu box */
@@ -213,7 +215,7 @@ MiniTuiDrawMenu(
     {
         TuiDrawMenuItem(MenuInfo, i);
     }
-
+        #ifndef _M_ARM
     /* Now tell the user how to choose */
     UiVtbl.DrawText(0,
                     MenuInfo->Bottom + 1,
@@ -232,7 +234,7 @@ MiniTuiDrawMenu(
                         MenuInfo->MenuFooter,
                         ATTR(UiMenuFgColor, UiMenuBgColor));
     }
-
+#endif
     /* Display the boot options if needed */
     if (MenuInfo->ShowBootOptions)
     {
