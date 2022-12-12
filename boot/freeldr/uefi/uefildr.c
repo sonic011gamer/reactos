@@ -30,6 +30,9 @@ EfiEntry(
     _In_ EFI_HANDLE ImageHandle,
     _In_ EFI_SYSTEM_TABLE *SystemTable)
 {
+    /* Debugger pre-initialization */
+    DebugInit(0);
+
 
     if(UefiMachInit(ImageHandle, SystemTable) != EFI_SUCCESS)
     {
