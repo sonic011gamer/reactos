@@ -21,15 +21,7 @@ VOID
 NTAPI
 KeStallExecutionProcessor(ULONG Microseconds)
 {
-    StallExecutionProcessor(Microseconds);
 }
-
-VOID
-StallExecutionProcessor(ULONG Microseconds)
-{
-
-}
-
 USHORT
 __cdecl PxeCallApi(USHORT Segment, USHORT Offset, USHORT Service, VOID* Parameter)
 {

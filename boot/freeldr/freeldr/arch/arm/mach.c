@@ -83,3 +83,9 @@ FrLdrBugCheckWithMessage(
     va_end(argptr);
     for (;;);
 }
+
+VOID 
+StallExecutionProcessor(ULONG Microseconds)
+{
+
+}
