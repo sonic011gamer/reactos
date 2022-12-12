@@ -152,14 +152,16 @@ UefiMemGetMemoryMap(ULONG *MemoryMapSize)
         {
             case EfiConventionalMemory:
             {
-                    FreeldrEntryCount = AddMemoryDescriptor(FreeldrMem,
+            FreeldrEntryCount = AddMemoryDescriptor(FreeldrMem,
                                             EntryCount,
                                             (MapEntry->PhysicalStart / PAGE_SIZE),
                                             MapEntry->NumberOfPages,
                                             LoaderFree);
+             //   UefiSetMemory(FreeldrMem, (MapEntry->PhysicalStart / PAGE_SIZE), (MapEntry->NumberOfPages * PAGE_SIZE), EntryCount, LoaderFree);
             }
             default:
             {
+              //  UefiSetMemory(FreeldrMem, (MapEntry->PhysicalStart / PAGE_SIZE), (MapEntry->NumberOfPages * MM_PAGE_SIZE), EntryCount, LoaderReserve);
             }
         }
         MapEntry = NEXT_MEMORY_DESCRIPTOR(MapEntry, MapOutput.DescriptorSize);
