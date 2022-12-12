@@ -332,7 +332,7 @@ BOOLEAN MmInitializeMemoryManager(VOID)
     TRACE("System Memory Map (Base Address, Length, Type):\n");
     while ((MemoryDescriptor = ArcGetMemoryDescriptor(MemoryDescriptor)) != NULL)
     {
-        printf("%x\t %x\t %s\n",
+        TRACE("%x\t %x\t %s\n",
             MemoryDescriptor->BasePage * MM_PAGE_SIZE,
             MemoryDescriptor->PageCount * MM_PAGE_SIZE,
             MmGetSystemMemoryMapTypeString(MemoryDescriptor->MemoryType));
@@ -349,7 +349,7 @@ BOOLEAN MmInitializeMemoryManager(VOID)
         // If we get here then we probably couldn't
         // find a contiguous chunk of memory big
         // enough to hold the page lookup table
-        printf("Error initializing memory manager!\n");
+        TRACE("Error initializing memory manager!\n");
         return FALSE;
     }
 
@@ -363,7 +363,7 @@ BOOLEAN MmInitializeMemoryManager(VOID)
 
     MmInitializeHeap(PageLookupTableAddress);
 
-    printf("Memory Manager initialized. 0x%x pages available.\n", FreePagesInLookupTable);
+    TRACE("Memory Manager initialized. 0x%x pages available.\n", FreePagesInLookupTable);
 
 
     return TRUE;
