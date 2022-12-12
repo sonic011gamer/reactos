@@ -60,12 +60,6 @@ ULONG LenBits[] =
 /* FUNCTIONS ******************************************************************/
 
 VOID
-StallExecutionProcessor(ULONG Microseconds)
-{
-    /* nothing for now */
-}
-
-VOID
 FrLdrCheckCpuCompatibility(VOID)
 {
     /* Nothing for now */

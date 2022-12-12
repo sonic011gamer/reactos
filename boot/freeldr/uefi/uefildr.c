@@ -42,6 +42,11 @@ EfiEntry(
         UiMessageBoxCritical("Unable to initialize UI.");
         goto Quit;
     }
+    
+    for(;;)
+    {
+        
+    }
 
     /* Initialize memory manager */
     if (!MmInitializeMemoryManager())
@@ -56,6 +61,7 @@ Quit:
     return 0;
 }
 
+#ifndef _M_ARM
 VOID
 Reboot()
 {
@@ -65,7 +71,7 @@ Reboot()
 
     }
 }
-
+#endif
 // We need to emulate these, because the original ones don't work in freeldr
 // These functions are here, because they need to be in the main compilation unit
 // and cannot be in a library.

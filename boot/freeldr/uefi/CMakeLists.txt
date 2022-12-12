@@ -70,7 +70,6 @@ list(APPEND FREELDR_BOOTMGR_SOURCE
     ../freeldr/ui/video.c)
 
 list(APPEND FREELDR_ARC_SOURCE
-    ../freeldr/lib/fs/pxe.c
     stubs.c
     utils.c
     uefiacpi.c
@@ -82,6 +81,7 @@ list(APPEND FREELDR_BASE_ASM_SOURCE)
 
 if(ARCH STREQUAL "i386")
     list(APPEND FREELDR_ARC_SOURCE
+        ../freeldr/lib/fs/pxe.c
         ../freeldr/arch/i386/i386bug.c)
     list(APPEND FREELDR_BASE_ASM_SOURCE)
         #../freeldr/arch/i386/multiboot.S)
@@ -99,6 +99,7 @@ if(ARCH STREQUAL "i386")
         ../freeldr/ntldr/headless.c)
 elseif(ARCH STREQUAL "amd64")
     list(APPEND FREELDR_ARC_SOURCE
+        ../freeldr/lib/fs/pxe.c
         ../freeldr/arch/i386/i386bug.c)
     list(APPEND FREELDR_COMMON_ASM_SOURCE
         arch/amd64/misc.S
@@ -110,6 +111,9 @@ elseif(ARCH STREQUAL "amd64")
     list(APPEND FREELDR_NTLDR_SOURCE
             ../freeldr/ntldr/arch/amd64/winldr.c)
 elseif(ARCH STREQUAL "arm")
+        list(APPEND FREELDR_ARC_SOURCE
+            ../freeldr/arch/arm/mach.c
+            arch/arm/armsetup.c)
         list(APPEND FREELDR_NTLDR_SOURCE
             ../freeldr/ntldr/arch/arm/winldr.c)
 elseif(ARCH STREQUAL "arm64")
@@ -173,7 +177,7 @@ endif()
 add_executable(uefildr ${UEFILDR_BASE_SOURCE})
 
 if(MSVC)
-    target_link_options(uefildr PRIVATE /DYNAMICBASE:NO /NXCOMPAT:NO /ignore:4078 /ignore:4254 /DRIVER)
+    target_link_options(uefildr PRIVATE /NXCOMPAT:NO /ignore:4078 /ignore:4254 /DRIVER)
     # We don't need hotpatching
     remove_target_compile_option(uefildr "/hotpatch")
 else()

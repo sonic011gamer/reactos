@@ -10,6 +10,7 @@
 #include <debug.h>
 
 EFI_GUID EfiGraphicsOutputProtocol = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
 EFI_SYSTEM_TABLE * GlobalSystemTable;
 EFI_HANDLE GlobalImageHandle;
 
@@ -28,13 +29,13 @@ UefiMachInit(_In_ EFI_HANDLE ImageHandle,
         return Status;
 
     /* Setup GOP */
-    EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
     Status = SystemTable->BootServices->LocateProtocol(&EfiGraphicsOutputProtocol, 0, (void**)&gop);
     if (Status != EFI_SUCCESS)
         return Status;
 
     UefiInitalizeVideo(ImageHandle, SystemTable, gop);
     UefiConsSetCursor(0,0);
+    UefiArchSpecificSetup();
 
     /* Setup vtbl */
     RtlZeroMemory(&MachVtbl, sizeof(MachVtbl));

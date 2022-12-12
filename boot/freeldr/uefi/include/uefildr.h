@@ -21,3 +21,6 @@
 #include <GlobalVariable.h>
 #include <debug.h>
 #include <machuefi.h>
+
+VOID
+UefiArchSpecificSetup();
