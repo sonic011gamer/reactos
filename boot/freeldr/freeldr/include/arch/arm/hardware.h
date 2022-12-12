@@ -34,8 +34,6 @@ extern ULONG gDiskReadBuffer, gFileSysBuffer;
 
 #define DriveMapGetBiosDriveNumber(DeviceName) 0
 
-VOID StallExecutionProcessor(ULONG Microseconds);
-
 FORCEINLINE VOID Reboot(VOID)
 {
     DbgBreakPoint();
