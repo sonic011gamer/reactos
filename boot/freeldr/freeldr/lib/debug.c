@@ -20,9 +20,9 @@
 #include <freeldr.h>
 #include <debug.h>
 
-#if DBG && !defined(_M_ARM)
+#if DBG
 
-// #define DEBUG_ALL
+#define DEBUG_ALL
 // #define DEBUG_WARN
 // #define DEBUG_ERR
 // #define DEBUG_INIFILE
@@ -188,19 +188,23 @@ VOID DebugInit(IN ULONG_PTR FrLdrSectionId)
     }
 
 Done:
+#ifndef _M_ARM
     /* Try to initialize the port; if it fails, remove the corresponding flag */
     if (DebugPort & RS232)
     {
         if (!Rs232PortInitialize(ComPort, BaudRate))
             DebugPort &= ~RS232;
     }
+#else
+    DebugPort &= ~RS232;
+#endif
 }
 
 VOID DebugPrintChar(UCHAR Character)
 {
     if (Character == '\n')
         DebugStartOfLine = TRUE;
-
+#ifndef _M_ARM
     if (DebugPort & RS232)
     {
         if (Character == '\n')
@@ -216,6 +220,12 @@ VOID DebugPrintChar(UCHAR Character)
     {
         MachConsPutChar(Character);
     }
+#else
+        if (Character == '\n')
+            ARMWriteToUART('\r');
+
+       ARMWriteToUART(Character);
+#endif
 }
 
 ULONG

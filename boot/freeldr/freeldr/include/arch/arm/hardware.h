@@ -64,4 +64,9 @@ typedef enum _ARM_DOMAIN
     ManagerDomain
 } ARM_DOMAIN;
 
+#define QEMUUART 0x09000000
+
+VOID
+ARMWriteToUART(UCHAR Data);
+
 #define PDE_SHIFT 20
