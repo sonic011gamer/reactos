@@ -18,7 +18,10 @@
 #include <debug.h>
 
 #define RVA(m, b) ((PVOID)((ULONG_PTR)(b) + (ULONG_PTR)(m)))
-
+#ifdef _M_ARM
+extern long* RelocThumb();
+ULONG_PTR AsmAddr;
+#endif
 /* FUNCTIONS *****************************************************************/
 
 FORCEINLINE
@@ -444,6 +447,13 @@ LdrProcessRelocationBlockLongLong(
 
         case IMAGE_REL_BASED_HIGHADJ:
         case IMAGE_REL_BASED_MIPS_JMPADDR:
+#ifdef _M_ARM
+        case IMAGE_REL_BASED_THUMB_MOV32:
+            LongPtr = (PULONG)RVA(Address, Offset);
+            AsmAddr = *LongPtr;
+            *LongPtr = SWAPD(*RelocThumb()) + (Delta & 0xFFFFFFFF);
+            break;
+#endif
         default:
             DPRINT1("Unknown/unsupported fixup type %hu.\n", Type);
             DPRINT1("Address %p, Current %u, Count %u, *TypeOffset %x\n",
