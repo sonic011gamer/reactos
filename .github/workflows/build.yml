@@ -176,9 +176,21 @@ jobs:
     - name: Build base module
       if: ${{ matrix.arch == 'arm' }}
       run: cmake --build build --target base/all
-    - name: Build control panel applets
+    - name: Build Dlls
       if: ${{ matrix.arch == 'arm' }}
-      run: cmake --build build --target dll/cpl/all
+      run: cmake --build build --target dll/all
+    - name: Build win32ss
+      if: ${{ matrix.arch == 'arm' }}
+      run: cmake --build build --target win32ss/all
+    - name: Build drivers
+      if: ${{ matrix.arch == 'arm' }}
+      run: cmake --build build --target drivers/all
+    - name: Build hals
+      if: ${{ matrix.arch == 'arm' }}
+      run: cmake --build build --target hal/all
+    - name: Build subsystems
+      if: ${{ matrix.arch == 'arm' }}
+      run: cmake --build build --target subsystems/all
     - name: Build rosapps
       if: ${{ matrix.arch == 'arm' }}
       run: cmake --build build --target modules/rosapps/all
