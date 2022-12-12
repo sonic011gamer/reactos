@@ -352,7 +352,7 @@ VOID RunLoader(VOID)
         UiMessageBoxCritical("Unable to initialize UI.");
         return;
     }
-
+    
     OperatingSystemList = InitOperatingSystemList(SectionId,
                                                   &OperatingSystemCount,
                                                   &DefaultOperatingSystem);

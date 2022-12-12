@@ -1,11 +1,14 @@
+
 #include <uefildr.h>
 
 
 #include <debug.h>
-//DBG_DEFAULT_CHANNEL(WARNING);
+DBG_DEFAULT_CHANNEL(WARNING);
 extern EFI_SYSTEM_TABLE * GlobalSystemTable;
 extern EFI_HANDLE GlobalImageHandle;
 
+#define TAG_HW_RESOURCE_LIST    'lRwH'
+#define TAG_HW_DISK_CONTEXT     'cDwH'
 typedef struct tagDISKCONTEXT
 {
     UCHAR DriveNumber;
@@ -18,7 +21,7 @@ typedef struct tagDISKCONTEXT
 UCHAR FrldrBootDrive;
 ULONG FrldrBootPartition;
 SIZE_T DiskReadBufferSize;
-PVOID DiskReadBuffer;
+void* DiskReadBuffer;
 PVOID Buffer;
 UINT64* LoaderFileSize;
 
@@ -75,7 +78,7 @@ UefiDiskOpen(CHAR *Path, OPENMODE OpenMode, ULONG *FileId)
         return EINVAL;
     if (SectorSize != Geometry.BytesPerSector)
     {
-        printf("SectorSize (%lu) != Geometry.BytesPerSector (%lu), expect problems!\n",
+        TRACE("SectorSize (%lu) != Geometry.BytesPerSector (%lu), expect problems!\n",
             SectorSize, Geometry.BytesPerSector);
     }
     SectorOffset = 0;
@@ -91,7 +94,7 @@ UefiDiskOpen(CHAR *Path, OPENMODE OpenMode, ULONG *FileId)
     Context->SectorCount = SectorCount;
     Context->SectorNumber = 0;
     FsSetDeviceSpecific(*FileId, Context);
-    printf("UefiDiskOpen : Sucess\r\n");
+    TRACE("UefiDiskOpen : Sucess\r\n");
     return ESUCCESS;
 }
 
@@ -212,20 +215,20 @@ UefiSetupBlockDevices()
     status = GlobalSystemTable->BootServices->HandleProtocol(handles[i], &bioGuid, (void **) &bio);
     /* if unsuccessful, skip and go over to the next device */
     if (EFI_ERROR(status) || bio == NULL || bio->Media->BlockSize==0){
-            printf("Failed");
+            TRACE("Failed");
             continue;
         }
         else{
-            printf("Sucess!, Block size: %d\r\n", bio->Media->BlockSize);
+            TRACE("Sucess!, Block size: %d\r\n", bio->Media->BlockSize);
         }
     }
 
-    status = GlobalSystemTable->BootServices->HandleProtocol(handles[1], &bioGuid, (void **) &bio);
+    status = GlobalSystemTable->BootServices->HandleProtocol(handles[3], &bioGuid, (void **) &bio);
 
     /* Read the MBR */
     if (!MachDiskReadLogicalSectors(0, 0ULL, 1, DiskReadBuffer))
     {
-        printf("Reading MBR failed\n");
+        TRACE("Reading MBR failed\n");
 
     }
 
@@ -241,11 +244,11 @@ UefiSetupBlockDevices()
         Checksum += Buffer[i];
     }
     Checksum = ~Checksum + 1;
-    printf("Checksum: %x\n", Checksum);
+    TRACE("Checksum: %x\n", Checksum);
     ValidPartitionTable = (Mbr->MasterBootRecordMagic == 0xAA55);
     if (Mbr->MasterBootRecordMagic == 0xAA55)
     {
-        printf("Detected MBR disk");
+        TRACE("Detected MBR disk");
     }
 
     /* Fill out the ARC disk block */
@@ -312,7 +315,7 @@ UefiSetBootpath()
         /* This is a hard disk */
         if (!UefiGetBootPartitionEntry(FrldrBootDrive, &PartitionEntry, &BootPartition))
         {
-            printf("Failed to get boot partition entry\n");
+            TRACE("Failed to get boot partition entry\n");
             return FALSE;
         }
 

@@ -176,7 +176,7 @@ EFI_STATUS Status;
 VOID
 UefiPrepareForReactOS(VOID)
 {
-    printf("UefiPrepareForReactOS: Exiting BootServices...");
+    printf("UefiPrepareForReactOS: Exiting BootServices...\r");
 	MapOutput = PUEFI_LoadMemoryMap();
 	Status = 0;
 	MapKeyLoc = MapOutput.MapKey;
