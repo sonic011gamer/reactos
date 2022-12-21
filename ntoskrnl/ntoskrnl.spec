@@ -71,7 +71,7 @@
 @ stub -version=0x600+ EmClientRuleRegisterNotification ;FIXME
 @ stdcall -stub -version=0x600+ EmProviderDeregister()
 @ stub -version=0x600+ EmProviderDeregisterEntry ;FIXME
-@ stdcall -stub -version=0x600+ EmProviderRegister()
+@ stdcall -stub -version=0x600+ EmProviderRegister(ptr ptr)
 @ stub -version=0x600+ EmProviderRegisterEntry ;FIXME
 @ stdcall -stub -version=0x600+ EtwActivityIdControl(long long)
 @ stdcall -stub -version=0x600+ EtwEnableTrace(long long long ptr double)
@@ -1171,6 +1171,19 @@
 @ stdcall RtlCheckRegistryKey(long wstr)
 @ stdcall RtlClearAllBits(ptr)
 @ stdcall RtlClearBit(ptr long)
+@ stdcall -stub -version=0x600+ RtlFindClosestEncodableLength(long ptr)
+@ stdcall -stub -version=0x600+ RtlIoDecodeMemIoResource(ptr ptr ptr ptr)
+@ stdcall -stub -version=0x600+ RtlIoEncodeMemIoResource(ptr long long long long long)
+@ stdcall -stub -version=0x600+ WheaAddErrorSource(ptr ptr)
+@ stdcall -stub -version=0x600+ IoRequestDeviceEjectEx(ptr)
+@ stdcall -stub -version=0x600+ WheaReportHwError(ptr)
+@ stdcall -stub -version=0x600+ NtGetEnvironmentVariableEx(ptr)
+@ stdcall -stub -version=0x600+ NtQueryEnvironmentVariableInfoEx(ptr)
+@ stdcall -stub -version=0x600+ WheaGetErrorSource(ptr ptr)
+@ stdcall -version=0x600+ IoSetDevicePropertyData(ptr ptr long long long long ptr)
+@ stdcall -version=0x600+ IoGetDevicePropertyData(ptr ptr long long long ptr ptr ptr)
+@ stdcall -stub -version=0x600+ WheaRegisterErrSrcInitializer(ptr)
+@ stdcall -stub -version=0x600+ RtlCmEncodeMemIoResource(ptr long long long)
 @ stdcall RtlClearBits(ptr long long)
 @ stub -version=0x600+ RtlCmDecodeMemIoResource
 @ stdcall RtlCompareMemory(ptr ptr long)

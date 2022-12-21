@@ -326,7 +326,7 @@ ExInitializeLookasideListEx(PLOOKASIDE_LIST_EX Lookaside,
                             USHORT Depth)
 {
     UNIMPLEMENTED;
-    return STATUS_NOT_IMPLEMENTED;
+    return STATUS_SUCCESS;
 }
 
 VOID
