@@ -743,5 +743,16 @@ EngDeviceIoControl(
 
     return Status;
 }
+typedef UINT D3DKMT_HANDLE;
+typedef UINT  D3DDDI_VIDEO_PRESENT_SOURCE_ID;
+typedef struct _D3DKMT_OPENADAPTERFROMLUID
+{
+    LUID            AdapterLuid;
+    D3DKMT_HANDLE   hAdapter;
+} D3DKMT_OPENADAPTERFROMLUID;
 
+NTSTATUS WINAPI NtGdiDdDDIOpenAdapterFromLuid( D3DKMT_OPENADAPTERFROMLUID *desc )
+{
+    return STATUS_SUCCESS;
+}
 /* EOF */

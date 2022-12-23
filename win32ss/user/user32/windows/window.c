@@ -207,7 +207,7 @@ User32CreateWindowEx(DWORD dwExStyle,
     HANDLE pCtx = NULL;
     DWORD dwFlagsVer;
 
-#if 0
+#if 1
     DbgPrint("[window] User32CreateWindowEx style %d, exstyle %d, parent %d\n", dwStyle, dwExStyle, hWndParent);
 #endif
 

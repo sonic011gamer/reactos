@@ -1020,7 +1020,7 @@
 @ stdcall PfxRemovePrefix(ptr ptr)
 @ stdcall PoCallDriver(ptr ptr)
 @ stdcall PoCancelDeviceNotify(ptr)
-@ stdcall -stub -version=0x600+ PoDisableSleepStates()
+@ stdcall -version=0x600+ PoDisableSleepStates()
 @ stdcall -version=0x600+ PoGetSystemWake(ptr)
 @ stdcall PoQueueShutdownWorkItem(ptr)
 @ stdcall -stub -version=0x600+ PoReenableSleepStates()

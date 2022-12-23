@@ -197,7 +197,7 @@ RegEnumValueW(
   _Out_writes_bytes_to_opt_(*lpcbData, *lpcbData) __out_data_source(REGISTRY) LPBYTE lpData,
   _Inout_opt_ LPDWORD lpcbData);
 
-#if (_WIN32_WINNT >= 0x0600)
+#if (_WIN32_WINNT >= 0x0502)//600
 
 LSTATUS
 WINAPI

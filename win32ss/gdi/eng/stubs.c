@@ -1333,7 +1333,7 @@ NtGdiGetWidthTable(
     OUT FLONG *pflInfo)
 {
     UNIMPLEMENTED;
-    return FALSE;
+    return TRUE;
 }
 
 /*
@@ -1380,7 +1380,7 @@ NtGdiMonoBitmap(
     IN HBITMAP hbm)
 {
     UNIMPLEMENTED;
-    return FALSE;
+    return TRUE;
 }
 
 /*

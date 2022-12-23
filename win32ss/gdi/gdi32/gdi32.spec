@@ -633,7 +633,7 @@
 @ stdcall D3DKMTDestroyDCFromMemory(ptr) gdi32_vista.D3DKMTDestroyDCFromMemory
 @ stdcall -version=0x600+ D3DKMTGetPresentHistory(ptr)
 @ stdcall -version=0x600+ D3DKMTGetPresentQueueEvent(ptr ptr)
-@ stdcall -version=0x600+ D3DKMTOpenAdapterFromGdiDisplayName(ptr)
+@ stdcall -version=0x600+ D3DKMTOpenAdapterFromGdiDisplayName() gdi32_vista.D3DKMTOpenAdapterFromGdiDisplayName
 @ stdcall -version=0x600+ D3DKMTOpenAdapterFromHdc(ptr)
 @ stdcall -version=0x600+ D3DKMTQueryAdapterInfo(ptr)
 ;FIXME Implement these ass full vista+ functions

@@ -2788,8 +2788,10 @@ NTAPI
 MmSecureVirtualMemory(IN PVOID Address,
                       IN SIZE_T Length,
                       IN ULONG Mode)
-{
+{   PHYSICAL_ADDRESS addr;
+    addr.QuadPart = 0xFFFFFFFF;
     static ULONG Warn; if (!Warn++) UNIMPLEMENTED;
+    Address = MmAllocateContiguousMemory(Length, addr);
     return Address;
 }
 

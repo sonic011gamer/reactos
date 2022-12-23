@@ -2149,3 +2149,5 @@ BOOL WINAPI SetupLogErrorW(LPCWSTR message, LogSeverity severity)
     HeapFree(GetProcessHeap(), 0, msg);
     return ret;
 }
+
+

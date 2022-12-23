@@ -1,7 +1,7 @@
 /*
  * SetupAPI driver-related functions
  *
- * Copyright 2005-2006 Hervé Poussineau (hpoussin@reactos.org)
+ * Copyright 2005-2006 Hervï¿½ Poussineau (hpoussin@reactos.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -2183,4 +2183,187 @@ cleanup:
 done:
     TRACE("Returning %d\n", ret);
     return ret;
+}
+
+/* VISTA BULLSHIT */
+typedef GUID  DEVPROPGUID, *PDEVPROPGUID;
+typedef ULONG DEVPROPID,   *PDEVPROPID;
+typedef struct _DEVPROPKEY {
+    DEVPROPGUID fmtid;
+    DEVPROPID   pid;
+} DEVPROPKEY, *PDEVPROPKEY;
+
+typedef PVOID HDEVINFO;
+
+typedef ULONG DEVPROPTYPE, *PDEVPROPTYPE;
+
+#define SETUP_DEVICE_INFO_SET_MAGIC 0xd00ff056
+
+//
+// Property type modifiers.  Used to modify base DEVPROP_TYPE_ values, as
+// appropriate.  Not valid as standalone DEVPROPTYPE values.
+//
+#define DEVPROP_TYPEMOD_ARRAY                   0x00001000  // array of fixed-sized data elements
+#define DEVPROP_TYPEMOD_LIST                    0x00002000  // list of variable-sized data elements
+
+//
+// Property data types.
+//
+#define DEVPROP_TYPE_EMPTY                      0x00000000
+struct device
+{
+    struct DeviceInfoSet *set;
+    HKEY                  key;
+    BOOL                  phantom;
+    WCHAR                *instanceId;
+    PVOID          interfaces;
+    GUID                  class;
+    DEVINST               devnode;
+    PVOID         entry;
+    BOOL                  removed;
+    SP_DEVINSTALL_PARAMS_W params;
+    struct driver        *drivers;
+    unsigned int          driver_count;
+    struct driver        *selected_driver;
+};
+ 
+ static void SETUPDI_GuidToString(const GUID *guid, LPWSTR guidStr)
+ {
+     static const WCHAR fmt[] = {'{','%','0','8','X','-','%','0','4','X','-',
+         '%','0','4','X','-','%','0','2','X','%','0','2','X','-','%','0','2',
+         'X','%','0','2','X','%','0','2','X','%','0','2','X','%','0','2','X','%',
+         '0','2','X','}',0};
+         int value = 39;
+     swprintf(guidStr, (wchar_t*)&value,  fmt, guid->Data1, guid->Data2, guid->Data3,
+         guid->Data4[0], guid->Data4[1], guid->Data4[2], guid->Data4[3],
+         guid->Data4[4], guid->Data4[5], guid->Data4[6], guid->Data4[7]);
+ }
+ 
+
+struct device_iface
+{
+    WCHAR           *refstr;
+    WCHAR           *symlink;
+    struct device   *device;
+    GUID             class;
+    DWORD            flags;
+    HKEY             class_key;
+    HKEY             refstr_key;
+    PVOID   entry;
+};
+
+ static struct DeviceInfoSet *get_device_set(HDEVINFO devinfo)
+ {
+     struct DeviceInfoSet *set = devinfo;
+ 
+     if (!devinfo || devinfo == INVALID_HANDLE_VALUE || set->magic != SETUP_DEVICE_INFO_SET_MAGIC)
+     {
+         SetLastError(ERROR_INVALID_HANDLE);
+         return NULL;
+     }
+ 
+     return set;
+ }
+ 
+static struct device *get_device(HDEVINFO devinfo, const SP_DEVINFO_DATA *data)
+{
+    struct DeviceInfoSet *set;
+    struct device *device;
+
+    if (!(set = get_device_set(devinfo)))
+        return FALSE;
+
+    if (!data || data->cbSize != sizeof(*data) || !data->Reserved)
+    {
+        SetLastError(ERROR_INVALID_PARAMETER);
+        return NULL;
+    }
+
+    device = (struct device *)data->Reserved;
+
+    if (device->set != set)
+    {
+        SetLastError(ERROR_INVALID_PARAMETER);
+        return NULL;
+    }
+
+    if (device->removed)
+    {
+        SetLastError(ERROR_NO_SUCH_DEVINST);
+        return NULL;
+    }
+
+    return device;
+}
+
+
+ static LSTATUS get_device_property(struct device *device, const DEVPROPKEY *prop_key, DEVPROPTYPE *prop_type,
+                 BYTE *prop_buff, DWORD prop_buff_size, DWORD *required_size, DWORD flags)
+ {
+     WCHAR key_path[55] = L"Properties\\";
+     HKEY hkey;
+     DWORD value_type;
+     DWORD value_size = 0;
+     LSTATUS ls;
+ 
+     if (!prop_key)
+         return ERROR_INVALID_DATA;
+ 
+     if (!prop_type || (!prop_buff && prop_buff_size))
+         return ERROR_INVALID_USER_BUFFER;
+ 
+     if (flags)
+         return ERROR_INVALID_FLAGS;
+ 
+     SETUPDI_GuidToString(&prop_key->fmtid, key_path + 11);
+     swprintf(( wchar_t *)(&key_path + 49),( wchar_t *)(sizeof(key_path) - 49), L"\\%04X", prop_key->pid);
+ 
+     ls = RegOpenKeyExW(device->key, key_path, 0, KEY_QUERY_VALUE, &hkey);
+     if (!ls)
+     {
+         value_size = prop_buff_size;
+         ls = RegQueryValueExW(hkey, NULL, NULL, &value_type, prop_buff, &value_size);
+         RegCloseKey(hkey);
+     }
+ 
+     switch (ls)
+     {
+     case NO_ERROR:
+     case ERROR_MORE_DATA:
+         *prop_type = 0xffff & value_type;
+         ls = (ls == ERROR_MORE_DATA || !prop_buff) ? ERROR_INSUFFICIENT_BUFFER : NO_ERROR;
+         break;
+     case ERROR_FILE_NOT_FOUND:
+         *prop_type = DEVPROP_TYPE_EMPTY;
+         value_size = 0;
+         ls = ERROR_NOT_FOUND;
+         break;
+     default:
+         *prop_type = DEVPROP_TYPE_EMPTY;
+         value_size = 0;
+         FIXME("Unhandled error %#lx\n", ls);
+         break;
+     }
+ 
+     if (required_size)
+         *required_size = value_size;
+ 
+     return ls;
+ }
+ 
+
+
+BOOL WINAPI SetupDiGetDevicePropertyW(HDEVINFO devinfo, PSP_DEVINFO_DATA device_data,
+                const DEVPROPKEY *prop_key, DEVPROPTYPE *prop_type, BYTE *prop_buff,
+                DWORD prop_buff_size, DWORD *required_size, DWORD flags)
+{
+    struct device *device;
+    LSTATUS ls;
+    if (!(device = get_device(devinfo, device_data)))
+        return FALSE;
+
+    ls = get_device_property(device, prop_key, prop_type, prop_buff, prop_buff_size, required_size, flags);
+
+    SetLastError(ls);
+    return !ls;
 }

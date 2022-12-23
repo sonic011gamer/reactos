@@ -293,7 +293,7 @@
 @ stdcall -stub -version=0x602+ NtGdiDdDDIDestroyOutputDupl()
 @ stdcall -stub -version=0x602+ NtGdiDdDDIEnumAdapters()
 @ stdcall -stub -version=0x602+ NtGdiDdDDIOfferAllocations()
-@ stdcall -stub -version=0x602+ NtGdiDdDDIOpenAdapterFromLuid()
+@ stdcall -version=0x600+ NtGdiDdDDIOpenAdapterFromLuid(ptr)
 @ stdcall -stub -version=0x602+ NtGdiDdDDIOpenKeyedMutex2()
 @ stdcall -stub -version=0x602+ NtGdiDdDDIOpenNtHandleFromName()
 @ stdcall -stub -version=0x602+ NtGdiDdDDIOpenResourceFromNtHandle()

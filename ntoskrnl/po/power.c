@@ -1132,3 +1132,9 @@ Exit:
     /* We're done, return */
     return Status;
 }
+
+NTSTATUS
+PoDisableSleepStates()
+{
+    return STATUS_SUCCESS;
+}

@@ -317,7 +317,7 @@
 @ stub SetupDiGetClassRegistryPropertyW
 @ stub SetupDiGetCustomDevicePropertyA
 @ stub SetupDiGetCustomDevicePropertyW
-@ stub -version=0x600+ SetupDiGetDevicePropertyW
+@ stdcall SetupDiGetDevicePropertyW(ptr ptr ptr ptr ptr long ptr long)
 @ stdcall SetupDiGetDeviceInfoListClass(ptr ptr)
 @ stdcall SetupDiGetDeviceInfoListDetailA(ptr ptr)
 @ stdcall SetupDiGetDeviceInfoListDetailW(ptr ptr)
