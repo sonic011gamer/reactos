@@ -77,7 +77,7 @@ elseif(ARCH STREQUAL "amd64")
     add_hal(hal SOURCES ${HAL_SOURCE} COMPONENTS generic acpi up apic)
     target_link_libraries(hal fast486)
 
-    add_hal(halmp SOURCES ${HAL_SOURCE} COMPONENTS generic acpi smp apic)
-    target_link_libraries(halmp fast486)
+    add_hal(halmacpi SOURCES ${HAL_SOURCE} COMPONENTS generic acpi smp apic)
+    target_link_libraries(halmacpi fast486)
 
 endif()
