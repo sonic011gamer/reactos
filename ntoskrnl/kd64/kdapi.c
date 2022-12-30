@@ -1871,6 +1871,7 @@ NTAPI
 KdEnterDebugger(IN PKTRAP_FRAME TrapFrame,
                 IN PKEXCEPTION_FRAME ExceptionFrame)
 {
+    //LOOK AT ME TOMORROW
     BOOLEAN Enable;
 
     /* Check if we have a trap frame */

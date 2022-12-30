@@ -208,6 +208,7 @@ KeStartAllProcessors()
         {
             break;
         }
+        KeIpiGenericCall(NULL, (ULONG_PTR)NULL);
 
         DPRINT("Waiting for init confirmation from AP CPU: #%u\n", ProcessorCount);
         while (KeNumberProcessors < (ProcessorCount + 1))

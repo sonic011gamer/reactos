@@ -30,3 +30,11 @@ HalStartNextProcessor(
     /* Always return false on UP systems */
     return FALSE;
 }
+
+/* Unused on UP*/
+VOID
+FASTCALL
+HalpIpiInterruptHandler(IN PKTRAP_FRAME TrapFrame)
+{
+
+}
