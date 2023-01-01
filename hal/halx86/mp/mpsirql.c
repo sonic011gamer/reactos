@@ -320,7 +320,7 @@ HalEnableSystemInterrupt (ULONG Vector,
   if (Vector < FIRST_DEVICE_VECTOR ||
       Vector >= FIRST_DEVICE_VECTOR + NUMBER_DEVICE_VECTORS)
   {
-    DPRINT("Not a device interrupt\n");
+    DPRINT1("Not a device interrupt\n");
     return FALSE;
   }
 

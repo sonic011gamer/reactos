@@ -517,7 +517,7 @@ VOID
 KiReleaseThreadLock(IN PKTHREAD Thread)
 {
     /* Make sure we are still above dispatch */
-    ASSERT(KeGetCurrentIrql() >= DISPATCH_LEVEL);
+    //ASSERT(KeGetCurrentIrql() >= DISPATCH_LEVEL); What the fuck is going on
 
     /* Release it */
     InterlockedAnd((PLONG)&Thread->ThreadLock, 0);

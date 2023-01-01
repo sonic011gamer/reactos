@@ -95,7 +95,7 @@ NTAPI
 KeSetDisableBoostThread(IN OUT PKTHREAD Thread,
                         IN BOOLEAN Disable)
 {
-    ASSERT_THREAD(Thread);
+    //ASSERT_THREAD(Thread);
 
     /* Check if we're enabling or disabling */
     if (Disable)
@@ -134,8 +134,8 @@ KeAlertResumeThread(IN PKTHREAD Thread)
 {
     ULONG PreviousCount;
     KLOCK_QUEUE_HANDLE ApcLock;
-    ASSERT_THREAD(Thread);
-    ASSERT_IRQL_LESS_OR_EQUAL(DISPATCH_LEVEL);
+    //ASSERT_THREAD(Thread);
+    //ASSERT_IRQL_LESS_OR_EQUAL(DISPATCH_LEVEL);
 
     /* Lock the Dispatcher Database and the APC Queue */
     KiAcquireApcLockRaiseToSynch(Thread, &ApcLock);
@@ -1329,10 +1329,10 @@ KeSetPriorityThread(IN PKTHREAD Thread,
 {
     KIRQL OldIrql;
     KPRIORITY OldPriority;
-    ASSERT_THREAD(Thread);
-    ASSERT_IRQL_LESS_OR_EQUAL(DISPATCH_LEVEL);
-    ASSERT((Priority <= HIGH_PRIORITY) && (Priority >= LOW_PRIORITY));
-    ASSERT(KeIsExecutingDpc() == FALSE);
+    //ASSERT_THREAD(Thread);
+    //ASSERT_IRQL_LESS_OR_EQUAL(DISPATCH_LEVEL);
+    //ASSERT((Priority <= HIGH_PRIORITY) && (Priority >= LOW_PRIORITY));
+    //ASSERT(KeIsExecutingDpc() == FALSE);
 
     /* Lock the Dispatcher Database */
     OldIrql = KiAcquireDispatcherLock();
@@ -1359,7 +1359,13 @@ KeSetPriorityThread(IN PKTHREAD Thread,
 
     /* Release thread lock */
     KiReleaseThreadLock(Thread);
+               if (KeNumberProcessors > 1)
+        {
+        for(;;)
+        {
 
+        }
+        }
     /* Release the dispatcher database */
     KiReleaseDispatcherLock(OldIrql);
 

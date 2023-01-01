@@ -527,20 +527,22 @@ HalpInitializePICs(IN BOOLEAN EnableInterrupts)
     /* Manually reserve some vectors */
     HalpVectorToIndex[APC_VECTOR] = APIC_RESERVED_VECTOR;
     HalpVectorToIndex[DISPATCH_VECTOR] = APIC_RESERVED_VECTOR;
+    HalpVectorToIndex[APIC_IPI_VECTOR] = APIC_RESERVED_VECTOR;
     HalpVectorToIndex[APIC_CLOCK_VECTOR] = 8;
     HalpVectorToIndex[APIC_SPURIOUS_VECTOR] = APIC_RESERVED_VECTOR;
 
     /* Set interrupt handlers in the IDT */
     KeRegisterInterruptHandler(APIC_CLOCK_VECTOR, HalpClockInterrupt);
-    KeRegisterInterruptHandler(APIC_IPI_VECTOR, HalpIpiInterrupt);
 #ifndef _M_AMD64
     KeRegisterInterruptHandler(APC_VECTOR, HalpApcInterrupt);
     KeRegisterInterruptHandler(DISPATCH_VECTOR, HalpDispatchInterrupt);
+    KeRegisterInterruptHandler(APIC_IPI_VECTOR, HalpIpiInterrupt);
 #endif
 
     /* Register the vectors for APC and dispatch interrupts */
     HalpRegisterVector(IDT_INTERNAL, 0, APC_VECTOR, APC_LEVEL);
     HalpRegisterVector(IDT_INTERNAL, 0, DISPATCH_VECTOR, DISPATCH_LEVEL);
+    HalpRegisterVector(IDT_INTERNAL, 0, APIC_IPI_VECTOR, IPI_LEVEL);
 
     /* Restore interrupt state */
     if (EnableInterrupts) EFlags |= EFLAGS_INTERRUPT_MASK;
@@ -639,6 +641,36 @@ HalpDispatchInterruptHandler(IN PKTRAP_FRAME TrapFrame)
 
     /* Exit the interrupt */
     KiEoiHelper(TrapFrame);
+}
+
+VOID
+DECLSPEC_NORETURN
+FASTCALL
+HalpIpiInterruptHandler(IN PKTRAP_FRAME TrapFrame)
+{
+    for(;;)
+    {
+        DPRINT1("FUCL");
+    }
+       KIRQL oldIrql;
+
+   HalBeginSystemInterrupt(IPI_LEVEL,
+                           APIC_IPI_VECTOR,
+			   &oldIrql);
+   _enable();
+#if 1
+   DPRINT1("(%s:%d) HalpIpiInterruptHandler on CPU%d, current irql is %d\n",
+            __FILE__,__LINE__, KeGetCurrentProcessorNumber(), KeGetCurrentIrql());
+#endif
+
+   KiIpiServiceRoutine(NULL, NULL);
+
+#if 1
+   DPRINT1("(%s:%d) HalpIpiInterruptHandler on CPU%d done\n", __FILE__,__LINE__, KeGetCurrentProcessorNumber());
+#endif
+
+   _disable();
+   HalEndSystemInterrupt(oldIrql, 0);
 }
 #endif
 

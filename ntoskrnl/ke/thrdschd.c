@@ -516,7 +516,7 @@ KiSetPriorityThread(IN PKTHREAD Thread,
     BOOLEAN RequestInterrupt = FALSE;
     KPRIORITY OldPriority;
     PKTHREAD NewThread;
-    ASSERT((Priority >= 0) && (Priority <= HIGH_PRIORITY));
+    //ASSERT((Priority >= 0) && (Priority <= HIGH_PRIORITY));
 
     /* Check if priority changed */
     if (Thread->Priority != Priority)

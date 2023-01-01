@@ -482,9 +482,12 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
 
     /* Save CPU state */
     KiSaveProcessorControlState(&Prcb->ProcessorState);
-
+    /* Check if this is the Boot CPU */
+    if (!Number)
+    {
     /* Get cache line information for this CPU */
-    KiGetCacheInformation();
+        KiGetCacheInformation();
+    }
 
     /* Initialize spinlocks and DPC data */
     KiInitSpinLocks(Prcb, Number);
@@ -533,7 +536,7 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
     else
     {
         /* FIXME */
-        DPRINT1("Starting CPU#%u - you are brave!\n", Number);
+     //   DPRINT1("Starting CPU#%u - you are brave!\n", Number);
         KeLowerIrql(DISPATCH_LEVEL);
     }
 
@@ -613,7 +616,13 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
 
     /* Set the Idle Priority to 0. This will jump into Phase 1 */
     KeSetPriorityThread(InitThread, 0);
+               if (KeNumberProcessors > 1)
+        {
+        for(;;)
+        {
 
+        }
+        }
     /* If there's no thread scheduled, put this CPU in the Idle summary */
     KiAcquirePrcbLock(Prcb);
     if (!Prcb->NextThread) KiIdleSummary |= 1 << Number;
@@ -808,22 +817,23 @@ KiSystemStartup(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
     RtlCopyMemory(&Idt[2], &NmiEntry, sizeof(KIDTENTRY));
     RtlCopyMemory(&Idt[8], &DoubleFaultEntry, sizeof(KIDTENTRY));
 
-AppCpuInit:
     /* Loop until we can release the freeze lock */
     do
     {
         /* Loop until execution can continue */
         while (*(volatile PKSPIN_LOCK*)&KiFreezeExecutionLock == (PVOID)1);
     } while(InterlockedBitTestAndSet((PLONG)&KiFreezeExecutionLock, 0));
+AppCpuInit:
 
     /* Setup CPU-related fields */
     __writefsdword(KPCR_NUMBER, Cpu);
     __writefsdword(KPCR_SET_MEMBER, 1 << Cpu);
     __writefsdword(KPCR_SET_MEMBER_COPY, 1 << Cpu);
     __writefsdword(KPCR_PRCB_SET_MEMBER, 1 << Cpu);
-
-    KiVerifyCpuFeatures(Pcr->Prcb);
-
+    if (!Cpu)
+    {
+        KiVerifyCpuFeatures(Pcr->Prcb);
+    }
     /* Initialize the Processor with HAL */
     HalInitializeProcessor(Cpu, KeLoaderBlock);
 

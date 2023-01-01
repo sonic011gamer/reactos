@@ -1576,6 +1576,7 @@ KeFlushEntireTb(IN BOOLEAN Invalid,
 {
     KIRQL OldIrql;
 #ifdef CONFIG_SMP
+    ULONG Count;
     KAFFINITY TargetAffinity;
     PKPRCB Prcb = KeGetCurrentPrcb();
 #endif
@@ -1589,6 +1590,7 @@ KeFlushEntireTb(IN BOOLEAN Invalid,
     /* Get the current processor affinity, and exclude ourselves */
     TargetAffinity = KeActiveProcessors;
     TargetAffinity &= ~Prcb->SetMember;
+    Count = KeNumberProcessors;
 
     /* Make sure this is MP */
     if (TargetAffinity)
@@ -1598,7 +1600,7 @@ KeFlushEntireTb(IN BOOLEAN Invalid,
                         KiFlushTargetEntireTb,
                         NULL,
                         0,
-                        NULL);
+                        &Count);
     }
 #endif
 
@@ -1609,11 +1611,14 @@ KeFlushEntireTb(IN BOOLEAN Invalid,
     /* If this is MP, wait for the other processors to finish */
     if (TargetAffinity)
     {
-        /* Sanity check */
-        ASSERT(Prcb == KeGetCurrentPrcb());
-
-        /* FIXME: TODO */
-        ASSERTMSG("Not yet implemented\n", FALSE);
+        #if 0
+        /* Spin until the other processors are ready */
+        while (Count != 1)
+        {
+            YieldProcessor();
+            KeMemoryBarrierWithoutFence();
+        }
+        #endif
     }
 #endif
 

@@ -28,6 +28,13 @@ KiConvertToGuiThread(
 _Requires_lock_not_held_(Prcb->PrcbLock)
 VOID
 NTAPI
+KiIpiInterruptHandler(VOID)
+{
+}
+
+_Requires_lock_not_held_(Prcb->PrcbLock)
+VOID
+NTAPI
 KiDpcInterruptHandler(VOID)
 {
     PKPRCB Prcb = KeGetCurrentPrcb();

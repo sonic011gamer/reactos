@@ -18,13 +18,14 @@ NTAPI
 ApicInitializeLocalApic(ULONG Cpu);
 
 /* FUNCTIONS ****************************************************************/
-
+ULONG processorcount = 0;
 VOID
 NTAPI
 HalpInitProcessor(
     IN ULONG ProcessorNumber,
     IN PLOADER_PARAMETER_BLOCK LoaderBlock)
 {
+    processorcount += 1;
 #ifdef CONFIG_SMP
     if (ProcessorNumber == 0)
     {
@@ -41,6 +42,11 @@ HalpInitProcessor(
 
     /* Initialize profiling data (but don't start it) */
     HalInitializeProfiling();
+
+    if (ProcessorNumber > 0)
+    {
+      //  HalpInitializePICs(TRUE);
+    }
 
     /* Initialize the timer */
     //ApicInitializeTimer(ProcessorNumber);
@@ -62,21 +68,16 @@ HalpInitPhase0(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
                                CLOCK2_LEVEL,
                                HalpClockInterrupt,
                                Latched);
-
-    /* Enable IPI interrupt handler */
-    HalpEnableInterruptHandler(IDT_INTERNAL,
-                               0,
-                               APIC_IPI_VECTOR,
-                               IPI_LEVEL,
-                               HalpIpiInterrupt,
-                               Latched);
 }
 
 VOID
 HalpInitPhase1(VOID)
 {
+    if (processorcount <= 1)
+    {
+            HalpInitDma();
+    }
     /* Initialize DMA. NT does this in Phase 0 */
-    HalpInitDma();
 }
 
 /* EOF */

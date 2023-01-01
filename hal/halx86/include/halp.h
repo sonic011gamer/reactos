@@ -211,6 +211,7 @@ HalpEnableInterruptHandler(IN UCHAR Flags,
 VOID NTAPI HalpInitializePICs(IN BOOLEAN EnableInterrupts);
 VOID __cdecl HalpApcInterrupt(VOID);
 VOID __cdecl HalpDispatchInterrupt(VOID);
+VOID __cdecl HalpIpiInterrupt(VOID);
 PHAL_SW_INTERRUPT_HANDLER __cdecl HalpDispatchInterrupt2(VOID);
 DECLSPEC_NORETURN VOID FASTCALL HalpApcInterrupt2ndEntry(IN PKTRAP_FRAME TrapFrame);
 DECLSPEC_NORETURN VOID FASTCALL HalpDispatchInterrupt2ndEntry(IN PKTRAP_FRAME TrapFrame);
@@ -222,7 +223,6 @@ extern BOOLEAN HalpProfilingStopped;
 CODE_SEG("INIT") VOID NTAPI HalpInitializeClock(VOID);
 VOID __cdecl HalpClockInterrupt(VOID);
 VOID __cdecl HalpProfileInterrupt(VOID);
-VOID __cdecl HalpIpiInterrupt(VOID);
 typedef struct _HALP_ROLLOVER
 {
     ULONG RollOver;
