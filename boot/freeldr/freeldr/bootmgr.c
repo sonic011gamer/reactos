@@ -344,7 +344,7 @@ VOID RunLoader(VOID)
     DebugInit(SectionId);
 
     /* Retrieve the default timeout */
-    TimeOut = GetTimeOut(SectionId);
+    TimeOut = 10;
 
     /* UI main initialization */
     if (!UiInitialize(TRUE))

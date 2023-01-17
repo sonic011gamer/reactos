@@ -13,6 +13,12 @@
 extern EFI_SYSTEM_TABLE * GlobalSystemTable;
 
 VOID
+UefiVideoSetTextCursorPosition(UCHAR X, UCHAR Y)
+{
+        GlobalSystemTable->ConOut->SetCursorPosition(GlobalSystemTable->ConOut, X, Y);
+}
+
+VOID
 UefiConsPutChar(int Ch)
 {
     GlobalSystemTable->ConOut->OutputString(GlobalSystemTable->ConOut, (CHAR16*)&Ch);

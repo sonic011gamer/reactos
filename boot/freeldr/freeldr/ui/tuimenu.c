@@ -10,7 +10,8 @@
 /* INCLUDES ******************************************************************/
 
 #include <freeldr.h>
-
+#include <debug.h>
+DBG_DEFAULT_CHANNEL(WARNING);
 /* FUNCTIONS *****************************************************************/
 
 static VOID

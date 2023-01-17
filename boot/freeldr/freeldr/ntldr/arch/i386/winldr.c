@@ -521,7 +521,7 @@ WinLdrSetProcessorContext(void)
 
     /* Enable paging */
     //BS->ExitBootServices(ImageHandle,MapKey);
-
+    MachPrepareForReactOS();
     /* Disable Interrupts */
     _disable();
 
@@ -533,7 +533,10 @@ WinLdrSetProcessorContext(void)
 
     /* Enable paging by modifying CR0 */
     __writecr0(__readcr0() | CR0_PG);
-
+    for(;;)
+    {
+        
+    }
     /* The Kernel expects the boot processor PCR to be zero-filled on startup */
     RtlZeroMemory((PVOID)Pcr, MM_PAGE_SIZE);
 
@@ -720,12 +723,15 @@ WinLdrSetProcessorContext(void)
     pop ebp;
     ret
     */
+
+
 }
 
 #if DBG
 VOID
 MempDump(VOID)
 {
+    #if 0
     PULONG PDE_Addr=(PULONG)PDE;//0xC0300000;
     int i, j;
 
@@ -742,5 +748,6 @@ MempDump(VOID)
 
         TRACE("\n");
     }
+    #endif
 }
 #endif

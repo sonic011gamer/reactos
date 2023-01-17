@@ -1128,7 +1128,7 @@ LoadAndBootWindows(
     LoaderBlock->Extension->MinorVersion = (OperatingSystemVersion & 0xFF);
 
     /* Load NLS data, OEM font, and prepare boot drivers list */
-    Success = WinLdrScanSystemHive(LoaderBlock, BootPath);
+   // Success = WinLdrScanSystemHive(LoaderBlock, BootPath);
     TRACE("SYSTEM hive %s\n", (Success ? "scanned" : "not scanned"));
     /* Bail out if failure */
     if (!Success)
@@ -1205,7 +1205,7 @@ LoadAndBootWindowsCommon(
 
     /* Load boot drivers */
     UiSetProgressBarText("Loading boot drivers...");
-    Success = WinLdrLoadBootDrivers(LoaderBlock, BootPath);
+   // Success = WinLdrLoadBootDrivers(LoaderBlock, BootPath);
     TRACE("Boot drivers loading %s\n", Success ? "successful" : "failed");
 
     UiSetProgressBarSubset(0, 100);
@@ -1227,7 +1227,7 @@ LoadAndBootWindowsCommon(
     LoaderBlockVA = PaToVa(LoaderBlock);
 
     /* "Stop all motors", change videomode */
-    MachPrepareForReactOS();
+   //MachPrepareForReactOS();
 
     /* Debugging... */
     //DumpMemoryAllocMap();
@@ -1248,12 +1248,12 @@ LoadAndBootWindowsCommon(
           KiSystemStartup, LoaderBlockVA);
 
     /* Zero KI_USER_SHARED_DATA page */
-    RtlZeroMemory((PVOID)KI_USER_SHARED_DATA, MM_PAGE_SIZE);
+    //RtlZeroMemory((PVOID)KI_USER_SHARED_DATA, MM_PAGE_SIZE);
 
-    WinLdrpDumpMemoryDescriptors(LoaderBlockVA);
-    WinLdrpDumpBootDriver(LoaderBlockVA);
+    //WinLdrpDumpMemoryDescriptors(LoaderBlockVA);
+   // WinLdrpDumpBootDriver(LoaderBlockVA);
 #ifndef _M_AMD64
-    WinLdrpDumpArcDisks(LoaderBlockVA);
+    //WinLdrpDumpArcDisks(LoaderBlockVA);
 #endif
 
     /* Pass control */

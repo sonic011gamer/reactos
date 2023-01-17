@@ -63,7 +63,7 @@ Quit:
 }
 
 #ifndef _M_ARM
-VOID
+void
 Reboot()
 {
     /* Stall until we deal with actual rebooting */
@@ -71,10 +71,7 @@ Reboot()
     {
         
     }
-Quit:
-    Reboot();
 
-    return 0;
 }
 #endif
 

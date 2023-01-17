@@ -8,11 +8,37 @@
 #include <uefildr.h>
 
 #include <debug.h>
-
+DBG_DEFAULT_CHANNEL(WARNING);
 EFI_GUID EfiGraphicsOutputProtocol = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
 EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
 EFI_SYSTEM_TABLE * GlobalSystemTable;
 EFI_HANDLE GlobalImageHandle;
+
+TIMEINFO*
+UefiGetTime(VOID)
+{
+    static TIMEINFO Test;
+    EFI_STATUS Status;
+    EFI_TIME time;
+
+    Status = GlobalSystemTable->RuntimeServices->GetTime (&time, NULL);
+    if (Status != EFI_SUCCESS)
+    {
+        TRACE("HELP ME BITCH %d", Status);
+        for(;;)
+        {
+
+        }
+    } 
+    Test.Year = time.Year;
+    Test.Month = time.Month;
+    Test.Day = time.Day;
+    Test.Hour = time.Hour;
+    Test.Minute = time.Minute;
+    Test.Second = time.Second;
+    return &Test;
+}
+
 
 EFI_STATUS
 UefiMachInit(_In_ EFI_HANDLE ImageHandle,

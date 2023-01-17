@@ -10,7 +10,7 @@
 #include <uefildr.h>
 
 #include <debug.h>
-
+DBG_DEFAULT_CHANNEL(WARNING);
 /**** Global Variables ***************************************************************************/
 
 #define NEXT_MEMORY_DESCRIPTOR(Descriptor, DescriptorSize) \
@@ -113,23 +113,68 @@ UefiSetMemory(
 
     /* Add the memory descriptor */
     FreeldrEntryCount = AddMemoryDescriptor(MemoryMap,
-                                            EntryCount,
+                                            1000,
                                             BasePage,
                                             PageCount,
-                                            LoaderFree);
+                                            MemoryType);
 }
 
 /**** Public Functions ***************************************************************************/
+VOID
+UefiReserveMemory(
+    PFREELDR_MEMORY_DESCRIPTOR MemoryMap,
+    ULONG_PTR BaseAddress,
+    SIZE_T Size,
+    TYPE_OF_MEMORY MemoryType,
+    PCHAR Usage)
+{
+    ULONG_PTR BasePage, PageCount;
+    ULONG i;
+
+    BasePage = BaseAddress / PAGE_SIZE;
+    PageCount = ADDRESS_AND_SIZE_TO_SPAN_PAGES(BaseAddress, Size);
+
+    for (i = 0; i < FreeldrEntryCount; i++)
+    {
+        /* Check for conflicting descriptor */
+        if ((MemoryMap[i].BasePage < BasePage + PageCount) &&
+            (MemoryMap[i].BasePage + MemoryMap[i].PageCount > BasePage))
+        {
+            /* Check if the memory is free */
+            if (MemoryMap[i].MemoryType != LoaderFree)
+            {
+                FrLdrBugCheckWithMessage(
+                    MEMORY_INIT_FAILURE,
+                    __FILE__,
+                    __LINE__,
+                    "Failed to reserve memory in the range 0x%Ix - 0x%Ix for %s",
+                    BaseAddress,
+                    Size,
+                    Usage);
+            }
+        }
+    }
+
+    /* Add the memory descriptor */
+    FreeldrEntryCount = AddMemoryDescriptor(MemoryMap,
+                                     MAX_BIOS_DESCRIPTORS,
+                                     BasePage,
+                                     PageCount,
+                                     MemoryType);
+}
+
 
 PFREELDR_MEMORY_DESCRIPTOR
 UefiMemGetMemoryMap(ULONG *MemoryMapSize)
 {
 	PFREELDR_MEMORY_DESCRIPTOR FreeldrMem = NULL;
     EFI_MEMORY_DESCRIPTOR* MapEntry;
+    EFI_MEMORY_DESCRIPTOR MapData;
 	EFI_MEMORY_MAP_OUTPUT MapOutput;
 	EFI_STATUS Status = 0;
     UINT32 EntryCount = 0;
 	UINT32 Index = 0;
+    UINT32 DescCount = 0;
 
 	MapOutput = PUEFI_LoadMemoryMap();
     if (MapOutput.EfiMemoryMap == NULL)
@@ -146,27 +191,52 @@ UefiMemGetMemoryMap(ULONG *MemoryMapSize)
     }
 
     MapEntry = MapOutput.EfiMemoryMap;
+    DescCount = EntryCount;
 	for (Index = 0; Index < EntryCount; ++Index)
     {
+
         switch (MapEntry->Type)
         {
+            DescCount += 100;
             case EfiConventionalMemory:
             {
-            FreeldrEntryCount = AddMemoryDescriptor(FreeldrMem,
-                                            EntryCount,
-                                            (MapEntry->PhysicalStart / PAGE_SIZE),
-                                            MapEntry->NumberOfPages,
+                MapData = *(MapEntry);
+             UefiSetMemory(FreeldrMem, (MapData.PhysicalStart), (MapData.NumberOfPages * EFI_PAGE_SIZE), DescCount, LoaderFree);
+#if 0
+                FreeldrEntryCount = AddMemoryDescriptor(FreeldrMem,
+                                            1000,
+                                            (MapData.PhysicalStart / PAGE_SIZE),
+                                            MapData.NumberOfPages,
                                             LoaderFree);
-             //   UefiSetMemory(FreeldrMem, (MapEntry->PhysicalStart / PAGE_SIZE), (MapEntry->NumberOfPages * PAGE_SIZE), EntryCount, LoaderFree);
+                    #endif
             }
+            case  EfiUnusableMemory:
+            {
+
+               // MapData = *(MapEntry);
+                //UefiSetMemory(FreeldrMem, (MapData.PhysicalStart), (MapData.NumberOfPages * EFI_PAGE_SIZE), DescCount, LoaderBad);
+                break;
+            }
+            case  EfiLoaderCode:
+            {
+              //  UefiReserveMemory(FreeldrMem, FREELDR_BASE, FrLdrImageSize, LoaderLoadedProgram, "FreeLdr image");
+
+               // MapData = *(MapEntry);
+                UefiSetMemory(FreeldrMem, (MapData.PhysicalStart), (MapData.NumberOfPages * EFI_PAGE_SIZE), DescCount, LoaderLoadedProgram);
+                break;
+            }
+
             default:
             {
-              //  UefiSetMemory(FreeldrMem, (MapEntry->PhysicalStart / PAGE_SIZE), (MapEntry->NumberOfPages * MM_PAGE_SIZE), EntryCount, LoaderReserve);
+                        //       MapData = *(MapEntry);
+               // UefiSetMemory(FreeldrMem, (MapData.PhysicalStart), (MapData.NumberOfPages * EFI_PAGE_SIZE), DescCount, LoaderReserve);
+                break;
             }
         }
         MapEntry = NEXT_MEMORY_DESCRIPTOR(MapEntry, MapOutput.DescriptorSize);
     }
 
+    //UefiMemFinalizeMemoryMap(FreeldrMem);
     return FreeldrMem;
 }
 
@@ -186,6 +256,15 @@ UefiPrepareForReactOS(VOID)
 	{
 		GlobalSystemTable->BootServices->ExitBootServices(GlobalImageHandle,MapOutput.MapKey);
 	}
-	//TRACE("ExitBootServices Sucessful");
+
+    	if (Status != EFI_SUCCESS)
+	{
+	    TRACE("ExitBootServices failed");
+        for(;;)
+        {
+
+        }
+	}
+	TRACE("ExitBootServices Sucessful");
 
 }
