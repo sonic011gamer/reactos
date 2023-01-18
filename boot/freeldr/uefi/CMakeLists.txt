@@ -72,6 +72,7 @@ list(APPEND FREELDR_ARC_SOURCE
     ../freeldr/lib/fs/pxe.c
     stubs.c
     uefiutil.c
+    ueficon.c
     uefisetup.c
     uefivid.c)
 
