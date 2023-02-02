@@ -1,0 +1,62 @@
+; hd4000.inf
+;
+; Installation file for the intel HD 4000 display adapter
+;
+[Version]
+Signature  = "$Windows NT$"
+LayoutFile = layout.inf
+Class      = Display
+ClassGUID  = {4D36E968-E325-11CE-BFC1-08002BE10318}
+Provider   = %ReactOS%
+DriverVer  = 2/1/2023,1.00
+
+[DestinationDirs]
+DefaultDestDir = 12
+HD4000.Display_CopyFiles = 11
+
+[Manufacturer]
+%HD4000% = HD4000
+
+[HD4000]
+%HD4000.DeviceDesc% = HD4000,PCI\VEN_1234&DEV_1111
+
+;---------------------------- HD4000 DRIVER ----------------------------
+
+[HD4000]
+CopyFiles = HD4000.Miniport_CopyFiles, HD4000.Display_CopyFiles
+
+[HD4000.Miniport_CopyFiles]
+hd4000.sys
+
+[HD4000.Display_CopyFiles]
+framebuf.dll
+
+[HD4000.SoftwareSettings]
+AddReg = HD4000_SoftwareSettings
+
+[HD4000_SoftwareSettings]
+HKR,, InstalledDisplayDrivers, %REG_MULTI_SZ%, framebuf
+HKR,, VgaCompatible,           %REG_DWORD%,    0
+
+[HD4000.Services]
+AddService = hd4000, 0x00000002, HD4000_Service
+
+[HD4000_Service]
+ServiceType   = 1
+StartType     = 3
+ErrorControl  = 0
+ServiceBinary = %12%\hd4000.sys
+LoadOrderGroup = Video
+
+;-------------------------------- STRINGS -------------------------------
+
+[Strings]
+; Non-localizable
+ReactOS = "ReactOS Project"
+HD4000 = "HD4000"
+
+REG_MULTI_SZ   = 0x00010000
+REG_DWORD      = 0x00010001
+
+; Localizable
+HD4000.DeviceDesc = "Intel HD4000 Graphics Adapter"

@@ -1,0 +1,16 @@
+[AddReg]
+HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#VEN_YOURID&DEV_YOURID","Service",0x00000000,"example"
+HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#VEN_YOURID&DEV_YOURID","ClassGUID",0x00000000,"{4D36E968-E325-11CE-BFC1-08002BE10318}"
+
+HKLM,"SYSTEM\CurrentControlSet\Services\example","ErrorControl",0x00010001,0x00000000
+HKLM,"SYSTEM\CurrentControlSet\Services\example","Group",0x00000000,"Video"
+HKLM,"SYSTEM\CurrentControlSet\Services\example","ImagePath",0x00020000,"system32\drivers\example.sys"
+HKLM,"SYSTEM\CurrentControlSet\Services\example","Start",0x00010001,0x00000003
+HKLM,"SYSTEM\CurrentControlSet\Services\example","Type",0x00010001,0x00000001
+HKLM,"SYSTEM\CurrentControlSet\Services\example\Video","Service",0x00000000,"example"
+
+HKLM,"SYSTEM\CurrentControlSet\Services\example\Device0","Device Description",0x00000000,"Example Magic Graphics Card"
+HKLM,"SYSTEM\CurrentControlSet\Services\example\Device0","InstalledDisplayDrivers",0x00010000,"framebuf"
+HKLM,"SYSTEM\CurrentControlSet\Services\example\Device0","VgaCompatible",0x00010001,0
+HKLM,"SYSTEM\CurrentControlSet\Services\example\Device0","DefaultSettings.XResolution",0x00010001,800
+HKLM,"SYSTEM\CurrentControlSet\Services\example\Device0","DefaultSettings.YResolution",0x00010001,600
