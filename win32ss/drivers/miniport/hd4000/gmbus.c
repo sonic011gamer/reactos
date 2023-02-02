@@ -6,7 +6,8 @@
  */
 
 #include "hd4000.h"
-
+#if 0
+PVOID BaseAddr = NULL;
 /*
  * GMBus is just a fancy I2C bus
  */
@@ -32,5 +33,7 @@ IGFX_GmBus_Read()
 VOID
 IGFX_GmBus_Wait()
 {
-
+   while (!(IGFX_Read32(BaseAddr, IGFX_GMBUS2) & (1 << 11)))
+       ;
 }
+#endif

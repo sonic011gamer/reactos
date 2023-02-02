@@ -72,14 +72,13 @@ HD4000FindAdapter(
     _In_ PUCHAR Again)
 {
     VideoDebugPrint((Info, "Intel HD4000: HD4000FindAdapter\n"));
-    PHD4000_DEVICE_EXTENSION Hd4000DeviceExtension;
+    PHD4000_DEVICE_EXTENSION Hd4000DeviceExtension = HwDeviceExtension;
     VIDEO_ACCESS_RANGE AccessRanges[3];
     VP_STATUS Status;
+    PVOID RegsBase;
     //USHORT VendorId = 0x8086; /* Intel Corporation */
     //USHORT DeviceId = 0x0000; /* Some intel GPU.... */
 
-
-    Hd4000DeviceExtension = (PHD4000_DEVICE_EXTENSION)HwDeviceExtension;
 
     Status = VideoPortGetAccessRanges(HwDeviceExtension, 0, NULL, 3, AccessRanges,
                                       NULL, NULL, NULL);
@@ -89,8 +88,34 @@ HD4000FindAdapter(
         DPRINT1("AccessRange[0].RangeStart: %X", AccessRanges[0].RangeStart);
         DPRINT1("AccessRange[0].RangeStart: %X", AccessRanges[0].RangeLength);
     }
-    DPRINT1("Hd4000DeviceExtension Addr: %X", Hd4000DeviceExtension);
 
+    RegsBase = VideoPortGetDeviceBase(
+                     HwDeviceExtension,
+                     AccessRanges[0].RangeStart,
+                     AccessRanges[0].RangeLength,
+                     AccessRanges[0].RangeInIoSpace
+                     );
+
+    Hd4000DeviceExtension->IoPorts.Mapped = RegsBase;
+    Hd4000DeviceExtension->IoPorts.RangeStart = AccessRanges[0].RangeStart;
+    Hd4000DeviceExtension->IoPorts.RangeLength = AccessRanges[0].RangeLength;
+    Hd4000DeviceExtension->IoPorts.RangeInIoSpace = AccessRanges[0].RangeInIoSpace;
+    if (!Hd4000DeviceExtension->IoPorts.Mapped)
+    {
+        VideoDebugPrint((Error, "HD4000 Failed to map interface\n"));
+        for(;;)
+        {
+
+        }
+        return ERROR_DEV_NOT_EXIST;
+    }
+#if 1
+    DPRINT1("Hd4000DeviceExtension Addr: %X",  Hd4000DeviceExtension->IoPorts.Mapped);
+#endif
+for(;;)
+{
+    
+}
     return NO_ERROR;
 }
 
