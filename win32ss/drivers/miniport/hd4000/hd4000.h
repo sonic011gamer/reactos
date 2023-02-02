@@ -15,6 +15,8 @@
 #include <devioctl.h>
 #include <section_attribs.h>
 
+#include "regs.h"
+
 typedef struct
 {
     USHORT XResolution;
@@ -40,7 +42,8 @@ typedef struct
 
     ULONG MaxXResolution;
     ULONG MaxYResolution;
-} HD4000_DEVICE_EXTENSION, *PBOCHS_DEVICE_EXTENSION;
+} HD4000_DEVICE_EXTENSION, *PHD4000_DEVICE_EXTENSION;
 
+#include "private_functions.h"
 
 #endif //HD4000_H

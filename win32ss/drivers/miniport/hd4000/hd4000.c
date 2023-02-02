@@ -1,7 +1,36 @@
+/*
+ * PROJECT:     ReactOS Intel HD4000 graphics card driver
+ * LICENSE:     GPL-2.0-or-later (https://spdx.org/licenses/GPL-2.0-or-later)
+ * PURPOSE:     HD4000 primary file
+ * COPYRIGHT:   Copyright 2023 Justin Miller <justinmiller100@gmail.com>
+ */
 
 #include "hd4000.h"
-
+#include <debug.h>
 /************************************ Globals *********************************************/
+#define KB 1024
+#define MB (KB * KB)
+
+static const UINT32 GMS_TO_SIZE[] =
+{
+      0 * MB,     // GMS_0MB
+     32 * MB,     // GMS_32MB_1
+     64 * MB,     // GMS_64MB_1
+     96 * MB,     // GMS_96MB_1
+    128 * MB,     // GMS_128MB_1
+     32 * MB,     // GMS_32MB
+     48 * MB,     // GMS_48MB
+     64 * MB,     // GMS_64MB
+    128 * MB,     // GMS_128MB
+    256 * MB,     // GMS_256MB
+     96 * MB,     // GMS_96MB
+    160 * MB,     // GMS_160MB
+    224 * MB,     // GMS_224MB
+    352 * MB,     // GMS_352MB
+    448 * MB,     // GMS_448MB
+    480 * MB,     // GMS_480MB
+    512 * MB,     // GMS_512MB
+};
 
 static const HD4000_SIZE BochsAvailableResolutions[] = {
     { 640, 480 },   // VGA
@@ -42,7 +71,27 @@ HD4000FindAdapter(
     _In_ PVIDEO_PORT_CONFIG_INFO ConfigInfo,
     _In_ PUCHAR Again)
 {
-    return ERROR_INVALID_FUNCTION;
+    VideoDebugPrint((Info, "Intel HD4000: HD4000FindAdapter\n"));
+    PHD4000_DEVICE_EXTENSION Hd4000DeviceExtension;
+    VIDEO_ACCESS_RANGE AccessRanges[3];
+    VP_STATUS Status;
+    //USHORT VendorId = 0x8086; /* Intel Corporation */
+    //USHORT DeviceId = 0x0000; /* Some intel GPU.... */
+
+
+    Hd4000DeviceExtension = (PHD4000_DEVICE_EXTENSION)HwDeviceExtension;
+
+    Status = VideoPortGetAccessRanges(HwDeviceExtension, 0, NULL, 3, AccessRanges,
+                                      NULL, NULL, NULL);
+
+    if (Status == NO_ERROR)
+    {
+        DPRINT1("AccessRange[0].RangeStart: %X", AccessRanges[0].RangeStart);
+        DPRINT1("AccessRange[0].RangeStart: %X", AccessRanges[0].RangeLength);
+    }
+    DPRINT1("Hd4000DeviceExtension Addr: %X", Hd4000DeviceExtension);
+
+    return NO_ERROR;
 }
 
 CODE_SEG("PAGE")
@@ -50,6 +99,11 @@ BOOLEAN NTAPI
 HD4000Initialize(
     _In_ PVOID HwDeviceExtension)
 {
+    VideoDebugPrint((Info, "Intel HD4000: HD4000Initialize\n"));
+    for(;;)
+    {
+        
+    }
     return 0;
 }
 
