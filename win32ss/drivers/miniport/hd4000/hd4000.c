@@ -109,6 +109,28 @@ HD4000FindAdapter(
         }
         return ERROR_DEV_NOT_EXIST;
     }
+    
+    DPRINT1("Trying to entering force wake...\n");
+    
+    int trys = 0;
+    int forceWakeAck;
+    do {
+        ++trys;
+        forceWakeAck = VideoPortReadPortUlong((PULONG)(&RegsBase + FORCE_WAKE_MT_ACK));
+        DPRINT1("Waiting for Force Ack to Clear: Try=%d - Ack=0x%X\n", trys, forceWakeAck);
+    } while (forceWakeAck != 0);
+    DPRINT1(" forceWakeAck");
+    VideoPortWritePortUlong((PULONG)(&RegsBase + FORCE_WAKE_MT), MASKED_ENABLE(1));
+    VideoPortReadPortUlong((PULONG)(&RegsBase + ECOBUS));
+    DPRINT1("Wake written");
+    do {
+        ++trys;
+        forceWakeAck = VideoPortReadPortUlong((PULONG)(&RegsBase + FORCE_WAKE_MT_ACK));
+        DPRINT1("Waiting for Force Ack to Clear: Try=%d - Ack=0x%X\n", trys, forceWakeAck);
+    } while (forceWakeAck != 0);
+    DPRINT1("Good morning Intel HD Graphics!");
+    GfxPrintPortState(RegsBase);
+
 #if 1
     DPRINT1("Hd4000DeviceExtension Addr: %X",  Hd4000DeviceExtension->IoPorts.Mapped);
 #endif

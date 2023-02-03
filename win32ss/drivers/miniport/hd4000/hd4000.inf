@@ -31,6 +31,8 @@ HD4000.Display_CopyFiles = 11
 %HD4000.DeviceDesc% = HD4000,PCI\VEN_8086&DEV_0152
 %HD4000.DeviceDesc% = HD4000,PCI\VEN_8086&DEV_0156
 %HD4000.DeviceDesc% = HD4000,PCI\VEN_8086&DEV_015A
+%HD4000.DeviceDesc% = HD4000,PCI\VEN_8086&DEV_0402
+
 ;---------------------------- HD4000 DRIVER ----------------------------
 
 [HD4000]

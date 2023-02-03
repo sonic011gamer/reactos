@@ -38,6 +38,9 @@ HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#VEN_8086&DEV_0
 HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#VEN_8086&DEV_015A,"Service",0x00000000,"hd4000"
 HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#VEN_8086&DEV_015A,"ClassGUID",0x00000000,"{4D36E968-E325-11CE-BFC1-08002BE10318}"
 
+HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#VEN_8086&DEV_0402,"Service",0x00000000,"hd4000"
+HKLM,"SYSTEM\CurrentControlSet\Control\CriticalDeviceDatabase\PCI#VEN_8086&DEV_0402,"ClassGUID",0x00000000,"{4D36E968-E325-11CE-BFC1-08002BE10318}"
+
 HKLM,"SYSTEM\CurrentControlSet\Services\hd4000","ErrorControl",0x00010001,0x00000000
 HKLM,"SYSTEM\CurrentControlSet\Services\hd4000","Group",0x00000000,"Video"
 HKLM,"SYSTEM\CurrentControlSet\Services\hd4000","ImagePath",0x00020000,"system32\drivers\hd4000.sys"

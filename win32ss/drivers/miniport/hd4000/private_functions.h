@@ -1,6 +1,9 @@
 #ifndef PRIVATE_FUNCTIONS_H
 #define PRIVATE_FUNCTIONS_H
 
+/* random utils */
+VOID
+GfxPrintPortState(PULONG BaseAddr);
 /* RW */
 ULONGLONG
 IGFX_Read64(IN PULONG BaseAddr, 
