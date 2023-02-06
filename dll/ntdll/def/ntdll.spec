@@ -1205,6 +1205,8 @@
 @ stdcall RtlTraceDatabaseValidate(ptr)
 ;@ stub -version=0x600+ RtlTryAcquirePebLock
 @ stdcall RtlTryEnterCriticalSection(ptr)
+@ stdcall -version=0x600+ RtlTryAcquireSRWLockExclusive(ptr)
+@ stdcall -version=0x600+ RtlTryAcquireSRWLockShared(ptr)
 @ stdcall RtlUnhandledExceptionFilter2(ptr long)
 @ stdcall RtlUnhandledExceptionFilter(ptr)
 @ stdcall RtlUnicodeStringToAnsiSize(ptr) RtlxUnicodeStringToAnsiSize

@@ -23,3 +23,8 @@
 @   stdcall -stub -version=0x600+ RegisterErrorReportingDialog(long long)
 @   stdcall -stub -version=0x600+ RegisterFrostWindow(long long)
 @   stdcall -stub -version=0x600+ RegisterGhostWindow(long long)
+@   stdcall -version=0x600+ DisplayConfigGetDeviceInfo(ptr)
+@   stdcall -version=0x600+ RegisterTouchWindow(ptr long)
+@   stdcall -version=0x600+ CloseTouchInputHandle(ptr)
+@   stdcall -version=0x600+ RegisterPowerSettingNotification(ptr ptr long)
+@   stdcall -version=0x600+ SetProcessDPIAware()

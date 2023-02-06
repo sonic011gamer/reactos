@@ -290,3 +290,11 @@
 290 stub JetUpgradeDatabase
 291 stub ese
 292 stub esent
+
+@ stdcall -stub -version=0x600+ JetSetSystemParameterW(ptr long long long long)
+@ stdcall -stub -version=0x600+ JetCreateInstanceW(ptr long)
+@ stdcall -stub -version=0x600+ JetGetTableColumnInfoW(ptr long)
+@ stdcall -stub -version=0x600+ JetOpenTableW(ptr long)
+@ stdcall -stub -version=0x600+ JetOpenDatabaseW(ptr long)
+@ stdcall -stub -version=0x600+ JetAttachDatabase2W(ptr long)
+@ stdcall -stub -version=0x600+ JetBeginSessionW(ptr long)

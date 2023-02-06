@@ -1,36 +1,3 @@
-;ADVAPI32:
-EventRegister
-EventUnregister
-EventWrite
-
-;KERNEL32:
-PowerClearRequest
-PowerCreateRequest
-PowerSetRequest
-QueryUnbiasInterruptTime
-ResolveLocaleName
-TryAcquireSRWLockExclusive
-
-;SHELL32
-SHGetPropertyStoreForWindow
-
-;USER32
-
-DisplayConfigGetDeviceInfo
-RegisterTouchWindow
-CloseTouchInputHandle
-
-;ESENT
-JetSetSystemParameterW
-JetCreateInstanceW
-JetGetTableColumnInfoW
-JetOpenTableW
-JetOpenDatabaseW
-JetAttachDatabase2W
-JetBeginSessionW
-
-; CfgMgr32
-CM_Get_DevNode_PropertyW
 
 ; SetupAPI
 SetDiGetDevicePropertyW

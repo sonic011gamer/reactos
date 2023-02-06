@@ -208,3 +208,21 @@ UnregisterPowerSettingNotification(HANDLE Handle) // HPOWERNOTIFY
     UNIMPLEMENTED;
     return TRUE;
 }
+
+LONG 
+WINAPI
+DisplayConfigGetDeviceInfo(
+  PVOID *requestPacket
+)
+{
+    return 0;
+}
+
+BOOL 
+WINAPI
+CloseTouchInputHandle(
+  PVOID hTouchInput
+)
+{
+    return 1;
+}

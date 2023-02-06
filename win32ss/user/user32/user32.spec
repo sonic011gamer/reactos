@@ -69,7 +69,6 @@
 67 stdcall CloseClipboard() NtUserCloseClipboard
 68 stdcall CloseDesktop(long) NtUserCloseDesktop
 @  stub -version=0x601+ CloseGestureInfoHandle
-@  stub -version=0x601+ CloseTouchInputHandle
 69 stdcall CloseWindow(long)
 70 stdcall CloseWindowStation(long) NtUserCloseWindowStation
 71 stdcall CopyAcceleratorTableA(long ptr long)
@@ -168,7 +167,6 @@
 164 stdcall DispatchMessageA(ptr)
 165 stdcall DispatchMessageW(ptr)
 166 stdcall DisplayExitWindowsWarnings(long)
-@ stub -version=0x600+ DisplayConfigGetDeviceInfo
 @ stub -version=0x600+ DisplayConfigSetDeviceInfo
 167 stdcall DlgDirListA(long str long long long)
 168 stdcall DlgDirListComboBoxA(long ptr long long long)
@@ -740,6 +738,7 @@
 703 stdcall UnregisterHotKey(long long) NtUserUnregisterHotKey
 704 stdcall UnregisterMessagePumpHook()
 @   stdcall -version=0x600+ UnregisterPowerSettingNotification() user32_vista.UnregisterPowerSettingNotification
+@   stdcall -version=0x600+ RegisterPowerSettingNotification() user32_vista.RegisterPowerSettingNotification
 @   stdcall -stub -version=0x600+ UnregisterSessionPort()
 @ stub -version=0x601+ UnregisterTouchWindow
 705 stdcall UnregisterUserApiHook() NtUserUnregisterUserApiHook
@@ -801,3 +800,10 @@
 @   stdcall -version=0x600+ RegisterErrorReportingDialog(long long) user32_vista.RegisterErrorReportingDialog
 @   stdcall -version=0x600+ RegisterFrostWindow(long long) user32_vista.RegisterFrostWindow
 @   stdcall -version=0x600+ RegisterGhostWindow(long long) user32_vista.RegisterGhostWindow
+
+
+@   stdcall -version=0x600+ DisplayConfigGetDeviceInfo(ptr) user32_vista.DisplayConfigGetDeviceInfo
+@   stdcall -version=0x600+ RegisterTouchWindow(ptr long) user32_vista.RegisterTouchWindow
+@   stdcall -version=0x601+ CloseTouchInputHandle(ptr) user32_vista.CloseTouchInputHandle
+
+@   stdcall -version=0x600+ SetProcessDPIAware() user32_vista.SetProcessDPIAware
