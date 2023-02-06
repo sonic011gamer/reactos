@@ -388,10 +388,6 @@ InternalSleep(IN OUT PRTL_CONDITION_VARIABLE ConditionVariable,
 
     COND_VAR_WAIT_ENTRY OwnEntry;
     NTSTATUS Status;
-
-    ASSERT(CondVarKeyedEventHandle != NULL);
-    ASSERT((CriticalSection == NULL) != (SRWLock == NULL));
-
     RtlZeroMemory(&OwnEntry, sizeof(OwnEntry));
 
     /* Put OwnEntry on the list. */

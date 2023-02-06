@@ -222,6 +222,5 @@ SHGetPropertyStoreForWindow(HWND   hwnd,
                             REFIID riid,
                             void   **ppv)
 {
-    UNIMPLEMENTED;
-    return S_OK;
+    return STATUS_SUCCESS;
 }

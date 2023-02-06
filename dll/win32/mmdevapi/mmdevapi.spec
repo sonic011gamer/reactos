@@ -13,7 +13,7 @@
 14 stub MMDEVAPI_14
 15 stub MMDEVAPI_15
 
-@ stdcall -private DllCanUnloadNow()
+@ stdcall -stub -private DllCanUnloadNow()
 @ stdcall -private DllGetClassObject( ptr ptr ptr )
-@ stdcall -private DllRegisterServer()
-@ stdcall -private DllUnregisterServer()
+@ stdcall -stub -private DllRegisterServer()
+@ stdcall -stub -private DllUnregisterServer()

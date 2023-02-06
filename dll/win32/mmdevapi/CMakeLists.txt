@@ -7,10 +7,7 @@ include_directories(${REACTOS_SOURCE_DIR}/sdk/include/reactos/wine)
 spec2def(mmdevapi.dll mmdevapi.spec ADD_IMPORTLIB)
 
 list(APPEND SOURCE
-    audiovolume.c
-    devenum.c
-    main.c
-    precomp.h
+stub.c
     ${CMAKE_CURRENT_BINARY_DIR}/mmdevapi_stubs.c)
 
 add_library(mmdevapi MODULE
