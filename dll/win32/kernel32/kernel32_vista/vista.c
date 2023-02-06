@@ -267,7 +267,7 @@ RegisterApplicationRestart(IN PCWSTR pwzCommandline  OPTIONAL,
                            IN DWORD dwFlags)
 {
     UNIMPLEMENTED;
-    return E_FAIL;
+    return STATUS_SUCCESS;
 }
 
 
@@ -743,8 +743,8 @@ GetThreadPreferredUILanguages(
     PULONG pcchLanguagesBuffer)
 {
     DPRINT1("%x %p %p %p\n", dwFlags, pulNumLanguages, pwszLanguagesBuffer, pcchLanguagesBuffer);
-    SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
-    return FALSE;
+  //  SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
+    return TRUE;
 }
 
 /*

@@ -168,12 +168,12 @@
 @ stdcall -version=0x600+ CreateSymbolicLinkW(wstr wstr long)
 @ stdcall CreateTapePartition(long long long long)
 @ stdcall CreateThread(ptr long ptr long long ptr)
-@ stub -version=0x600+ CreateThreadpool
-@ stub -version=0x600+ CreateThreadpoolCleanupGroup
-@ stub -version=0x600+ CreateThreadpoolIo
-@ stub -version=0x600+ CreateThreadpoolTimer
-@ stub -version=0x600+ CreateThreadpoolWait
-@ stub -version=0x600+ CreateThreadpoolWork
+@ stdcall -stub -version=0x600+ CreateThreadpool(ptr)
+@ stdcall -stub -version=0x600+ CreateThreadpoolCleanupGroup(ptr)
+@ stdcall -stub -version=0x600+ CreateThreadpoolIo(ptr)
+@ stdcall -stub -version=0x600+ CreateThreadpoolTimer(ptr)
+@ stdcall -stub -version=0x600+ CreateThreadpoolWait(ptr)
+@ stdcall -stub -version=0x600+ CreateThreadpoolWork(ptr)
 @ stdcall CreateTimerQueue()
 @ stdcall CreateTimerQueueTimer(ptr long ptr ptr long long long)
 @ stdcall CreateToolhelp32Snapshot(long long)
