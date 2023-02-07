@@ -1,0 +1,6 @@
+@ stdcall -stub -version=0x600+ WinUsb_Initialize(ptr ptr ptr ptr)
+@ stdcall -stub -version=0x600+ WinUsb_ControlTransfer(ptr ptr ptr ptr)
+@ stdcall -stub -version=0x600+ WinUsb_WritePipe(ptr ptr ptr ptr)
+@ stdcall -stub -version=0x600+ WinUsb_ReadPipe(ptr ptr ptr ptr)
+@ stdcall -stub -version=0x600+ WinUsb_GetAssociatedInterface(ptr ptr ptr ptr)
+@ stdcall -stub -version=0x600+ WinUsb_Free(ptr ptr ptr ptr)

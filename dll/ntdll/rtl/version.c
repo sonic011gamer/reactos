@@ -150,6 +150,29 @@ RtlGetNtVersionNumbers(OUT PULONG pMajorVersion,
     }
 }
 
+BOOLEAN WINAPI RtlGetProductInfo(DWORD dwOSMajorVersion, DWORD dwOSMinorVersion, DWORD dwSpMajorVersion,
+                                 DWORD dwSpMinorVersion, PDWORD pdwReturnedProductType)
+{
+    //TRACE("(%d, %d, %d, %d, %p)\n", dwOSMajorVersion, dwOSMinorVersion,
+    //      dwSpMajorVersion, dwSpMinorVersion, pdwReturnedProductType);
+
+    if (!pdwReturnedProductType)
+        return FALSE;
+
+    if (dwOSMajorVersion < 6)
+    {
+        *pdwReturnedProductType = PRODUCT_UNDEFINED;
+        return FALSE;
+    }
+
+    //if (current_version->wProductType == VER_NT_WORKSTATION)
+        *pdwReturnedProductType = PRODUCT_ULTIMATE_N;
+    //else
+    //    *pdwReturnedProductType = PRODUCT_STANDARD_SERVER;
+
+    return TRUE;
+}
+
 /*
  * @implemented
  * @note User-mode version of RtlGetVersion in ntoskrnl/rtl/misc.c

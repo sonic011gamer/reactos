@@ -965,7 +965,7 @@
 ;@ stub -version=0x600+ _snscanf_s_l
 @ varargs _snwprintf(ptr long wstr)
 ;@ stub -version=0x600+ _snwprintf_l
-;@ stub -version=0x600+ _snwprintf_s
+@ stdcall -stub -version=0x600+ _snwprintf_s(ptr long long ptr)
 ;@ stub -version=0x600+ _snwprintf_s_l
 @ varargs _snwscanf(wstr long wstr)
 ;@ stub -version=0x600+ _snwscanf_l
@@ -1218,7 +1218,7 @@
 ;@ stub -version=0x600+ _winput_s
 @ extern -arch=i386,x86_64 _winver
 @ cdecl _wmakepath(ptr wstr wstr wstr wstr)
-;@ stub -version=0x600+ _wmakepath_s
+@ cdecl -stub -version=0x600+ _wmakepath_s(ptr ptr ptr ptr ptr)
 @ cdecl _wmkdir(wstr)
 @ cdecl _wmktemp(wstr)
 ;@ stub -version=0x600+ _wmktemp_s
@@ -1253,7 +1253,7 @@
 @ cdecl _wspawnvp(long wstr ptr)
 @ cdecl _wspawnvpe(long wstr ptr ptr)
 @ cdecl _wsplitpath(wstr ptr ptr ptr ptr)
-;@ stub -version=0x600+ _wsplitpath_s
+@ cdecl -stub -version=0x600+ _wsplitpath_s(ptr ptr long ptr long ptr long ptr long)
 @ cdecl _wstat(wstr ptr)
 @ cdecl _wstat64(wstr ptr)
 @ cdecl _wstati64(wstr ptr)
@@ -1449,12 +1449,12 @@
 @ cdecl sinh(double)
 @ cdecl -arch=x86_64,arm sinhf(long)
 @ varargs sprintf(ptr str)
-;@ stub -version=0x600+ sprintf_s
+@ cdecl -stub -version=0x600+ sprintf_s(ptr long ptr)
 @ cdecl sqrt(double)
 @ cdecl -arch=x86_64,arm sqrtf(long)
 @ cdecl srand(long)
 @ varargs sscanf(str str)
-;@ stub -version=0x600+ sscanf_s
+@ cdecl -stub -version=0x600+ sscanf_s(ptr ptr)
 @ cdecl strcat(str str)
 @ cdecl -version=0x600+ strcat_s(ptr long str)
 @ cdecl strchr(str long)
@@ -1484,7 +1484,7 @@
 @ cdecl strtoul(str ptr long)
 @ cdecl strxfrm(ptr str long)
 @ varargs swprintf(ptr wstr)
-;@ stub -version=0x600+ swprintf_s
+@ varargs -stub -version=0x600+ swprintf_s(ptr long ptr)
 @ varargs swscanf(wstr wstr)
 ;@ stub -version=0x600+ swscanf_s
 @ cdecl system(str)

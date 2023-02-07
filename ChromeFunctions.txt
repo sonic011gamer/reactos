@@ -1,7 +1,4 @@
 
-; SetupAPI
-SetDiGetDevicePropertyW
-
 MISSING DLLS:
 
 ;DWRITE
@@ -14,12 +11,6 @@ CreateDXGIFactory1
 ;D3D11
 D3D11CreateDevice
 
-;WINUSB
-WinUsb_Initialize
-WinUsb_ControlTransfer
-WinUsb_WritePipe
-WinUsb_ReadPipe
-WinUsb_GetAssociatedInterface
 
 ;NCRYPT
 NCryptSignHash
@@ -29,12 +20,20 @@ NCryptFreeObject
 DXVA2CreateDirect3DDeviceManager9
 DXVA2CreateVideoService
 
+;WINUSB
+WinUsb_Initialize
+WinUsb_ControlTransfer
+WinUsb_WritePipe
+WinUsb_ReadPipe
+WinUsb_GetAssociatedInterface
+
 ;WEVTAPI
 EvtNext
 EvtQuery
 EvtClose
 EvtCreateRenderContext
 EvtRender
+;----------------------------------------
 
 ;NDFAPI
 NdfExecuteDiagnosis

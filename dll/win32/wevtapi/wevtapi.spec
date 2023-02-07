@@ -1,0 +1,5 @@
+@ stdcall -stub -version=0x600+ EvtNext(ptr ptr ptr ptr)
+@ stdcall -stub -version=0x600+ EvtQuery(ptr ptr ptr ptr)
+@ stdcall -stub -version=0x600+ EvtClose(ptr ptr ptr ptr)
+@ stdcall -stub -version=0x600+ EvtCreateRenderContext(ptr ptr ptr ptr)
+@ stdcall -stub -version=0x600+ EvtRender(ptr ptr ptr ptr)

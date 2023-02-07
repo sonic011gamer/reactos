@@ -642,7 +642,6 @@
 620 stdcall SetMessageExtraInfo(long)
 621 stdcall SetMessageQueue(long)
 622 stdcall SetParent(long long) NtUserSetParent
-@   stdcall -version=0x600+ SetProcessDPIAware() user32_vista.SetProcessDPIAware
 623 stdcall SetProcessDefaultLayout(long)
 624 stdcall SetProcessWindowStation(long) NtUserSetProcessWindowStation
 625 stdcall SetProgmanWindow (long)
