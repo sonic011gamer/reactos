@@ -84,6 +84,14 @@
                     (k)->ConvKey)->Owner == KeGetCurrentThread())
 
 //
+// Shared acquires a KCB by index
+//
+#define CmpAcquireKcbLockSharedByIndex(i)                           \
+{                                                                   \
+    ExAcquirePushLockShared(&CmpCacheTable[(i)].Lock);              \
+}
+
+//
 // Exclusively acquires a KCB by index
 //
 FORCEINLINE
@@ -114,6 +122,16 @@ CmpAcquireKcbLockExclusiveByKey(IN ULONG ConvKey)
     CmpAcquireKcbLockExclusiveByIndex(GET_HASH_INDEX(ConvKey));
 }
 
+//
+// Shared acquires a KCB by key
+//
+FORCEINLINE
+VOID
+CmpAcquireKcbLockSharedByKey(
+    _In_ ULONG ConvKey)
+{
+    CmpAcquireKcbLockSharedByIndex(GET_HASH_INDEX(ConvKey));
+}
 
 //
 // Shared acquires a KCB
@@ -122,14 +140,6 @@ CmpAcquireKcbLockExclusiveByKey(IN ULONG ConvKey)
 {                                                                   \
     ExAcquirePushLockShared(&GET_HASH_ENTRY(CmpCacheTable,          \
                                             (k)->ConvKey)->Lock);    \
-}
-
-//
-// Shared acquires a KCB by index
-//
-#define CmpAcquireKcbLockSharedByIndex(i)                           \
-{                                                                   \
-    ExAcquirePushLockShared(&CmpCacheTable[(i)].Lock);              \
 }
 
 //
