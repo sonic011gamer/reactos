@@ -5,7 +5,7 @@
  * PROGRAMMER:      Rama Teja Gampa <ramateja.g@gmail.com>
 */
 #include "usbxhci.h"
-#define NDEBUG
+//#define NDEBUG
 #include <debug.h>
 #define NDEBUG_XHCI_ROOT_HUB
 #include "dbg_xhci.h"
@@ -16,27 +16,7 @@ XHCI_RH_GetRootHubData(IN PVOID xhciExtension,
                        IN PVOID rootHubData)
 {
     
-    PXHCI_EXTENSION XhciExtension;
-    PUSBPORT_ROOT_HUB_DATA RootHubData;
     DPRINT1("XHCI_RH_GetRootHubData: function initiated\n");
-    XhciExtension = (PXHCI_EXTENSION)xhciExtension;
-
-    DPRINT_RH("XHCI_RH_GetRootHubData: XhciExtension - %p, rootHubData - %p\n",
-              XhciExtension,
-              rootHubData);
-
-    RootHubData = (PUSBPORT_ROOT_HUB_DATA)rootHubData;
-
-    RootHubData->NumberOfPorts = XhciExtension->NumberOfPorts;
-
-   
-    /* 
-        Identifies a Compound Device: Hub is not part of a compound device.
-        Over-current Protection Mode: Global Over-current Protection.
-    */
-    RootHubData->HubCharacteristics.AsUSHORT &= 3;
-    RootHubData->PowerOnToPowerGood = 2;
-    RootHubData->HubControlCurrent = 0;
 }
 
 MPSTATUS
@@ -55,37 +35,6 @@ XHCI_RH_GetPortStatus(IN PVOID xhciExtension,
                       IN USHORT Port,
                       IN PUSB_PORT_STATUS_AND_CHANGE PortStatus)
 {
-    PXHCI_EXTENSION XhciExtension;
-    PULONG PortStatusRegPointer;
-    XHCI_PORT_STATUS_CONTROL PortStatusRegister;
-    USB_PORT_STATUS_AND_CHANGE  portstatus;
-    
-    XhciExtension = (PXHCI_EXTENSION)xhciExtension;
-    ASSERT(Port != 0 && Port <= XhciExtension->NumberOfPorts);
-    PortStatusRegPointer = (XhciExtension->OperationalRegs) + (XHCI_PORTSC + (Port - 1)*4);  
-    PortStatusRegister.AsULONG = READ_REGISTER_ULONG(PortStatusRegPointer);
-    
-   
-    portstatus.AsUlong32 = 0;
-    portstatus.PortStatus.Usb20PortStatus.CurrentConnectStatus = PortStatusRegister.CurrentConnectStatus;
-    portstatus.PortStatus.Usb20PortStatus.PortEnabledDisabled = PortStatusRegister.PortEnableDisable;
-    portstatus.PortStatus.Usb20PortStatus.Suspend = 0;//PortStatusRegister.PortEnableDisable;
-    portstatus.PortStatus.Usb20PortStatus.OverCurrent = PortStatusRegister.OverCurrentActive;
-    portstatus.PortStatus.Usb20PortStatus.Reset = PortStatusRegister.PortReset;
-    portstatus.PortStatus.Usb20PortStatus.PortPower = PortStatusRegister.PortPower;
-    portstatus.PortStatus.Usb20PortStatus.LowSpeedDeviceAttached = 0;//PortStatusRegister.PortEnableDisabl
-    portstatus.PortStatus.Usb20PortStatus.HighSpeedDeviceAttached =  PortStatusRegister.CurrentConnectStatus;
-   
-    portstatus.PortStatus.Usb20PortStatus.PortTestMode = 0;//PortStatusRegister.PortPower;
-    portstatus.PortStatus.Usb20PortStatus.PortIndicatorControl = 0;//PortStatusRegister.PortIndicatorControl;
-    
-    portstatus.PortChange.Usb20PortChange.ConnectStatusChange = PortStatusRegister.ConnectStatusChange;
-    portstatus.PortChange.Usb20PortChange.PortEnableDisableChange = PortStatusRegister.PortEnableDisableChange;
-    portstatus.PortChange.Usb20PortChange.SuspendChange = 0;//PortStatusRegister.ConnectStatusChange;
-    portstatus.PortChange.Usb20PortChange.OverCurrentIndicatorChange = PortStatusRegister.OverCurrentChange;
-    portstatus.PortChange.Usb20PortChange.ResetChange = PortStatusRegister.PortResetChange;
-
-    *PortStatus = portstatus;
     
     return MP_STATUS_SUCCESS;
 }
@@ -122,22 +71,7 @@ NTAPI
 XHCI_RH_SetFeaturePortReset(IN PVOID xhciExtension,
                             IN USHORT Port)
 {
-    
-    PXHCI_EXTENSION XhciExtension;
-    PULONG PortStatusRegPointer;
-    XHCI_PORT_STATUS_CONTROL PortStatusRegister;
-    
     DPRINT1("XHCI_RH_SetFeaturePortReset: function initiated\n");
-    XhciExtension = (PXHCI_EXTENSION)xhciExtension;
-    ASSERT(Port != 0 && Port <= XhciExtension->NumberOfPorts);
-    PortStatusRegPointer = (XhciExtension->OperationalRegs) + (XHCI_PORTSC + (Port - 1)*4);  
-    PortStatusRegister.AsULONG = READ_REGISTER_ULONG(PortStatusRegPointer);
-    
-    PortStatusRegister.AsULONG = PortStatusRegister.AsULONG & PORT_STATUS_MASK;
-    PortStatusRegister.PortReset = 1;
-    
-    WRITE_REGISTER_ULONG(PortStatusRegPointer, PortStatusRegister.AsULONG );
-
     return MP_STATUS_SUCCESS;
 }
 
@@ -146,21 +80,7 @@ NTAPI
 XHCI_RH_SetFeaturePortPower(IN PVOID xhciExtension,
                             IN USHORT Port)
 {
-    
-    PXHCI_EXTENSION XhciExtension;
-    PULONG PortStatusRegPointer;
-    XHCI_PORT_STATUS_CONTROL PortStatusRegister;
     DPRINT1("XHCI_RH_SetFeaturePortPower: function initiated\n");
-    XhciExtension = (PXHCI_EXTENSION)xhciExtension;
-    ASSERT(Port != 0 && Port <= XhciExtension->NumberOfPorts);
-    PortStatusRegPointer = (XhciExtension->OperationalRegs) + (XHCI_PORTSC + (Port - 1)*4);  
-    PortStatusRegister.AsULONG = READ_REGISTER_ULONG(PortStatusRegPointer);
-    
-    PortStatusRegister.AsULONG = PortStatusRegister.AsULONG & PORT_STATUS_MASK;
-    PortStatusRegister.PortPower = 1;
-    
-    WRITE_REGISTER_ULONG(PortStatusRegPointer, PortStatusRegister.AsULONG );
-    
     return MP_STATUS_SUCCESS;
 }
 MPSTATUS
@@ -186,24 +106,7 @@ NTAPI
 XHCI_RH_ClearFeaturePortEnable(IN PVOID xhciExtension,
                                IN USHORT Port)
 {
-    
-    PXHCI_EXTENSION XhciExtension;
-    PULONG PortStatusRegPointer;
-    XHCI_PORT_STATUS_CONTROL PortStatusRegister;
     DPRINT1("XHCI_RH_ClearFeaturePortEnable: function initiated\n");
-    XhciExtension = (PXHCI_EXTENSION)xhciExtension;
-    ASSERT(Port != 0 && Port <= XhciExtension->NumberOfPorts);
-    PortStatusRegPointer = (XhciExtension->OperationalRegs) + (XHCI_PORTSC + (Port - 1)*4);  
-    PortStatusRegister.AsULONG = READ_REGISTER_ULONG(PortStatusRegPointer) ;
-    
-    PortStatusRegister.AsULONG = PortStatusRegister.AsULONG & PORT_STATUS_MASK;
-    PortStatusRegister.PortEnableDisable = 1;
-    
-    WRITE_REGISTER_ULONG(PortStatusRegPointer, PortStatusRegister.AsULONG );
-    
-    PortStatusRegister.AsULONG = READ_REGISTER_ULONG(PortStatusRegPointer) ;
-    
-    ASSERT(PortStatusRegister.PortEnableDisable == 0);
     return MP_STATUS_SUCCESS;    
 }
 
@@ -247,24 +150,7 @@ NTAPI
 XHCI_RH_ClearFeaturePortConnectChange(IN PVOID xhciExtension,
                                       IN USHORT Port)
 {
-    
-    PXHCI_EXTENSION XhciExtension;
-    PULONG PortStatusRegPointer;
-    XHCI_PORT_STATUS_CONTROL PortStatusRegister;
     DPRINT1("XHCI_RH_ClearFeaturePortConnectChange: function initiated\n");
-    XhciExtension = (PXHCI_EXTENSION)xhciExtension;
-    ASSERT(Port != 0 && Port <= XhciExtension->NumberOfPorts);
-    PortStatusRegPointer = (XhciExtension->OperationalRegs) + (XHCI_PORTSC + (Port - 1)*4);  
-    PortStatusRegister.AsULONG = READ_REGISTER_ULONG(PortStatusRegPointer);
-    
-    PortStatusRegister.AsULONG = PortStatusRegister.AsULONG & PORT_STATUS_MASK;
-    PortStatusRegister.ConnectStatusChange = 1;
-    
-    WRITE_REGISTER_ULONG(PortStatusRegPointer, PortStatusRegister.AsULONG );
-    
-    PortStatusRegister.AsULONG = READ_REGISTER_ULONG(PortStatusRegPointer) ;
-    
-    ASSERT(PortStatusRegister.ConnectStatusChange == 0);
     return MP_STATUS_SUCCESS;
 }
 
@@ -273,25 +159,7 @@ NTAPI
 XHCI_RH_ClearFeaturePortResetChange(IN PVOID xhciExtension,
                                     IN USHORT Port)
 {
-    
-    PXHCI_EXTENSION XhciExtension;
-    PULONG PortStatusRegPointer;
-    XHCI_PORT_STATUS_CONTROL PortStatusRegister;
     DPRINT1("XHCI_RH_ClearFeaturePortResetChange: function initiated\n");
-    XhciExtension = (PXHCI_EXTENSION)xhciExtension;
-    ASSERT(Port != 0 && Port <= XhciExtension->NumberOfPorts);
-    PortStatusRegPointer = (XhciExtension->OperationalRegs) + (XHCI_PORTSC + (Port - 1)*4);  
-    
-    PortStatusRegister.AsULONG = READ_REGISTER_ULONG(PortStatusRegPointer);
-
-    PortStatusRegister.AsULONG = PortStatusRegister.AsULONG & PORT_STATUS_MASK;
-    PortStatusRegister.PortResetChange = 1;
-        
-    WRITE_REGISTER_ULONG(PortStatusRegPointer, PortStatusRegister.AsULONG );
-    
-    PortStatusRegister.AsULONG = READ_REGISTER_ULONG(PortStatusRegPointer) ;
-    
-    ASSERT(PortStatusRegister.PortResetChange == 0);
     return MP_STATUS_SUCCESS;
 }
 
@@ -317,19 +185,7 @@ VOID
 NTAPI
 XHCI_RH_DisableIrq(IN PVOID xhciExtension)
 {
-   
-   PXHCI_EXTENSION XhciExtension;
-   PULONG OperationalRegs;
-   XHCI_USB_COMMAND usbCommand;
-   
-   DPRINT("XHCI_RH_DisableIrq: function initiated\n"); 
-   XhciExtension = (PXHCI_EXTENSION)xhciExtension;
-   OperationalRegs = XhciExtension->OperationalRegs;
-   usbCommand.AsULONG =READ_REGISTER_ULONG(OperationalRegs + XHCI_USBCMD);
-   
-   usbCommand.InterrupterEnable = 0;
-   
-   WRITE_REGISTER_ULONG(OperationalRegs + XHCI_USBCMD,usbCommand.AsULONG);
+   DPRINT("XHCI_RH_DisableIrq: function initiated\n");
 }
 
 VOID
@@ -337,16 +193,5 @@ NTAPI
 XHCI_RH_EnableIrq(IN PVOID xhciExtension)
 {
    
-   PXHCI_EXTENSION XhciExtension;
-   PULONG OperationalRegs;
-   XHCI_USB_COMMAND usbCommand;
-   
-   DPRINT("XHCI_RH_EnableIrq: function initiated\n"); 
-   XhciExtension = (PXHCI_EXTENSION)xhciExtension;
-   OperationalRegs = XhciExtension->OperationalRegs;
-   usbCommand.AsULONG =READ_REGISTER_ULONG(OperationalRegs + XHCI_USBCMD);
-   
-   usbCommand.InterrupterEnable = 1;
-   
-   WRITE_REGISTER_ULONG(OperationalRegs + XHCI_USBCMD,usbCommand.AsULONG);
+   DPRINT("XHCI_RH_EnableIrq: function initiated\n");
 }
