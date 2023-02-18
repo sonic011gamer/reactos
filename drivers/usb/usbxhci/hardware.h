@@ -5,6 +5,16 @@
  * PROGRAMMER:      Rama Teja Gampa <ramateja.g@gmail.com>
 */
     
+/* Register Definitions ***************************************************************************/
+// PCI IDs
+#define	PCI_VENDOR_INTEL						0x8086
+#define	PCI_DEVICE_INTEL_PANTHER_POINT_XHCI		0x1e31
+#define	PCI_DEVICE_INTEL_LYNX_POINT_XHCI		0x8c31
+#define	PCI_DEVICE_INTEL_LYNX_POINT_LP_XHCI		0x9c31
+#define	PCI_DEVICE_INTEL_BAYTRAIL_XHCI			0x0f35
+#define	PCI_DEVICE_INTEL_WILDCAT_POINT_XHCI		0x8cb1
+#define	PCI_DEVICE_INTEL_WILDCAT_POINT_LP_XHCI	0x9cb1
+
 // base io addr register offsets
 #define XHCI_HCSP1            1
 #define XHCI_HCSP2            2
@@ -28,6 +38,35 @@
 #define XHCI_ERSTSZ           10
 #define XHCI_ERSTBA           12
 #define XHCI_ERSTDP           14
+
+/* Hardware Structs *******************************************************************************/
+
+/* 5.4.8 */
+//#define XHCI_PORTSC(n)			(0x400 + (0x10 * (n)))
+#define PS_CCS					(1 << 0)
+#define PS_PED					(1 << 1)
+#define PS_OCA					(1 << 3)
+#define PS_PR					(1 << 4)
+#define PS_PP					(1 << 9)
+#define PS_SPEED_GET(x)			(((x) >> 10) & 0xF)
+#define PS_LWS					(1 << 16)
+#define PS_CSC					(1 << 17)
+#define PS_PEC					(1 << 18)
+#define PS_WRC					(1 << 19)
+#define PS_OCC					(1 << 20)
+#define PS_PRC					(1 << 21)
+#define PS_PLC					(1 << 22)
+#define PS_CEC					(1 << 23)
+#define PS_CAS					(1 << 24)
+#define PS_WCE					(1 << 25)
+#define PS_WDE					(1 << 26)
+#define PS_WPR					(1 << 30)
+
+#define PS_CLEAR				0x80FF00F7U
+
+#define PS_PLS_MASK				(0xf << 5)
+#define PS_XDEV_U0				(0x0 << 5)
+#define PS_XDEV_U3				(0x3 << 5)
 
 
 typedef volatile union _XHCI_CAPLENGHT_INTERFACE_VERSION 
@@ -333,3 +372,23 @@ typedef volatile union _XHCI_DOORBELL
     };
     ULONG AsULONG;
 } XHCI_DOORBELL;
+
+typedef struct _XHCI_HCD_TD {
+  /* Hardware*/
+  //EHCI_QUEUE_TD HwTD;
+  /* Software */
+  ULONG PhysicalAddress;
+  ULONG TdFlags;
+  struct _XHCI_ENDPOINT * XhciEndpoint;
+  struct _XHCI_TRANSFER * XhciTransfer;
+  struct _XHCI_HCD_TD * NextHcdTD;
+  struct _XHCI_HCD_TD * AltNextHcdTD;
+  USB_DEFAULT_PIPE_SETUP_PACKET SetupPacket;
+  ULONG LengthThisTD;
+  LIST_ENTRY DoneLink;
+#ifdef _WIN64
+  ULONG Pad[31];
+#else
+  ULONG Pad[40];
+#endif
+} XHCI_HCD_TD, *PXHCI_HCD_TD;

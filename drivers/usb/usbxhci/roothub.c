@@ -12,11 +12,28 @@
 
 VOID
 NTAPI
-XHCI_RH_GetRootHubData(IN PVOID xhciExtension,
-                       IN PVOID rootHubData)
+XHCI_RH_GetRootHubData(_Inout_ PVOID hcExtension,
+                       _Inout_ PVOID rootHubData)
 {
-    
-    DPRINT1("XHCI_RH_GetRootHubData: function initiated\n");
+    PUSBPORT_ROOT_HUB_DATA RootHubData;
+    PXHCI_EXTENSION XhciExtension;
+
+    DPRINT("XHCI_RH_GetRootHubData: function initiated\n");
+    XhciExtension = (PXHCI_EXTENSION)hcExtension;
+    DPRINT_RH("XHCI_RH_GetRootHubData: XhciExtension - %p, rootHubData - %p\n",
+              XhciExtension,
+              rootHubData);
+
+    RootHubData = (PUSBPORT_ROOT_HUB_DATA)rootHubData;
+    RootHubData->NumberOfPorts = XhciExtension->NumberOfPorts;
+
+    /*
+        Identifies a Compound Device: Hub is not part of a compound device.
+        Over-current Protection Mode: Global Over-current Protection.
+    */
+    RootHubData->HubCharacteristics.AsUSHORT &= 3;
+    RootHubData->PowerOnToPowerGood = 2;
+    RootHubData->HubControlCurrent = 0;
 }
 
 MPSTATUS
@@ -77,12 +94,25 @@ XHCI_RH_SetFeaturePortReset(IN PVOID xhciExtension,
 
 MPSTATUS
 NTAPI
-XHCI_RH_SetFeaturePortPower(IN PVOID xhciExtension,
-                            IN USHORT Port)
+XHCI_RH_SetFeaturePortPower(_Inout_ PVOID hcExtension,
+                            _In_    USHORT Port)
 {
+    XHCI_PORT_STATUS_CONTROL PortStatusRegister;
+    PXHCI_EXTENSION XhciExtension;
+    PULONG PortStatusRegPointer;
+
     DPRINT1("XHCI_RH_SetFeaturePortPower: function initiated\n");
+    XhciExtension = (PXHCI_EXTENSION)hcExtension;
+    ASSERT(Port != 0 && Port <= XhciExtension->NumberOfPorts);
+    PortStatusRegPointer = (XhciExtension->OperationalRegs) + (XHCI_PORTSC + (Port - 1)*4);
+    PortStatusRegister.AsULONG = READ_REGISTER_ULONG(PortStatusRegPointer);
+    PortStatusRegister.AsULONG = PortStatusRegister.AsULONG & PORT_STATUS_MASK;
+    PortStatusRegister.PortPower = 1;
+
+    WRITE_REGISTER_ULONG(PortStatusRegPointer, PortStatusRegister.AsULONG );
     return MP_STATUS_SUCCESS;
 }
+
 MPSTATUS
 NTAPI
 XHCI_RH_SetFeaturePortEnable(IN PVOID xhciExtension,
@@ -147,10 +177,25 @@ XHCI_RH_ClearFeaturePortEnableChange(IN PVOID xhciExtension,
 
 MPSTATUS
 NTAPI
-XHCI_RH_ClearFeaturePortConnectChange(IN PVOID xhciExtension,
-                                      IN USHORT Port)
+XHCI_RH_ClearFeaturePortConnectChange(_Inout_ PVOID hcExtension,
+                                      _In_    USHORT Port)
 {
+    XHCI_PORT_STATUS_CONTROL PortStatusRegister;
+    PXHCI_EXTENSION XhciExtension;
+    PULONG PortStatusRegPointer;
+
     DPRINT1("XHCI_RH_ClearFeaturePortConnectChange: function initiated\n");
+    XhciExtension = (PXHCI_EXTENSION)hcExtension;
+    ASSERT(Port != 0 && Port <= XhciExtension->NumberOfPorts);
+    PortStatusRegPointer = (XhciExtension->OperationalRegs) + (XHCI_PORTSC + (Port - 1)*4);
+    PortStatusRegister.AsULONG = READ_REGISTER_ULONG(PortStatusRegPointer);
+    PortStatusRegister.AsULONG = PortStatusRegister.AsULONG & PORT_STATUS_MASK;
+    PortStatusRegister.ConnectStatusChange = 1;
+
+    WRITE_REGISTER_ULONG(PortStatusRegPointer, PortStatusRegister.AsULONG );
+    PortStatusRegister.AsULONG = READ_REGISTER_ULONG(PortStatusRegPointer) ;
+
+    ASSERT(PortStatusRegister.ConnectStatusChange == 0);
     return MP_STATUS_SUCCESS;
 }
 
@@ -183,15 +228,41 @@ XHCI_RH_ClearFeaturePortOvercurrentChange(IN PVOID xhciExtension,
 
 VOID
 NTAPI
-XHCI_RH_DisableIrq(IN PVOID xhciExtension)
+XHCI_RH_DisableIrq(_In_ PVOID hcExtension)
 {
+   PXHCI_EXTENSION XhciExtension;
+   XHCI_USB_COMMAND usbCommand;
+   PULONG OperationalRegs;
+
    DPRINT("XHCI_RH_DisableIrq: function initiated\n");
+   XhciExtension = (PXHCI_EXTENSION)hcExtension;
+   OperationalRegs = XhciExtension->OperationalRegs;
+   usbCommand.AsULONG =READ_REGISTER_ULONG(OperationalRegs + XHCI_USBCMD);
+   if (usbCommand.InterrupterEnable != 0)
+   {
+        usbCommand.InterrupterEnable = 0;
+
+       WRITE_REGISTER_ULONG(OperationalRegs + XHCI_USBCMD,usbCommand.AsULONG);
+   }
+
 }
 
 VOID
 NTAPI
-XHCI_RH_EnableIrq(IN PVOID xhciExtension)
+XHCI_RH_EnableIrq(_In_ PVOID hcExtension)
 {
-   
-   DPRINT("XHCI_RH_EnableIrq: function initiated\n");
+    PXHCI_EXTENSION XhciExtension;
+    XHCI_USB_COMMAND usbCommand;
+    PULONG OperationalRegs;
+
+    DPRINT("XHCI_RH_EnableIrq: function initiated\n");
+    XhciExtension = (PXHCI_EXTENSION)hcExtension;
+    OperationalRegs = XhciExtension->OperationalRegs;
+    usbCommand.AsULONG =READ_REGISTER_ULONG(OperationalRegs + XHCI_USBCMD);
+
+    if (usbCommand.InterrupterEnable != 1)
+    {
+        usbCommand.InterrupterEnable = 1;
+        WRITE_REGISTER_ULONG(OperationalRegs + XHCI_USBCMD,usbCommand.AsULONG);
+    }
 }
