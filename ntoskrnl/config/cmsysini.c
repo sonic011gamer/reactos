@@ -1132,6 +1132,7 @@ CmpCreateRegistryRoot(VOID)
     RootKey->Type = CM_KEY_BODY_TYPE;
     RootKey->NotifyBlock = NULL;
     RootKey->ProcessID = PsGetCurrentProcessId();
+    RootKey->KcbLocked = FALSE;
 
     /* Link with KCB */
     EnlistKeyBodyWithKCB(RootKey, 0);
