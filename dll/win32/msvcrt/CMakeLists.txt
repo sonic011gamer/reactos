@@ -25,6 +25,7 @@ add_definitions(
 
 list(APPEND SOURCE
     dllmain.c
+    wcs.c
     stubs.c
     msvcrt.rc
     ${CMAKE_CURRENT_BINARY_DIR}/msvcrt_stubs.c
