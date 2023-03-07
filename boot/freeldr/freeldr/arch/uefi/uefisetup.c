@@ -12,42 +12,15 @@ DBG_DEFAULT_CHANNEL(WARNING);
 
 /* GLOBALS ********************************************************************/
 
-EFI_GUID EfiGraphicsOutputProtocol = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
-extern EFI_SYSTEM_TABLE *GlobalSystemTable;
+extern EFI_SYSTEM_TABLE* GlobalSystemTable;
 extern EFI_HANDLE GlobalImageHandle;
-EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
 BOOLEAN AcpiPresent = FALSE;
 
 /* FUNCTIONS ******************************************************************/
 
-EFI_STATUS
-UefiHandleService(EFI_STATUS Status)
-{
-    if (Status != EFI_SUCCESS)
-    {
-        TRACE("UEFI Services call has failed with status: %X\n", Status);
-    }
-
-    return Status;
-}
-
 VOID
 MachInit(const char *CmdLine)
 {
-    EFI_STATUS Status = 0;
-    Status = GlobalSystemTable->BootServices->AllocatePool(EfiLoaderData, sizeof(MachVtbl), (void**)&MachVtbl);
-    if (UefiHandleService(Status) != EFI_SUCCESS)
-        ERR("UefiMachInit: Could not allocated memory for MachVtbl");
-
-    /* Setup GOP */
-    Status = GlobalSystemTable->BootServices->LocateProtocol(&EfiGraphicsOutputProtocol, 0, (void**)&gop);
-    if (Status != EFI_SUCCESS)
-        ERR("UefiMachInit: Cannot setup GOP");
-    UefiInitalizeVideo(gop);
-
-    /* Setup Vtbl */
-    RtlZeroMemory(&MachVtbl, sizeof(MachVtbl));
-
     MachVtbl.ConsPutChar = UefiConsPutChar;
     MachVtbl.ConsKbHit = UefiConsKbHit;
     MachVtbl.ConsGetCh = UefiConsGetCh;
@@ -76,4 +49,10 @@ MachInit(const char *CmdLine)
     MachVtbl.InitializeBootDevices = UefiInitializeBootDevices;
     MachVtbl.HwDetect = UefiHwDetect;
     MachVtbl.HwIdle = UefiHwIdle;
+
+    /* Setup GOP */
+    if (UefiInitalizeVideo() != EFI_SUCCESS)
+    {
+        ERR("Failed to setup GOP\n");
+    }
 }

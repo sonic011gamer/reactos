@@ -38,13 +38,6 @@ __cdecl PxeCallApi(USHORT Segment, USHORT Offset, USHORT Service, VOID* Paramete
 //TODOS
 
 VOID
-UefiConsPutChar(int Ch)
-{
-
-}
-
-
-VOID
 UefiVideoGetFontsFromFirmware(PULONG RomFontPointers)
 {
 

@@ -12,7 +12,7 @@ DBG_DEFAULT_CHANNEL(WARNING);
 
 /* GLOBALS ********************************************************************/
 
-extern EFI_SYSTEM_TABLE *GlobalSystemTable;
+extern EFI_SYSTEM_TABLE* GlobalSystemTable;
 
 /* FUNCTIONS ******************************************************************/
 
@@ -21,11 +21,11 @@ UefiGetTime(VOID)
 {
     static TIMEINFO Test;
     EFI_STATUS Status;
-    EFI_TIME time;
+    EFI_TIME time = {0};
 
-    Status = GlobalSystemTable->RuntimeServices->GetTime (&time, NULL);
-    if (UefiHandleService(Status) != EFI_SUCCESS)
-        ERR("UefiGetTime: cannot get time");
+    Status = GlobalSystemTable->RuntimeServices->GetTime(&time, NULL);
+    if (Status != EFI_SUCCESS)
+        ERR("UefiGetTime: cannot get time status %d\n", Status);
 
     Test.Year = time.Year;
     Test.Month = time.Month;

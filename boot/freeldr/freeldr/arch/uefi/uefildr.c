@@ -12,7 +12,7 @@
 /* GLOBALS ********************************************************************/
 
 EFI_HANDLE GlobalImageHandle;
-EFI_SYSTEM_TABLE *GlobalSystemTable;
+EFI_SYSTEM_TABLE* GlobalSystemTable;
 
 /* FUNCTIONS ******************************************************************/
 
@@ -21,7 +21,6 @@ EfiEntry(
     _In_ EFI_HANDLE ImageHandle,
     _In_ EFI_SYSTEM_TABLE *SystemTable)
 {
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"UEFI EntryPoint: Starting freeldr from UEFI");
     GlobalImageHandle = ImageHandle;
     GlobalSystemTable = SystemTable;
 

@@ -3,111 +3,107 @@ include_directories(BEFORE
     ${REACTOS_SOURCE_DIR}/boot/environ/include/efi
     ${REACTOS_SOURCE_DIR}/boot/freeldr/freeldr
     ${REACTOS_SOURCE_DIR}/boot/freeldr/freeldr/include
-    ${REACTOS_SOURCE_DIR}/boot/freeldr/uefi/include
-    ${REACTOS_SOURCE_DIR}/boot/freeldr/uefi/include/efi)
+    ${REACTOS_SOURCE_DIR}/boot/freeldr/freeldr/include/arch/uefi)
 
 include_directories(
     ${REACTOS_SOURCE_DIR}/ntoskrnl/include
     ${REACTOS_SOURCE_DIR}/sdk/lib/cmlib
     ${REACTOS_SOURCE_DIR}/sdk/include/reactos/libs
-    ${REACTOS_SOURCE_DIR}/sdk/include/reactos/elf
-    ${REACTOS_SOURCE_DIR}/sdk/include/reactos/uefi)
+    ${REACTOS_SOURCE_DIR}/sdk/include/reactos/elf)
 
 add_definitions(-DUEFIBOOT -D_NTHAL_ -D_BLDR_ -D_NTSYSTEM_)
 
 list(APPEND FREELDR_BOOTLIB_SOURCE
-    ../freeldr/lib/arcsupp.c
-    ../freeldr/lib/debug.c
-    ../freeldr/lib/peloader.c
-    ../freeldr/lib/cache/blocklist.c
-    ../freeldr/lib/cache/cache.c
-    ../freeldr/lib/comm/rs232.c
-    ../freeldr/lib/fs/btrfs.c
-    ../freeldr/lib/fs/ext2.c
-    ../freeldr/lib/fs/fat.c
-    ../freeldr/lib/fs/fs.c
-    ../freeldr/lib/fs/iso.c
-    ../freeldr/lib/fs/ntfs.c
-    ../freeldr/lib/inifile/ini_init.c
-    ../freeldr/lib/inifile/inifile.c
-    ../freeldr/lib/inifile/parse.c
-    ../freeldr/lib/mm/meminit.c
-    ../freeldr/lib/mm/mm.c
-    ../freeldr/lib/mm/heap.c)
+     ../../lib/arcsupp.c
+     ../../lib/debug.c
+     ../../lib/peloader.c
+     ../../lib/cache/blocklist.c
+     ../../lib/cache/cache.c
+     ../../lib/comm/rs232.c
+     ../../lib/fs/btrfs.c
+     ../../lib/fs/ext2.c
+     ../../lib/fs/fat.c
+     ../../lib/fs/fs.c
+     ../../lib/fs/iso.c
+     ../../lib/fs/ntfs.c
+     ../../lib/inifile/ini_init.c
+     ../../lib/inifile/inifile.c
+     ../../lib/inifile/parse.c
+     ../../lib/mm/meminit.c
+     ../../lib/mm/mm.c
+     ../../lib/mm/heap.c)
 
 list(APPEND FREELDR_NTLDR_SOURCE
-    ${REACTOS_SOURCE_DIR}/ntoskrnl/config/cmboot.c
-    ../freeldr/ntldr/conversion.c
-    ../freeldr/ntldr/registry.c
-    ../freeldr/ntldr/winldr.c
-    ../freeldr/ntldr/wlmemory.c
-    ../freeldr/ntldr/wlregistry.c)
+     ${REACTOS_SOURCE_DIR}/ntoskrnl/config/cmboot.c
+     ../../ntldr/conversion.c
+     ../../ntldr/registry.c
+     ../../ntldr/winldr.c
+     ../../ntldr/wlmemory.c
+     ../../ntldr/wlregistry.c)
 
 list(APPEND FREELDR_ARC_SOURCE
-    ../freeldr/arcname.c
-    ../freeldr/arch/drivers/hwide.c
-    ../freeldr/arch/arcemul.c
-    ../freeldr/arch/archwsup.c
-    ../freeldr/disk/disk.c
-    ../freeldr/disk/partition.c
-    ../freeldr/disk/ramdisk.c)
+     ../drivers/hwide.c
+     ../arcemul.c
+     ../archwsup.c
+     ../../arcname.c
+     ../../disk/disk.c
+     ../../disk/partition.c
+     ../../disk/ramdisk.c)
 
 list(APPEND FREELDR_BOOTMGR_SOURCE
-    ../freeldr/include/freeldr.h
-    ../freeldr/cmdline.c
-    ../freeldr/custom.c
-    ../freeldr/linuxboot.c
-    ../freeldr/miscboot.c
-    ../freeldr/options.c
-    ../freeldr/oslist.c
-    ../freeldr/ui/directui.c
-    ../freeldr/ui/minitui.c
-    ../freeldr/ui/noui.c
-    ../freeldr/ui/tui.c
-    ../freeldr/ui/tuimenu.c
-    ../freeldr/ui/ui.c
-    ../freeldr/ui/video.c)
+     ../../include/freeldr.h
+     ../../cmdline.c
+     ../../custom.c
+     ../../linuxboot.c
+     ../../miscboot.c
+     ../../options.c
+     ../../oslist.c
+     ../../ui/directui.c
+     ../../ui/minitui.c
+     ../../ui/noui.c
+     ../../ui/tui.c
+     ../../ui/tuimenu.c
+     ../../ui/ui.c
+     ../../ui/video.c)
 
 list(APPEND FREELDR_ARC_SOURCE
-    ../freeldr/lib/fs/pxe.c
-    stubs.c
-    uefiutil.c
-    ueficon.c
-    uefisetup.c
-    uefivid.c)
-
-list(APPEND FREELDR_BASE_ASM_SOURCE)
+     ../../lib/fs/pxe.c
+     stubs.c
+     uefiutil.c
+     ueficon.c
+     uefisetup.c
+     uefivid.c)
 
 if(ARCH STREQUAL "i386")
     list(APPEND FREELDR_BOOTMGR_SOURCE
-        ../freeldr/arch/i386/i386bug.c)
+         ../i386/i386bug.c)
     list(APPEND FREELDR_BASE_ASM_SOURCE
-        ../freeldr/arch/i386/multiboot.S)
+         ../i386/multiboot.S)
 
     list(APPEND FREELDR_COMMON_ASM_SOURCE
-        ../freeldr/arch/i386/drvmap.S
-        ../freeldr/arch/i386/int386.S
-        ../freeldr/arch/i386/pnpbios.S
-        ../freeldr/arch/i386/i386trap.S
-        ../freeldr/arch/i386/linux.S)
+         ../i386/drvmap.S
+         ../i386/int386.S
+         ../i386/pnpbios.S
+         ../i386/i386trap.S
+         ../i386/linux.S)
 
     list(APPEND FREELDR_NTLDR_SOURCE
-        ../freeldr/ntldr/arch/i386/winldr.c
-        ../freeldr/ntldr/headless.c)
+        ../../ntldr/arch/i386/winldr.c
+        ../../ntldr/headless.c)
 elseif(ARCH STREQUAL "amd64")
     list(APPEND FREELDR_BOOTMGR_SOURCE
-        ../freeldr/arch/i386/i386bug.c)
+         ../i386/i386bug.c)
     list(APPEND FREELDR_COMMON_ASM_SOURCE
-        arch/amd64/misc.S
-        ../freeldr/arch/amd64/int386.S
-        ../freeldr/arch/amd64/pnpbios.S
-        ../freeldr/arch/amd64/linux.S)
+         arch/amd64/misc.S
+         ../amd64/int386.S
+         ../amd64/linux.S
+         ../amd64/pnpbios.S)
 
     list(APPEND FREELDR_NTLDR_SOURCE
-            ../freeldr/ntldr/arch/amd64/winldr.c)
+         ../../ntldr/arch/amd64/winldr.c)
 elseif(ARCH STREQUAL "arm")
-        list(APPEND FREELDR_NTLDR_SOURCE
-            ../freeldr/ntldr/arch/arm/winldr.c)
+    list(APPEND FREELDR_NTLDR_SOURCE
+         ../../ntldr/arch/arm/winldr.c)
 elseif(ARCH STREQUAL "arm64")
     #TBD
 else()
@@ -135,7 +131,7 @@ set(PCH_SOURCE
     ${FREELDR_NTLDR_SOURCE}
     ${FREELDR_BOOTMGR_SOURCE})
 
-add_pch(uefifreeldr_common include/uefildr.h PCH_SOURCE)
+add_pch(uefifreeldr_common ../../include/arch/uefi/uefildr.h PCH_SOURCE)
 add_dependencies(uefifreeldr_common bugcodes asm xdk)
 
 ## GCC builds need this extra thing for some reason...
@@ -143,23 +139,23 @@ if(ARCH STREQUAL "i386" AND NOT MSVC)
     target_link_libraries(uefifreeldr_common mini_hal)
 endif()
 
-
 if(MSVC)
     # Explicitly use string pooling
     add_compile_options("/GF")
 endif()
 
-spec2def(uefildr.exe ../freeldr/freeldr.spec)
+spec2def(uefildr.exe ../../freeldr.spec)
 
 list(APPEND UEFILDR_BASE_SOURCE
-    include/uefildr.h
-    uefildr.c
-   ../freeldr/bootmgr.c
-   ../freeldr/freeldr.c
-   ../freeldr/ntldr/setupldr.c
-   ../freeldr/ntldr/inffile.c
-   ../freeldr/ntldr/ntldropts.c
-   ../freeldr/lib/rtl/libsupp.c)
+     ../../include/arch/uefi/uefildr.h
+     uefildr.c
+     ../vgafont.c
+     ../../bootmgr.c
+     ../../freeldr.c
+     ../../ntldr/setupldr.c
+     ../../ntldr/inffile.c
+     ../../ntldr/ntldropts.c
+     ../../lib/rtl/libsupp.c)
 
 if(ARCH STREQUAL "i386")
     # Must be included together with disk/scsiport.c

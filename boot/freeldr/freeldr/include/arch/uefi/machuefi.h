@@ -20,8 +20,8 @@ UefiConsKbHit(VOID);
 int
 UefiConsGetCh(void);
 
-VOID
-UefiInitalizeVideo(_In_ EFI_GRAPHICS_OUTPUT_PROTOCOL* gop);
+EFI_STATUS
+UefiInitalizeVideo(VOID);
 
 VOID
 UefiVideoClearScreen(UCHAR Attr);

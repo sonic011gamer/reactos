@@ -1,4 +1,6 @@
 
+add_subdirectory(arch/uefi)
+
 if(MSVC)
     # Explicitly use string pooling
     add_compile_options("/GF")

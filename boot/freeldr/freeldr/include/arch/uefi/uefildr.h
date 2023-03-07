@@ -20,7 +20,7 @@
 #include <Acpi.h>
 #include <GlobalVariable.h>
 #include <debug.h>
-#include <machuefi.h>
+#include "machuefi.h"
 
 //TODO: this version of the struct is temporary
 typedef struct _REACTOS_INTERNAL_BGCONTEXT
@@ -34,7 +34,3 @@ typedef struct _REACTOS_INTERNAL_BGCONTEXT
 } REACTOS_INTERNAL_BGCONTEXT, *PREACTOS_INTERNAL_BGCONTEXT;
 
 VOID __cdecl BootMain(IN PCCH CmdLine);
-
-
-EFI_STATUS
-UefiHandleService(EFI_STATUS Status);

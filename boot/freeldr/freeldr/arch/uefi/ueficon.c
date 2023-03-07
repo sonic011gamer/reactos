@@ -48,7 +48,7 @@ UefiConsPutChar(int c)
     }
     else if (c == '\t')
     {
-        CurrentCursorX = (CurrentCursorX + 8) & ~ 7;
+        CurrentCursorX = (CurrentCursorX + 8) & ~7;
     }
     else
     {
