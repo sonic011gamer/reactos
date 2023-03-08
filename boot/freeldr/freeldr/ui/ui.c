@@ -22,7 +22,7 @@
 #include <debug.h>
 DBG_DEFAULT_CHANNEL(UI);
 
-#ifndef _M_ARM
+#if 1
 
 UCHAR UiStatusBarFgColor;       // Status bar foreground color
 UCHAR UiStatusBarBgColor;       // Status bar background color
@@ -65,7 +65,7 @@ ULONG UiScreenHeight;   // Screen Height
  */
 UI_PROGRESS_BAR UiProgressBar = {{0}};
 
-#ifndef _M_ARM
+#if 1
 
 UIVTBL UiVtbl =
 {
@@ -413,7 +413,7 @@ UiInitProgressBar(
     UiProgressBar.Show = TRUE;
 
     /* Initial drawing: set the "Loading..." text and the original position */
-#ifndef _M_ARM
+#if 1
     UiVtbl.SetProgressBarText(ProgressText);
     UiVtbl.TickProgressBar(0);
 #else
@@ -477,7 +477,7 @@ UiUpdateProgressBar(
     TotalProgress = UiProgressBar.State.Floor + (Percentage * UiProgressBar.State.Bias);
     // TotalProgress /= (100 * 100);
 
-#ifndef _M_ARM
+#if 1
     UiVtbl.TickProgressBar(TotalProgress);
 #else
     MiniTuiTickProgressBar(TotalProgress);
@@ -492,7 +492,7 @@ UiSetProgressBarText(
     if (!UiProgressBar.Show)
         return;
 
-#ifndef _M_ARM
+#if 1
     UiVtbl.SetProgressBarText(ProgressText);
 #else
     MiniTuiSetProgressBarText(ProgressText);
@@ -503,7 +503,7 @@ VOID
 UiDrawProgressBarCenter(
     _In_ PCSTR ProgressText)
 {
-#ifndef _M_ARM
+#if 1
     UiVtbl.DrawProgressBarCenter(ProgressText);
 #else
     MiniTuiDrawProgressBarCenter(ProgressText);
@@ -518,14 +518,14 @@ UiDrawProgressBar(
     _In_ ULONG Bottom,
     _In_ PCSTR ProgressText)
 {
-#ifndef _M_ARM
+#if 1
     UiVtbl.DrawProgressBar(Left, Top, Right, Bottom, ProgressText);
 #else
     MiniTuiDrawProgressBar(Left, Top, Right, Bottom, ProgressText);
 #endif
 }
 
-#ifndef _M_ARM
+#if 1
 
 static VOID
 UiEscapeString(PCHAR String)

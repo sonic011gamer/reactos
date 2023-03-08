@@ -48,7 +48,8 @@ list(APPEND FREELDR_ARC_SOURCE
      ../../arcname.c
      ../../disk/disk.c
      ../../disk/partition.c
-     ../../disk/ramdisk.c)
+     ../../disk/ramdisk.c
+     ../arm/mach.c)
 
 list(APPEND FREELDR_BOOTMGR_SOURCE
      ../../include/freeldr.h
@@ -67,7 +68,7 @@ list(APPEND FREELDR_BOOTMGR_SOURCE
      ../../ui/video.c)
 
 list(APPEND FREELDR_ARC_SOURCE
-     ../../lib/fs/pxe.c
+   #  ../../lib/fs/pxe.c
      stubs.c
      uefiutil.c
      ueficon.c
@@ -167,7 +168,7 @@ endif()
 add_executable(uefildr ${UEFILDR_BASE_SOURCE})
 
 if(MSVC)
-    target_link_options(uefildr PRIVATE /DYNAMICBASE:NO /NXCOMPAT:NO /ignore:4078 /ignore:4254 /DRIVER)
+    target_link_options(uefildr PRIVATE /ignore:4078 /ignore:4254 /DRIVER)
     # We don't need hotpatching
     remove_target_compile_option(uefildr "/hotpatch")
 else()

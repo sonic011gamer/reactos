@@ -18,6 +18,43 @@ BOOLEAN AcpiPresent = FALSE;
 
 /* FUNCTIONS ******************************************************************/
 
+ULONG FirstLevelDcacheSize;
+ULONG FirstLevelDcacheFillSize;
+ULONG FirstLevelIcacheSize;
+ULONG FirstLevelIcacheFillSize;
+ULONG SecondLevelDcacheSize;
+ULONG SecondLevelDcacheFillSize;
+ULONG SecondLevelIcacheSize;
+ULONG SecondLevelIcacheFillSize;
+
+extern ULONG reactos_disk_count;
+
+ULONG SizeBits[] =
+{
+    -1,      // INVALID
+    -1,      // INVALID
+    1 << 12, // 4KB
+    1 << 13, // 8KB
+    1 << 14, // 16KB
+    1 << 15, // 32KB
+    1 << 16, // 64KB
+    1 << 17  // 128KB
+};
+
+ULONG AssocBits[] =
+{
+    -1,      // INVALID
+    -1,      // INVALID
+    4        // 4-way associative
+};
+
+ULONG LenBits[] =
+{
+    -1,      // INVALID
+    -1,      // INVALID
+    8        // 8 words per line (32 bytes)
+};
+
 VOID
 MachInit(const char *CmdLine)
 {

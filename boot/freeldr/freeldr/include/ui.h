@@ -352,6 +352,3 @@ extern UIVTBL UiVtbl;
 #include <ui/minitui.h>
 #include <ui/noui.h>
 #include <ui/tui.h>
-#ifdef _M_ARM
-#include <ui/directui.h>
-#endif

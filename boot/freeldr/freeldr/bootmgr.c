@@ -410,10 +410,8 @@ VOID RunLoader(VOID)
 
         /* If we get there, the OS loader failed. As it may have
          * messed up the display, re-initialize the UI. */
-#ifndef _M_ARM
         UiVtbl.UnInitialize();
-#endif
-        UiInitialize(TRUE);
+
     }
 
 Reboot:

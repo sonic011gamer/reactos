@@ -6,7 +6,7 @@
  * PROGRAMMERS:     Hervé Poussineau
  */
 
-#ifndef _M_ARM
+#if 1
 #include <freeldr.h>
 
 BOOLEAN NoUiInitialize(VOID)

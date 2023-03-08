@@ -13,7 +13,7 @@
 // #define NTLDR_PROGRESSBAR
 // #define BTMGR_PROGRESSBAR /* Default style */
 
-#ifndef _M_ARM
+#if 1
 
 BOOLEAN MiniTuiInitialize(VOID)
 {
@@ -143,7 +143,7 @@ MiniTuiTickProgressBar(
                 UiProgressBar.Right, UiProgressBar.Bottom,
                 ' ', ATTR(UiTextColor, UiMenuBgColor));
 
-#ifndef _M_ARM
+#if 1
     TuiUpdateDateTime();
     VideoCopyOffScreenBufferToVRAM();
 #endif
@@ -191,7 +191,7 @@ MiniTuiDrawMenu(
 {
     ULONG i;
 
-#ifndef _M_ARM
+#if 1
     /* Draw the backdrop */
     UiDrawBackdrop();
 #endif
@@ -239,12 +239,12 @@ MiniTuiDrawMenu(
         DisplayBootTimeOptions();
     }
 
-#ifndef _M_ARM
+#if 1
     VideoCopyOffScreenBufferToVRAM();
 #endif
 }
 
-#ifndef _M_ARM
+#if 1
 
 const UIVTBL MiniTuiVtbl =
 {

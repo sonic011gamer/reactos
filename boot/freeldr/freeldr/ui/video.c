@@ -5,7 +5,7 @@
  * COPYRIGHT:   Copyright 1998-2003 Brian Palmer <brianp@sginet.com>
  */
 
-#ifndef _M_ARM
+#if 1
 #include <freeldr.h>
 
 #define RGB_MAX                 64

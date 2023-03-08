@@ -19,7 +19,7 @@
 
 #include <freeldr.h>
 
-#ifndef _M_ARM
+#if 1
 PVOID TextVideoBuffer = NULL;
 #endif
 
@@ -93,7 +93,7 @@ TuiDrawText2(
     _In_reads_or_z_(MaxNumChars) PCSTR Text,
     _In_ UCHAR Attr)
 {
-#ifndef _M_ARM
+#if 1
     PUCHAR ScreenMemory = (PUCHAR)TextVideoBuffer;
 #endif
     ULONG i, j;
@@ -105,7 +105,7 @@ TuiDrawText2(
     /* Draw the text, not exceeding the width */
     for (i = X, j = 0; Text[j] && i < UiScreenWidth && (MaxNumChars > 0 ? j < MaxNumChars : TRUE); i++, j++)
     {
-#ifndef _M_ARM
+#if 1
         ScreenMemory[((Y*2)*UiScreenWidth)+(i*2)]   = (UCHAR)Text[j];
         ScreenMemory[((Y*2)*UiScreenWidth)+(i*2)+1] = Attr;
 #else
@@ -196,7 +196,7 @@ TuiDrawCenteredText(
 
 /* FULL TUI THEME ************************************************************/
 
-#ifndef _M_ARM
+#if 1
 
 #define TAG_TUI_SCREENBUFFER 'SiuT'
 #define TAG_TUI_PALETTE      'PiuT'
@@ -802,7 +802,7 @@ TuiTickProgressBar(
                 UiProgressBar.Right, UiProgressBar.Bottom,
                 '\xB2', ATTR(UiTextColor, UiMenuBgColor));
 
-#ifndef _M_ARM
+#if 1
     TuiUpdateDateTime();
     VideoCopyOffScreenBufferToVRAM();
 #endif

@@ -29,8 +29,3 @@ EfiEntry(
     //UNREACHABLE
     return 0;
 }
-
-VOID __cdecl Reboot(VOID)
-{
-
-}
