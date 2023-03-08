@@ -72,6 +72,7 @@ list(APPEND FREELDR_ARC_SOURCE
      uefiutil.c
      ueficon.c
      uefisetup.c
+     uefimem.c
      uefivid.c)
 
 if(ARCH STREQUAL "i386")
