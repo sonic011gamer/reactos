@@ -1,8 +1,15 @@
+
 #include <asm.inc>
 #include <arch/pc/x86common.h>
 #include <arch/pc/pcbios.h>
 
 .code64
+
+// void __fastfail(unsigned int Code<rcx>);
+PUBLIC __fastfail
+__fastfail:
+    // mov ecx, [rsp + 4]
+    int HEX(29)
 
 // void __lgdt(void *Source<rcx>);
 PUBLIC __lgdt
@@ -18,6 +25,16 @@ __lgdt:
 PUBLIC __ltr
 __ltr:
     ltr cx
+    ret
+
+// void _sgdt(void *Destination<rcx>);
+PUBLIC __sgdt
+__sgdt:
+#ifdef _USE_ML
+    sgdt fword ptr [rcx]
+#else
+    sgdt cs:[rcx]
+#endif
     ret
 
 END

@@ -94,8 +94,8 @@ elseif(ARCH STREQUAL "amd64")
     list(APPEND FREELDR_BOOTMGR_SOURCE
          ../i386/i386bug.c)
     list(APPEND FREELDR_COMMON_ASM_SOURCE
-         arch/amd64/misc.S
          ../amd64/int386.S
+         ../amd64/misc.S
          ../amd64/linux.S
          ../amd64/pnpbios.S)
 
