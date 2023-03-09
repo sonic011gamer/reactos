@@ -12,8 +12,8 @@
 
     IMPORT KiInitializeSystem
 
-    NESTED_ENTRY KiSystemStartup
-    PROLOG_END KiSystemStartup
+    NESTED_ENTRY KiSystemStartupAsm
+    PROLOG_END KiSystemStartupAsm
 
     /* Put us in FIQ mode, set IRQ stack */
     b .
@@ -46,7 +46,7 @@
     /* Go to C code */
     b KiInitializeSystem
 
-    NESTED_END KiSystemStartup
+    NESTED_END KiSystemStartupAsm
 
     END
 /* EOF */

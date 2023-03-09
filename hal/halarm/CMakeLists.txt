@@ -18,7 +18,9 @@ function(add_hal _halname)
         list(APPEND _haldata_SOURCES "$<TARGET_OBJECTS:lib_hal_${_component}>")
     endforeach()
     add_library(${_halname} MODULE
-        ${_haldata_SOURCES})
+        ${_haldata_SOURCES}
+        ${CMAKE_CURRENT_BINARY_DIR}/hal.def
+        ${CMAKE_CURRENT_BINARY_DIR}/hal_stubs.c)
 
     add_importlibs(${_halname} ntoskrnl)
     add_dependencies(${_halname} psdk asm)

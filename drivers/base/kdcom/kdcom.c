@@ -7,7 +7,7 @@
  */
 
 #include "kddll.h"
-
+#define QEMUUART 0x09000000
 #include <cportlib/cportlib.h>
 #include <arc/arc.h>
 #include <stdio.h>
@@ -40,7 +40,7 @@ const ULONG BaseArray[] = {0, 0x800003F8};
 #elif defined(_M_MIPS)
 const ULONG BaseArray[] = {0, 0x80006000, 0x80007000};
 #elif defined(_M_ARM)
-const ULONG BaseArray[] = {0, 0xF1012000};
+const ULONG BaseArray[] = {0,  QEMUUART};
 #else
 #error Unknown architecture
 #endif

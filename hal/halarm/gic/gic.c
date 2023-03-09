@@ -35,13 +35,7 @@ HalGetInterruptSource(VOID)
 /*
  * @implemented
  */
-KIRQL
-NTAPI
-KeGetCurrentIrql(VOID)
-{
-    /* Return the IRQL */
-    return KeGetPcr()->CurrentIrql;
-}
+
 
 /*
  * @implemented

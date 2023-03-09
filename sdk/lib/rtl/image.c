@@ -450,7 +450,6 @@ LdrProcessRelocationBlockLongLong(
 #ifdef _M_ARM
         case IMAGE_REL_BASED_THUMB_MOV32:
             LongPtr = (PULONG)RVA(Address, Offset);
-            *LongPtr = SWAPD(*LongPtr) + (Delta & 0xFFFFFFFF);
             break;
 #endif
         default:

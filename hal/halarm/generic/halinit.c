@@ -153,33 +153,4 @@ HalInitSystem(IN ULONG BootPhase,
     /* All done, return */
     return TRUE;
 }
-
-/* TODO: fix me..?  */
-#include <internal/kd.h>
-ULONG
-DbgPrintEarly(const char *fmt, ...)
-{
-    va_list args;
-    unsigned int i;
-    char Buffer[1024];
-    PCHAR String = Buffer;
-
-    va_start(args, fmt);
-    i = vsprintf(Buffer, fmt, args);
-    va_end(args);
-
-    /* Output the message */
-    while (*String != 0)
-    {
-        if (*String == '\n')
-        {
-           //KdPortPutByteEx(NULL, '\r');
-        }
-        //KdPortPutByteEx(NULL, *String);
-        String++;
-    }
-
-    return STATUS_SUCCESS;
-}
-
 /* EOF */

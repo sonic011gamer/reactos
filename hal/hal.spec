@@ -37,7 +37,7 @@
 @ stdcall HalQueryDisplayParameters(ptr ptr ptr ptr)
 @ stdcall HalQueryRealTimeClock(ptr)
 @ stdcall HalReadDmaCounter(ptr)
-@ stdcall HalReportResourceUsage()
+@ stdcall -stub HalReportResourceUsage()
 @ stdcall HalRequestIpi(long)
 @ fastcall HalRequestSoftwareInterrupt(long)
 @ stdcall HalReturnToFirmware(long)
@@ -65,7 +65,7 @@
 @ stdcall -arch=i386,x86_64 IoReadPartitionTable(ptr long long ptr) HalpReadPartitionTable
 @ stdcall -arch=i386,x86_64 IoSetPartitionInformation(ptr long long long) HalpSetPartitionInformation
 @ stdcall -arch=i386,x86_64 IoWritePartitionTable(ptr long long long ptr) HalpWritePartitionTable
-@ extern KdComPortInUse
+@ stub KdComPortInUse
 @ fastcall -arch=i386,arm KeAcquireInStackQueuedSpinLock(ptr ptr)
 @ fastcall -arch=i386,arm KeAcquireInStackQueuedSpinLockRaiseToSynch(ptr ptr)
 @ fastcall -arch=i386,arm KeAcquireQueuedSpinLock(ptr)
@@ -73,7 +73,7 @@
 @ stdcall -arch=i386,arm KeAcquireSpinLock(ptr ptr)
 @ fastcall -arch=i386,arm KeAcquireSpinLockRaiseToSynch(ptr)
 @ stdcall KeFlushWriteBuffer()
-@ stdcall -arch=i386,arm KeGetCurrentIrql()
+@ stdcall -stub -arch=i386,arm KeGetCurrentIrql()
 @ stdcall -arch=i386,arm KeLowerIrql(long)
 @ stdcall KeQueryPerformanceCounter(ptr)
 @ stdcall -arch=i386,arm KeRaiseIrql(long ptr)

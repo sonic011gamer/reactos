@@ -19,6 +19,44 @@ KdPortPutByteEx(
     UCHAR ByteToSend
 );
 
+
+#define QEMUUART 0x09000000
+volatile unsigned int * UART0DR = (unsigned int *) QEMUUART;
+
+VOID
+ARMWriteToUART(UCHAR Data)
+{
+    *UART0DR = Data;
+}
+
+ULONG
+DbgPrintEarly(const char *fmt, ...)
+{
+    va_list args;
+    unsigned int i;
+    char Buffer[1024];
+    PCHAR String = Buffer;
+
+    va_start(args, fmt);
+    i = vsprintf(Buffer, fmt, args);
+    va_end(args);
+
+    /* Output the message */
+    while (*String != 0)
+    {
+        if (*String == '\n')
+        {
+
+            ARMWriteToUART('\r');
+        }
+        ARMWriteToUART(*String);
+        String++;
+    }
+
+    return STATUS_SUCCESS;
+}
+
+
 /* GLOBALS ********************************************************************/
 
 KINTERRUPT KxUnexpectedInterrupt;
@@ -49,6 +87,7 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
                    IN CCHAR Number,
                    IN PLOADER_PARAMETER_BLOCK LoaderBlock)
 {
+    DPRINT1("KiInitializeKernel");
     PKIPCR Pcr = (PKIPCR)KeGetPcr();
     ULONG PageDirectory[2];
     ULONG i;
@@ -338,8 +377,9 @@ KiInitializeSystem(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
     PKIPCR Pcr = (PKIPCR)KeGetPcr();
     PKTHREAD Thread;
 
+    DbgPrintEarly("KiInitializeSystem: Flushing Tlb\n");
     /* Flush the TLB */
-    KeFlushTb();
+  //  KeFlushTb();
 
     /* Save the loader block and get the current CPU */
     KeLoaderBlock = LoaderBlock;
@@ -358,6 +398,7 @@ KiInitializeSystem(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
     /* Skip initial setup if this isn't the Boot CPU */
     if (Cpu) goto AppCpuInit;
 
+    DbgPrintEarly("KiInitializeSystem: PCR\n");
     /* Initialize the PCR */
     RtlZeroMemory(Pcr, PAGE_SIZE);
     KiInitializePcr(Cpu,
@@ -365,11 +406,15 @@ KiInitializeSystem(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
                     InitialThread,
                     (PVOID)LoaderBlock->u.Arm.PanicStack,
                     (PVOID)LoaderBlock->u.Arm.InterruptStack);
-
+    DbgPrintEarly("KiInitializeSystem: Sweeping cache\n");
     /* Now sweep caches */
     HalSweepIcache();
     HalSweepDcache();
+    DbgPrintEarly("KiInitializeSystem: returning from Cache Sweep\n");
+    for(;;)
+    {
 
+    }
     /* Set us as the current process */
     InitialThread->ApcState.Process = InitialProcess;
 
@@ -377,9 +422,10 @@ AppCpuInit:
     /* Setup CPU-related fields */
     Pcr->PrcbData.Number = Cpu;
     Pcr->PrcbData.SetMember = 1 << Cpu;
-
     /* Initialize the Processor with HAL */
+    DbgPrintEarly("\nKiInitializeSystem: Setting up HAL\n");
     HalInitializeProcessor(Cpu, KeLoaderBlock);
+    DbgPrintEarly("KiInitializeSystem: HAL has been setup\n");
 
     /* Set active processors */
     KeActiveProcessors |= Pcr->PrcbData.SetMember;
@@ -390,13 +436,12 @@ AppCpuInit:
     {
         /* Initialize debugging system */
         KdInitSystem(0, KeLoaderBlock);
+        DPRINT1("Left KD init\n");
 
         /* Check for break-in */
         if (KdPollBreakIn()) DbgBreakPointWithStatus(DBG_STATUS_CONTROL_C);
     }
-
-    /* Raise to HIGH_LEVEL */
-    KfRaiseIrql(HIGH_LEVEL);
+    DPRINT1("Rasing irql");
 
     /* Set the exception address to high */
     ControlRegister = KeArmControlRegisterGet();
@@ -429,28 +474,13 @@ AppCpuInit:
     KiIdleLoop();
 }
 
-ULONG
-DbgPrintEarly(const char *fmt, ...)
+void KiSystemStartupAsm();
+CODE_SEG("INIT")
+DECLSPEC_NORETURN
+VOID
+NTAPI
+KiSystemStartup(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
 {
-    va_list args;
-    unsigned int i;
-    char Buffer[1024];
-    PCHAR String = Buffer;
-
-    va_start(args, fmt);
-    i = vsprintf(Buffer, fmt, args);
-    va_end(args);
-
-    /* Output the message */
-    while (*String != 0)
-    {
-        if (*String == '\n')
-        {
-            KdPortPutByteEx(NULL, '\r');
-        }
-        KdPortPutByteEx(NULL, *String);
-        String++;
-    }
-
-    return STATUS_SUCCESS;
+    DbgPrintEarly("Entering KiSystemStartup with LoaderBlock VA Of %X\n", LoaderBlock);
+    KiInitializeSystem(LoaderBlock);
 }

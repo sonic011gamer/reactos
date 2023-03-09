@@ -1205,7 +1205,7 @@ LoadAndBootWindowsCommon(
 
     /* Load boot drivers */
     UiSetProgressBarText("Loading boot drivers...");
-    Success = WinLdrLoadBootDrivers(LoaderBlock, BootPath);
+  //  Success = WinLdrLoadBootDrivers(LoaderBlock, BootPath);
     TRACE("Boot drivers loading %s\n", Success ? "successful" : "failed");
 
     UiSetProgressBarSubset(0, 100);
@@ -1246,15 +1246,6 @@ LoadAndBootWindowsCommon(
 
     TRACE("Hello from paged mode, KiSystemStartup %p, LoaderBlockVA %p!\n",
           KiSystemStartup, LoaderBlockVA);
-
-    /* Zero KI_USER_SHARED_DATA page */
-    RtlZeroMemory((PVOID)KI_USER_SHARED_DATA, MM_PAGE_SIZE);
-
-    WinLdrpDumpMemoryDescriptors(LoaderBlockVA);
-    WinLdrpDumpBootDriver(LoaderBlockVA);
-#ifndef _M_AMD64
-    WinLdrpDumpArcDisks(LoaderBlockVA);
-#endif
 
     /* Pass control */
     (*KiSystemStartup)(LoaderBlockVA);
