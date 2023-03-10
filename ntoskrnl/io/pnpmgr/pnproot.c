@@ -363,7 +363,7 @@ tryagain:
     Device->Pdo->Flags |= DO_BUS_ENUMERATED_DEVICE;
     Device->Pdo->Flags &= ~DO_DEVICE_INITIALIZING;
 
-    InsertTailList(
+    (
         &DeviceExtension->DeviceListHead,
         &Device->ListEntry);
     DeviceExtension->DeviceListCount++;

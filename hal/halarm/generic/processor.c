@@ -162,6 +162,7 @@ VOID
 HalSweepIcache(VOID)
 {
 
+    DbgPrintEarly("HAL JUMP");
     /* All ARM cores support the same Icache flush command */
    // KeArmFlushIcache();
 }

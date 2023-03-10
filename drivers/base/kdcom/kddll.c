@@ -84,6 +84,7 @@ KdReceivePacket(
     OUT PULONG DataLength,
     IN OUT PKD_CONTEXT KdContext)
 {
+
     UCHAR Byte = 0;
     KDP_STATUS KdStatus;
     KD_PACKET Packet;

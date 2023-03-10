@@ -85,6 +85,10 @@ NTAPI
 KdDebuggerInitialize0(
     IN PLOADER_PARAMETER_BLOCK LoaderBlock OPTIONAL)
 {
+    for(;;)
+    {
+
+    }
     ULONG i;
     PCHAR CommandLine, Port = NULL;
 

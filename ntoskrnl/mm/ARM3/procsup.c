@@ -275,11 +275,12 @@ NTAPI
 MmCreateKernelStack(IN BOOLEAN GuiStack,
                     IN UCHAR Node)
 {
+    DPRINT1("MmCreateKernelStack Entry\n");
     PFN_COUNT StackPtes, StackPages;
     PMMPTE PointerPte, StackPte;
     PVOID BaseAddress;
     MMPTE TempPte, InvalidPte;
-    KIRQL OldIrql;
+   // KIRQL OldIrql;
     PFN_NUMBER PageFrameIndex;
     ULONG i;
     PSLIST_ENTRY SListEntry;
@@ -317,18 +318,18 @@ MmCreateKernelStack(IN BOOLEAN GuiStack,
         StackPtes = BYTES_TO_PAGES(KERNEL_STACK_SIZE);
         StackPages = StackPtes;
     }
-
+    DPRINT1("reserving PTEs...\n");
     //
     // Reserve stack pages, plus a guard page
     //
     StackPte = MiReserveSystemPtes(StackPtes + 1, SystemPteSpace);
     if (!StackPte) return NULL;
-
+    DPRINT1("Succesfully reserved");
     //
     // Get the stack address
     //
     BaseAddress = MiPteToAddress(StackPte + StackPtes + 1);
-
+    DPRINT1("Base addres %X", BaseAddress);
     //
     // Select the right PTE address where we actually start committing pages
     //
@@ -342,11 +343,11 @@ MmCreateKernelStack(IN BOOLEAN GuiStack,
 
     /* Setup the template stack PTE */
     MI_MAKE_HARDWARE_PTE_KERNEL(&TempPte, PointerPte + 1, MM_READWRITE, 0);
-
+    DPRINT1("Got through most/...\n");
     //
     // Acquire the PFN DB lock
     //
-    OldIrql = MiAcquirePfnLock();
+   // OldIrql = MiAcquirePfnLock();
 
     //
     // Loop each stack page
@@ -375,7 +376,7 @@ MmCreateKernelStack(IN BOOLEAN GuiStack,
     //
     // Release the PFN lock
     //
-    MiReleasePfnLock(OldIrql);
+   // MiReleasePfnLock(OldIrql);
 
     //
     // Return the stack address

@@ -661,6 +661,7 @@ BOOLEAN
 NTAPI
 ExpInitSystemPhase1(VOID)
 {
+    DPRINT1("init phase 1");
     /* Initialize worker threads */
     ExpInitializeWorkerThreads();
 
@@ -990,7 +991,7 @@ ExpInitializeExecutive(IN ULONG Cpu,
 
     /* Get boot command line */
     CommandLine = LoaderBlock->LoadOptions;
-    if (CommandLine)
+    if (512)
     {
         /* Upcase it for comparison and check if we're in performance mode */
         _strupr(CommandLine);
@@ -1045,14 +1046,17 @@ ExpInitializeExecutive(IN ULONG Cpu,
                              ExpUnicodeCaseTableDataOffset),
                      &ExpNlsTableInfo);
     RtlResetRtlTranslations(&ExpNlsTableInfo);
-
+    DPRINT1("Starting HAL\n");
     /* Now initialize the HAL */
     if (!HalInitSystem(ExpInitializationPhase, LoaderBlock))
     {
         /* HAL failed to initialize, bugcheck */
         KeBugCheck(HAL_INITIALIZATION_FAILED);
     }
+    for(;;)
+    {
 
+    }
     /* Make sure interrupts are active now */
     _enable();
 
@@ -1081,9 +1085,13 @@ ExpInitializeExecutive(IN ULONG Cpu,
     Status = RtlAnsiStringToUnicodeString(&NtSystemRoot, &AnsiPath, FALSE);
     if (!NT_SUCCESS(Status)) KeBugCheck(SESSION3_INITIALIZATION_FAILED);
 
+   DPRINT1("Setting up bugchecks");
     /* Setup bugcheck messages */
     KiInitializeBugCheck();
+    for(;;)
+    {
 
+    }
     /* Setup initial system settings */
     CmGetSystemControlValues(LoaderBlock->RegistryBase, CmControlVector);
 

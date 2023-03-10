@@ -87,24 +87,21 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
                    IN CCHAR Number,
                    IN PLOADER_PARAMETER_BLOCK LoaderBlock)
 {
-    DPRINT1("KiInitializeKernel");
+    DPRINT1("KiInitializeKernel\n");
     PKIPCR Pcr = (PKIPCR)KeGetPcr();
     ULONG PageDirectory[2];
     ULONG i;
 
     /* Set the default NX policy (opt-in) */
-    SharedUserData->NXSupportPolicy = NX_SUPPORT_POLICY_OPTIN;
-
+   // SharedUserData->NXSupportPolicy = NX_SUPPORT_POLICY_OPTIN;
+    DPRINT1("prepping spinlocks\n");
     /* Initialize spinlocks and DPC data */
-    KiInitSpinLocks(Prcb, Number);
+   KiInitSpinLocks(Prcb, Number);
 
     /* Set stack pointers */
     //Pcr->InitialStack = IdleStack;
     Pcr->PrcbData.SpBase = IdleStack; // ???
 
-    /* Check if this is the Boot CPU */
-    if (!Number)
-    {
         /* Setup the unexpected interrupt */
         KxUnexpectedInterrupt.DispatchAddress = KiUnexpectedInterrupt;
         for (i = 0; i < 4; i++)
@@ -117,7 +114,7 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
         KiDmaIoCoherency = 0;
 
         /* Sweep D-Cache */
-        HalSweepDcache();
+        //HalSweepDcache();
 
         /* Set boot-level flags */
         KeProcessorArchitecture = PROCESSOR_ARCHITECTURE_ARM;
@@ -130,8 +127,8 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
         Prcb->MultiThreadSetMaster = Prcb;
 #endif
         /* Lower to APC_LEVEL */
-        KeLowerIrql(APC_LEVEL);
-
+      //  KeLowerIrql(APC_LEVEL);
+        DPRINT1("Setting up first portable parts of the OS\n");
         /* Initialize portable parts of the OS */
         KiInitSystem();
 
@@ -145,12 +142,7 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
                             PageDirectory,
                             FALSE);
         InitProcess->QuantumReset = MAXCHAR;
-    }
-    else
-    {
-        /* FIXME-V6: See if we want to support MP */
-        DPRINT1("ARM MPCore not supported\n");
-    }
+
 
     /* Setup the Idle Thread */
     KeInitializeThread(InitProcess,
@@ -161,6 +153,7 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
                        NULL,
                        NULL,
                        IdleStack);
+
     InitThread->NextProcessor = Number;
     InitThread->Priority = HIGH_PRIORITY;
     InitThread->State = Running;
@@ -175,9 +168,9 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
     Prcb->CurrentThread = InitThread;
     Prcb->NextThread = NULL;
     Prcb->IdleThread = InitThread;
-
+    DPRINT1("starting kerneleexecutive\n");
     /* Initialize the Kernel Executive */
-    ExpInitializeExecutive(Number, LoaderBlock);
+    ExpInitializeExecutive(0, LoaderBlock);
 
     /* Only do this on the boot CPU */
     if (!Number)
@@ -194,18 +187,18 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
     }
 
     /* Raise to Dispatch */
-    KfRaiseIrql(DISPATCH_LEVEL);
+ //   KfRaiseIrql(DISPATCH_LEVEL);
 
     /* Set the Idle Priority to 0. This will jump into Phase 1 */
     KeSetPriorityThread(InitThread, 0);
 
     /* If there's no thread scheduled, put this CPU in the Idle summary */
-    KiAcquirePrcbLock(Prcb);
+   // KiAcquirePrcbLock(Prcb);
     if (!Prcb->NextThread) KiIdleSummary |= 1 << Number;
-    KiReleasePrcbLock(Prcb);
+   // KiReleasePrcbLock(Prcb);
 
     /* Raise back to HIGH_LEVEL and clear the PRCB for the loader block */
-    KfRaiseIrql(HIGH_LEVEL);
+   // KfRaiseIrql(HIGH_LEVEL);
     LoaderBlock->Prcb = 0;
 }
 
@@ -389,11 +382,9 @@ KiInitializeSystem(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
     InitialThread = (PKTHREAD)LoaderBlock->Thread;
     InitialProcess = (PKPROCESS)LoaderBlock->Process;
 
+    DbgPrintEarly("KiInitializeSystem: Cleaning APC List head\n");
     /* Clean the APC List Head */
     InitializeListHead(&InitialThread->ApcState.ApcListHead[KernelMode]);
-
-    /* Initialize the machine type */
-    KiInitializeMachineType();
 
     /* Skip initial setup if this isn't the Boot CPU */
     if (Cpu) goto AppCpuInit;
@@ -406,16 +397,8 @@ KiInitializeSystem(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
                     InitialThread,
                     (PVOID)LoaderBlock->u.Arm.PanicStack,
                     (PVOID)LoaderBlock->u.Arm.InterruptStack);
-    DbgPrintEarly("KiInitializeSystem: Sweeping cache\n");
-    /* Now sweep caches */
-    HalSweepIcache();
-    HalSweepDcache();
-    DbgPrintEarly("KiInitializeSystem: returning from Cache Sweep\n");
-    for(;;)
-    {
 
-    }
-    /* Set us as the current process */
+/* Set us as the current process */
     InitialThread->ApcState.Process = InitialProcess;
 
 AppCpuInit:
@@ -439,9 +422,9 @@ AppCpuInit:
         DPRINT1("Left KD init\n");
 
         /* Check for break-in */
-        if (KdPollBreakIn()) DbgBreakPointWithStatus(DBG_STATUS_CONTROL_C);
+       // if (KdPollBreakIn()) DbgBreakPointWithStatus(DBG_STATUS_CONTROL_C);
     }
-    DPRINT1("Rasing irql");
+    DPRINT1("Rasing irql\n");
 
     /* Set the exception address to high */
     ControlRegister = KeArmControlRegisterGet();
@@ -449,8 +432,8 @@ AppCpuInit:
     KeArmControlRegisterSet(ControlRegister);
 
     /* Setup the exception vector table */
-    RtlCopyMemory((PVOID)0xFFFF0000, &KiArmVectorTable, 14 * sizeof(PVOID));
-
+   // RtlCopyMemory((PVOID)0xFFFF0000, &KiArmVectorTable, 14 * sizeof(PVOID));
+    DPRINT1("Entering KiInitializeKernel\n");
     /* Initialize the rest of the kernel now */
     KiInitializeKernel((PKPROCESS)LoaderBlock->Process,
                        (PKTHREAD)LoaderBlock->Thread,
@@ -458,7 +441,7 @@ AppCpuInit:
                        &Pcr->PrcbData,
                        Pcr->PrcbData.Number,
                        KeLoaderBlock);
-
+    DPRINT1("leaving init kernel\n");
     /* Set the priority of this thread to 0 */
     Thread = KeGetCurrentThread();
     Thread->Priority = 0;

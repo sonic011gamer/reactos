@@ -46,7 +46,9 @@ KiSwitchThreads(
     IN PKTHREAD NewThread
 );
 
-
+PKTRAP_FRAME TrapFrame;
+PKEXCEPTION_FRAME CtxSwitchFrame;
+PKEXCEPTION_FRAME ExceptionFrame;
 /* FIXME: THIS IS TOTALLY BUSTED NOW */
 VOID
 NTAPI
@@ -56,27 +58,33 @@ KiInitializeContextThread(IN PKTHREAD Thread,
                           IN PVOID StartContext,
                           IN PCONTEXT ContextPointer)
 {
-    PKTRAP_FRAME TrapFrame;
-    PKEXCEPTION_FRAME ExceptionFrame = NULL, CtxSwitchFrame;
+
 
     //
     // Check if this is a user thread
     //
     if (ContextPointer)
     {
+
         //
         // Setup the initial frame
         //
         PKUINIT_FRAME InitFrame;
         InitFrame = (PKUINIT_FRAME)((ULONG_PTR)Thread->InitialStack -
                                     sizeof(KUINIT_FRAME));
+for(;;)
+{
 
+}
         //
         // Setup the Trap Frame and Exception frame
         //
         TrapFrame = &InitFrame->TrapFrame;
         ExceptionFrame = &InitFrame->ExceptionFrame;
+    for(;;)
+    {
 
+    }
         ///
         // Zero out the trap frame and exception frame
         //
@@ -91,7 +99,10 @@ KiInitializeContextThread(IN PKTHREAD Thread,
                              TrapFrame,
                              ContextPointer->ContextFlags | CONTEXT_CONTROL,
                              UserMode);
+        for(;;)
+        {
 
+        }
         //
         // Set the previous mode as user
         //
@@ -132,7 +143,7 @@ KiInitializeContextThread(IN PKTHREAD Thread,
     // Now setup the context switch frame
     //
     CtxSwitchFrame->Return = (ULONG)KiThreadStartup;
-    CtxSwitchFrame->R11 = (ULONG)(ExceptionFrame ? ExceptionFrame : CtxSwitchFrame);
+   // CtxSwitchFrame->R11 = (ULONG)(ExceptionFrame ? ExceptionFrame : CtxSwitchFrame);
 
     //
     // Set the parameters

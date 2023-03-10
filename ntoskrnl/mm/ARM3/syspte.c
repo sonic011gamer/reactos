@@ -89,26 +89,23 @@ MiReserveAlignedSystemPtes(IN ULONG NumberOfPtes,
                            IN MMSYSTEM_PTE_POOL_TYPE SystemPtePoolType,
                            IN ULONG Alignment)
 {
-    KIRQL OldIrql;
+  //  KIRQL OldIrql;
     PMMPTE PreviousPte, NextPte, ReturnPte;
     ULONG ClusterSize;
 
-    //
-    // Sanity check
-    //
-    ASSERT(Alignment <= PAGE_SIZE);
+
 
     //
     // Acquire the System PTE lock
     //
-    OldIrql = KeAcquireQueuedSpinLock(LockQueueSystemSpaceLock);
+  //  OldIrql = KeAcquireQueuedSpinLock(LockQueueSystemSpaceLock);
 
     //
     // Find the last cluster in the list that doesn't contain enough PTEs
     //
     PreviousPte = &MmFirstFreeSystemPte[SystemPtePoolType];
-
-    while (PreviousPte->u.List.NextEntry != MM_EMPTY_PTE_LIST)
+    DPRINT1("going into pte loop\n");
+    while (PreviousPte->u.List.NextEntry != 0)
     {
         //
         // Get the next cluster and its size
@@ -127,24 +124,15 @@ MiReserveAlignedSystemPtes(IN ULONG NumberOfPtes,
         //
         PreviousPte = NextPte;
     }
+    DPRINT1("left");
 
-    //
-    // Make sure we didn't reach the end of the cluster list
-    //
-    if (PreviousPte->u.List.NextEntry == MM_EMPTY_PTE_LIST)
-    {
-        //
-        // Release the System PTE lock and return failure
-        //
-        KeReleaseQueuedSpinLock(LockQueueSystemSpaceLock, OldIrql);
-        return NULL;
-    }
 
     //
     // Unlink the cluster
     //
-    PreviousPte->u.List.NextEntry = NextPte->u.List.NextEntry;
+    //PreviousPte->u.List.NextEntry = NextPte->u.List.NextEntry;
 
+    DPRINT1("ahhhh");
     //
     // Check if the reservation spans the whole cluster
     //
@@ -192,7 +180,7 @@ MiReserveAlignedSystemPtes(IN ULONG NumberOfPtes,
         //
         PreviousPte = &MmFirstFreeSystemPte[SystemPtePoolType];
 
-        while (PreviousPte->u.List.NextEntry != MM_EMPTY_PTE_LIST)
+        while (PreviousPte->u.List.NextEntry != 0)
         {
             //
             // Get the next cluster
@@ -219,7 +207,7 @@ MiReserveAlignedSystemPtes(IN ULONG NumberOfPtes,
         NextPte->u.List.NextEntry = PreviousPte->u.List.NextEntry;
         PreviousPte->u.List.NextEntry = NextPte - MmSystemPteBase;
     }
-
+    DPRINT1("Decrease avaiable\n");
     //
     // Decrease availability
     //
@@ -228,13 +216,13 @@ MiReserveAlignedSystemPtes(IN ULONG NumberOfPtes,
     //
     // Release the System PTE lock
     //
-    KeReleaseQueuedSpinLock(LockQueueSystemSpaceLock, OldIrql);
+   // KeReleaseQueuedSpinLock(LockQueueSystemSpaceLock, OldIrql);
 
     //
     // Flush the TLB
     //
-    KeFlushProcessTb();
-
+    //KeFlushProcessTb();
+    DPRINT1("allocating PTEs...");
     //
     // Return the reserved PTEs
     //

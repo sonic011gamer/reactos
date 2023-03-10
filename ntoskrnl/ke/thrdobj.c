@@ -497,7 +497,7 @@ VOID
 NTAPI
 KeStartThread(IN OUT PKTHREAD Thread)
 {
-    KLOCK_QUEUE_HANDLE LockHandle;
+    //KLOCK_QUEUE_HANDLE LockHandle;
 #ifdef CONFIG_SMP
     PKNODE Node;
     PKPRCB NodePrcb;
@@ -516,13 +516,14 @@ KeStartThread(IN OUT PKTHREAD Thread)
     Thread->SystemAffinityActive = FALSE;
 
     /* Lock the process */
-    KiAcquireProcessLockRaiseToSynch(Process, &LockHandle);
+ //   KiAcquireProcessLockRaiseToSynch(Process, &LockHandle);
 
     /* Setup volatile data */
     Thread->Priority = Process->BasePriority;
     Thread->BasePriority = Process->BasePriority;
     Thread->Affinity = Process->Affinity;
     Thread->UserAffinity = Process->Affinity;
+    DPRINT1("starting thread...\n");
 
 #ifdef CONFIG_SMP
     /* Get the KNODE and its PRCB */
@@ -545,7 +546,7 @@ KeStartThread(IN OUT PKTHREAD Thread)
     Process->ThreadSeed = IdealProcessor;
 
     /* Sanity check */
-    ASSERT((Thread->UserAffinity & AFFINITY_MASK(IdealProcessor)));
+   // ASSERT((Thread->UserAffinity & AFFINITY_MASK(IdealProcessor)));
 #endif
 
     /* Set the Ideal Processor */
@@ -553,18 +554,15 @@ KeStartThread(IN OUT PKTHREAD Thread)
     Thread->UserIdealProcessor = IdealProcessor;
 
     /* Lock the Dispatcher Database */
-    KiAcquireDispatcherLockAtSynchLevel();
-
+   // KiAcquireDispatcherLockAtSynchLevel();
     /* Insert the thread into the process list */
-    InsertTailList(&Process->ThreadListHead, &Thread->ThreadListEntry);
 
     /* Increase the stack count */
-    ASSERT(Process->StackCount != MAXULONG_PTR);
-    Process->StackCount++;
+    //ASSERT(Process->StackCount != MAXULONG_PTR);
 
     /* Release locks and return */
-    KiReleaseDispatcherLockFromSynchLevel();
-    KiReleaseProcessLock(&LockHandle);
+    //KiReleaseDispatcherLockFromSynchLevel();
+   // KiReleaseProcessLock(&LockHandle);
 }
 
 VOID
@@ -802,7 +800,7 @@ KeInitThread(IN OUT PKTHREAD Thread,
     Thread->AdjustReason = AdjustNone;
 
     /* Initialize the lock */
-    KeInitializeSpinLock(&Thread->ThreadLock);
+  //  KeInitializeSpinLock(&Thread->ThreadLock);
 
     /* Setup the Service Descriptor Table for Native Calls */
     Thread->ServiceTable = KeServiceDescriptorTable;
@@ -815,7 +813,7 @@ KeInitThread(IN OUT PKTHREAD Thread,
     Thread->ApcStatePointer[AttachedApcEnvironment] = &Thread->SavedApcState;
     Thread->ApcStateIndex = OriginalApcEnvironment;
     Thread->ApcQueueable = TRUE;
-    KeInitializeSpinLock(&Thread->ApcQueueLock);
+   // KeInitializeSpinLock(&Thread->ApcQueueLock);
 
     /* Initialize the Suspend APC */
     KeInitializeApc(&Thread->SuspendApc,
@@ -850,14 +848,15 @@ KeInitThread(IN OUT PKTHREAD Thread,
     /* Check if we have a kernel stack */
     if (!KernelStack)
     {
+        DPRINT1("Creating kernel stack for new thread\n");
         /* We don't, allocate one */
-        KernelStack = MmCreateKernelStack(FALSE, 0);
-        if (!KernelStack) return STATUS_INSUFFICIENT_RESOURCES;
+        KernelStack = NULL;
+        DPRINT1("Stack loc %X\n", KernelStack);
+        //if (!KernelStack) return STATUS_INSUFFICIENT_RESOURCES;
 
         /* Remember for later */
         AllocatedStack = TRUE;
     }
-
     /* Set the Thread Stacks */
     Thread->InitialStack = KernelStack;
     Thread->StackBase = KernelStack;
@@ -866,29 +865,7 @@ KeInitThread(IN OUT PKTHREAD Thread,
 
     /* Enter SEH to avoid crashes due to user mode */
     Status = STATUS_SUCCESS;
-    _SEH2_TRY
-    {
-        /* Initialize the Thread Context */
-        KiInitializeContextThread(Thread,
-                                  SystemRoutine,
-                                  StartRoutine,
-                                  StartContext,
-                                  Context);
-    }
-    _SEH2_EXCEPT(EXCEPTION_EXECUTE_HANDLER)
-    {
-        /* Set failure status */
-        Status = STATUS_UNSUCCESSFUL;
 
-        /* Check if a stack was allocated */
-        if (AllocatedStack)
-        {
-            /* Delete the stack */
-            MmDeleteKernelStack((PVOID)Thread->StackBase, FALSE);
-            Thread->InitialStack = NULL;
-        }
-    }
-    _SEH2_END;
 
     /* Set the Thread to initialized */
     Thread->State = Initialized;
@@ -919,6 +896,7 @@ KeInitializeThread(IN PKPROCESS Process,
         /* Start it */
         KeStartThread(Thread);
     }
+    DPRINT1("Started thread");
 }
 
 VOID

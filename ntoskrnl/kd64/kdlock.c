@@ -74,50 +74,24 @@ BOOLEAN
 NTAPI
 KdPollBreakIn(VOID)
 {
-    BOOLEAN DoBreak = FALSE, Enable;
+    BOOLEAN DoBreak = FALSE;
 
-    /* First make sure that KD is enabled */
-    if (KdDebuggerEnabled)
+    /* Now get a packet */
+    if (KdReceivePacket(PACKET_TYPE_KD_POLL_BREAKIN,
+                        NULL,
+                        NULL,
+                        NULL,
+                        NULL) == KdPacketReceived)
     {
-        /* Disable interrupts */
-        Enable = KeDisableInterrupts();
-
-        /* Check if a CTRL-C is in the queue */
-        if (KdpContext.KdpControlCPending)
-        {
-            /* Set it and prepare for break */
-            KdpControlCPressed = TRUE;
-            DoBreak = TRUE;
-            KdpContext.KdpControlCPending = FALSE;
-        }
-        else
-        {
-            KIRQL OldIrql;
-            /* Try to acquire the lock */
-            KeRaiseIrql(HIGH_LEVEL, &OldIrql);
-            if (KeTryToAcquireSpinLockAtDpcLevel(&KdpDebuggerLock))
-            {
-                /* Now get a packet */
-                if (KdReceivePacket(PACKET_TYPE_KD_POLL_BREAKIN,
-                                    NULL,
-                                    NULL,
-                                    NULL,
-                                    NULL) == KdPacketReceived)
-                {
-                    /* Successful breakin */
-                    DoBreak = TRUE;
-                    KdpControlCPressed = TRUE;
-                }
-
-                /* Let go of the port */
-                KdpPortUnlock();
-            }
-            KeLowerIrql(OldIrql);
-        }
-
-        /* Re-enable interrupts */
-        KeRestoreInterrupts(Enable);
+        /* Successful breakin */
+        DoBreak = TRUE;
+        KdpControlCPressed = TRUE;
     }
+
+    /* Let go of the port */
+                KdpPortUnlock();
+
+
 
     /* Tell the caller to do a break */
     return DoBreak;

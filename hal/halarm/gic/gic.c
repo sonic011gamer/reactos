@@ -62,26 +62,54 @@ KeRaiseIrqlToSynchLevel(VOID)
 }
 
 /*
- * @implemented
+ * @unimplemented
  */
 KIRQL
 FASTCALL
 KfRaiseIrql(IN KIRQL NewIrql)
 {
-    UNIMPLEMENTED;
-    while (TRUE);
-    return 0;
+    PKPCR Pcr = KeGetPcr();
+    KIRQL CurrentIrql;
+    /* Read current IRQL */
+    CurrentIrql = Pcr->CurrentIrql;
+
+#ifdef IRQL_DEBUG
+    /* Validate correct raise */
+    if (CurrentIrql > NewIrql)
+    {
+        /* Crash system */
+        //Pcr->Irql = PASSIVE_LEVEL;
+        //KeBugCheck(IRQL_NOT_GREATER_OR_EQUAL);
+    }
+#endif
+    /* Set new IRQL */
+    Pcr->CurrentIrql = NewIrql;
+
+    /* Return old IRQL */
+    return CurrentIrql;
 }
 
 /*
- * @implemented
+ * @unmplemented
  */
 VOID
 FASTCALL
 KfLowerIrql(IN KIRQL NewIrql)
 {
-    UNIMPLEMENTED;
-    while (TRUE);
+
+    PKPCR Pcr = KeGetPcr();
+#ifdef IRQL_DEBUG
+    /* Validate correct lower */
+    if (OldIrql > Pcr->Irql)
+    {
+        /* Crash system */
+       // Pcr->Irql = HIGH_LEVEL;
+        //KeBugCheck(IRQL_NOT_LESS_OR_EQUAL);
+    }
+#endif
+
+    /* Save the new IRQL and restore interrupt state */
+    Pcr->CurrentIrql = NewIrql;
 }
 
 /* SOFTWARE INTERRUPTS ********************************************************/

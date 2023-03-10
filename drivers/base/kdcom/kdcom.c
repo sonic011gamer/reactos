@@ -243,6 +243,7 @@ KdDebuggerInitialize0(IN PLOADER_PARAMETER_BLOCK LoaderBlock OPTIONAL)
     }
 
 #ifdef KDDEBUG
+#ifndef _M_ARM
     /*
      * Try to find a free COM port and use it as the KD debugging port.
      * NOTE: Inspired by reactos/boot/freeldr/freeldr/comm/rs232.c, Rs232PortInitialize(...)
@@ -265,9 +266,9 @@ KdDebuggerInitialize0(IN PLOADER_PARAMETER_BLOCK LoaderBlock OPTIONAL)
         CpInitialize(&KdDebugComPort, UlongToPtr(BaseArray[ComPort]), DEFAULT_BAUD_RATE);
     }
 #endif
+#endif
 
     KDDBGPRINT("KdDebuggerInitialize0\n");
-
     /* Initialize the port */
     return KdpPortInitialize(ComPortNumber, ComPortBaudRate);
 }
