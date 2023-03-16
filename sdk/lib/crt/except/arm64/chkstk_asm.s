@@ -3,6 +3,7 @@
 
 /* We need one of these first! */
 /* #include <kxarm64.h> */
+#include <kxarm64.h>
 
 /* CODE **********************************************************************/
     TEXTAREA
