@@ -133,5 +133,7 @@ list(APPEND FREELDR_BASE_SOURCE
 #     list(APPEND FREELDR_BASE_SOURCE
 #         ${CMAKE_CURRENT_BINARY_DIR}/freeldr_pe.def)
 # endif()
-
+if(ARCH STREQUAL "i386" OR ARCH STREQUAL "amd64")
 include(pcat.cmake)
+endif()
+include(uefi.cmake)
