@@ -1,6 +1,9 @@
 $if (_WDMDDK_)
 /** Kernel definitions for ARM64 **/
-
+typedef struct _KFLOATING_SAVE
+{
+    ULONG Reserved;
+} KFLOATING_SAVE, *PKFLOATING_SAVE;
 /* Interrupt request levels */
 #define PASSIVE_LEVEL           0
 #define LOW_LEVEL               0
@@ -159,7 +162,6 @@ KeFlushIoBuffers(
 
 $endif (_WDMDDK_)
 $if (_NTDDK_)
-
 #define ARM64_MAX_BREAKPOINTS 8
 #define ARM64_MAX_WATCHPOINTS 2
 
@@ -246,4 +248,52 @@ typedef struct _CONTEXT {
     ULONG64 Wvr[ARM64_MAX_WATCHPOINTS];
 
 } CONTEXT, *PCONTEXT;
+
+typedef struct _KPCR
+{
+    _ANONYMOUS_UNION union
+    {
+        NT_TIB NtTib;
+        _ANONYMOUS_STRUCT struct
+        {
+            ULONG TibPad0[2];
+            PVOID Spare1;
+            struct _KPCR *Self;
+            struct _KPRCB *CurrentPrcb;
+            PKSPIN_LOCK_QUEUE LockArray;
+            PVOID Used_Self;
+        };
+    };
+    KIRQL CurrentIrql;
+    UCHAR SecondLevelCacheAssociativity;
+    ULONG Unused0[3];
+    USHORT MajorVersion;
+    USHORT MinorVersion;
+    ULONG StallScaleFactor;
+    PVOID Unused1[3];
+    ULONG KernelReserved[15];
+    ULONG SecondLevelCacheSize;
+    _ANONYMOUS_UNION union
+    {
+        USHORT SoftwareInterruptPending; // Software Interrupt Pending Flag
+        struct
+        {
+            UCHAR ApcInterrupt;          // 0x01 if APC int pending
+            UCHAR DispatchInterrupt;     // 0x01 if dispatch int pending
+        };
+    };
+    USHORT InterruptPad;
+    ULONG HalReserved[32];
+    PVOID KdVersionBlock;
+    PVOID Unused3;
+    ULONG PcrAlign1[8];
+} KPCR, *PKPCR;
+
+FORCEINLINE
+PKPCR
+KeGetPcr(
+    VOID)
+{
+    return (PKPCR)NULL;
+}
 $endif

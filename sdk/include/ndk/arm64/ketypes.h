@@ -499,62 +499,59 @@ typedef struct _KIPCR
 {
     union
     {
+        NT_TIB NtTib;
         struct
         {
             ULONG TibPad0[2];
             PVOID Spare1;
             struct _KPCR *Self;
-            PVOID  PcrReserved0;
+            struct _KPRCB *CurrentPrcb;
             struct _KSPIN_LOCK_QUEUE* LockArray;
             PVOID Used_Self;
         };
     };
     KIRQL CurrentIrql;
     UCHAR SecondLevelCacheAssociativity;
-    UCHAR Pad1[2];
+    ULONG Unused0[3];
     USHORT MajorVersion;
     USHORT MinorVersion;
     ULONG StallScaleFactor;
+    PVOID Unused1[3];
+    ULONG KernelReserved[15];
     ULONG SecondLevelCacheSize;
-    struct
+    union
     {
-        UCHAR ApcInterrupt;
-        UCHAR DispatchInterrupt;
+        USHORT SoftwareInterruptPending;
+        struct
+        {
+            UCHAR ApcInterrupt;
+            UCHAR DispatchInterrupt;
+        };
     };
     USHORT InterruptPad;
-    UCHAR BtiMitigation;
-    struct
-    {
-        UCHAR SsbMitigationFirmware:1;
-        UCHAR SsbMitigationDynamic:1;
-        UCHAR SsbMitigationKernel:1;
-        UCHAR SsbMitigationUser:1;
-        UCHAR SsbMitigationReserved:4;
-    };
-    UCHAR Pad2[2];
-    ULONG64 PanicStorage[6];
+    ULONG HalReserved[32];
     PVOID KdVersionBlock;
-    PVOID HalReserved[134];
-    PVOID KvaUserModeTtbr1;
+    PVOID Unused3;
+    ULONG PcrAlign1[8];
 
     /* Private members, not in ntddk.h */
     PVOID Idt[256];
     PVOID* IdtExt;
-    PVOID PcrAlign[15];
+    ULONG PcrAlign2[19];
+    UCHAR _PADDING1_[0x4];
     KPRCB Prcb;
 } KIPCR, *PKIPCR;
 
 //
 // Macro to get current KPRCB
 //
+
 FORCEINLINE
 struct _KPRCB *
 KeGetCurrentPrcb(VOID)
-{  
-    //UNIMPLEMENTED;
-    return 0;
+{
+    return KeGetPcr()->CurrentPrcb;
 }
-
 //
 // Just read it from the PCR
 //
