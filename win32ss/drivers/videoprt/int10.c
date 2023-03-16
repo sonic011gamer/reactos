@@ -28,6 +28,7 @@
 #define NDEBUG
 #include <debug.h>
 
+#ifndef _M_ARM64 // No no you silly BIOS
 /* PRIVATE FUNCTIONS **********************************************************/
 
 #define IsLowV86Mem(_Seg, _Off) ((((_Seg) << 4) + (_Off)) < (0xa0000))
@@ -479,3 +480,4 @@ VideoPortInt10(
 
     return Status;
 }
+#endif
