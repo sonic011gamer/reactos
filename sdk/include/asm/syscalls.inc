@@ -112,6 +112,7 @@ MACRO(STUBCODE_K, Name, SyscallId, ArgCount)
     j KiSystemService
     nop
 ENDM
+#elif defined(_M_ARM64)
 #else
 #error unsupported architecture
 #endif

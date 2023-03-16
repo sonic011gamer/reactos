@@ -1000,7 +1000,9 @@ int _isunordered(double, double);
 int _isunorderedf(float, float);
 
 #endif /* _M_ARM */
-
+#ifdef _M_ARM64
+void __break(int);
+#endif
 #if defined(_M_CEE_PURE)
 
 long _InterlockedCompareExchange(_Interlocked_operand_ long volatile * _Destination, long _Exchange, long _Comparand);
