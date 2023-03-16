@@ -1,18 +1,19 @@
 #pragma once
-
+#ifndef _M_ARM64
 //
 // ARM Headers
 //
 #include <internal/arm/ke.h>
 #include <internal/arm/intrin_i.h>
-
 //
 // Versatile Peripherals
 //
 #include <peripherals/pl011.h>
 #include <peripherals/pl190.h>
 #include <peripherals/sp804.h>
-
+#else
+//#include <internal/arm64/ke.h>
+#endif
 #define PRIMARY_VECTOR_BASE     0x00
 
 /* Usage flags */
