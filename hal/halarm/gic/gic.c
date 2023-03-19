@@ -33,35 +33,6 @@ HalGetInterruptSource(VOID)
 }
 
 /*
- * @implemented
- */
-
-
-/*
- * @implemented
- */
-KIRQL
-NTAPI
-KeRaiseIrqlToDpcLevel(VOID)
-{
-    UNIMPLEMENTED;
-    while (TRUE);
-    return 0;
-}
-
-/*
- * @implemented
- */
-KIRQL
-NTAPI
-KeRaiseIrqlToSynchLevel(VOID)
-{
-    UNIMPLEMENTED;
-    while (TRUE);
-    return 0;
-}
-
-/*
  * @unimplemented
  */
 KIRQL
