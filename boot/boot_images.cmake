@@ -159,8 +159,7 @@ add_custom_target(livecd
         -eltorito-alt-boot -eltorito-platform efi -eltorito-boot loader/efisys.bin
         -sort ${CMAKE_CURRENT_BINARY_DIR}/bootfiles.sort
         -no-cache-inodes -graft-points -path-list ${CMAKE_CURRENT_BINARY_DIR}/livecd.$<CONFIG>.lst
-    COMMAND native-isohybrid -t 0x96 ${REACTOS_BINARY_DIR}/livecd.iso
-    DEPENDS native-isohybrid native-mkisofs
+    DEPENDS native-mkisofs
     VERBATIM)
 endif()
 
