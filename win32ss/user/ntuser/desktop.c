@@ -379,9 +379,7 @@ GetSystemVersionString(OUT PWSTR pwszzVersion,
         /* String for Safe Mode */
         Status = RtlStringCchPrintfW(pwszzVersion,
                                      cchDest,
-                                     L"ReactOS Version %S %wZ (NT %u.%u Build %u%s)\n",
-                                     KERNEL_VERSION_STR,
-                                     &BuildLabString,
+                                     L"ReactOS Longhorn Build 5000 (NT %u.%u Build %u%s)\n",
                                      SharedUserData->NtMajorVersion,
                                      SharedUserData->NtMinorVersion,
                                      (VerInfo.dwBuildNumber & 0xFFFF),
@@ -419,10 +417,9 @@ GetSystemVersionString(OUT PWSTR pwszzVersion,
         /* Multi-string for Normal Mode */
         Status = RtlStringCchPrintfW(pwszzVersion,
                                      cchDest,
-                                     L"ReactOS Version %S\n"
+                                     L"ReactOS Longhorn Build 5000\n"
                                      L"Build %wZ\n"
                                      L"Reporting NT %u.%u (Build %u%s)\n",
-                                     KERNEL_VERSION_STR,
                                      &BuildLabString,
                                      SharedUserData->NtMajorVersion,
                                      SharedUserData->NtMinorVersion,
