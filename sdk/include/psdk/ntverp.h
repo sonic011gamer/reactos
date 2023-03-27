@@ -13,6 +13,14 @@
  * PROGRAMMERS:     Alex Ionescu (alex.ionescu@reactos.org)
  */
 
+#define VER_PRODUCTBUILD                    7601
+#define VER_PRODUCTBUILD_QFE                17514
+#define VER_PRODUCTMAJORVERSION             6
+#define VER_PRODUCTMINORVERSION             1
+#define VER_PRODUCTVERSION_W                (0x0601)
+#define VER_PRODUCTVERSION_DW               (0x06010000 | VER_PRODUCTBUILD)
+
+#if 0
 //
 // Windows NT Build 3790.3959
 //
@@ -26,7 +34,7 @@
 #define VER_PRODUCTMINORVERSION             2
 #define VER_PRODUCTVERSION_W                (0x0502)
 #define VER_PRODUCTVERSION_DW               (0x05020000 | VER_PRODUCTBUILD)
-
+#endif
 //
 // Not a beta
 //
