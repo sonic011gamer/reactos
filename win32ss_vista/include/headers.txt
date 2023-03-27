@@ -1,0 +1,4 @@
+These are HEADERS that have begun the process of being stripped fdown
+from the public windows SDK
+More work to be done.
+version 1.0
