@@ -76,7 +76,7 @@ WINE_DEFAULT_DEBUG_CHANNEL(nls);
  * Our cache takes the form of a singly linked list, whose node is below:
  */
 #define NLS_NUM_CACHED_STRINGS 57
-
+LCID WINAPI LocaleNameToLCID( LPCWSTR name, DWORD flags );
 typedef struct _NLS_FORMAT_NODE
 {
   LCID  lcid;         /* Locale Id */
@@ -929,7 +929,7 @@ INT WINAPI GetDateFormatA( LCID lcid, DWORD dwFlags, const SYSTEMTIME* lpTime,
                                 lpFormat, lpDateStr, cchOut);
 }
 
-#if _WIN32_WINNT >= 0x600
+#if 1
 /******************************************************************************
  * GetDateFormatEx [KERNEL32.@]
  *
@@ -1037,7 +1037,7 @@ INT WINAPI GetTimeFormatA(LCID lcid, DWORD dwFlags, const SYSTEMTIME* lpTime,
                                 lpFormat, lpTimeStr, cchOut);
 }
 
-#if _WIN32_WINNT >= 0x600
+#if 1
 /******************************************************************************
  * GetTimeFormatEx [KERNEL32.@]
  *
@@ -1431,7 +1431,7 @@ error:
   return 0;
 }
 
-#if _WIN32_WINNT >= 0x600
+#if 1
 /**************************************************************************
  *              GetNumberFormatEx	(KERNEL32.@)
  */
@@ -1847,7 +1847,7 @@ error:
   return 0;
 }
 
-#if _WIN32_WINNT >= 0x600
+#if 1
 /***********************************************************************
  *            GetCurrencyFormatEx (KERNEL32.@)
  */
@@ -2029,7 +2029,7 @@ BOOL WINAPI EnumDateFormatsW(DATEFMT_ENUMPROCW proc, LCID lcid, DWORD flags)
     return NLS_EnumDateFormats(&ctxt);
 }
 
-#if _WIN32_WINNT >= 0x600
+#if 1
 /**************************************************************************
  *              EnumDateFormatsExEx	(KERNEL32.@)
  */
@@ -2153,7 +2153,7 @@ BOOL WINAPI EnumTimeFormatsW(TIMEFMT_ENUMPROCW proc, LCID lcid, DWORD flags)
     return NLS_EnumTimeFormats(&ctxt);
 }
 
-#if _WIN32_WINNT >= 0x600
+#if 1
 /**************************************************************************
  *              EnumTimeFormatsEx	(KERNEL32.@)
  */
@@ -2401,7 +2401,7 @@ BOOL WINAPI EnumCalendarInfoExW( CALINFO_ENUMPROCEXW calinfoproc,LCID locale,
   return NLS_EnumCalendarInfo(&ctxt);
 }
 
-#if _WIN32_WINNT >= 0x600
+#if 1
 /******************************************************************************
  *		EnumCalendarInfoExEx	[KERNEL32.@]
  */
@@ -2792,7 +2792,7 @@ int WINAPI GetCalendarInfoW(LCID Locale, CALID Calendar, CALTYPE CalType,
     return 0;
 }
 
-#if _WIN32_WINNT >= 0x600
+#if 1
 /*********************************************************************
  *	GetCalendarInfoEx				(KERNEL32.@)
  */
