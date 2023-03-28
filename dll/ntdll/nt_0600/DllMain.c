@@ -49,18 +49,3 @@ DllMain(HANDLE hDll,
     }
     return TRUE;
 }
-static DWORD default_search_flags;  /* default flags set by LdrSetDefaultDllDirectories */
-
-NTSTATUS
-NTAPI 
-LdrSetDefaultDllDirectories( ULONG flags )
-{
-   /* LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR doesn't make sense in default dirs */
- const ULONG load_library_search_flags = (LOAD_LIBRARY_SEARCH_APPLICATION_DIR |
-                                             LOAD_LIBRARY_SEARCH_USER_DIRS |
-                                            LOAD_LIBRARY_SEARCH_SYSTEM32 |
-                                            LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
-        if (!flags || (flags & ~load_library_search_flags)) return STATUS_INVALID_PARAMETER;
-    default_search_flags = flags;
-  return STATUS_SUCCESS;
- }

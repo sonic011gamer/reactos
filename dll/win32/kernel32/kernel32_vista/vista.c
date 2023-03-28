@@ -776,7 +776,8 @@ GetUILanguageInfo(
     return FALSE;
 }
 
-
+NTSTATUS WINAPI RtlGetUserPreferredUILanguages( DWORD flags, ULONG unknown, ULONG *count,
+                                                WCHAR *buffer, ULONG *size );
 /*
  * @unimplemented
  */
@@ -788,9 +789,9 @@ GetUserPreferredUILanguages(
     PZZWSTR pwszLanguagesBuffer,
     PULONG pcchLanguagesBuffer)
 {
-    DPRINT1("%x %p %p %p\n", dwFlags, pulNumLanguages, pwszLanguagesBuffer, pcchLanguagesBuffer);
-    SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
-    return FALSE;
+
+    RtlGetUserPreferredUILanguages( dwFlags, 0, pulNumLanguages, pwszLanguagesBuffer, pcchLanguagesBuffer );
+    return TRUE;
 }
 
 /*

@@ -50,7 +50,7 @@ HRESULT APIENTRY CtfImmTIMDestroyInputContext(HIMC hIMC)
 HRESULT APIENTRY CtfImmTIMCreateInputContext(HIMC hIMC)
 {
     TRACE("(%p)\n", hIMC);
-    return E_NOTIMPL;
+   return STATUS_SUCCESS;
 }
 
 /***********************************************************************
@@ -75,7 +75,7 @@ BOOL WINAPI CtfImmIsTextFrameServiceDisabled(VOID)
 HRESULT WINAPI CtfImmTIMActivate(HKL hKL)
 {
     FIXME("(%p)\n", hKL);
-    return E_NOTIMPL;
+    return STATUS_SUCCESS;
 }
 
 /***********************************************************************

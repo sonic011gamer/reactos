@@ -3403,7 +3403,7 @@ DWORD WINAPI DECLSPEC_HOTPATCH GetAdaptersAddresses(ULONG Family,ULONG Flags,PVO
 BOOL WINAPI CancelIPChangeNotify(LPOVERLAPPED notifyOverlapped)
 {
     FIXME(":stub\n");
-    return 0L;
+    return FALSE;
 }
 
 /*

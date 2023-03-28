@@ -2809,3 +2809,15 @@ LdrpUnloadShimEngine()
 }
 
 /* EOF */
+
+static DWORD default_search_flags;  /* default flags set by LdrSetDefaultDllDirectories */
+
+NTSTATUS
+NTAPI 
+LdrSetDefaultDllDirectories( ULONG flags )
+{
+
+  return STATUS_SUCCESS;
+ }
+
+ 

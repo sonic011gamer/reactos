@@ -26,7 +26,7 @@
 @ stdcall -version=0xA00+ -arch=win32 SHDeleteEmptyKeyW() shlwapi.SHDeleteEmptyKeyW
 @ stdcall -version=0xA00+ -arch=win32 SHDeleteKeyA() shlwapi.SHDeleteKeyA
 @ stdcall -version=0xA00+ -arch=win32 SHDeleteKeyW() shlwapi.SHDeleteKeyW
-@ stdcall -version=0xA00+ -arch=win32 SHDeleteValueA() shlwapi.SHDeleteValueA
+@ stdcall -version=0x+ -arch=win32 SHDeleteValueA() shlwapi.SHDeleteValueA
 @ stdcall -version=0xA00+ -arch=win32 SHDeleteValueW() shlwapi.SHDeleteValueW
 @ stdcall -version=0xA00+ -arch=win32 SHEnumKeyExA() shlwapi.SHEnumKeyExA
 @ stdcall -version=0xA00+ -arch=win32 SHEnumKeyExW() shlwapi.SHEnumKeyExW

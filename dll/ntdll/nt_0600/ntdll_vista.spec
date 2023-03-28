@@ -14,9 +14,3 @@
 @ stdcall RtlRunOnceExecuteOnce(ptr ptr ptr ptr)
 @ stdcall RtlConnectToSm(ptr ptr long ptr) SmConnectToSm
 @ stdcall RtlSendMsgToSm(ptr ptr) SmSendMsgToSm
-
-@ stdcall RtlCompareUnicodeStrings(ptr long ptr long long)
-
-@ stdcall RtlRemovePrivileges(ptr ptr long)
-@ stdcall RtlGetProductInfo(long long long long ptr)
-@ stdcall LdrSetDefaultDllDirectories(long)

@@ -56,7 +56,7 @@
 @ stdcall _getdllprocaddr() msvcrt._getdllprocaddr
 @ stdcall _getpid() msvcrt._getpid
 @ stub _initialize_narrow_environment
-@ cdecl -stub -version=0xA00+ _initialize_onexit_table(ptr)
+@ cdecl -stub -version=0x600+ _initialize_onexit_table(ptr)
 @ stub _initialize_wide_environment
 @ stdcall _initterm() msvcrt._initterm
 @ cdecl -version=0x600+ _initterm_e(ptr ptr) msvcrt._initterm_e
@@ -64,7 +64,7 @@
 @ stub _invalid_parameter_noinfo_noreturn
 @ stub _invoke_watson
 @ stub _query_app_type
-@ cdecl -stub -version=0xA00+ _register_onexit_function(ptr ptr)
+@ cdecl -stub -version=0x600+ _register_onexit_function(ptr ptr)
 @ stub _register_thread_local_exe_atexit_callback
 @ stdcall _resetstkoflw() msvcrt._resetstkoflw
 @ cdecl -version=0x600+ _seh_filter_dll() msvcrt.__CppXcptFilter
