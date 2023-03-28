@@ -411,7 +411,7 @@ typedef struct _D3DKMDT_VIDEO_SIGNAL_INFO
         struct
         {
             // Scan line ordering (e.g. progressive, interlaced).
-            D3DDDI_VIDEO_SIGNAL_SCANLINE_ORDERING ScanLineOrdering : 3;
+           // D3DDDI_VIDEO_SIGNAL_SCANLINE_ORDERING ScanLineOrdering : 3;
 
             // Vertical refresh frequency divider
             UINT VSyncFreqDivider               : 6;
@@ -2266,4 +2266,4 @@ typedef BYTE DXGK_DISPLAY_TECHNOLOGY;
 typedef BYTE DXGK_DISPLAY_DESCRIPTOR_TYPE;
 #endif // defined(__cplusplus) && !defined(SORTPP_PASS)
 
-#endif  D3DKMDT_H
+#endif // D3DKMDT_H
