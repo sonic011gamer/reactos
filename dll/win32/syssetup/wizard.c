@@ -1896,6 +1896,7 @@ static struct ThemeInfo
     { MAKEINTRESOURCE(IDB_LAUTUS), IDS_LAUTUS, L"themes\\lautus\\lautus.msstyles" },
     { MAKEINTRESOURCE(IDB_LUNAR), IDS_LUNAR, L"themes\\lunar\\lunar.msstyles" },
     { MAKEINTRESOURCE(IDB_MIZU), IDS_MIZU, L"themes\\mizu\\mizu.msstyles"},
+    { MAKEINTRESOURCE(IDB_MIZU), IDS_MIZU, L"themes\\Reactive\\reactive.msstyles"},
 };
 
 static INT_PTR CALLBACK
@@ -1967,20 +1968,13 @@ ThemePageDlgProc(HWND hwndDlg,
                         int iTheme = pnmv->iItem;
                         DPRINT1("Selected theme: %u\n", Themes[iTheme].DisplayName);
 
-                        if (Themes[iTheme].ThemeFile)
-                        {
-                            WCHAR wszParams[1024];
-                            WCHAR wszTheme[MAX_PATH];
-                            WCHAR* format = L"desk.cpl desk,@Appearance /Action:ActivateMSTheme /file:\"%s\"";
+                        WCHAR wszParams[1024];
+                        WCHAR wszTheme[MAX_PATH];
+                        WCHAR* format = L"desk.cpl desk,@Appearance /Action:ActivateMSTheme /file:\"%s\"";
 
-                            SHGetFolderPathAndSubDirW(0, CSIDL_RESOURCES, NULL, SHGFP_TYPE_DEFAULT, Themes[iTheme].ThemeFile, wszTheme);
-                            swprintf(wszParams, format, wszTheme);
-                            RunControlPanelApplet(hwndDlg, wszParams);
-                        }
-                        else
-                        {
-                            RunControlPanelApplet(hwndDlg, L"desk.cpl desk,@Appearance /Action:ActivateMSTheme");
-                        }
+                        SHGetFolderPathAndSubDirW(0, CSIDL_RESOURCES, NULL, SHGFP_TYPE_DEFAULT, L"themes\\Reactive\\reactive.msstyles", wszTheme);
+                        swprintf(wszParams, format, wszTheme);
+                        RunControlPanelApplet(hwndDlg, wszParams);
                     }
                     break;
                 case PSN_SETACTIVE:
@@ -3303,6 +3297,18 @@ InstallWizard(VOID)
 
     /* Display the wizard */
     hWnd = (HWND)PropertySheet(&psh);
+
+    if (1==1)
+    {
+        WCHAR wszParams[1024];
+        WCHAR wszTheme[MAX_PATH];
+        WCHAR* format = L"desk.cpl desk,@Appearance /Action:ActivateMSTheme /file:\"%s\"";
+
+        SHGetFolderPathAndSubDirW(0, CSIDL_RESOURCES, NULL, SHGFP_TYPE_DEFAULT, L"themes\\Reactive\\reactive.msstyles", wszTheme);
+        swprintf(wszParams, format, wszTheme);
+        RunControlPanelApplet(hWnd, wszParams);
+    }
+
     ShowWindow(hWnd, SW_SHOW);
 
     while (GetMessage(&msg, NULL, 0, 0))
