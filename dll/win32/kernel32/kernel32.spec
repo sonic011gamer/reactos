@@ -162,10 +162,10 @@
 @ stdcall -version=0x600+ CreateSemaphoreExW(ptr long long wstr long long)
 @ stdcall CreateSemaphoreW(ptr long long wstr)
 @ stdcall -i386 CreateSocketHandle()
-@ stdcall -version=0x600+ CreateSymbolicLinkA(str str long)
+@ stdcall -version=0x600+ CreateSymbolicLinkA(str str long) kernel32_vista.CreateSymbolicLinkA
 @ stdcall -stub -version=0x600+ CreateSymbolicLinkTransactedA(str str long ptr)
 @ stdcall -stub -version=0x600+ CreateSymbolicLinkTransactedW(wstr wstr long ptr)
-@ stdcall -version=0x600+ CreateSymbolicLinkW(wstr wstr long)
+@ stdcall -version=0x600+ CreateSymbolicLinkW(wstr wstr long) kernel32_vista.CreateSymbolicLinkW
 @ stdcall CreateTapePartition(long long long long)
 @ stdcall CreateThread(ptr long ptr long long ptr)
 @ stub -version=0x600+ CreateThreadpool
