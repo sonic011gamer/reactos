@@ -43,11 +43,6 @@
 #define DXGK_KEYWORD_LOG_FLAGS_STABLE_POWER   0x1000
 #define DXGK_KEYWORD_LOG_FLAGS_STABLE_POWER2  0x2000
 
-#pragma warning(push)
-#pragma warning(disable:4200) /* nonstandard extension used : zero-sized array in struct/union */
-#pragma warning(disable:4201) // anonymous unions warning
-#pragma warning(disable:4510 4512 4610 ) // cannot generate default constructor
-
 typedef D3DDDI_SEGMENTPREFERENCE DXGK_SEGMENTPREFERENCE;
 
 typedef struct _DXGK_SEGMENTBANKPREFERENCE
