@@ -1207,4 +1207,10 @@ typedef struct _DRIVER_INITIALIZATION_DATA {
 
 } DRIVER_INITIALIZATION_DATA, *PDRIVER_INITIALIZATION_DATA;
 
+NTSTATUS DxgkInitialize(
+  _In_ PDRIVER_OBJECT              DriverObject,
+  _In_ PUNICODE_STRING             RegistryPath,
+  _In_ PDRIVER_INITIALIZATION_DATA DriverInitializationData
+);
+
 #endif
