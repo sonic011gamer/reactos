@@ -12,4 +12,13 @@ DriverEntry(
    // __debugbreak();
     return TRUE;
 }
+
+NTSTATUS DxgkInitialize(
+  _In_ PDRIVER_OBJECT              DriverObject,
+  _In_ PUNICODE_STRING             RegistryPath,
+  _In_ PDRIVER_INITIALIZATION_DATA DriverInitializationData
+)
+{
+    return STATUS_SUCCESS;
+}
 // end DriverEntry()
