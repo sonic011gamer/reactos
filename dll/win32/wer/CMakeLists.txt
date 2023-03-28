@@ -9,7 +9,7 @@ list(APPEND SOURCE
 
 add_library(wer MODULE
     ${SOURCE}
-    wer.rc
+    Wer.rc
     stubs.c
     ${CMAKE_CURRENT_BINARY_DIR}/wer_stubs.c
     ${CMAKE_CURRENT_BINARY_DIR}/wer.def)
