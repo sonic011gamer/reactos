@@ -63,7 +63,7 @@ static const WCHAR szLangGroupsKeyName[] = {
     'L','a','n','g','u','a','g','e',' ','G','r','o','u','p','s',0
 };
 
-#if (WINVER >= 0x0600)
+#if 1
 /* Charset to codepage map, sorted by name. */
 static const struct charset_entry
 {
@@ -269,7 +269,7 @@ static inline UINT get_lcid_codepage( LCID lcid )
     return ret;
 }
 
-#if (WINVER >= 0x0600)
+
 /***********************************************************************
  *              charset_cmp (internal)
  */
@@ -509,7 +509,45 @@ done:
     EnumResourceLanguagesW( kernel32_handle, (LPCWSTR)RT_STRING, (LPCWSTR)LOCALE_ILANGUAGE,
                             find_locale_id_callback, (LPARAM)name );
 }
-#endif
+
+
+#define LOCALE_NAME_USER_DEFAULT            NULL
+#define LOCALE_NAME_INVARIANT               L""
+#define LOCALE_NAME_SYSTEM_DEFAULT          L"!x-sys-default-locale"
+
+/***********************************************************************
+ *           LocaleNameToLCID  (KERNEL32.@)
+ */
+LCID WINAPI LocaleNameToLCID( LPCWSTR name, DWORD flags )
+{
+    struct locale_name locale_name;
+    static int once;
+
+    if (flags && !once++)
+        FIXME( "unsupported flags %x\n", flags );
+
+    if (name == LOCALE_NAME_USER_DEFAULT)
+        return GetUserDefaultLCID();
+
+    /* string parsing */
+    parse_locale_name( name, &locale_name );
+
+    TRACE( "found lcid %x for %s, matches %d\n",
+           locale_name.lcid, debugstr_w(name), locale_name.matches );
+
+    if (!locale_name.matches)
+    {
+        SetLastError(ERROR_INVALID_PARAMETER);
+        return 0;
+    }
+
+    if (locale_name.matches == 1)
+        WARN( "locale %s not recognized, defaulting to %s\n",
+              debugstr_w(name), debugstr_w(locale_name.lang) );
+
+    return locale_name.lcid;
+}
+
 
 /***********************************************************************
  *           convert_default_lcid
@@ -834,40 +872,6 @@ LANGID WINAPI GetSystemDefaultUILanguage(void)
     return lang;
 }
 
-#if (WINVER >= 0x0600)
-/***********************************************************************
- *           LocaleNameToLCID  (KERNEL32.@)
- */
-LCID WINAPI LocaleNameToLCID( LPCWSTR name, DWORD flags )
-{
-    struct locale_name locale_name;
-    static int once;
-
-    if (flags && !once++)
-        FIXME( "unsupported flags %x\n", flags );
-
-    if (name == LOCALE_NAME_USER_DEFAULT)
-        return GetUserDefaultLCID();
-
-    /* string parsing */
-    parse_locale_name( name, &locale_name );
-
-    TRACE( "found lcid %x for %s, matches %d\n",
-           locale_name.lcid, debugstr_w(name), locale_name.matches );
-
-    if (!locale_name.matches)
-    {
-        SetLastError(ERROR_INVALID_PARAMETER);
-        return 0;
-    }
-
-    if (locale_name.matches == 1)
-        WARN( "locale %s not recognized, defaulting to %s\n",
-              debugstr_w(name), debugstr_w(locale_name.lang) );
-
-    return locale_name.lcid;
-}
-
 
 /***********************************************************************
  *           LCIDToLocaleName  (KERNEL32.@)
@@ -879,7 +883,7 @@ INT WINAPI LCIDToLocaleName( LCID lcid, LPWSTR name, INT count, DWORD flags )
 
     return GetLocaleInfoW( lcid, LOCALE_SNAME | LOCALE_NOUSEROVERRIDE, name, count );
 }
-#endif
+
 
 /******************************************************************************
  *		get_registry_locale_info
@@ -1260,7 +1264,7 @@ INT WINAPI GetLocaleInfoW( LCID lcid, LCTYPE lctype, LPWSTR buffer, INT len )
     return ret;
 }
 
-#if (WINVER >= 0x0600)
+#if 1
 WINBASEAPI
 int
 WINAPI
