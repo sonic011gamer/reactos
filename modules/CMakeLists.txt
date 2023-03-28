@@ -49,3 +49,7 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/)
         add_cd_file(FILE ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/${item} DESTINATION reactos/3rdParty NAME_ON_CD ${item} FOR bootcd)
     endforeach(item)
 endif()
+
+
+add_cd_file(FILE ${CMAKE_CURRENT_SOURCE_DIR}/longhorn/longhorn.png DESTINATION reactos/Web/Wallpaper FOR all)
+
