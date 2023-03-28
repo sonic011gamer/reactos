@@ -1,6 +1,6 @@
-@ stdcall -version=0x502 PropertyLengthAsVariant(ptr long long long)
-@ stdcall -version=0x502 RtlConvertPropertyToVariant(ptr long ptr ptr)
-@ stdcall -version=0x502 RtlConvertVariantToProperty(ptr long ptr ptr ptr long ptr)
+@ stdcall -version=0x502+ PropertyLengthAsVariant(ptr long long long)
+@ stdcall -version=0x502+ RtlConvertPropertyToVariant(ptr long ptr ptr)
+@ stdcall -version=0x502+ RtlConvertVariantToProperty(ptr long ptr ptr ptr long ptr)
 @ fastcall -arch=i386 RtlActivateActivationContextUnsafeFast(ptr ptr)
 @ fastcall -arch=i386 RtlDeactivateActivationContextUnsafeFast(ptr)
 @ fastcall -arch=i386 RtlInterlockedPushListSList(ptr ptr ptr long)
@@ -38,9 +38,9 @@
 @ stdcall CsrFreeCaptureBuffer(ptr)
 @ stdcall CsrGetProcessId()
 @ stdcall CsrIdentifyAlertableThread()
-@ stdcall -version=0x502 CsrNewThread()
-@ stdcall -version=0x502 CsrProbeForRead(ptr long long)
-@ stdcall -version=0x502 CsrProbeForWrite(ptr long long)
+@ stdcall -version=0x502+ CsrNewThread()
+@ stdcall -version=0x502+ CsrProbeForRead(ptr long long)
+@ stdcall -version=0x502+ CsrProbeForWrite(ptr long long)
 @ stdcall CsrSetPriorityClass(ptr ptr)
 @ stdcall -stub -version=0x600+ CsrVerifyRegion(ptr long)
 @ stdcall DbgBreakPoint()
@@ -61,13 +61,13 @@
 @ stdcall DbgUiStopDebugging(ptr)
 @ stdcall DbgUiWaitStateChange(ptr ptr)
 @ stdcall DbgUserBreakPoint()
-@ stdcall -version=0x502 EtwControlTraceA(double str ptr long)
-@ stdcall -version=0x502 EtwControlTraceW(double wstr ptr long)
+@ stdcall -version=0x502+ EtwControlTraceA(double str ptr long)
+@ stdcall -version=0x502+ EtwControlTraceW(double wstr ptr long)
 @ stdcall -stub EtwCreateTraceInstanceId(ptr ptr)
 @ stub -version=0x600+ EtwDeliverDataBlock
-@ stdcall -version=0x502 EtwEnableTrace(long long long ptr double)
+@ stdcall -version=0x502+ EtwEnableTrace(long long long ptr double)
 @ stub -version=0x600+ EtwEnumerateProcessRegGuids
-@ stdcall -stub -version=0x502 EtwEnumerateTraceGuids(ptr long ptr)
+@ stdcall -stub -version=0x502+ EtwEnumerateTraceGuids(ptr long ptr)
 @ stub -version=0x600+ EtwEventActivityIdControl
 @ stub -version=0x600+ EtwEventEnabled
 @ stub -version=0x600+ EtwEventProviderEnabled
@@ -79,46 +79,46 @@
 @ stub -version=0x600+ EtwEventWriteStartScenario
 @ stub -version=0x600+ EtwEventWriteString
 @ stub -version=0x600+ EtwEventWriteTransfer
-@ stdcall -version=0x502 EtwFlushTraceA(double str ptr)
-@ stdcall -version=0x502 EtwFlushTraceW(double wstr ptr)
+@ stdcall -version=0x502+ EtwFlushTraceA(double str ptr)
+@ stdcall -version=0x502+ EtwFlushTraceW(double wstr ptr)
 @ stdcall EtwGetTraceEnableFlags(double)
 @ stdcall EtwGetTraceEnableLevel(double)
 @ stdcall EtwGetTraceLoggerHandle(ptr)
 @ stub -version=0x600+ EtwLogTraceEvent
 @ stub -version=0x600+ EtwNotificationRegister
-@ stdcall -stub -version=0x502 EtwNotificationRegistrationA(ptr long ptr long long)
-@ stdcall -stub -version=0x502 EtwNotificationRegistrationW(ptr long ptr long long)
+@ stdcall -stub -version=0x502+ EtwNotificationRegistrationA(ptr long ptr long long)
+@ stdcall -stub -version=0x502+ EtwNotificationRegistrationW(ptr long ptr long long)
 @ stub -version=0x600+ EtwNotificationUnregister
 @ stub -version=0x600+ EtwProcessPrivateLoggerRequest
-@ stdcall -version=0x502 EtwQueryAllTracesA(ptr long ptr)
-@ stdcall -version=0x502 EtwQueryAllTracesW(ptr long ptr)
-@ stdcall -version=0x502 EtwQueryTraceA(double str ptr)
-@ stdcall -version=0x502 EtwQueryTraceW(double wstr ptr)
-@ stdcall -stub -version=0x502 EtwReceiveNotificationsA(long long long long)
-@ stdcall -stub -version=0x502 EtwReceiveNotificationsW(long long long long)
+@ stdcall -version=0x502+ EtwQueryAllTracesA(ptr long ptr)
+@ stdcall -version=0x502+ EtwQueryAllTracesW(ptr long ptr)
+@ stdcall -version=0x502+ EtwQueryTraceA(double str ptr)
+@ stdcall -version=0x502+ EtwQueryTraceW(double wstr ptr)
+@ stdcall -stub -version=0x502+ EtwReceiveNotificationsA(long long long long)
+@ stdcall -stub -version=0x502+ EtwReceiveNotificationsW(long long long long)
 @ stub -version=0x600+ EtwRegisterSecurityProvider
 @ stdcall EtwRegisterTraceGuidsA(ptr ptr ptr long ptr str str ptr)
 @ stdcall EtwRegisterTraceGuidsW(ptr ptr ptr long ptr wstr wstr ptr)
 @ stub -version=0x600+ EtwReplyNotification
 @ stub -version=0x600+ EtwSendNotification
 @ stub -version=0x600+ EtwSetMark
-@ stdcall -version=0x502 EtwStartTraceA(ptr str ptr)
-@ stdcall -version=0x502 EtwStartTraceW(ptr wstr ptr)
-@ stdcall -version=0x502 EtwStopTraceA(double str ptr)
-@ stdcall -version=0x502 EtwStopTraceW(double wstr ptr)
-@ stdcall -version=0x502 EtwTraceEvent(double ptr)
+@ stdcall -version=0x502+ EtwStartTraceA(ptr str ptr)
+@ stdcall -version=0x502+ EtwStartTraceW(ptr wstr ptr)
+@ stdcall -version=0x502+ EtwStopTraceA(double str ptr)
+@ stdcall -version=0x502+ EtwStopTraceW(double wstr ptr)
+@ stdcall -version=0x502+ EtwTraceEvent(double ptr)
 @ stdcall -stub EtwTraceEventInstance(double ptr ptr ptr)
 @ varargs EtwTraceMessage(int64 long ptr long)
 @ stdcall -stub EtwTraceMessageVa(int64 long ptr long ptr)
 @ stdcall EtwUnregisterTraceGuids(double)
-@ stdcall -version=0x502 EtwUpdateTraceA(double str ptr)
-@ stdcall -version=0x502 EtwUpdateTraceW(double wstr ptr)
+@ stdcall -version=0x502+ EtwUpdateTraceA(double str ptr)
+@ stdcall -version=0x502+ EtwUpdateTraceW(double wstr ptr)
 @ stub -version=0x600+ EtwWriteUMSecurityEvent
 @ stub -version=0x600+ EtwpCreateEtwThread
 @ stub -version=0x600+ EtwpGetCpuSpeed
-@ stdcall -stub -version=0x502 EtwpGetTraceBuffer(long long long long)
+@ stdcall -stub -version=0x502+ EtwpGetTraceBuffer(long long long long)
 @ stub -version=0x600+ EtwpNotificationThread
-@ stdcall -stub -version=0x502 EtwpSetHWConfigFunction(ptr long)
+@ stdcall -stub -version=0x502+ EtwpSetHWConfigFunction(ptr long)
 @ stdcall -arch=x86_64 ExpInterlockedPopEntrySListEnd()
 @ stub -version=0x600+ -arch=x86_64 ExpInterlockedPopEntrySListEnd8
 @ stdcall -arch=x86_64 ExpInterlockedPopEntrySListFault()
@@ -132,13 +132,13 @@
 @ stdcall KiUserApcDispatcher(ptr ptr ptr ptr)
 @ stdcall KiUserCallbackDispatcher(ptr ptr long) ; CHECKME
 @ stdcall KiUserExceptionDispatcher(ptr ptr)
-@ stdcall -version=0x502 LdrAccessOutOfProcessResource(ptr ptr ptr ptr ptr)
+@ stdcall -version=0x502+ LdrAccessOutOfProcessResource(ptr ptr ptr ptr ptr)
 @ stdcall LdrAccessResource(long ptr ptr ptr)
 @ stdcall -stub -version=0x600+ LdrAddLoadAsDataTable(ptr wstr long ptr)
 @ stdcall LdrAddRefDll(long ptr)
-@ stdcall -version=0x502 LdrAlternateResourcesEnabled()
-@ stdcall -version=0x502 LdrCreateOutOfProcessImage(long ptr ptr ptr)
-@ stdcall -version=0x502 LdrDestroyOutOfProcessImage(ptr)
+@ stdcall -version=0x502+ LdrAlternateResourcesEnabled()
+@ stdcall -version=0x502+ LdrCreateOutOfProcessImage(long ptr ptr ptr)
+@ stdcall -version=0x502+ LdrDestroyOutOfProcessImage(ptr)
 @ stdcall LdrDisableThreadCalloutsForDll(long)
 @ stdcall LdrEnumResources(ptr ptr long ptr ptr)
 @ stdcall LdrEnumerateLoadedModules(long ptr long)
@@ -665,7 +665,7 @@
 @ stdcall -stub -arch=i386 RtlCaptureStackContext(ptr ptr ptr)
 @ stdcall RtlCharToInteger(ptr long ptr)
 @ stdcall RtlCheckForOrphanedCriticalSections(ptr)
-@ stdcall -stub -version=0x502 RtlCheckProcessParameters(ptr ptr ptr ptr)
+@ stdcall -stub -version=0x502+ RtlCheckProcessParameters(ptr ptr ptr ptr)
 @ stdcall RtlCheckRegistryKey(long ptr)
 @ stub -version=0x600+ RtlCleanUpTEBLangLists
 @ stdcall RtlClearAllBits(ptr)
@@ -818,7 +818,7 @@
 @ stdcall RtlExitUserThread(long)
 @ stub -version=0x600+ RtlExpandEnvironmentStrings
 @ stdcall RtlExpandEnvironmentStrings_U(ptr ptr ptr ptr)
-@ stdcall -version=0x502 RtlExtendHeap(ptr long ptr ptr)
+@ stdcall -version=0x502+ RtlExtendHeap(ptr long ptr ptr)
 @ stub -version=0x600+ RtlExtendMemoryBlockLookaside
 @ stub -version=0x600+ RtlExtendMemoryZone
 @ stdcall -arch=win32 -ret64 RtlExtendedIntegerMultiply(double long)
@@ -861,7 +861,7 @@
 @ stdcall RtlFreeThreadActivationContextStack()
 @ stdcall RtlFreeUnicodeString(ptr)
 @ stub -version=0x600+ RtlFreeUserStack
-@ stdcall -version=0x502 RtlFreeUserThreadStack(ptr ptr)
+@ stdcall -version=0x502+ RtlFreeUserThreadStack(ptr ptr)
 @ stdcall RtlGUIDFromString(ptr ptr)
 @ stdcall RtlGenerate8dot3Name(ptr ptr long ptr)
 @ stdcall RtlGetAce(ptr long ptr)
@@ -1168,7 +1168,7 @@
 @ stdcall RtlSetTimeZoneInformation(ptr)
 @ stdcall RtlSetTimer(ptr ptr ptr ptr long long long)
 @ stdcall RtlSetUnhandledExceptionFilter(ptr)
-@ stdcall -stub -version=0x502 RtlSetUnicodeCallouts(ptr)
+@ stdcall -stub -version=0x502+ RtlSetUnicodeCallouts(ptr)
 @ stdcall RtlSetUserFlagsHeap(ptr long ptr long long)
 @ stdcall RtlSetUserValueHeap(ptr long ptr ptr)
 @ stub -version=0x600+ RtlSidDominates
@@ -1239,7 +1239,7 @@
 @ stdcall RtlUpdateTimer(ptr ptr long long)
 @ stdcall RtlUpperChar(long)
 @ stdcall RtlUpperString(ptr ptr)
-@ stdcall -version=0x502 RtlUsageHeap(ptr long ptr)
+@ stdcall -version=0x502+ RtlUsageHeap(ptr long ptr)
 @ stub -version=0x600+ RtlUserThreadStart
 @ stdcall RtlValidAcl(ptr)
 @ stdcall RtlValidRelativeSecurityDescriptor(ptr long long)
@@ -1802,8 +1802,8 @@
 @ cdecl _strnicmp(str str long)
 @ cdecl _strupr(str)
 @ stub -version=0x600+ _swprintf
-@ cdecl -version=0x502 _tolower(long)
-@ cdecl -version=0x502 _toupper(long)
+@ cdecl -version=0x502+ _tolower(long)
+@ cdecl -version=0x502+ _toupper(long)
 @ cdecl _ui64toa(double ptr long)
 @ cdecl _ui64tow(double ptr long)
 @ cdecl _ultoa(long ptr long)

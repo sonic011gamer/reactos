@@ -487,7 +487,7 @@ RtlAdjustPrivilege(IN ULONG Privilege,
     return STATUS_SUCCESS;
 }
 
-#if (NTDDI_VERSION >= NTDDI_VISTA)
+#if 1//NTDDI_VERSION >= NTDDI_VISTA)
 
 /**
  * @brief
