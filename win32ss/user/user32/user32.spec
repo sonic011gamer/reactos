@@ -748,3 +748,36 @@
 739 varargs wsprintfW(ptr wstr)
 740 stdcall wvsprintfA(ptr str ptr)
 741 stdcall wvsprintfW(ptr wstr ptr)
+
+
+
+
+
+@   stdcall -version=0x600+ ChangeWindowMessageFilter(long long) user32_vista.ChangeWindowMessageFilter
+@   stdcall -version=0x600+ ChangeWindowMessageFilterEx(long long long ptr) user32_vista.ChangeWindowMessageFilterEx
+@   stdcall -version=0x600+ UnregisterPowerSettingNotification(ptr) user32_vista.UnregisterPowerSettingNotification
+@   stdcall -version=0x600+ SetWindowCompositionAttribute(ptr ptr) user32_vista.SetWindowCompositionAttribute
+@   stdcall -version=0x600+ CalculatePopupWindowPosition(ptr long long ptr ptr) user32_vista.CalculatePopupWindowPosition
+@   stdcall -version=0x600+ DwmGetDxSharedSurface(ptr ptr ptr ptr ptr ptr) user32_vista.DwmGetDxSharedSurface
+@   stdcall -version=0x600+ GetWindowCompositionAttribute(ptr ptr) user32_vista.GetWindowCompositionAttribute
+@   stdcall -version=0x600+ GhostWindowFromHungWindow(ptr) user32_vista.GhostWindowFromHungWindow
+@   stdcall -version=0x600+ HungWindowFromGhostWindow(ptr) user32_vista.HungWindowFromGhostWindow
+@   stdcall -version=0x600+ InternalGetWindowIcon(ptr long) user32_vista.InternalGetWindowIcon
+@   stdcall -version=0x600+ IsProcessDPIAware() user32_vista.IsProcessDPIAware
+@   stdcall -version=0x600+ IsThreadDesktopComposited() user32_vista.IsThreadDesktopComposited
+@   stdcall -version=0x601+ IsTopLevelWindow(ptr) user32_vista.IsTopLevelWindow
+@   stdcall -version=0x601+ IsTouchWindow(ptr long) user32_vista.IsTouchWindow
+@   stdcall -version=0x600+ IsWindowRedirectedForPrint(ptr) user32_vista.IsWindowRedirectedForPrint
+@   stdcall -version=0x600+ LogicalToPhysicalPoint(ptr ptr) user32_vista.LogicalToPhysicalPoint
+@   stdcall -version=0x600+ OpenThreadDesktop(long long long long) user32_vista.OpenThreadDesktop
+@   stdcall -version=0x600+ PaintMonitor() user32_vista.PaintMonitor
+@   stdcall -version=0x601+ QueryDisplayConfig() user32_vista.QueryDisplayConfig
+@   stdcall -version=0x601+ SetDisplayConfig() user32_vista.SetDisplayConfig
+@   stdcall -version=0x600+ RegisterErrorReportingDialog(long long) user32_vista.RegisterErrorReportingDialog
+@   stdcall -version=0x600+ RegisterFrostWindow(long long) user32_vista.RegisterFrostWindow
+@   stdcall -version=0x600+ RegisterGhostWindow(long long) user32_vista.RegisterGhostWindow
+@   stdcall -version=0x600+ DisplayConfigGetDeviceInfo(ptr) user32_vista.DisplayConfigGetDeviceInfo
+@   stdcall -version=0x600+ RegisterTouchWindow(ptr long) user32_vista.RegisterTouchWindow
+@   stdcall -version=0x600+ CloseTouchInputHandle(ptr) user32_vista.CloseTouchInputHandle
+@   stdcall -version=0x600+ RegisterPowerSettingNotification() user32_vista.RegisterPowerSettingNotification
+@   stdcall -version=0x600+ SetProcessDPIAware() user32_vista.SetProcessDPIAware
