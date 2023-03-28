@@ -10,6 +10,7 @@
 @ stub -version=0x600+ DxgkSqmCreateStringStreamEntry ;17
 @ stub -version=0x600+ DxgkSqmGenericDword ;18
 @ stub -version=0x600+ DxgkSqmGenericDword64 ;19
+@ stdcall DxgkInitialize(ptr ptr ptr)
 @ stub -version=0x600+ g_loggerInfo ;26
 @ stub -version=0x600+ g_TdrConfig ;6
 @ stub -version=0x600+ g_TdrForceTimeout ;7
