@@ -1065,6 +1065,9 @@ ParseFile(char* pcStart, FILE *fileDest, unsigned *cExports)
                         endversion = strtoul(pc, (char**)&pc, 16);
                     }
 
+                 // hack hack hack
+                    endversion = 0xFFF;
+
                     /* Check for degenerate range */
                     if (version > endversion)
                     {
