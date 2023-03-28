@@ -1,1 +1,5 @@
+add_subdirectory(avrt)
 add_subdirectory(dwmapi)
+#add_subdirectory(KernelBase)
+add_subdirectory(rstrtmgr)
+add_subdirectory(wsdapi)
