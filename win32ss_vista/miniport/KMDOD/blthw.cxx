@@ -179,9 +179,6 @@ BDD_HWBLT::~BDD_HWBLT()
     SetPresentWorkerThreadInfo(NULL);
 }
 
-#pragma warning(push)
-#pragma warning(disable:26135) // The function doesn't lock anything
-
 void
 BDD_HWBLT::SetPresentWorkerThreadInfo(
     HANDLE hWorkerThread)
@@ -231,7 +228,6 @@ BDD_HWBLT::SetPresentWorkerThreadInfo(
     }
 
 }
-#pragma warning(pop)
 
 NTSTATUS
 BDD_HWBLT::ExecutePresentDisplayOnly(
