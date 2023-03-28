@@ -3,3 +3,4 @@
 #include <ntddk.h>
 #include <windef.h>
 #include <stdio.h>
+#include <locd3d.h>
