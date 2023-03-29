@@ -18,7 +18,7 @@
 @ stdcall WakeConditionVariable(ptr)
 
 @ stdcall InitializeCriticalSectionEx(ptr long long)
-
+@ stdcall ResolveLocaleName(ptr ptr long)
 @ stdcall ApplicationRecoveryFinished(long)
 @ stdcall ApplicationRecoveryInProgress(ptr)
 @ stdcall CreateSymbolicLinkA(str str long)
@@ -67,3 +67,17 @@
 @ stdcall   K32GetPerformanceInfo(ptr long)
 @ stdcall   K32QueryWorkingSet(ptr ptr long)
 @ stdcall   K32QueryWorkingSetEx(ptr ptr long)
+
+
+@ stdcall GetProcessPreferredUILanguages(long ptr ptr ptr)
+;@ stdcall GetActiveProcessorCount(long)
+;@ stdcall GetActiveProcessorGroupCount()
+;@ stdcall GetLogicalProcessorInformationEx(ptr ptr ptr)
+;@ stdcall GetMaximumProcessorCount(long)
+;@ stdcall GetMaximumProcessorGroupCount()
+;@ stdcall GetNumaAvailableMemoryNodeEx(long ptr)
+;@ stdcall GetNumaNodeNumberFromHandle(long ptr)
+;@ stdcall GetNumaNodeProcessorMaskEx(long ptr)
+;@ stdcall GetNumaProcessorNodeEx(ptr ptr)
+;@ stdcall GetNumaProximityNodeEx(long ptr)
+;@ stdcall GetProcessGroupAffinity(long ptr ptr)
