@@ -4,38 +4,38 @@ add_definitions(-D_MIDL_USE_GUIDDEF_)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 list(APPEND SOURCE
-#   access.idl
+    #   access.idl
     activaut.idl
     activdbg.idl
     activscp.idl
     asptlb.idl
-#   asynot.idl
-#   asysta.idl
+    #   asynot.idl
+    #   asysta.idl
     atliface.idl
     audioclient.idl
     audiopolicy.idl
     bdaiface.idl
-#   binres.idl
+    #   binres.idl
     bits.idl
     bits1_5.idl
     bits2_0.idl
     bits2_5.idl
     bits3_0.idl
-#   cmdbas.idl
-#   cmdtxt.idl
+    #   cmdbas.idl
+    #   cmdtxt.idl
     comcat.idl
     commoncontrols.idl
     control.idl
     cor.idl
     cordebug.idl
-#   crtrow.idl
+    #   crtrow.idl
     ctxtcall.idl
-#   dbccmd.idl
-#   dbcses.idl
-#   dbdsad.idl
-#   dbinit.idl
-#   dbprop.idl
-#   dbs.idl
+    #   dbccmd.idl
+    #   dbcses.idl
+    #   dbdsad.idl
+    #   dbinit.idl
+    #   dbprop.idl
+    #   dbs.idl
     devenum.idl
     devicetopology.idl
     dimm.idl
@@ -44,6 +44,36 @@ list(APPEND SOURCE
     docobjectservice.idl
     downloadmgr.idl
     drmexternals.idl
+    d2d1.idl
+    d2d1_1.idl
+    d2d1_2.idl
+    d3d10.idl
+    d3d10_1.idl
+    d3d10sdklayers.idl
+    d3d11.idl
+    d3d11_1.idl
+    d3d11_2.idl
+    d3d11_3.idl
+    d3d11_4.idl
+    d3d11sdklayers.idl
+    #    d3d12.idl
+    #    d3d12sdklayers.idl
+    #    d3d12shader.idl
+    dcommon.idl
+    dxgi.idl
+    dxgi1_2.idl
+    dxgi1_3.idl
+    dxgi1_4.idl
+    dxgi1_5.idl
+    dxgi1_6.idl
+    dxgicommon.idl
+    dxgidebug.idl
+    dxgiformat.idl
+    dxgitype.idl
+    dwrite.idl
+    dwrite_1.idl
+    dwrite_2.idl
+    dwrite_3.idl
 #   dyngraph.idl
     endpointvolume.idl
     exdisp.idl
@@ -154,6 +184,13 @@ add_typelib(stdole2.idl)
 add_custom_target(stdole2 DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/stdole2.tlb)
 
 add_idl_headers(d3d_idl_headers d3dcommon.idl)
+add_iid_library(dxgi_uuids dxgi.idl dxgi1_2.idl dxgi1_3.idl dxgi1_4.idl dxgi1_5.idl dxgi1_6.idl dxgi_internal.idl)
+add_iid_library(d2d1_uuids d2d1.idl d2d1_1.idl d2d1_2.idl)
+add_iid_library(d3d10_uuids d3d10.idl d3d10_1.idl d3d10sdklayers.idl)
+add_iid_library(d3d10_1_uuids d3d10_1.idl)
+add_iid_library(d3d11_uuids d3d11.idl d3d11_1.idl d3d11_2.idl d3d11_3.idl d3d11_4.idl d3d11sdklayers.idl)
+#add_iid_library(d3d12_uuids d3d12.idl d3d12sdklayers.idl d3d12shader.idl)
+add_iid_library(dwrite_uuids dwrite.idl dwrite_1.idl dwrite_2.idl dwrite_3.idl)
 
 add_iid_library(adsiid iads.idl transact.idl)
 add_iid_library(wuguid wuapi.idl)
