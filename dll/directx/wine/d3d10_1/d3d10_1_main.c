@@ -20,9 +20,29 @@
 #include "wine/debug.h"
 
 #define COBJMACROS
+#include "wine/dxgi.h"
+
 #include "d3d10_1.h"
- 
 WINE_DEFAULT_DEBUG_CHANNEL(d3d10);
+
+
+
+DEFINE_GUID(IID_IDXGIObject,0xaec22fb8,0x76f3,0x4639,0x9b,0xe0,0x28,0xeb,0x43,0xa6,0x7a,0x2e);
+DEFINE_GUID(IID_IDXGIDeviceSubObject,0x3d3e0379,0xf9de,0x4d58,0xbb,0x6c,0x18,0xd6,0x29,0x92,0xf1,0xa6);
+DEFINE_GUID(IID_IDXGIResource,0x035f3ab4,0x482e,0x4e50,0xb4,0x1f,0x8a,0x7f,0x8b,0xd8,0x96,0x0b);
+DEFINE_GUID(IID_IDXGIKeyedMutex,0x9d8e1289,0xd7b3,0x465f,0x81,0x26,0x25,0x0e,0x34,0x9a,0xf8,0x5d);
+DEFINE_GUID(IID_IDXGISurface,0xcafcb56c,0x6ac3,0x4889,0xbf,0x47,0x9e,0x23,0xbb,0xd2,0x60,0xec);
+DEFINE_GUID(IID_IDXGISurface1,0x4AE63092,0x6327,0x4c1b,0x80,0xAE,0xBF,0xE1,0x2E,0xA3,0x2B,0x86);
+DEFINE_GUID(IID_IDXGIAdapter,0x2411e7e1,0x12ac,0x4ccf,0xbd,0x14,0x97,0x98,0xe8,0x53,0x4d,0xc0);
+DEFINE_GUID(IID_IDXGIOutput,0xae02eedb,0xc735,0x4690,0x8d,0x52,0x5a,0x8d,0xc2,0x02,0x13,0xaa);
+DEFINE_GUID(IID_IDXGISwapChain,0x310d36a0,0xd2e7,0x4c0a,0xaa,0x04,0x6a,0x9d,0x23,0xb8,0x88,0x6a);
+DEFINE_GUID(IID_IDXGIFactory,0x7b7166ec,0x21c7,0x44ae,0xb2,0x1a,0xc9,0xae,0x32,0x1a,0xe3,0x69);
+DEFINE_GUID(IID_IDXGIDevice,0x54ec77fa,0x1377,0x44e6,0x8c,0x32,0x88,0xfd,0x5f,0x44,0xc8,0x4c);
+DEFINE_GUID(IID_IDXGIFactory1,0x770aae78,0xf26f,0x4dba,0xa8,0x29,0x25,0x3c,0x83,0xd1,0xb3,0x87);
+DEFINE_GUID(IID_IDXGIAdapter1,0x29038f61,0x3839,0x4626,0x91,0xfd,0x08,0x68,0x79,0x01,0x1a,0x05);
+DEFINE_GUID(IID_IDXGIDevice1,0x77db970f,0x6276,0x48ba,0xba,0x28,0x07,0x01,0x43,0xb4,0x39,0x2c);
+
+    
 
 HRESULT WINAPI D3D10CoreCreateDevice(IDXGIFactory *factory, IDXGIAdapter *adapter,
         unsigned int flags, D3D_FEATURE_LEVEL feature_level, ID3D10Device **device);
@@ -86,21 +106,25 @@ static HRESULT d3d10_create_device1(IDXGIAdapter *adapter, D3D10_DRIVER_TYPE dri
 
     if (adapter)
     {
+        #if 0
         IDXGIAdapter_AddRef(adapter);
         if (FAILED(hr = IDXGIAdapter_GetParent(adapter, &IID_IDXGIFactory, (void **)&factory)))
         {
             WARN("Failed to get dxgi factory, hr %#x.\n", hr);
             return hr;
         }
+        #endif
     }
     else
     {
+        #if 0
         if (FAILED(hr = CreateDXGIFactory(&IID_IDXGIFactory, (void **)&factory)))
         {
             WARN("Failed to create dxgi factory, hr %#x.\n", hr);
             return hr;
         }
-
+#endif      
+        factory = NULL;
         switch (driver_type)
         {
             case D3D10_DRIVER_TYPE_WARP:
@@ -215,11 +239,14 @@ HRESULT WINAPI D3D10CreateDeviceAndSwapChain1(IDXGIAdapter *adapter, D3D10_DRIVE
 
     if (swapchain)
     {
+        dxgi_device = NULL;
+        #if 0
         if (FAILED(hr = ID3D10Device1_QueryInterface(*device, &IID_IDXGIDevice, (void **)&dxgi_device)))
         {
             ERR("Failed to get a dxgi device from the d3d10 device, returning %#x.\n", hr);
             goto cleanup;
         }
+        #endif
 
         hr = IDXGIDevice_GetAdapter(dxgi_device, &adapter);
         IDXGIDevice_Release(dxgi_device);
@@ -228,7 +255,8 @@ HRESULT WINAPI D3D10CreateDeviceAndSwapChain1(IDXGIAdapter *adapter, D3D10_DRIVE
             ERR("Failed to get the device adapter, returning %#x.\n", hr);
             goto cleanup;
         }
-
+        factory = NULL;
+#if 0
         hr = IDXGIAdapter_GetParent(adapter, &IID_IDXGIFactory, (void **)&factory);
         IDXGIAdapter_Release(adapter);
         if (FAILED(hr))
@@ -236,7 +264,7 @@ HRESULT WINAPI D3D10CreateDeviceAndSwapChain1(IDXGIAdapter *adapter, D3D10_DRIVE
             ERR("Failed to get the adapter factory, returning %#x.\n", hr);
             goto cleanup;
         }
-
+#endif
         hr = IDXGIFactory_CreateSwapChain(factory, (IUnknown *)*device, swapchain_desc, swapchain);
         IDXGIFactory_Release(factory);
         if (FAILED(hr))
