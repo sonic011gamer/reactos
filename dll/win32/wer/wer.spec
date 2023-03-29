@@ -73,8 +73,8 @@
 @ stub -version=0x601+ WerpUpdateReportResponse	
 @ stdcall -version=0x601+ WerAddExcludedApplication(str long)
 @ stdcall -version=0x601+ WerRemoveExcludedApplication(str long)
-@ stdcall -version=0x601+ WerReportAddDump(long long long long ptr ptr long)
-@ stdcall -version=0x601+ WerReportAddFile(str ptr long long)
+@ stdcall -version=0x601+ -stub WerReportAddDump(long long long long ptr ptr long)
+@ stdcall -version=0x601+ -stub WerReportAddFile(str ptr long long)
 @ stdcall -version=0x601+ WerReportCloseHandle(long)
 @ stdcall -version=0x601+ WerReportCreate(ptr long ptr ptr)
 @ stdcall -version=0x601+ WerReportSetParameter(long long str str)	
