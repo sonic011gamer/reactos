@@ -501,6 +501,7 @@
 @ extern -arch=i386,x86_64 _fileinfo
 @ cdecl _filelength(long)
 @ cdecl -ret64 _filelengthi64(long)
+@ cdecl -version=0x600+ _set_new_mode(long)  MSVCRT__set_new_mode
 @ cdecl _fileno(ptr)
 @ cdecl _findclose(long)
 @ cdecl _findfirst(str ptr)
@@ -949,7 +950,7 @@
 @ cdecl -version=0x600+ _set_errno(long)
 @ cdecl _set_error_mode(long)
 @ stub -version=0x600+ _set_fileinfo
-@ stub -version=0x600+ _set_fmode
+@ stdcall -stub -version=0x600+ _set_fmode(long)
 @ stub -version=0x600+ _set_output_format
 @ cdecl _set_sbh_threshold(long)
 @ cdecl _seterrormode(long)
@@ -1566,29 +1567,28 @@
 @ stdcall -version=0x600+ _configthreadlocale(long)
 @ stdcall -version=0x600+ _get_heap_handle()
 ; I gotta implement all of these
-@ stub -version=0x600+ wscanf_s
-@ stub -version=0x600+ _calloc_base
-@ stub -version=0x600+ _aligned_msize
-@ stub -version=0x600+ _free_base
-@ stub -version=0x600+ _malloc_base
-@ stub -version=0x600+ _realloc_base
-@ stub -version=0x600+ _recalloc
-@ stub -version=0x600+ wctype
-@ stub -version=0x600+ _lock_locales
-@ stub -version=0x600+ ___lc_locale_name_func
-@ stub -version=0x600+ _unlock_locales
-@ stub -version=0x600+ _get_stream_buffer_pointers
-@ stub -version=0x600+ _configure_narrow_argv
-@ stub -version=0x600+ _configure_wide_argv
-@ stub -version=0x600+ _crt_atexit
-@ stub -version=0x600+ _execute_onexit_table
-@ stub -version=0x600+ _get_initial_narrow_environment
-@ stub -version=0x600+ _get_initial_wide_environment
-@ stub -version=0x600+ _initialize_narrow_environment
-@ stub -version=0x600+ _initialize_onexit_table
-@ stub -version=0x600+ _initialize_wide_environment
-@ stub -version=0x600+ _invalid_parameter_noinfo
-@ stub -version=0x600+ _invalid_parameter_noinfo_noreturn
-@ stub -version=0x600+ _register_onexit_function
-@ stub -version=0x600+ _register_thread_local_exe_atexit_callback
-@ stub -version=0x600+ _set_app_type
+@ stdcall -stub -version=0x600+ wscanf_s(ptr)
+@ stdcall -stub -version=0x600+ _calloc_base(ptr)
+@ stdcall -stub -version=0x600+ _aligned_msize(ptr)
+@ stdcall -stub -version=0x600+ _free_base(ptr)
+@ stdcall -stub -version=0x600+ _malloc_base(ptr)
+@ stdcall -stub -version=0x600+ _realloc_base(ptr)
+@ stdcall -stub -version=0x600+ _recalloc(ptr)
+@ stdcall -stub -version=0x600+ wctype(ptr)
+@ stdcall -stub -version=0x600+ _lock_locales(ptr)
+@ stdcall -stub -version=0x600+ ___lc_locale_name_func(ptr)
+@ stdcall -stub -version=0x600+ _unlock_locales(ptr)
+@ stdcall -stub -version=0x600+ _get_stream_buffer_pointers(ptr)
+@ stdcall -stub -version=0x600+ _configure_narrow_argv(ptr)
+@ stdcall -stub -version=0x600+ _configure_wide_argv(ptr)
+@ cdecl -stub -version=0x600+ _crt_atexit(ptr)
+@ stdcall -stub -version=0x600+ _execute_onexit_table(ptr)
+@ stdcall -stub -version=0x600+ _get_initial_narrow_environment(ptr)
+@ stdcall -stub -version=0x600+ _get_initial_wide_environment(ptr)
+@ stdcall -stub -version=0x600+ _initialize_narrow_environment(ptr)
+@ stdcall -stub -version=0x600+ _initialize_onexit_table(ptr)
+@ stdcall -stub -version=0x600+ _initialize_wide_environment(ptr)
+@ stdcall -stub -version=0x600+ _invalid_parameter_noinfo(ptr)
+@ stdcall -stub -version=0x600+ _invalid_parameter_noinfo_noreturn(ptr)
+@ stdcall -stub -version=0x600+ _register_onexit_function(ptr)
+@ stdcall -stub -version=0x600+ _register_thread_local_exe_atexit_callback(ptr)
