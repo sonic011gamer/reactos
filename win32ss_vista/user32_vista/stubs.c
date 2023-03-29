@@ -2,7 +2,7 @@
 #include <debug.h>
 
 /*
- * @implemented
+ * @unimplemented
  */
 BOOL
 WINAPI
@@ -225,4 +225,18 @@ CloseTouchInputHandle(
 )
 {
     return 1;
+}
+
+BOOL
+AddClipboardFormatListener(
+    HWND hwnd)
+{
+    return 0;
+}
+
+BOOL
+RemoveClipboardFormatListener(
+    HWND hwnd)
+{
+    return 0;
 }
