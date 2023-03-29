@@ -795,7 +795,6 @@ LANGID WINAPI GetSystemDefaultLangID(void)
     return LANGIDFROMLCID(GetSystemDefaultLCID());
 }
 
-
 /***********************************************************************
  *		GetUserDefaultLCID (KERNEL32.@)
  *
@@ -832,7 +831,6 @@ LCID WINAPI GetSystemDefaultLCID(void)
     NtQueryDefaultLocale( FALSE, &lcid );
     return lcid;
 }
-
 
 /***********************************************************************
  *		GetUserDefaultUILanguage (KERNEL32.@)
@@ -882,6 +880,16 @@ INT WINAPI LCIDToLocaleName( LCID lcid, LPWSTR name, INT count, DWORD flags )
     if (flags && !once++) FIXME( "unsupported flags %x\n", flags );
 
     return GetLocaleInfoW( lcid, LOCALE_SNAME | LOCALE_NOUSEROVERRIDE, name, count );
+}
+
+
+/***********************************************************************
+ *		GetSystemDefaultLocaleName (KERNEL32.@)
+ */
+INT WINAPI GetSystemDefaultLocaleName(LPWSTR localename, INT len)
+{
+    LCID lcid = GetSystemDefaultLCID();
+    return LCIDToLocaleName(lcid, localename, len, 0);
 }
 
 
