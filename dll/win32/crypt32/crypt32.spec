@@ -242,3 +242,5 @@
 @ stub RegQueryInfoKeyU
 @ stub RegQueryValueExU
 @ stub RegSetValueExU
+@ stdcall -stub -version=0x601+ CryptRetrieveTimeStamp(ptr long long ptr ptr ptr long ptr ptr ptr)
+@ stdcall -stub -version=0x601+ CryptVerifyTimeStampSignature(ptr long ptr long long ptr ptr ptr)
