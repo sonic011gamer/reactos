@@ -781,3 +781,5 @@
 @   stdcall -version=0x600+ CloseTouchInputHandle(ptr) user32_vista.CloseTouchInputHandle
 @   stdcall -version=0x600+ RegisterPowerSettingNotification() user32_vista.RegisterPowerSettingNotification
 @   stdcall -version=0x600+ SetProcessDPIAware() user32_vista.SetProcessDPIAware
+@ stdcall -version=0x600+ AddClipboardFormatListener(ptr) user32_vista.AddClipboardFormatListener
+@ stdcall -version=0x600+ RemoveClipboardFormatListener(ptr) user32_vista.RemoveClipboardFormatListener
