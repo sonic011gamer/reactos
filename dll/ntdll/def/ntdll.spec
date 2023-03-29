@@ -607,8 +607,8 @@
 @ stdcall RtlAcquirePrivilege(ptr long long ptr)
 @ stdcall RtlAcquireResourceExclusive(ptr long)
 @ stdcall RtlAcquireResourceShared(ptr long)
-@ stdcall -stub -version=0x600+ RtlAcquireSRWLockExclusive(ptr)
-@ stdcall -stub -version=0x600+ RtlAcquireSRWLockShared(ptr)
+@ stdcall -version=0x600+ RtlAcquireSRWLockExclusive(ptr) ntdll_vista.RtlAcquireSRWLockExclusive
+@ stdcall -version=0x600+ RtlAcquireSRWLockShared(ptr) ntdll_vista.RtlAcquireSRWLockShared
 @ stdcall RtlActivateActivationContext(long ptr ptr)
 @ stdcall RtlActivateActivationContextEx(long ptr ptr ptr)
 @ stdcall -arch=x86_64,arm RtlActivateActivationContextUnsafeFast(ptr ptr)
@@ -949,7 +949,7 @@
 @ stdcall RtlInitializeRXact(ptr long ptr)
 @ stdcall RtlInitializeResource(ptr)
 @ stdcall RtlInitializeSListHead(ptr)
-@ stdcall -stub -version=0x600+ RtlInitializeSRWLock(ptr)
+@ stdcall -version=0x600+ RtlInitializeSRWLock(ptr) ntdll_vista.RtlInitializeSRWLock
 @ stdcall RtlInitializeSid(ptr ptr long)
 @ stdcall RtlInsertElementGenericTable(ptr ptr long ptr)
 @ stdcall RtlInsertElementGenericTableAvl(ptr ptr long ptr)
@@ -1108,8 +1108,8 @@
 @ stdcall RtlReleasePrivilege(ptr)
 @ stdcall RtlReleaseRelativeName(ptr)
 @ stdcall RtlReleaseResource(ptr)
-@ stdcall -stub -version=0x600+ RtlReleaseSRWLockExclusive(ptr)
-@ stdcall -stub -version=0x600+ RtlReleaseSRWLockShared(ptr)
+@ stdcall -version=0x600+ RtlReleaseSRWLockExclusive(ptr) ntdll_vista.RtlReleaseSRWLockExclusive
+@ stdcall -version=0x600+ RtlReleaseSRWLockShared(ptr) ntdll_vista.RtlReleaseSRWLockShared
 @ stdcall RtlRemoteCall(ptr ptr ptr long ptr long long)
 @ stdcall -version=0x600+ RtlRemovePrivileges(ptr ptr long)
 @ stdcall RtlRemoveVectoredContinueHandler(ptr)
