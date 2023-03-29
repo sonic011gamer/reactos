@@ -1562,19 +1562,19 @@
 @ varargs wprintf(wstr)
 @ stub -version=0x600+ wprintf_s
 @ varargs wscanf(wstr)
+@ stdcall -version=0x600+ _configthreadlocale(long)
+@ stdcall -version=0x600+ _get_heap_handle()
 ; I gotta implement all of these
 @ stub -version=0x600+ wscanf_s
 @ stub -version=0x600+ _calloc_base
 @ stub -version=0x600+ _aligned_msize
 @ stub -version=0x600+ _free_base
-@ stub -version=0x600+ _get_heap_handle
 @ stub -version=0x600+ _malloc_base
 @ stub -version=0x600+ _realloc_base
 @ stub -version=0x600+ _recalloc
 @ stub -version=0x600+ wctype
-@ stub -version=0x600+ ___lc_locale_name_func
-@ stub -version=0x600+ _configthreadlocale
 @ stub -version=0x600+ _lock_locales
+@ stub -version=0x600+ ___lc_locale_name_func
 @ stub -version=0x600+ _unlock_locales
 @ stub -version=0x600+ _get_stream_buffer_pointers
 @ stub -version=0x600+ _configure_narrow_argv
