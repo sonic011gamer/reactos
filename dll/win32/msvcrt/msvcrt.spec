@@ -738,6 +738,7 @@
 @ stub -version=0x600+ _makepath_s
 @ stub -version=0x600+ _malloc_dbg
 @ cdecl _mbbtombc(long)
+@ cdecl terminate() MSVCRT_terminate
 @ stub -version=0x600+ _mbbtombc_l
 @ cdecl _mbbtype(long long)
 @ extern _mbcasemap
