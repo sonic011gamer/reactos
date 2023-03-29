@@ -630,7 +630,7 @@
 @ stdcall GetThreadTimes(long ptr ptr ptr ptr)
 @ stub -version=0x600+ GetThreadUILanguage
 @ stdcall GetTickCount()
-@ stub -version=0x600+ GetTickCount64
+@ stdcall -version=0x600+ GetTickCount64() kernel32_vista.GetTickCount64
 @ stdcall GetTimeFormatA(long long ptr str ptr long)
 @ stdcall -version=0x600+ GetTimeFormatEx(wstr long ptr wstr wstr long)
 @ stdcall GetTimeFormatW(long long ptr wstr ptr long)
@@ -1175,20 +1175,20 @@
 @ stub -version=0x600+ WaitForThreadpoolWorkCallbacks
 @ stdcall WaitNamedPipeA(str long)
 @ stdcall WaitNamedPipeW(wstr long)
-@ stub -version=0x600+ WakeAllConditionVariable
-@ stub -version=0x600+ WakeConditionVariable
-@ stub -version=0x600+ WerGetFlags
-@ stub -version=0x600+ WerRegisterFile
-@ stub -version=0x600+ WerRegisterMemoryBlock
-@ stub -version=0x600+ WerSetFlags
-@ stub -version=0x600+ WerUnregisterFile
-@ stub -version=0x600+ WerUnregisterMemoryBlock
-@ stub -version=0x600+ WerpCleanupMessageMapping
-@ stub -version=0x600+ WerpInitiateRemoteRecovery
-@ stub -version=0x600+ WerpNotifyLoadStringResource
-@ stub -version=0x600+ WerpNotifyLoadStringResourceEx
-@ stub -version=0x600+ WerpNotifyUseStringResource
-@ stub -version=0x600+ WerpStringLookup
+@ stdcall -version=0x600+ WakeAllConditionVariable(ptr) ntdll.RtlWakeAllConditionVariable
+@ stdcall -version=0x600+ WakeConditionVariable(ptr) ntdll.RtlWakeConditionVariable
+@ stdcall -stub -version=0x600+ WerGetFlags(ptr ptr)
+@ stdcall -stub -version=0x600+ WerRegisterFile(ptr ptr long)
+@ stdcall -stub -version=0x600+ WerRegisterMemoryBlock(ptr long)
+@ stdcall -stub -version=0x600+ WerSetFlags(long)
+@ stdcall -stub -version=0x600+ WerUnregisterFile(ptr)
+@ stdcall -stub -version=0x600+ WerUnregisterMemoryBlock(ptr)
+@ stdcall -stub -version=0x600+ WerpCleanupMessageMapping(ptr)
+@ stdcall -stub -version=0x600+ WerpInitiateRemoteRecovery(ptr)
+@ stdcall -stub -version=0x600+ WerpNotifyLoadStringResource(ptr)
+@ stdcall -stub -version=0x600+ WerpNotifyLoadStringResourceEx(ptr)
+@ stdcall -stub -version=0x600+ WerpNotifyUseStringResource(ptr)
+@ stdcall -stub -version=0x600+ WerpStringLookup(ptr)
 @ stdcall WideCharToMultiByte(long long wstr long ptr long ptr ptr)
 @ stdcall WinExec(str long)
 @ stdcall Wow64DisableWow64FsRedirection(ptr)
@@ -1262,7 +1262,8 @@
 ;@ stdcall -arch=x86_64 uaw_wcsicmp(wstr wstr)
 ;@ stdcall -arch=x86_64 uaw_wcslen(wstr)
 ;@ stdcall -arch=x86_64 uaw_wcsrchr(wstr long)
-
+@ stdcall -version=0x600+ GetProcessPreferredUILanguages(long ptr ptr ptr) kernel32_vista.GetProcessPreferredUILanguages
+@ stdcall -version=0x600+ ResolveLocaleName(ptr ptr long) kernel32_vista.ResolveLocaleName
 @ stdcall -version=0x600+ K32EnumDeviceDrivers(ptr long ptr) kernel32_vista.K32EnumDeviceDrivers
 @ stdcall -version=0x600+ K32EnumPageFilesA(ptr ptr) kernel32_vista.K32EnumPageFilesA
 @ stdcall -version=0x600+ K32EnumPageFilesW(ptr ptr) kernel32_vista.K32EnumPageFilesW
