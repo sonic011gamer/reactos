@@ -20,7 +20,7 @@
 #include "wine/debug.h"
 
 #define COBJMACROS
-#include "wine/dxgi.h"
+#include "winedxgi.h"
 
 #include "d3d10_1.h"
 WINE_DEFAULT_DEBUG_CHANNEL(d3d10);
