@@ -166,6 +166,7 @@ list(APPEND SOURCE
     wia_xp.idl
     wincodec.idl
     wincodecsdk.idl
+
     winsxs.idl
     wmdrmsdk.idl
     wmiutils.idl
@@ -176,6 +177,7 @@ list(APPEND SOURCE
     xmldom.idl
     xmldso.idl
     ctfutb.idl
+    winedxgi.idl
     xmllite.idl)
 
 add_idl_headers(psdk ${SOURCE})
