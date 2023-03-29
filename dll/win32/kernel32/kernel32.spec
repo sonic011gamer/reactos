@@ -707,11 +707,11 @@
 @ stub -version=0x600+ IdnToNameprepUnicode
 @ stub -version=0x600+ IdnToUnicode
 @ stdcall InitAtomTable(long)
-@ stub -version=0x600+ InitOnceBeginInitialize
-@ stub -version=0x600+ InitOnceComplete
+@ stdcall -version=0x600+ InitOnceBeginInitialize() kernel32_vista.InitOnceBeginInitialize
+@ stdcall -version=0x600+ InitOnceComplete() kernel32_vista.InitOnceComplete
 @ stdcall -version=0x600+ InitOnceExecuteOnce() kernel32_vista.InitOnceExecuteOnce
 @ stub -version=0x600+ InitOnceInitialize
-@ stub -version=0x600+ InitializeConditionVariable
+@ stdcall -version=0x600+ InitializeConditionVariable() kernel32_vista.InitializeConditionVariable
 @ stdcall InitializeCriticalSection(ptr)
 @ stdcall InitializeCriticalSectionAndSpinCount(ptr long)
 @ stdcall -version=0x600+ InitializeCriticalSectionEx(ptr long long)
