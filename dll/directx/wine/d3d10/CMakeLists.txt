@@ -11,7 +11,7 @@ spec2def(d3d10.dll d3d10.spec ADD_IMPORTLIB)
 list(APPEND SOURCE
     d3d10_main.c
 	d3d10_guid.c
-    effect.c
+   # effect.c
 	utils.c
 	#end
 	shader.c
@@ -26,7 +26,8 @@ add_library(d3d10 SHARED
     ${CMAKE_CURRENT_BINARY_DIR}/d3d10.def)
 
 set_module_type(d3d10 win32dll)
-target_link_libraries(d3d10 wine uuid dxguid)
-add_importlibs(d3d10 d3dwine msvcrt d3dcompiler_43 dxgi kernel32 ntdll)
+target_link_libraries(d3d10 wine uuid)
+add_importlibs(d3d10 d3dwine msvcrt d3dcompiler_43 d3d10core dxgi kernel32 ntdll)
 add_pch(d3d10 d3d10_private.h SOURCE)
+add_dependencies(d3d10 wineheaders d3d_idl_headers)
 add_cd_file(TARGET d3d10 DESTINATION reactos/system32 FOR all)

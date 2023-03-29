@@ -1,7 +1,5 @@
 /*
- * Direct3D 11
- *
- * Copyright 2013 Austin English
+ * Copyright 2004 Tom Wickline
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,29 +14,14 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
- *
  */
 
-#include <stdarg.h>
+#define WINE_FILEDESCRIPTION_STR "Wine DirectPlay"
+#define WINE_FILENAME_STR "dxgi.dll"
+#define WINE_FILEVERSION 5,3,0,900
+#define WINE_FILEVERSION_STR "5.3.0.900"
+#define WINE_PRODUCTVERSION 5,3,0,900
+#define WINE_PRODUCTVERSION_STR "5.3"
+#define WINE_EXTRAVALUES VALUE "OLESelfRegister",""
 
-#include "windef.h"
-#include "winbase.h"
-#include "d3d11.h"
-#include "wine/debug.h"
-
-WINE_DEFAULT_DEBUG_CHANNEL(d3d11);
-
-HRESULT WINAPI D3D11CreateDevice(
-    _In_opt_ IDXGIAdapter* pAdapter,
-    D3D_DRIVER_TYPE DriverType,
-    HMODULE Software,
-    UINT Flags,
-    _In_reads_opt_( FeatureLevels ) CONST D3D_FEATURE_LEVEL* pFeatureLevels,
-    UINT FeatureLevels,
-    UINT SDKVersion,
-    _COM_Outptr_opt_ ID3D11Device** ppDevice,
-    _Out_opt_ D3D_FEATURE_LEVEL* pFeatureLevel,
-    _COM_Outptr_opt_ ID3D11DeviceContext** ppImmediateContext )
-{
-    return E_OUTOFMEMORY;
-}
+#include "wine/wine_common_ver.rc"
