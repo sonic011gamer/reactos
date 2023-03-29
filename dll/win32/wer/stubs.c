@@ -34,26 +34,3 @@ HRESULT WINAPI WerReportSubmit(HREPORT report, WER_CONSENT weconst, DWORD dword,
     return STATUS_SUCCESS;
 }
 
-HRESULT WerReportAddDump(
-    HREPORT                    hReportHandle,
-     HANDLE                     hProcess,
-  HANDLE                     hThread,
-   WER_DUMP_TYPE              dumpType,
-  PWER_EXCEPTION_INFORMATION pExceptionParam,
-   PWER_DUMP_CUSTOM_OPTIONS   pDumpCustomOptions,
-   DWORD                      dwFlags
-)
-{
-    return STATUS_SUCCESS;
-}
-
-
-HRESULT WerReportAddFile(
-  HREPORT       hReportHandle,
-  PCWSTR        pwzPath,
-  WER_FILE_TYPE repFileType,
-  DWORD         dwFileFlags
-)
-{
-    return STATUS_SUCCESS;
-}
