@@ -27,10 +27,6 @@ WINE_DEFAULT_DEBUG_CHANNEL(d3d10);
 
 /* IUnknown methods */
 
-static inline struct d3d10_shader_reflection *impl_from_ID3D10ShaderReflection(ID3D10ShaderReflection *iface)
-{
-    return CONTAINING_RECORD(iface, struct d3d10_shader_reflection, ID3D10ShaderReflection_iface);
-}
 
 static HRESULT STDMETHODCALLTYPE d3d10_shader_reflection_QueryInterface(ID3D10ShaderReflection *iface, REFIID riid, void **object)
 {
@@ -52,18 +48,22 @@ static HRESULT STDMETHODCALLTYPE d3d10_shader_reflection_QueryInterface(ID3D10Sh
 
 static ULONG STDMETHODCALLTYPE d3d10_shader_reflection_AddRef(ID3D10ShaderReflection *iface)
 {
+    #if 0
     struct d3d10_shader_reflection *This = impl_from_ID3D10ShaderReflection(iface);
-    ULONG refcount = &This->refcount + 1;
+    ULONG refcount = refcount + 1;
 
     TRACE("%p increasing refcount to %u\n", This, refcount);
 
     return refcount;
+    #endif
+    return 0;
 }
 
 static ULONG STDMETHODCALLTYPE d3d10_shader_reflection_Release(ID3D10ShaderReflection *iface)
 {
-    struct d3d10_shader_reflection *This = impl_from_ID3D10ShaderReflection(iface);
-    ULONG refcount = &This->refcount - 1;
+    #if 0
+    d3d10_shader_reflection *This = impl_from_ID3D10ShaderReflection(iface);
+    ULONG refcount = refcount - 1;
     TRACE("%p decreasing refcount to %u\n", This, refcount);
 
     if (!refcount)
@@ -72,6 +72,8 @@ static ULONG STDMETHODCALLTYPE d3d10_shader_reflection_Release(ID3D10ShaderRefle
     }
 
     return refcount;
+    #endif
+    return 0;
 }
 
 /* ID3D10ShaderReflection methods */
@@ -156,3 +158,8 @@ HRESULT WINAPI D3D10DisassembleShader(const void *data, SIZE_T data_size,
     return D3DDisassemble(data, data_size, color_code ? D3D_DISASM_ENABLE_COLOR_CODE : 0, comments, disassembly);
 }
 
+static inline struct d3d10_shader_reflection *impl_from_ID3D10ShaderReflection(ID3D10ShaderReflection *iface)
+{
+   // return CONTAINING_RECORD(iface, struct d3d10_shader_reflection, ID3D10ShaderReflection_iface);
+    return 0;
+}

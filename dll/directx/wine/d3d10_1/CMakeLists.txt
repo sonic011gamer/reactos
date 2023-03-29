@@ -18,5 +18,6 @@ add_library(d3d10_1 SHARED
 
 set_module_type(d3d10_1 win32dll)
 target_link_libraries(d3d10_1 wine dxguid uuid)
+add_dependencies(d3d10_1 wineheaders)
 add_importlibs(d3d10_1 msvcrt kernel32 ntdll dxgi d3d10core d3d10)
 add_cd_file(TARGET d3d10_1 DESTINATION reactos/system32 FOR all)
