@@ -19,19 +19,36 @@
 #ifndef __WINE_D3D10_PRIVATE_H
 #define __WINE_D3D10_PRIVATE_H
 
-#include <math.h>
-
 #include "wine/debug.h"
 #include "wine/rbtree.h"
-#include "wine/heap.h"
-
 #define COBJMACROS
-#include <winbase.h>
-#include <winuser.h>
-#include <objbase.h>
+#include "winbase.h"
+#include "winuser.h"
+#include "objbase.h"
 
 #include "d3d10.h"
 #include "d3dcompiler.h"
+#include <dxgi.h>
+#include "winedxgi.h"
+
+
+DEFINE_GUID(IID_IDXGIObject,0xaec22fb8,0x76f3,0x4639,0x9b,0xe0,0x28,0xeb,0x43,0xa6,0x7a,0x2e);
+DEFINE_GUID(IID_IDXGIDeviceSubObject,0x3d3e0379,0xf9de,0x4d58,0xbb,0x6c,0x18,0xd6,0x29,0x92,0xf1,0xa6);
+DEFINE_GUID(IID_IDXGIResource,0x035f3ab4,0x482e,0x4e50,0xb4,0x1f,0x8a,0x7f,0x8b,0xd8,0x96,0x0b);
+DEFINE_GUID(IID_IDXGIKeyedMutex,0x9d8e1289,0xd7b3,0x465f,0x81,0x26,0x25,0x0e,0x34,0x9a,0xf8,0x5d);
+DEFINE_GUID(IID_IDXGISurface,0xcafcb56c,0x6ac3,0x4889,0xbf,0x47,0x9e,0x23,0xbb,0xd2,0x60,0xec);
+DEFINE_GUID(IID_IDXGISurface1,0x4AE63092,0x6327,0x4c1b,0x80,0xAE,0xBF,0xE1,0x2E,0xA3,0x2B,0x86);
+DEFINE_GUID(IID_IDXGIAdapter,0x2411e7e1,0x12ac,0x4ccf,0xbd,0x14,0x97,0x98,0xe8,0x53,0x4d,0xc0);
+DEFINE_GUID(IID_IDXGIOutput,0xae02eedb,0xc735,0x4690,0x8d,0x52,0x5a,0x8d,0xc2,0x02,0x13,0xaa);
+DEFINE_GUID(IID_IDXGISwapChain,0x310d36a0,0xd2e7,0x4c0a,0xaa,0x04,0x6a,0x9d,0x23,0xb8,0x88,0x6a);
+DEFINE_GUID(IID_IDXGIFactory,0x7b7166ec,0x21c7,0x44ae,0xb2,0x1a,0xc9,0xae,0x32,0x1a,0xe3,0x69);
+DEFINE_GUID(IID_IDXGIDevice,0x54ec77fa,0x1377,0x44e6,0x8c,0x32,0x88,0xfd,0x5f,0x44,0xc8,0x4c);
+DEFINE_GUID(IID_IDXGIFactory1,0x770aae78,0xf26f,0x4dba,0xa8,0x29,0x25,0x3c,0x83,0xd1,0xb3,0x87);
+DEFINE_GUID(IID_IDXGIAdapter1,0x29038f61,0x3839,0x4626,0x91,0xfd,0x08,0x68,0x79,0x01,0x1a,0x05);
+DEFINE_GUID(IID_IDXGIDevice1,0x77db970f,0x6276,0x48ba,0xba,0x28,0x07,0x01,0x43,0xb4,0x39,0x2c);
+
+    
+
 
 /*
  * This doesn't belong here, but for some functions it is possible to return that value,
@@ -40,18 +57,11 @@
  */
 #define D3DERR_INVALIDCALL 0x8876086c
 
-#define MAKE_TAG(ch0, ch1, ch2, ch3) \
-    ((DWORD)(ch0) | ((DWORD)(ch1) << 8) | \
-    ((DWORD)(ch2) << 16) | ((DWORD)(ch3) << 24 ))
-#define TAG_AON9 MAKE_TAG('A', 'o', 'n', '9')
-#define TAG_DXBC MAKE_TAG('D', 'X', 'B', 'C')
-#define TAG_ISGN MAKE_TAG('I', 'S', 'G', 'N')
-#define TAG_OSG5 MAKE_TAG('O', 'S', 'G', '5')
-#define TAG_OSGN MAKE_TAG('O', 'S', 'G', 'N')
-#define TAG_PCSG MAKE_TAG('P', 'C', 'S', 'G')
-#define TAG_SHDR MAKE_TAG('S', 'H', 'D', 'R')
-#define TAG_SHEX MAKE_TAG('S', 'H', 'E', 'X')
-
+/* TRACE helper functions */
+const char *debug_d3d10_driver_type(D3D10_DRIVER_TYPE driver_type) DECLSPEC_HIDDEN;
+const char *debug_d3d10_shader_variable_class(D3D10_SHADER_VARIABLE_CLASS c) DECLSPEC_HIDDEN;
+const char *debug_d3d10_shader_variable_type(D3D10_SHADER_VARIABLE_TYPE t) DECLSPEC_HIDDEN;
+const char *debug_d3d10_device_state_types(D3D10_DEVICE_STATE_TYPES t) DECLSPEC_HIDDEN;
 
 enum d3d10_effect_object_type
 {
@@ -74,11 +84,6 @@ enum d3d10_effect_object_operation
     D3D10_EOO_ANONYMOUS_SHADER = 7,
 };
 
-struct d3d10_matrix
-{
-    float m[4][4];
-};
-
 struct d3d10_effect_object
 {
     struct d3d10_effect_pass *pass;
@@ -92,15 +97,6 @@ struct d3d10_effect_object
         ID3D10PixelShader *ps;
         ID3D10GeometryShader *gs;
     } object;
-};
-
-struct d3d10_effect_shader_resource
-{
-    D3D10_SHADER_INPUT_TYPE in_type;
-    unsigned int bind_point;
-    unsigned int bind_count;
-
-    struct d3d10_effect_variable *variable;
 };
 
 struct d3d10_effect_shader_signature
@@ -121,9 +117,6 @@ struct d3d10_effect_shader_variable
         ID3D10PixelShader *ps;
         ID3D10GeometryShader *gs;
     } shader;
-
-    unsigned int resource_count;
-    struct d3d10_effect_shader_resource *resources;
 };
 
 struct d3d10_effect_state_object_variable
@@ -142,21 +135,6 @@ struct d3d10_effect_state_object_variable
         ID3D10BlendState *blend;
         ID3D10SamplerState *sampler;
     } object;
-};
-
-struct d3d10_effect_resource_variable
-{
-    ID3D10ShaderResourceView **srv;
-    BOOL parent;
-};
-
-struct d3d10_effect_buffer_variable
-{
-    ID3D10Buffer *buffer;
-    ID3D10ShaderResourceView *resource_view;
-
-    BOOL changed;
-    BYTE *local_buffer;
 };
 
 /* ID3D10EffectType */
@@ -214,8 +192,6 @@ struct d3d10_effect_variable
     {
         struct d3d10_effect_state_object_variable state;
         struct d3d10_effect_shader_variable shader;
-        struct d3d10_effect_buffer_variable buffer;
-        struct d3d10_effect_resource_variable resource;
     } u;
 };
 
@@ -296,16 +272,58 @@ struct d3d10_effect
     struct d3d10_effect_technique *techniques;
 };
 
+/* ID3D10ShaderReflection */
+extern const struct ID3D10ShaderReflectionVtbl d3d10_shader_reflection_vtbl DECLSPEC_HIDDEN;
+struct d3d10_shader_reflection
+{
+    ID3D10ShaderReflection ID3D10ShaderReflection_iface;
+    LONG refcount;
+};
+
 HRESULT d3d10_effect_parse(struct d3d10_effect *This, const void *data, SIZE_T data_size) DECLSPEC_HIDDEN;
 
 /* D3D10Core */
 HRESULT WINAPI D3D10CoreCreateDevice(IDXGIFactory *factory, IDXGIAdapter *adapter,
         unsigned int flags, D3D_FEATURE_LEVEL feature_level, ID3D10Device **device);
 
+#define MAKE_TAG(ch0, ch1, ch2, ch3) \
+    ((DWORD)(ch0) | ((DWORD)(ch1) << 8) | \
+    ((DWORD)(ch2) << 16) | ((DWORD)(ch3) << 24 ))
+#define TAG_DXBC MAKE_TAG('D', 'X', 'B', 'C')
+#define TAG_FX10 MAKE_TAG('F', 'X', '1', '0')
+#define TAG_ISGN MAKE_TAG('I', 'S', 'G', 'N')
+#define TAG_OSGN MAKE_TAG('O', 'S', 'G', 'N')
+#define TAG_SHDR MAKE_TAG('S', 'H', 'D', 'R')
 
-//void read_dword(const char **ptr, UINT32 *d)
-//void read_float(const char **ptr, float *f);
-//void skip_dword_unknown(const char **ptr, unsigned int count);
-//void write_dword(DWORD* location, INT* offset, const DWORD write);
-//void write_float(DWORD* location, INT* offset, const FLOAT write);
+HRESULT parse_dxbc(const char *data, SIZE_T data_size,
+        HRESULT (*chunk_handler)(const char *data, DWORD data_size, DWORD tag, void *ctx), void *ctx) DECLSPEC_HIDDEN;
+
+static inline void *d3d10_calloc(SIZE_T count, SIZE_T size)
+{
+    if (count > ~(SIZE_T)0 / size)
+        return NULL;
+    return HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, count * size);
+}
+
+static inline void read_dword(const char **ptr, DWORD *d)
+{
+    memcpy(d, *ptr, sizeof(*d));
+    *ptr += sizeof(*d);
+}
+
+static inline void write_dword(char **ptr, DWORD d)
+{
+    memcpy(*ptr, &d, sizeof(d));
+    *ptr += sizeof(d);
+}
+
+static inline BOOL require_space(size_t offset, size_t count, size_t size, size_t data_size)
+{
+    return !count || (data_size - offset) / count >= size;
+}
+
+void skip_dword_unknown(const char *location, const char **ptr, unsigned int count) DECLSPEC_HIDDEN;
+void write_dword_unknown(char **ptr, DWORD d) DECLSPEC_HIDDEN;
+
 #endif /* __WINE_D3D10_PRIVATE_H */
+
