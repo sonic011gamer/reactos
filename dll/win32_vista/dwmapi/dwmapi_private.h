@@ -37,8 +37,6 @@
 
 #include <dwmapi.h>
 
-#define DWM_E_COMPOSITIONDISABLED        _HRESULT_TYPEDEF_(0x80263001L)
-
 typedef struct _DWM_PRESENT_PARAMETERS
 {
     UINT32          cbSize;
