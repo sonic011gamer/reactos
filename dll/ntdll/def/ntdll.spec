@@ -1124,10 +1124,10 @@
 @ stdcall RtlRevertMemoryStream(ptr)
 @ stdcall RtlRunDecodeUnicodeString(long ptr)
 @ stdcall RtlRunEncodeUnicodeString(long ptr)
-@ stdcall -stub -version=0x600+ RtlRunOnceBeginInitialize(ptr long ptr)
-@ stdcall -stub -version=0x600+ RtlRunOnceComplete(ptr long ptr)
-@ stdcall -stub -version=0x600+ RtlRunOnceExecuteOnce(ptr ptr ptr ptr)
-@ stdcall -stub -version=0x600+ RtlRunOnceInitialize(ptr)
+@ stdcall -version=0x600+ RtlRunOnceBeginInitialize(ptr long ptr) vista.RtlRunOnceBeginInitialize
+@ stdcall -version=0x600+ RtlRunOnceComplete(ptr long ptr) vista.RtlRunOnceComplete
+@ stdcall -version=0x600+ RtlRunOnceExecuteOnce(ptr ptr ptr ptr) vista.RtlRunOnceExecuteOnce
+@ stdcall -version=0x600+ RtlRunOnceInitialize(ptr) vista.RtlRunOnceInitialize
 @ stdcall RtlSecondsSince1970ToTime(long ptr)
 @ stdcall RtlSecondsSince1980ToTime(long ptr)
 @ stdcall RtlSeekMemoryStream(ptr int64 long ptr)

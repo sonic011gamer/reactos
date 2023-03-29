@@ -1660,3 +1660,19 @@ QueryWorkingSetEx(IN HANDLE hProcess,
 }
 
 /* EOF */
+
+BOOL
+WINAPI
+EnumProcessModulesEx(HANDLE hProcess,
+                     HMODULE *lphModule,
+                     DWORD cb,
+                     LPDWORD lpcbNeeded,
+                   DWORD dwFilterFlag)
+{
+    DPRINT1("HACK: calling into EnumProcessModules\n");
+    //HACK just call into
+    return EnumProcessModules(hProcess, lphModule,
+                              cb, lpcbNeeded);
+}
+
+/* EOF */
