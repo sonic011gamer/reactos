@@ -67,10 +67,10 @@
 @ stdcall -version=0x600+ _register_onexit_function(ptr ptr) msvcrt._register_onexit_function
 @ cdecl -version=0x600+ _register_thread_local_exe_atexit_callback(ptr) msvcrt._register_thread_local_exe_atexit_callback
 @ stdcall _resetstkoflw() msvcrt._resetstkoflw
-@ cdecl -version=0xA00+ _seh_filter_dll() msvcrt.__CppXcptFilter
-@ cdecl -version=0xA00+ _seh_filter_exe() msvcrt._XcptFilter
+@ cdecl -version=0x600+ _seh_filter_dll() msvcrt.__CppXcptFilter
+@ cdecl -version=0x600+ _seh_filter_exe() msvcrt._XcptFilter
 @ stub _set_abort_behavior
-@ cdecl -version=0x600+ _set_app_type(long) msvcrt._set_app_type
+@ cdecl -version=0x600+ _set_app_type(long) msvcrt.__set_app_type
 @ stub _set_controlfp
 @ cdecl -version=0x600+ _set_doserrno(long) msvcrt._set_doserrno
 @ cdecl -version=0x600+ _set_errno(long) msvcrt._set_errno
