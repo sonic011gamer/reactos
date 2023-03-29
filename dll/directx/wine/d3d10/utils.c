@@ -25,7 +25,7 @@
 WINE_DEFAULT_DEBUG_CHANNEL(d3d10);
 
 #define WINE_D3D10_TO_STR(x) case x: return #x
-
+#if 0
 void write_dword(DWORD* location, INT* offset, const DWORD write)
 {
     location[*offset] = write;
@@ -37,7 +37,7 @@ void read_dword(const char **ptr, UINT32 *d)
     memcpy(d, *ptr, sizeof(*d));
     *ptr += sizeof(*d);
 }
-
+#endif
 const char *debug_d3d10_driver_type(D3D10_DRIVER_TYPE driver_type)
 {
     switch(driver_type)

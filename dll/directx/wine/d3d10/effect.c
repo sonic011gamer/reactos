@@ -24,7 +24,13 @@
 #include "d3d10_private.h"
 
 #include <float.h>
-
+struct float_rect
+{
+    float l;
+    float t;
+    float r;
+    float b;
+};
 void write_dword_unknown(char **ptr, DWORD d)
 {
    // FIXME("Writing unknown DWORD 0x%08x\n", d);
@@ -426,6 +432,7 @@ static HRESULT shader_chunk_handler(const char *data, DWORD data_size, DWORD tag
     return S_OK;
 }
 
+
 static HRESULT parse_shader(ID3D10EffectVariable *variable, const char *data)
 {
     struct d3d10_effect_variable *v = impl_from_ID3D10EffectVariable(variable);
@@ -580,13 +587,6 @@ static HRESULT parse_fx10_type(struct d3d10_effect_type *t, const char *ptr, con
             t->basetype = d3d10_variable_type((typeinfo & D3D10_FX10_TYPE_BASETYPE_MASK) >> D3D10_FX10_TYPE_BASETYPE_SHIFT, FALSE);
             t->type_class = d3d10_variable_class((typeinfo & D3D10_FX10_TYPE_CLASS_MASK) >> D3D10_FX10_TYPE_CLASS_SHIFT, typeinfo & D3D10_FX10_TYPE_MATRIX_COLUMN_MAJOR_MASK);
 
-            TRACE("Type description: %#x.\n", typeinfo);
-            TRACE("\tcolumns: %u.\n", t->column_count);
-            TRACE("\trows: %u.\n", t->row_count);
-            TRACE("\tbasetype: %s.\n", debug_d3d10_shader_variable_type(t->basetype));
-            TRACE("\tclass: %s.\n", debug_d3d10_shader_variable_class(t->type_class));
-            TRACE("\tunknown bits: %#x.\n", typeinfo & ~(D3D10_FX10_TYPE_COLUMN_MASK | D3D10_FX10_TYPE_ROW_MASK
-                    | D3D10_FX10_TYPE_BASETYPE_MASK | D3D10_FX10_TYPE_CLASS_MASK | D3D10_FX10_TYPE_MATRIX_COLUMN_MAJOR_MASK));
             break;
 
         case 2:
@@ -599,10 +599,6 @@ static HRESULT parse_fx10_type(struct d3d10_effect_type *t, const char *ptr, con
 
             read_dword(&ptr, &typeinfo);
             t->basetype = d3d10_variable_type(typeinfo, TRUE);
-
-            TRACE("Type description: %#x.\n", typeinfo);
-            TRACE("\tbasetype: %s.\n", debug_d3d10_shader_variable_type(t->basetype));
-            TRACE("\tclass: %s.\n", debug_d3d10_shader_variable_class(t->type_class));
             break;
 
          case 3:
@@ -713,13 +709,9 @@ static HRESULT parse_fx10_type(struct d3d10_effect_type *t, const char *ptr, con
         TRACE("\tColumns: %u.\n", t->elementtype->column_count);
 
         t->elementtype->row_count = t->row_count;
-        TRACE("\tRows: %u.\n", t->elementtype->row_count);
 
         t->elementtype->basetype = t->basetype;
-        TRACE("\tBasetype: %s.\n", debug_d3d10_shader_variable_type(t->elementtype->basetype));
-
         t->elementtype->type_class = t->type_class;
-        TRACE("\tClass: %s.\n", debug_d3d10_shader_variable_class(t->elementtype->type_class));
 
         t->elementtype->members = t->members;
     }
