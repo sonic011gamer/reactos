@@ -1,0 +1,2 @@
+ONLY INSTALLER --->
+kernel32.dll!SetProcessDEPPolicy
