@@ -228,6 +228,7 @@ CloseTouchInputHandle(
 }
 
 BOOL
+WINAPI
 AddClipboardFormatListener(
     HWND hwnd)
 {
@@ -235,6 +236,7 @@ AddClipboardFormatListener(
 }
 
 BOOL
+WINAPI
 RemoveClipboardFormatListener(
     HWND hwnd)
 {
