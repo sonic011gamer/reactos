@@ -68,7 +68,7 @@
 @ stdcall   K32QueryWorkingSet(ptr ptr long)
 @ stdcall   K32QueryWorkingSetEx(ptr ptr long)
 @ stdcall   K32GetMappedFileNameW(ptr ptr ptr long)
-
+@ stdcall    QueryUnbiasedInterruptTime(ptr)
 
 @ stdcall GetProcessPreferredUILanguages(long ptr ptr ptr)
 ;@ stdcall GetActiveProcessorCount(long)
