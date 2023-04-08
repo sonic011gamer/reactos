@@ -869,8 +869,8 @@
 @ stdcall QueryDepthSList(ptr) ntdll.RtlQueryDepthSList
 @ stdcall QueryDosDeviceA(str ptr long)
 @ stdcall QueryDosDeviceW(wstr ptr long)
-@ stub -version=0x600+ QueryFullProcessImageNameA
-@ stub -version=0x600+ QueryFullProcessImageNameW
+@ stdcall -version=0x600+ QueryFullProcessImageNameA(ptr long str ptr) kernel32_vista.QueryFullProcessImageNameA
+@ stdcall -version=0x600+ QueryFullProcessImageNameW(ptr long wstr ptr) kernel32_vista.QueryFullProcessImageNameW
 @ stub -version=0x600+ QueryIdleProcessorCycleTime
 @ stdcall QueryInformationJobObject(long long ptr long ptr)
 @ stdcall QueryMemoryResourceNotification(ptr ptr)
@@ -900,8 +900,8 @@
 @ stdcall ReadFileEx(long ptr long ptr ptr)
 @ stdcall ReadFileScatter(long ptr long ptr ptr)
 @ stdcall ReadProcessMemory(long ptr ptr long ptr)
-@ stub -version=0x600+ RegisterApplicationRecoveryCallback
-@ stub -version=0x600+ RegisterApplicationRestart
+@ stdcall -version=0x600+ RegisterApplicationRecoveryCallback(ptr ptr long long) kernel32_vista.RegisterApplicationRecoveryCallback
+@ stdcall -version=0x600+ RegisterApplicationRestart(wstr long) kernel32_vista.RegisterApplicationRestart
 @ stdcall RegisterConsoleIME(ptr ptr)
 @ stdcall RegisterConsoleOS2(long)
 @ stdcall RegisterConsoleVDM(long long long long long long long long long long long)
@@ -1077,7 +1077,7 @@
 @ stdcall SetThreadExecutionState(long)
 @ stdcall SetThreadIdealProcessor(long long)
 @ stdcall SetThreadLocale(long)
-@ stub -version=0x600+ SetThreadPreferredUILanguages
+@ stdcall -version=0x600+ SetThreadPreferredUILanguages(long wstr ptr) kernel32_vista.SetThreadPreferredUILanguages
 @ stdcall SetThreadPriority(long long)
 @ stdcall SetThreadPriorityBoost(long long)
 @ stdcall SetThreadStackGuarantee(ptr)
@@ -1135,8 +1135,8 @@
 @ stdcall UnlockFile(long long long long long)
 @ stdcall UnlockFileEx(long long long long ptr)
 @ stdcall UnmapViewOfFile(ptr)
-@ stub -version=0x600+ UnregisterApplicationRecoveryCallback
-@ stub -version=0x600+ UnregisterApplicationRestart
+@ stdcall -stub -version=0x600+ UnregisterApplicationRecoveryCallback(ptr ptr)
+@ stdcall -stub -version=0x600+ UnregisterApplicationRestart(ptr ptr)
 @ stdcall UnregisterConsoleIME()
 @ stdcall UnregisterWait(long)
 @ stdcall UnregisterWaitEx(long long)
