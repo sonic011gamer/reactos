@@ -166,3 +166,12 @@ K32QueryWorkingSetEx(
     UNIMPLEMENTED;
     return TRUE;
 }
+
+WINBASEAPI
+BOOL
+WINAPI QueryUnbiasedInterruptTime(ULONGLONG* time)
+{
+    /* heh. */
+    *time = GetTickCount64();
+    return TRUE;
+}
