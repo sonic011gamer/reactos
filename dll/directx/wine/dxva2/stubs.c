@@ -6,7 +6,9 @@
 #define NDEBUG
 #include <reactos/debug.h>
 
-HRESULT DXVA2CreateDirect3DDeviceManager9(
+HRESULT
+WINAPI
+DXVA2CreateDirect3DDeviceManager9(
   UINT                    *pResetToken,
   PVOID **ppDeviceManager
 )
@@ -15,7 +17,9 @@ HRESULT DXVA2CreateDirect3DDeviceManager9(
     return 0;
 }
 
-HRESULT DXVA2CreateVideoService(
+HRESULT
+WINAPI
+DXVA2CreateVideoService(
   ULONG_PTR *pDD,
   REFIID           riid,
   void             **ppService
