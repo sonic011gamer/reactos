@@ -1204,6 +1204,8 @@
 @ stdcall RtlTraceDatabaseUnlock(ptr)
 @ stdcall RtlTraceDatabaseValidate(ptr)
 @ stdcall -stub -version=0x600+ RtlTryAcquirePebLock()
+@ stdcall -version=0x600+ RtlTryAcquireSRWLockExclusive(ptr) ntdll_vista.RtlTryAcquireSRWLockExclusive
+@ stdcall -version=0x600+ RtlTryAcquireSRWLockShared(ptr) ntdll_vista.RtlTryAcquireSRWLockShared
 @ stdcall RtlTryEnterCriticalSection(ptr)
 @ stdcall RtlUnhandledExceptionFilter2(ptr long)
 @ stdcall RtlUnhandledExceptionFilter(ptr)

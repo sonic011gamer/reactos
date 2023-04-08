@@ -4,6 +4,8 @@
 @ stdcall RtlSleepConditionVariableCS(ptr ptr ptr)
 @ stdcall RtlSleepConditionVariableSRW(ptr ptr ptr long)
 @ stdcall RtlInitializeSRWLock(ptr)
+@ stdcall RtlTryAcquireSRWLockExclusive(ptr)
+@ stdcall RtlTryAcquireSRWLockShared(ptr)
 @ stdcall RtlAcquireSRWLockShared(ptr)
 @ stdcall RtlReleaseSRWLockShared(ptr)
 @ stdcall RtlAcquireSRWLockExclusive(ptr)
