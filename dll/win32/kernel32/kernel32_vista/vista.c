@@ -16,6 +16,7 @@
 #define NDEBUG
 #include <debug.h>
 
+
 /* PUBLIC FUNCTIONS ***********************************************************/
 
 /*
@@ -911,3 +912,26 @@ BOOL WINAPI K32GetPerformanceInfo( PPERFORMANCE_INFORMATION info, DWORD size )
     return TRUE;
 }
 
+
+DWORD
+WINAPI
+K32GetMappedFileNameW( HANDLE process, void *addr, WCHAR *name, DWORD size )
+{
+    ULONG_PTR buffer[(sizeof(MEMORY_SECTION_NAME) + MAX_PATH * sizeof(WCHAR)) / sizeof(ULONG_PTR)];
+    MEMORY_SECTION_NAME *mem = (MEMORY_SECTION_NAME *)buffer;
+    DWORD len;
+
+    if (size && !name)
+    {
+        SetLastError( ERROR_INVALID_PARAMETER );
+        return 0;
+    }
+   NtQueryVirtualMemory( process, addr, 0,
+                                             mem, sizeof(buffer), NULL );
+
+    len = mem->SectionFileName.Length / sizeof(WCHAR);
+    memcpy( name, mem->SectionFileName.Buffer, min( mem->SectionFileName.Length, size * sizeof(WCHAR) ));
+    if (len >= size) SetLastError( ERROR_INSUFFICIENT_BUFFER );
+    name[min(len, size - 1)] = 0;
+    return len;
+}
