@@ -104,5 +104,6 @@
 @ stdcall signal() msvcrt.signal
 @ stdcall strerror() msvcrt.strerror
 @ cdecl -version=0x600+ _strerror_s(ptr long str) msvcrt.strerror_s
+@ cdecl -version=0x600+ strerror_s(ptr long str) msvcrt.strerror_s
 @ stdcall system() msvcrt.system
 @ cdecl -version=0x600+ terminate() msvcrt.terminate
