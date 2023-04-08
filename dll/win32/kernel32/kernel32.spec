@@ -1376,7 +1376,6 @@
 @ stdcall -stub -version=0x601+ Wow64GetThreadSelectorEntry(ptr long ptr)
 @ stdcall -stub -version=0x601+ -arch=x86_64 UmsThreadYield(ptr)
 @ stdcall -stub -version=0x601+ -arch=i386,x86_64 InitializeContext(ptr long ptr ptr)
-
 @ stub  -version=0x600+ GetProductName
 @ stub  -version=0x601+ GetXStateFeaturesMask
 @ stub  -version=0x601+ LoadStringByReference
