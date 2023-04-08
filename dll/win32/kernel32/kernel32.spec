@@ -1290,3 +1290,4 @@
 @ stdcall -version=0x600+ K32QueryWorkingSet(ptr ptr long) kernel32_vista.K32QueryWorkingSet
 @ stdcall -version=0x600+ K32QueryWorkingSetEx(ptr ptr long) kernel32_vista.K32QueryWorkingSetEx
 @ stdcall -version=0x600+ SetProcessPreferredUILanguages(long ptr ptr) kernel32_vista.SetProcessPreferredUILanguages
+@ stdcall -version=0x600+ K32GetMappedFileNameW(ptr ptr ptr long) kernel32_vista.K32GetMappedFileNameW
