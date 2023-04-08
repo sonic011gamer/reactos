@@ -1639,7 +1639,6 @@
 @ cdecl _strrev()
 @ cdecl _strset()
 @ cdecl _strupr()
-@ stub swprintf_s
 @ cdecl _vsnprintf()
 @ cdecl _vsnwprintf()
 ;@ cdecl -stub -version=0x600+ _vswprintf(ptr wstr ptr)
@@ -1681,7 +1680,7 @@
 @ cdecl strspn()
 @ cdecl strstr()
 @ cdecl swprintf()
-;@ varargs -version=0x601+ swprintf_s(ptr long wstr)
+@ varargs -stub -version=0x601+ swprintf_s(ptr long wstr)
 @ cdecl tolower()
 @ cdecl toupper()
 @ cdecl towlower()
