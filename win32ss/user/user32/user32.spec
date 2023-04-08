@@ -748,7 +748,8 @@
 739 varargs wsprintfW(ptr wstr)
 740 stdcall wvsprintfA(ptr str ptr)
 741 stdcall wvsprintfW(ptr wstr ptr)
-
+742 stdcall -version=0x600+ DisplayConfigGetDeviceInfo(ptr) user32_vista.DisplayConfigGetDeviceInfo
+743 stdcall -version=0x600+ -stub  GetDisplayConfigBufferSizes(long ptr ptr)
 
 
 
@@ -776,7 +777,6 @@
 @   stdcall -version=0x600+ RegisterErrorReportingDialog(long long) user32_vista.RegisterErrorReportingDialog
 @   stdcall -version=0x600+ RegisterFrostWindow(long long) user32_vista.RegisterFrostWindow
 @   stdcall -version=0x600+ RegisterGhostWindow(long long) user32_vista.RegisterGhostWindow
-@   stdcall -version=0x600+ DisplayConfigGetDeviceInfo(ptr) user32_vista.DisplayConfigGetDeviceInfo
 @   stdcall -version=0x600+ RegisterTouchWindow(ptr long) user32_vista.RegisterTouchWindow
 @   stdcall -version=0x600+ CloseTouchInputHandle(ptr) user32_vista.CloseTouchInputHandle
 @   stdcall -version=0x600+ RegisterPowerSettingNotification() user32_vista.RegisterPowerSettingNotification
