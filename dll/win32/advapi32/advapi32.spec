@@ -321,6 +321,7 @@
 @ stdcall InitiateSystemShutdownExA(str str long long long long)
 @ stdcall InitiateSystemShutdownExW(wstr wstr long long long long)
 @ stdcall InitiateSystemShutdownW(str str long long long)
+@ stdcall -stub -version=0x600+ InitateShutdownW(ptr ptr long long long)
 @ stub InstallApplication
 @ stdcall IsTextUnicode(ptr long ptr)
 @ stdcall IsTokenRestricted(long)
