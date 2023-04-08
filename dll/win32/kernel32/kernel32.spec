@@ -623,12 +623,12 @@
 @ stdcall GetThreadIOPendingFlag(long ptr)
 @ stdcall GetThreadId(ptr)
 @ stdcall GetThreadLocale()
-@ stub -version=0x600+ GetThreadPreferredUILanguages
+@ stdcall -version=0x600+ GetThreadPreferredUILanguages(long ptr wstr ptr) kernel32_vista.GetThreadPreferredUILanguages
 @ stdcall GetThreadPriority(long)
 @ stdcall GetThreadPriorityBoost(long ptr)
 @ stdcall GetThreadSelectorEntry(long long ptr)
 @ stdcall GetThreadTimes(long ptr ptr ptr ptr)
-@ stub -version=0x600+ GetThreadUILanguage
+@ stdcall -version=0x600+ GetThreadUILanguage(long ptr wstr ptr) kernel32_vista.GetThreadUILanguage
 @ stdcall GetTickCount()
 @ stdcall -version=0x600+ GetTickCount64() kernel32_vista.GetTickCount64
 @ stdcall GetTimeFormatA(long long ptr str ptr long)
