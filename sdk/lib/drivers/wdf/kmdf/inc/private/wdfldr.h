@@ -117,6 +117,7 @@ typedef struct _WDF_CLASS_LIBRARY_INFO {
 extern "C" {
 #endif
 
+CODE_SEG("PAGE")
 NTSTATUS
 NTAPI
 WdfRegisterClassLibrary(
@@ -130,6 +131,7 @@ WdfLdrDiagnosticsValueByNameAsULONG(
     _In_ PUNICODE_STRING ValueName,
     _Out_ PULONG Value);
 
+CODE_SEG("PAGE")
 NTSTATUS
 NTAPI
 WdfRegisterLibrary(
@@ -148,6 +150,7 @@ DllInitialize(
     _In_ PUNICODE_STRING RegistryPath);
 
 
+CODE_SEG("PAGE")
 NTSTATUS
 NTAPI
 WdfVersionBind(
@@ -157,6 +160,7 @@ WdfVersionBind(
     _Out_ PWDF_COMPONENT_GLOBALS *ComponentGlobals);
 
 
+CODE_SEG("PAGE")
 NTSTATUS
 NTAPI
 WdfVersionUnbind(
