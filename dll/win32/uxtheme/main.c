@@ -36,3 +36,17 @@ BOOL WINAPI DllMain(HINSTANCE hInstDLL, DWORD fdwReason, LPVOID lpv)
     }
     return TRUE;
 }
+typedef HANDLE HANIMATIONBUFFER;  // handle to a buffered paint animation
+
+HRESULT
+WINAPI
+EndBufferedAnimation(
+	HANIMATIONBUFFER hbpAnimation,
+	BOOL fUpdateTarget
+)
+{
+ //   FIXME("Stub (%p %u)\n", hbpAnimation, fUpdateTarget);
+
+    return E_NOTIMPL;
+}
+
