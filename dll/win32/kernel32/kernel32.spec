@@ -1101,8 +1101,8 @@
 @ stdcall SignalObjectAndWait(long long long long)
 @ stdcall SizeofResource(long long)
 @ stdcall Sleep(long)
-@ stub -version=0x600+ SleepConditionVariableCS
-@ stub -version=0x600+ SleepConditionVariableSRW
+@ stdcall -version=0x600+ SleepConditionVariableCS() kernel32_vista.SleepConditionVariableCS
+@ stdcall -version=0x600+ SleepConditionVariableSRW() kernel32_vista.SleepConditionVariableSRW
 @ stdcall SleepEx(long long)
 @ stub -version=0x600+ StartThreadpoolIo
 @ stub -version=0x600+ SubmitThreadpoolWork

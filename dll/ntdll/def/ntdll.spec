@@ -1178,8 +1178,8 @@
 @ stdcall -stub -version=0x600+ RtlSidHashLookup(long ptr)
 @ stdcall -stub -version=0x600+ RtlSidIsHigherLevel(long long ptr)
 @ stdcall RtlSizeHeap(long long ptr)
-@ stdcall -stub -version=0x600+ RtlSleepConditionVariableCS(ptr ptr ptr)
-@ stdcall -stub -version=0x600+ RtlSleepConditionVariableSRW(ptr ptr ptr long)
+@ stdcall -version=0x600+ RtlSleepConditionVariableCS(ptr ptr ptr) ntdll_vista.RtlSleepConditionVariableCS
+@ stdcall -version=0x600+ RtlSleepConditionVariableSRW(ptr ptr ptr long) ntdll_vista.RtlSleepConditionVariableSRW
 @ stdcall RtlSplay(ptr)
 @ stdcall RtlStartRXact(ptr)
 @ stdcall RtlStatMemoryStream(ptr ptr long)
@@ -1253,8 +1253,8 @@
 @ stdcall RtlValidateUnicodeString(long ptr)
 @ stdcall RtlVerifyVersionInfo(ptr long double)
 @ stdcall -arch=x86_64 RtlVirtualUnwind(long long long ptr ptr ptr ptr ptr)
-@ stdcall -stub -version=0x600+ RtlWakeAllConditionVariable(ptr)
-@ stdcall -stub -version=0x600+ RtlWakeConditionVariable(ptr)
+@ stdcall -version=0x600+ RtlWakeAllConditionVariable(ptr) ntdll_vista.RtlWakeAllConditionVariable
+@ stdcall -version=0x600+ RtlWakeConditionVariable(ptr) ntdll_vista.RtlWakeConditionVariable
 @ stdcall RtlWalkFrameChain(ptr long long)
 @ stdcall RtlWalkHeap(long ptr)
 @ stdcall -stub -version=0x600+ RtlWerpReportException(long long ptr long long ptr)
