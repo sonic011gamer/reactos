@@ -22,6 +22,10 @@ add_library(dxgi MODULE
     ${CMAKE_CURRENT_BINARY_DIR}/dxgi_stubs.c
     ${CMAKE_CURRENT_BINARY_DIR}/dxgi.def)
 
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(dxgi PRIVATE -Wno-sequence-point -Wno-unused-function -Wno-unused-but-set-variable -Wno-error) # Our favourite compiler :)
+endif()
+
 set_module_type(dxgi win32dll)
 target_link_libraries(dxgi dxguid uuid wine)
 add_importlibs(dxgi advapi32 gdi32 user32 d3dwine msvcrt kernel32 ntdll)

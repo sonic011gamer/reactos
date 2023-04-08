@@ -16,6 +16,10 @@ add_library(d3d10_1 SHARED
     ${CMAKE_CURRENT_BINARY_DIR}/d3d10_1_stubs.c
     ${CMAKE_CURRENT_BINARY_DIR}/d3d10_1.def)
 
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(d3d10_1 PRIVATE -Wno-incompatible-pointer-types -Wno-error) # Our favourite compiler :)
+endif()
+
 set_module_type(d3d10_1 win32dll)
 target_link_libraries(d3d10_1 wine dxguid uuid)
 add_dependencies(d3d10_1 wineheaders)
