@@ -593,6 +593,28 @@ DWORD WINAPI DeleteIpNetEntry(PMIB_IPNETROW pArpEntry)
   return (DWORD) 0;
 }
 
+DWORD
+WINAPI
+ConvertInterfaceIndexToLuid(
+  _In_  NET_IFINDEX InterfaceIndex,
+  _Out_ PNET_LUID   InterfaceLuid
+)
+{
+	MIB_IFROW row;
+	if(InterfaceLuid==0)
+      return ERROR_INVALID_PARAMETER;
+
+	memset(InterfaceLuid, 0, sizeof(*InterfaceLuid));
+
+	row.dwIndex = InterfaceIndex;
+    if (GetIfEntry(&row)==0)
+		return ERROR_FILE_NOT_FOUND;
+
+	InterfaceLuid->Info.Reserved     = 0;
+    InterfaceLuid->Info.NetLuidIndex = InterfaceIndex;
+    InterfaceLuid->Info.IfType       = row.dwType;
+	return NO_ERROR;
+}
 
 /******************************************************************
  *    DeleteProxyArpEntry (IPHLPAPI.@)
