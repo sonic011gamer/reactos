@@ -604,7 +604,7 @@
 @ cdecl -arch=x86_64 -version=0x502 _heapused(ptr ptr)
 @ cdecl _heapwalk(ptr)
 @ cdecl _hypot(double double)
-@ cdecl -arch=x86_64,arm _hypotf(long long)
+;@ cdecl -version=0x502 -arch=x86_64 _hypotf(long long) ; FIXME
 @ cdecl _i64toa(long long ptr long)
 @ cdecl -version=0x600+ _i64toa_s(int64 ptr long long)
 @ cdecl _i64tow(long long ptr long)
@@ -1592,4 +1592,4 @@
 @ stdcall -stub -version=0x600+ _invalid_parameter_noinfo_noreturn()
 @ stdcall -stub -version=0x600+ _register_onexit_function()
 @ stdcall -stub -version=0x600+ _register_thread_local_exe_atexit_callback()
-@ cdecl -stub -version=0x600+ _hypotf(long long)
+@ cdecl -version=0x600+ _hypotf(long long)
