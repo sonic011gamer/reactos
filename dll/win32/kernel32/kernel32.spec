@@ -1318,7 +1318,7 @@
 @ stdcall -version=0x601+ BasepAllocateActivationContextActivationBlock(long ptr ptr ptr)
 @ stdcall -stub -version=0x601+ BasepAnsiStringToDynamicUnicodeString(wstr str)
 @ stdcall -version=0x601+ BasepFreeActivationContextActivationBlock(ptr)
-@ stdcall -version=0x601+ BaseFormatTimeOut(int64 long)
+@ stdcall -version=0x601+ BaseFormatTimeOut(ptr long)
 @ stdcall -version=0x601+ BaseGetNamedObjectDirectory()
 @ stdcall -version=0x601+ Basep8BitStringToDynamicUnicodeString(wstr str)
 @ stdcall -version=0x601+ BasepMapModuleHandle(ptr long)
