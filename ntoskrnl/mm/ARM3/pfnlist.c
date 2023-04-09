@@ -1221,11 +1221,22 @@ MiDecrementShareCount(IN PMMPFN Pfn1,
 
 VOID
 NTAPI
+MmDereferencePage(PFN_NUMBER Pfn);
+
+VOID
+NTAPI
 MiDecrementReferenceCount(IN PMMPFN Pfn1,
                           IN PFN_NUMBER PageFrameIndex)
 {
     /* PFN lock must be held */
     MI_ASSERT_PFN_LOCK_HELD();
+
+    /* Hack for RosMm */
+    if (Pfn1->u4.AweAllocation)
+    {
+        MmDereferencePage(PageFrameIndex);
+        return;
+    }
 
     /* Sanity checks on the page */
     if (PageFrameIndex > MmHighestPhysicalPage ||
