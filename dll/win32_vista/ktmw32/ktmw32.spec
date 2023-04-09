@@ -4,7 +4,7 @@
 @ stdcall -version=0x600+ -stub CommitTransactionAsync(ptr ptr ptr ptr ptr) 
 @ stdcall -version=0x600+ -stub CreateEnlistment(ptr ptr ptr ptr ptr) 
 @ stdcall -version=0x600+ -stub CreateResourceManager(ptr ptr ptr ptr ptr) 
-@ stdcall -version=0x600+ CreateTransaction(ptr ptr long long long) ; Correct
+@ stdcall -version=0x600+ CreateTransaction(ptr ptr long long long long wstr) ; Correct
 @ stdcall -version=0x600+ -stub CreateTransactionManager(ptr ptr ptr ptr ptr) 
 @ stdcall -version=0x600+ -stub GetCurrentClockTransactionManager(ptr ptr ptr ptr ptr) 
 @ stdcall -version=0x600+ -stub GetEnlistmentId	(ptr ptr ptr ptr ptr) 

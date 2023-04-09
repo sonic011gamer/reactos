@@ -165,7 +165,6 @@ elseif(ARCH STREQUAL "arm")
         math/arm/__64tof.h
     )
     list(APPEND CRT_MATH_SOURCE
-        math/_hypotf.c
         math/acosf.c
         math/asinf.c
         math/atan2f.c
@@ -217,6 +216,7 @@ if(NOT ARCH STREQUAL "amd64")
         math/cosh.c
         math/cosf.c
         math/hypot.c
+        math/_hypotf.c
         math/modf.c
         math/s_modf.c
         math/sinh.c
