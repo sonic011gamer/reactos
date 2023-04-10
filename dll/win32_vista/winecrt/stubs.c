@@ -1,7 +1,8 @@
 
 #include "precomp.h"
 
-#include <debug.h>
+WINE_DEFAULT_DEBUG_CHANNEL(winecrt);
+
 #undef UNIMPLEMENTED
 #define UNIMPLEMENTED __wine_spec_unimplemented_stub("winecrt.dll", __FUNCTION__)
 
@@ -69,7 +70,7 @@ char** CDECL _get_initial_narrow_environment(void)
  */
 int CDECL _configure_narrow_argv(int mode)
 {
-  DPRINT1("Calling stub _configure_narrow_argv: This will probably fail(%d)\n", mode);
+  ERR("Calling stub _configure_narrow_argv: This will probably fail(%d)\n", mode);
 
 //     __debugbreak();
   return 0;
@@ -79,7 +80,7 @@ int CDECL _configure_narrow_argv(int mode)
  */
 int CDECL _initialize_narrow_environment(void)
 {
-  DPRINT1("Calling stub _initialize_narrow_environment: This will probably fail\n");
+  ERR("Calling stub _initialize_narrow_environment: This will probably fail\n");
      // __debugbreak();
   return 0;
 }
@@ -95,7 +96,7 @@ wchar_t** CDECL _get_initial_wide_environment(void)
  */
 int CDECL _configure_wide_argv(int mode)
 {
-   //DPRINT1("Calling stub _configure_wide_argv: This will probably fail(%d) stub\n", mode);
+   //ERR("Calling stub _configure_wide_argv: This will probably fail(%d) stub\n", mode);
    // __debugbreak();
   return 0;
 }
@@ -104,7 +105,7 @@ int CDECL _configure_wide_argv(int mode)
  */
 int CDECL _initialize_wide_environment(void)
 {
-    DPRINT1("Calling stub _initialize_wide_environment: This will probably fail\n");
+    ERR("Calling stub _initialize_wide_environment: This will probably fail\n");
         ///__debugbreak();
   return 0;
 }
