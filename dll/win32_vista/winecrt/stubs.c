@@ -71,7 +71,7 @@ int CDECL _configure_narrow_argv(int mode)
 {
   DPRINT1("Calling stub _configure_narrow_argv: This will probably fail(%d)\n", mode);
 
-     __debugbreak();
+//     __debugbreak();
   return 0;
 }
 /*********************************************************************
@@ -80,7 +80,7 @@ int CDECL _configure_narrow_argv(int mode)
 int CDECL _initialize_narrow_environment(void)
 {
   DPRINT1("Calling stub _initialize_narrow_environment: This will probably fail\n");
-      __debugbreak();
+     // __debugbreak();
   return 0;
 }
 /*********************************************************************
@@ -95,8 +95,8 @@ wchar_t** CDECL _get_initial_wide_environment(void)
  */
 int CDECL _configure_wide_argv(int mode)
 {
-   DPRINT1("Calling stub _configure_wide_argv: This will probably fail(%d) stub\n", mode);
-    __debugbreak();
+   //DPRINT1("Calling stub _configure_wide_argv: This will probably fail(%d) stub\n", mode);
+   // __debugbreak();
   return 0;
 }
 /*********************************************************************
@@ -105,7 +105,7 @@ int CDECL _configure_wide_argv(int mode)
 int CDECL _initialize_wide_environment(void)
 {
     DPRINT1("Calling stub _initialize_wide_environment: This will probably fail\n");
-        __debugbreak();
+        ///__debugbreak();
   return 0;
 }
 /*********************************************************************
@@ -169,7 +169,7 @@ typedef enum _crt_app_type
     _crt_console_app,
     _crt_gui_app
 } _crt_app_type;
-
+int MSVCRT__fmode = 0;
 #ifndef _CRT_ONEXIT_T_DEFINED
 #define _CRT_ONEXIT_T_DEFINED
 typedef int (__cdecl *_onexit_t)(void);
@@ -179,3 +179,9 @@ void  __cdecl  free(void*);
 void* __cdecl  malloc(size_t);
 void* __cdecl  calloc(size_t, size_t);
 void* __cdecl  realloc(void*, size_t);
+
+int CDECL _set_fmode(int mode)
+{
+    MSVCRT__fmode = mode;
+    return 0;
+}
