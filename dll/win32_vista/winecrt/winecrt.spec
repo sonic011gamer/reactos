@@ -35,5 +35,4 @@
 
 @ cdecl -stub _invalid_parameter_noinfo()
 @ cdecl -stub _invalid_parameter_noinfo_noreturn()
-@ cdecl -stub  _hypotf(long long)
 @ cdecl _set_fmode(long)
