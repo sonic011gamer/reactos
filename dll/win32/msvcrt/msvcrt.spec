@@ -951,7 +951,7 @@
 @ cdecl -version=0x600+ _set_errno(long)
 @ cdecl _set_error_mode(long)
 @ stub -version=0x600+ _set_fileinfo
-@ stdcall -stub -version=0x600+ _set_fmode(long)
+@ cdecl -version=0x600+ _set_fmode(long) winecrt._set_fmode
 @ stub -version=0x600+ _set_output_format
 @ cdecl _set_sbh_threshold(long)
 @ cdecl _seterrormode(long)
