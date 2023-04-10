@@ -1590,7 +1590,7 @@
 @ cdecl -version=0x600+ _invalid_parameter_noinfo() winecrt._invalid_parameter_noinfo
 @ cdecl -version=0x600+ _invalid_parameter_noinfo_noreturn() winecrt._invalid_parameter_noinfo_noreturn
 @ cdecl -version=0x600+ _register_thread_local_exe_atexit_callback() winecrt._register_thread_local_exe_atexit_callback
-@ cdecl -version=0x600+ _hypotf() winecrt._hypotf
+@ cdecl -version=0x600+ _hypotf(long long)
 @ cdecl -version=0x600+ _execute_onexit_table(ptr)
 @ cdecl -version=0x600+ _initialize_onexit_table(ptr)
 @ cdecl -version=0x600+ _register_onexit_function(ptr ptr)
