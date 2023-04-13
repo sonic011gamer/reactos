@@ -7,10 +7,6 @@
 #pragma once
 
 
-//
-// Old includes which are only kept for now for compatibility
-//
-
 #ifndef _NTOSP_
 #define _NTOSP_
 
@@ -70,16 +66,6 @@ typedef unsigned char  BYTE;
 #include <d3dkmdt.h>
 
 #define DlDebugPrintEx(arg) DlDebugPrint arg
-
-//
-// ** New definitions *********************************************************
-//
-
-
-//
-// Define ACPI event IDs
-//
-
 #define ACPI_NOTIFY_DOCK_EVENT              0x77
 #define ACPI_NOTIFY_PANEL_SWITCH            0x80
 #define ACPI_NOTIFY_DEVICE_HOTPLUG          0x81
@@ -560,7 +546,7 @@ typedef struct _DXGKRNL_INTERFACE {
 
     DXGKCB_LOG_ETW_EVENT                    DxgkCbLogEtwEvent;
 
-    //DXGKCB_EXCLUDE_ADAPTER_ACCESS           DxgkCbExcludeAdapterAccess;
+   // DXGKCB_EXCLUDE_ADAPTER_ACCESS           DxgkCbExcludeAdapterAccess;
 
 #if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WIN8)
 
@@ -1207,7 +1193,9 @@ typedef struct _DRIVER_INITIALIZATION_DATA {
 
 } DRIVER_INITIALIZATION_DATA, *PDRIVER_INITIALIZATION_DATA;
 
-NTSTATUS DxgkInitialize(
+NTSTATUS
+NTAPI
+DxgkInitialize(
   _In_ PDRIVER_OBJECT              DriverObject,
   _In_ PUNICODE_STRING             RegistryPath,
   _In_ PDRIVER_INITIALIZATION_DATA DriverInitializationData
