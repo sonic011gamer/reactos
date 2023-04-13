@@ -4,7 +4,8 @@ remove_definitions(-D_WIN32_WINNT=0x502)
 add_definitions(-D_WIN32_WINNT=0x601)
 
 list(APPEND SOURCE
-     drivertest.c
+     entry.c
+     device_manage.c
     )
 
 add_library(openwddm MODULE
@@ -17,6 +18,7 @@ if(USE_CLANG_CL)
 endif()
 
 set_module_type(openwddm kernelmodedriver ENTRYPOINT DriverEntry)
-add_importlibs(openwddm ntoskrnl hal dxgkrnl)
+target_link_libraries(openwddm displib)
+add_importlibs(openwddm ntoskrnl dxgkrnl)
 add_driver_inf(openwddm openwddm.inf)
 add_cd_file(TARGET openwddm DESTINATION reactos/system32/drivers NO_CAB FOR all)
