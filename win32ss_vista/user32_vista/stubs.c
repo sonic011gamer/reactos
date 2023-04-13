@@ -259,5 +259,5 @@ BOOL
 WINAPI
 GetDpiForMonitorInternal(HMONITOR monitor ,UINT one,UINT* two,UINT* three)
 {
-    return FALSE
+    return FALSE;
 }
