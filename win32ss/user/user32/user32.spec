@@ -783,3 +783,6 @@
 @   stdcall -version=0x600+ SetProcessDPIAware() user32_vista.SetProcessDPIAware
 @ stdcall -version=0x600+ AddClipboardFormatListener(ptr) user32_vista.AddClipboardFormatListener
 @ stdcall -version=0x600+ RemoveClipboardFormatListener(ptr) user32_vista.RemoveClipboardFormatListener
+@ stdcall -version=0x600+ GetProcessDpiAwarenessInternal(ptr ptr) user32_vista.GetProcessDpiAwarenessInternal
+@ stdcall -version=0x600+ SetProcessDpiAwarenessInternal(long) user32_vista.SetProcessDpiAwarenessInternal
+@ stdcall -version=0x600+ GetDpiForMonitorInternal(ptr long ptr ptr) user32_vista.GetDpiForMonitorInternal
