@@ -6,6 +6,9 @@ spec2def(dxgkrnl.sys dxgkrnl.spec ADD_IMPORTLIB)
 
 list(APPEND SOURCE
     dxgkrnl.c
+    dxgkrnl_vista.c
+    interface_vista.c
+    undocumented.c
     )
 
 add_library(dxgkrnl MODULE
