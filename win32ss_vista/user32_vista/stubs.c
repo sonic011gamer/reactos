@@ -242,3 +242,22 @@ RemoveClipboardFormatListener(
 {
     return 0;
 }
+
+BOOL
+WINAPI
+GetProcessDpiAwarenessInternal(HANDLE handle,DPI_AWARENESS* dpi )
+{
+    return FALSE;
+}
+BOOL
+WINAPI
+SetProcessDpiAwarenessInternal(DPI_AWARENESS dpi)
+{
+    return FALSE;
+}
+BOOL
+WINAPI
+GetDpiForMonitorInternal(HMONITOR monitor ,UINT one,UINT* two,UINT* three)
+{
+    return FALSE
+}
