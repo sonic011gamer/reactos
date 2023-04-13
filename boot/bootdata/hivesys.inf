@@ -2194,7 +2194,7 @@ HKLM,"SYSTEM\CurrentControlSet\Services\DXGKrnl","Description",0x00000000,"Contr
 HKLM,"SYSTEM\CurrentControlSet\Services\DXGKrnl","ErrorControl",0x00010001,0x00000000
 HKLM,"SYSTEM\CurrentControlSet\Services\DXGKrnl","Group",0x00000000,"Video Init"
 HKLM,"SYSTEM\CurrentControlSet\Services\DXGKrnl","ImagePath",0x00020000,"system32\drivers\dxgkrnl.sys"
-HKLM,"SYSTEM\CurrentControlSet\Services\DXGKrnl","Start",0x00010001,0x00000001
+HKLM,"SYSTEM\CurrentControlSet\Services\DXGKrnl","Start",0x00010001,0x00000003
 HKLM,"SYSTEM\CurrentControlSet\Services\DXGKrnl","Type",0x00010001,0x00000001
 HKLM,"SYSTEM\CurrentControlSet\Services\DXGKrnl","Tag",0x00010001,0x00000001
 
