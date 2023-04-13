@@ -30,3 +30,7 @@
 @   stdcall -version=0x600+ SetProcessDPIAware()
 @ stdcall AddClipboardFormatListener(ptr)
 @ stdcall RemoveClipboardFormatListener(ptr)
+
+@ stdcall GetProcessDpiAwarenessInternal(ptr ptr)
+@ stdcall SetProcessDpiAwarenessInternal(long)
+@ stdcall GetDpiForMonitorInternal(ptr long ptr ptr)
