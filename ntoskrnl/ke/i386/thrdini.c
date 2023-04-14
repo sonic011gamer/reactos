@@ -485,6 +485,7 @@ KiDispatchInterrupt(VOID)
     }
     else if (Prcb->NextThread)
     {
+        KiAcquirePrcbLock(Prcb);
         /* Capture current thread data */
         OldThread = Prcb->CurrentThread;
         NewThread = Prcb->NextThread;
