@@ -39,8 +39,16 @@ HalpInitProcessor(
     /* Initialize the local APIC for this cpu */
     ApicInitializeLocalApic(ProcessorNumber);
 
-    /* Initialize profiling data (but don't start it) */
-    HalInitializeProfiling();
+    if(ProcessorNumber != 0)
+    {
+         /* Initialize the PICs */
+         HalpInitializePICs(TRUE);
+    }
+    if(ProcessorNumber == 0)
+    {
+        /* Initialize profiling data (but don't start it) */
+        HalInitializeProfiling();
+    }
 
     /* Initialize the timer */
     //ApicInitializeTimer(ProcessorNumber);
@@ -62,13 +70,25 @@ HalpInitPhase0(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
                                CLOCK2_LEVEL,
                                HalpClockInterrupt,
                                Latched);
+#ifdef CONFIG_SMP
+    /* Enable Ipi interrupt handler */
+    HalpEnableInterruptHandler(IDT_INTERNAL,
+                               0,
+                               APIC_IPI_VECTOR,
+                               IPI_LEVEL,
+                               HalpIpiInterrupt,
+                               Latched);
+#endif
 }
 
 VOID
 HalpInitPhase1(VOID)
 {
     /* Initialize DMA. NT does this in Phase 0 */
-    HalpInitDma();
+    if(KeNumberProcessors < 2)
+    {
+        HalpInitDma();
+    }
 }
 
 /* EOF */
