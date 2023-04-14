@@ -1613,7 +1613,7 @@ KeFlushEntireTb(IN BOOLEAN Invalid,
         ASSERT(Prcb == KeGetCurrentPrcb());
 
         /* FIXME: TODO */
-        ASSERTMSG("Not yet implemented\n", FALSE);
+       // ASSERTMSG("Not yet implemented\n", FALSE);
     }
 #endif
 

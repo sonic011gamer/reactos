@@ -40,12 +40,12 @@ KiInitMachineDependent(VOID)
     BOOLEAN FbCaching = FALSE;
     NTSTATUS Status;
     ULONG ReturnLength;
-    ULONG i, Affinity, Sample = 0;
+    ULONG i, Affinity;//, //Sample = 0;
     PFX_SAVE_AREA FxSaveArea;
     ULONG MXCsrMask = 0xFFBF;
-    CPU_INFO CpuInfo;
-    KI_SAMPLE_MAP Samples[10];
-    PKI_SAMPLE_MAP CurrentSample = Samples;
+   // CPU_INFO CpuInfo;
+   // KI_SAMPLE_MAP Samples[10];
+   // PKI_SAMPLE_MAP CurrentSample = Samples;
     LARGE_IDENTITY_MAP IdentityMap;
 
     /* Check for large page support */
@@ -130,7 +130,7 @@ KiInitMachineDependent(VOID)
 
             /* Reset MHz to 0 for this CPU */
             KeGetCurrentPrcb()->MHz = 0;
-
+#if 0
             /* Check if we can use RDTSC */
             if (KeFeatureBits & KF_RDTSC)
             {
@@ -205,6 +205,9 @@ KiInitMachineDependent(VOID)
                 /* Save the CPU Speed */
                 KeGetCurrentPrcb()->MHz = CurrentSample[-1].MHz;
             }
+
+            #endif
+            KeGetCurrentPrcb()->MHz = 500;
 
             /* Check if we have MTRR */
             if (KeFeatureBits & KF_MTRR)
@@ -817,14 +820,23 @@ AppCpuInit:
     __writefsdword(KPCR_SET_MEMBER_COPY, 1 << Cpu);
     __writefsdword(KPCR_PRCB_SET_MEMBER, 1 << Cpu);
 
-    KiVerifyCpuFeatures(Pcr->Prcb);
-
+    if (!Cpu)
+    {
+         KiVerifyCpuFeatures(Pcr->Prcb);
+    }
     /* Initialize the Processor with HAL */
     HalInitializeProcessor(Cpu, KeLoaderBlock);
 
     /* Set active processors */
     KeActiveProcessors |= __readfsdword(KPCR_SET_MEMBER);
     KeNumberProcessors++;
+    if (Cpu)
+    {
+        for(;;)
+        {
+
+        }
+    }
 
     /* Check if this is the boot CPU */
     if (!Cpu)
