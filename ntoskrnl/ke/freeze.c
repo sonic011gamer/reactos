@@ -19,6 +19,16 @@
 KIRQL KiOldIrql;
 ULONG KiFreezeFlag;
 
+VOID
+NTAPI
+KiIdleSMP()
+{
+    while (KiFreezeFlag != 0)
+    {
+
+    }
+}
+
 /* FUNCTIONS ******************************************************************/
 
 BOOLEAN
@@ -26,6 +36,10 @@ NTAPI
 KeFreezeExecution(IN PKTRAP_FRAME TrapFrame,
                   IN PKEXCEPTION_FRAME ExceptionFrame)
 {
+#ifdef CONFIG_SMP
+    KAFFINITY TargetAffinity;
+    PKPRCB Prcb = KeGetCurrentPrcb();
+#endif
     BOOLEAN Enable;
     KIRQL OldIrql;
 
@@ -49,7 +63,16 @@ KeFreezeExecution(IN PKTRAP_FRAME TrapFrame,
 #endif
 
 #ifdef CONFIG_SMP
-    // TODO: Add SMP support.
+#if 1
+    TargetAffinity = KeActiveProcessors;
+    TargetAffinity &= ~Prcb->SetMember;
+
+        /* Make sure this is MP */
+    if (TargetAffinity)
+    {
+        KiIpiSend(TargetAffinity, IPI_FREEZE);
+    }
+    #endif
 #endif
 
     /* Save the old IRQL to be restored on unfreeze */
