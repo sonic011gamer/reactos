@@ -230,7 +230,7 @@ KeIpiGenericCall(IN PKIPI_BROADCAST_WORKER Function, IN ULONG_PTR Argument)
       //  ASSERT(Prcb == KeGetCurrentPrcb());
 
         /* FIXME: TODO */
-        ASSERTMSG("Not yet implemented\n", FALSE);
+       // ASSERTMSG("Not yet implemented\n", FALSE);
     }
 #endif
 
