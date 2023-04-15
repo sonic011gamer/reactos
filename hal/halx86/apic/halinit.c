@@ -12,6 +12,7 @@
 #include <smp.h>
 #define NDEBUG
 #include <debug.h>
+extern UCHAR HalpVectorToIndex[256];
 
 VOID
 NTAPI
@@ -38,6 +39,23 @@ HalpInitProcessor(
 
     /* Initialize the local APIC for this cpu */
     ApicInitializeLocalApic(ProcessorNumber);
+        if(ProcessorNumber != 0)
+    {
+    /* Set interrupt handlers in the IDT */
+    KeRegisterInterruptHandler(APIC_CLOCK_VECTOR, HalpClockInterrupt);
+    KeRegisterInterruptHandler(APIC_IPI_VECTOR, HalpIpiInterrupt);
+#ifndef _M_AMD64
+    KeRegisterInterruptHandler(APC_VECTOR, HalpApcInterrupt);
+    KeRegisterInterruptHandler(DISPATCH_VECTOR, HalpDispatchInterrupt);
+#endif
+
+    /* Register the vectors for APC and dispatch interrupts */
+    HalpRegisterVector(IDT_INTERNAL, 0, APC_VECTOR, APC_LEVEL);
+    HalpRegisterVector(IDT_INTERNAL, 0, DISPATCH_VECTOR, DISPATCH_LEVEL);
+
+    /* Restore interrupt state */
+    //if (EnableInterrupts) EFlags |= EFLAGS_INTERRUPT_MASK;
+    }
     if(ProcessorNumber == 0)
     {
     /* Initialize profiling data (but don't start it) */

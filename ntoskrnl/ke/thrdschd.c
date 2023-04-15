@@ -340,6 +340,10 @@ KiSelectNextThread(IN PKPRCB Prcb)
         InterlockedOrSetMember(&KiIdleSummary, Prcb->SetMember);
         Prcb->IdleSchedule = TRUE;
 
+        if (Prcb->SetMember != 1)
+        {
+            __debugbreak();
+        }
        // KiSwapThread(Thread, Prcb);
         /* FIXME: SMT support */
         //ASSERTMSG("SMP: Not yet implemented\n", FALSE);

@@ -380,7 +380,7 @@ AppCpuInit:
     HalInitializeProcessor(Cpu, KeLoaderBlock);
 
     /* Set active processors */
-    KeActiveProcessors |= Pcr->Prcb.SetMember;
+    KeActiveProcessors |= 1ULL << Cpu;
     KeNumberProcessors++;
 
     /* Check if this is the boot CPU */

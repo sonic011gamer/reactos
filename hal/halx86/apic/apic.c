@@ -643,6 +643,34 @@ HalpDispatchInterruptHandler(IN PKTRAP_FRAME TrapFrame)
     /* Exit the interrupt */
     KiEoiHelper(TrapFrame);
 }
+
+VOID
+FASTCALL
+HalpIpiInterruptHandler(IN PKTRAP_FRAME TrapFrame)
+{
+    KIRQL Irql;
+
+    /* Enter trap */
+    KiEnterInterruptTrap(TrapFrame);
+
+    /* Start the interrupt */
+    if (!HalBeginSystemInterrupt(IPI_LEVEL, APIC_IPI_VECTOR, &Irql))
+    {
+        /* Spurious, just end the interrupt */
+        KiEoiHelper(TrapFrame);
+    }
+    /* Raise to DISPATCH_LEVEL */
+    ApicRaiseIrql(DISPATCH_LEVEL);
+
+    KiIpiServiceRoutine(TrapFrame, NULL);
+
+    /* Restore the old IRQL */
+    ApicLowerIrql(Irql);
+
+    /* Exit the interrupt */
+    KiEoiHelper(TrapFrame);
+}
+
 #endif
 
 

@@ -308,8 +308,6 @@ RawInputThreadMain(VOID)
             UserProcessMouseInput(&MouseInput);
             UserLeave();
         }
-        else if (MouStatus != STATUS_PENDING)
-            ERR("Failed to read from mouse: %x.\n", MouStatus);
 
         /* Have we successed reading from keyboard? */
         if (NT_SUCCESS(KbdStatus) && KbdStatus != STATUS_PENDING)

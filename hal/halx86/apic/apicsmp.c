@@ -105,7 +105,7 @@ HalpRequestIpi(KAFFINITY TargetProcessors)
         if (TargetProcessors & Current)
         {
            // DPRINT1("Sending IPI to CPU: %X\n", i);
-            ApicRequestGlobalInterrupt(i, 0, APIC_MT_Fixed,
+            ApicRequestGlobalInterrupt(i, APIC_IPI_VECTOR, APIC_MT_Fixed,
                 APIC_TGM_Edge, APIC_DSH_Destination);
         }
     }
@@ -125,30 +125,3 @@ ApicStartApplicationProcessor(ULONG NTProcessorNumber, PHYSICAL_ADDRESS StartupL
     ApicRequestGlobalInterrupt(NTProcessorNumber, (StartupLoc.LowPart) >> 12,
         APIC_MT_Startup, APIC_TGM_Edge, APIC_DSH_Destination);
 }
-#ifdef CONFIG_SMP
-VOID
-FASTCALL
-HalpIpiInterruptHandler(IN PKTRAP_FRAME TrapFrame)
-{
-    DPRINT1("FUCL");
-       KIRQL oldIrql;
-
-   HalBeginSystemInterrupt(IPI_LEVEL,
-                           APIC_IPI_VECTOR,
-			   &oldIrql);
-   _enable();
-#if 1
-   DPRINT1("(%s:%d) HalpIpiHandler on CPU%d, current irql is %d\n",
-            __FILE__,__LINE__, KeGetCurrentProcessorNumber(), KeGetCurrentIrql());
-#endif
-
-   KiIpiServiceRoutine(NULL, NULL);
-
-#if 1
-   DPRINT1("(%s:%d) HalpIpiHandler on CPU%d done\n", __FILE__,__LINE__, KeGetCurrentProcessorNumber());
-#endif
-
-   _disable();
-   HalEndSystemInterrupt(oldIrql, 0);
-}
-#endif

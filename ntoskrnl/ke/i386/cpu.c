@@ -1597,12 +1597,7 @@ KeFlushEntireTb(IN BOOLEAN Invalid,
         /* Make sure this is MP */
         if (TargetAffinity)
         {
-            /* Send an IPI TB flush to the other processors */
-            KiIpiSendPacket(TargetAffinity,
-                            KiFlushTargetEntireTb,
-                            NULL,
-                            0,
-                            NULL);
+
         }
     }
 #endif

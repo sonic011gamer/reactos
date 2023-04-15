@@ -174,13 +174,13 @@ KeStartAllProcessors()
             break;
         }
 
-        DPRINT("Waiting for init confirmation from AP CPU: #%u\n", ProcessorCount);
+       // DPRINT("Waiting for init confirmation from AP CPU: #%u\n", ProcessorCount);
         while (KeNumberProcessors < (ProcessorCount + 1))
         {
             KeMemoryBarrier();
             YieldProcessor();
         }
-        DPRINT("CPU Startup sucessfull!\n");
+      //  DPRINT("CPU Startup sucessfull!\n");
     }
 
     // The last CPU didn't start - clean the data
@@ -193,5 +193,5 @@ KeStartAllProcessors()
     if (DPCStack)
         MmDeleteKernelStack(DPCStack, FALSE);
 
-    DPRINT1("KeStartAllProcessors: Sucessful AP startup count is %u\n", ProcessorCount);
+    //DPRINT1("KeStartAllProcessors: Sucessful AP startup count is %u\n", ProcessorCount);
 }

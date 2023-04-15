@@ -261,7 +261,10 @@ KiIdleLoop(VOID)
 {
     PKPRCB Prcb = KeGetCurrentPrcb();
     PKTHREAD OldThread, NewThread;
-
+    if (Prcb->SetMember == 2)
+    {
+        __debugbreak();
+    }
     /* Now loop forever */
     while (TRUE)
     {

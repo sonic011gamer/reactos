@@ -529,6 +529,7 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
     }
     else
     {
+        DPRINT1("Starting a new CPU\n");
         KeLowerIrql(DISPATCH_LEVEL);
     }
 
@@ -824,7 +825,7 @@ AppCpuInit:
     HalInitializeProcessor(Cpu, KeLoaderBlock);
 
     /* Set active processors */
-    KeActiveProcessors |= __readfsdword(KPCR_SET_MEMBER);
+    KeActiveProcessors |= 1ULL << Cpu;
     KeNumberProcessors++;
 
     /* Check if this is the boot CPU */

@@ -1,32 +1,68 @@
 /*
- * PROJECT:         ReactOS Kernel
- * LICENSE:         GPL - See COPYING in the top level directory
- * FILE:            ntoskrnl/ke/ipi.c
- * PURPOSE:         Inter-Processor Packet Interface
- * PROGRAMMERS:     Alex Ionescu (alex.ionescu@reactos.org)
+ * PROJECT:     ReactOS Kernel
+ * LICENSE:     GPL-2.0-or-later (https://spdx.org/licenses/GPL-2.0-or-later)
+ * PURPOSE:     Inter-Processor Packet Interface
+ * COPYRIGHT:   Copyright 2006 Alex Ionescu (alex.ionescu@reactos.org)
+ *              Copyright 2022 Justin Miller <justinmiller100@gmail.com>
  */
 
 /* INCLUDES ******************************************************************/
 
 #include <ntoskrnl.h>
-#define NDEBUG
+//#define NDEBUG
 #include <debug.h>
+
+#ifdef NDEBUG
+#define KdpDprintf(...)
+#endif
 
 /* GLOBALS *******************************************************************/
 
 extern KSPIN_LOCK KiReverseStallIpiLock;
+#define IPI_FROZEN_RUNNING 0
+#define IPI_FROZEN_THAWING 3
+#define IPI_FROZEN_HALTED 2
 
 /* PRIVATE FUNCTIONS *********************************************************/
 
-VOID NTAPI
-KiIpiGenericCallTarget(IN PKIPI_CONTEXT PacketContext, IN PVOID BroadcastFunction, IN PVOID Argument, IN PVOID Count)
+/**
+ * @brief
+ * This routine counts down and executes a IPI worker at the same time on all cores
+ *
+ * @param[in] PacketContext
+ *
+ * @param[in] Function
+ * The routine to be executed across the CPUs synched
+ *
+ * @param[in] Argument
+ * Parameter for function pointer
+ *
+ * @param[in] Count
+ * Linearly decrementing count per CPU
+ */
+VOID
+NTAPI
+KiIpiGenericCallTarget(_In_ PKIPI_CONTEXT PacketContext,
+                       _In_ PKIPI_BROADCAST_WORKER Function,
+                       _In_ PULONG Argument,
+                       _In_ PULONG Count)
 {
-    /* FIXME: TODO */
-    ASSERTMSG("Not yet implemented\n", FALSE);
+  //  DPRINT1("generic call target enter");
+    /* A CPU has entered, decrement */
+    *Count -= 1;
+
+    /* Loop until all processors are synched */
+    while (Count != 0);
+
+    /* Call the function pointer */
+    (*Function)((ULONG_PTR)Argument);
+
+    /* we're done! */
+    KiIpiSignalPacketDone(PacketContext);
 }
 
-/* UNIMPLEMENTED */
-VOID NTAPI
+VOID
+NTAPI
 KiIpiSendPacket(
     IN KAFFINITY TargetProcessors,
     IN PKIPI_WORKER WorkerFunction,
@@ -35,32 +71,29 @@ KiIpiSendPacket(
     IN PULONG Count)
 {
 #ifdef CONFIG_SMP
-   // DPRINT1("KiIpiSendPacket: Attempting IPI on KAFFINITY of %X\n", TargetProcessors);
     KAFFINITY Processor;
     LONG i;
     PKPRCB Prcb, CurrentPrcb;
     KIRQL oldIrql;
 
-    ASSERT(KeGetCurrentIrql() == SYNCH_LEVEL);
-
+    /* Parse processor list and prep the routine to be serviced */
     CurrentPrcb = KeGetCurrentPrcb();
     for (i = 0, Processor = 1; i < KeNumberProcessors; i++, Processor <<= 1)
     {
         if (TargetProcessors & Processor)
         {
-            
             Prcb = KiProcessorBlock[i];
 
-            #if 0
-            while (0 != InterlockedCompareExchangeUL(&Prcb->SignalDone, (LONG)CurrentPrcb, 0));
-            #endif
-            InterlockedBitTestAndSet((PLONG)&Prcb->IpiFrozen, IPI_SYNCH_REQUEST);
+            Prcb->WorkerRoutine = WorkerFunction;
+            InterlockedBitTestAndSet((PLONG)&Prcb->RequestSummary, IPI_SYNCH_REQUEST);
             if (Processor != CurrentPrcb->SetMember)
             {
                // DPRINT1("Count is %X\n", Count);
             }
         }
     }
+
+    /* If the processor entering this routine ALSO needs to execute, service the routine */
     if (TargetProcessors & CurrentPrcb->SetMember)
     {
         KeRaiseIrql(IPI_LEVEL, &oldIrql);
@@ -68,6 +101,7 @@ KiIpiSendPacket(
         KeLowerIrql(oldIrql);
     }
 
+    /* Fire off to the processors! */
     HalRequestIpi(TargetProcessors);
 #endif
 }
@@ -75,17 +109,27 @@ KiIpiSendPacket(
 VOID FASTCALL
 KiIpiSignalPacketDone(IN PKIPI_CONTEXT PacketContext)
 {
-    UNIMPLEMENTED;
+    /* FIXME: TODO */
+ ///   UNIMPLEMENTED;
 }
 
 VOID FASTCALL
 KiIpiSignalPacketDoneAndStall(IN PKIPI_CONTEXT PacketContext, IN volatile PULONG ReverseStall)
 {
     /* FIXME: TODO */
-    KeStallExecutionProcessor((ULONG)ReverseStall);
-    UNIMPLEMENTED;
+  //  UNIMPLEMENTED;
 }
 
+/**
+ * @brief
+ * Send a interrupt of whatever type is assigned in IpiRequest to the target CPU set
+ *
+ * @param[in] TargetSet
+ * List of CPUs being sent IPIs
+ *
+ * @param[in] IpiRequest
+ * The Interrupt type being sent to target CPUs
+ */
 VOID
 NTAPI
 KiIpiSendRequest(IN KAFFINITY TargetSet,
@@ -103,7 +147,7 @@ KiIpiSendRequest(IN KAFFINITY TargetSet,
             /* Get the PRCB for this CPU */
             Prcb = KiProcessorBlock[i];
 
-            InterlockedBitTestAndSet((PLONG)&Prcb->IpiFrozen, IpiRequest);
+            InterlockedBitTestAndSet((PLONG)&Prcb->RequestSummary, IpiRequest);
         }
     }
 
@@ -113,7 +157,10 @@ KiIpiSendRequest(IN KAFFINITY TargetSet,
 }
 
 /* PUBLIC FUNCTIONS **********************************************************/
-
+VOID
+NTAPI
+KiFreezeTargetExecution(_In_ PKTRAP_FRAME TrapFrame,
+                        _In_ PKEXCEPTION_FRAME ExceptionFrame);
 /*
  * @implemented
  */
@@ -124,38 +171,49 @@ KiIpiServiceRoutine(IN PKTRAP_FRAME TrapFrame, IN PKEXCEPTION_FRAME ExceptionFra
 #ifdef CONFIG_SMP
     PKPRCB Prcb;
    // ASSERT(KeGetCurrentIrql() == IPI_LEVEL);
-
     Prcb = KeGetCurrentPrcb();
 
-    if (InterlockedBitTestAndReset((PLONG)&Prcb->IpiFrozen, IPI_APC))
+    /* APC level! Trigger an APC interrupt */
+    if (InterlockedBitTestAndReset((PLONG)&Prcb->RequestSummary, IPI_APC))
     {
         HalRequestSoftwareInterrupt(APC_LEVEL);
     }
 
-    if (InterlockedBitTestAndReset((PLONG)&Prcb->IpiFrozen, IPI_DPC))
+
+    /* DPC level! Trigger an DPC interrupt */
+    if (InterlockedBitTestAndReset((PLONG)&Prcb->RequestSummary, IPI_DPC))
     {
-        Prcb->DpcInterruptRequested = TRUE;
+        DPRINT1("DPC PUSH\b");
+                Prcb->DpcInterruptRequested = TRUE;
         HalRequestSoftwareInterrupt(DISPATCH_LEVEL);
     }
 
-    if (InterlockedBitTestAndReset((PLONG)&Prcb->IpiFrozen, IPI_SYNCH_REQUEST))
+    /* Freeze level! Trigger a FREEZE interrupt */
+    if (InterlockedBitTestAndReset((PLONG)&Prcb->RequestSummary, IPI_FREEZE))
+    {
+        KiFreezeTargetExecution(TrapFrame, ExceptionFrame);
+    }
+
+
+    /* SYNCH_REQUEST we have a function pointer to execute! */
+    if (InterlockedBitTestAndReset((PLONG)&Prcb->RequestSummary, IPI_SYNCH_REQUEST))
     {
 #if defined(_M_ARM) || defined(_M_AMD64)
-        DbgBreakPoint();
+            DbgBreakPoint();
 #else
-        (void)InterlockedDecrementUL(&Prcb->SignalDone->CurrentPacket[1]);
-        if (InterlockedCompareExchangeUL(&Prcb->SignalDone->CurrentPacket[2], 0, 0))
-        {
-            while (0 != InterlockedCompareExchangeUL(&Prcb->SignalDone->CurrentPacket[1], 0, 0))
-                ;
-        }
-        ((VOID(NTAPI *)(PVOID))(Prcb->SignalDone->WorkerRoutine))(Prcb->SignalDone->CurrentPacket[0]);
-        InterlockedBitTestAndReset((PLONG)&Prcb->SignalDone->TargetSet, KeGetCurrentProcessorNumber());
-        if (InterlockedCompareExchangeUL(&Prcb->SignalDone->CurrentPacket[2], 0, 0))
-        {
-            while (0 != InterlockedCompareExchangeUL(&Prcb->SignalDone->TargetSet, 0, 0))
-                ;
-        }
+            (void)InterlockedDecrementUL(&Prcb->CurrentPacket[1]);
+            if (InterlockedCompareExchangeUL(&Prcb->CurrentPacket[2], 0, 0))
+            {
+                while (0 != InterlockedCompareExchangeUL(&Prcb->CurrentPacket[1], 0, 0))
+                    ;
+            }
+            ((VOID(NTAPI *)(PVOID))(Prcb->WorkerRoutine))(Prcb->CurrentPacket[0]);
+            InterlockedBitTestAndReset((PLONG)&Prcb->TargetSet, KeGetCurrentProcessorNumber());
+            if (InterlockedCompareExchangeUL(&Prcb->CurrentPacket[2], 0, 0))
+            {
+                while (0 != InterlockedCompareExchangeUL(&Prcb->TargetSet, 0, 0))
+                    ;
+            }
         (void)InterlockedExchangePointer((PVOID *)&Prcb->SignalDone, NULL);
 #endif // _M_ARM
     }
@@ -170,6 +228,7 @@ ULONG_PTR
 NTAPI
 KeIpiGenericCall(IN PKIPI_BROADCAST_WORKER Function, IN ULONG_PTR Argument)
 {
+    //DPRINT1("entering generic call\n");
     ULONG_PTR Status;
     KIRQL OldIrql, OldIrql2;
 #ifdef CONFIG_SMP
@@ -198,17 +257,13 @@ KeIpiGenericCall(IN PKIPI_BROADCAST_WORKER Function, IN ULONG_PTR Argument)
     /* Make sure this is MP */
     if (Affinity)
     {
+           // DPRINT1("Sending packet\n");
         /* Send an IPI */
-        KiIpiSendPacket(Affinity, KiIpiGenericCallTarget, Function, Argument, &Count);
+      //  KiIpiSendPacket(Affinity, KiIpiGenericCallTarget, Function, Argument, &Count);
 
-        /* Spin until the other processors are ready */
-        while (Count != 1)
-        {
-            Count = 1;
-            YieldProcessor();
-            KeMemoryBarrierWithoutFence();
-        }
     }
+
+      //  DPRINT1("leaving count\n");
 #endif
 
     /* Raise to IPI level */
@@ -218,7 +273,6 @@ KeIpiGenericCall(IN PKIPI_BROADCAST_WORKER Function, IN ULONG_PTR Argument)
     /* Let the other processors know it is time */
     Count = 0;
 #endif
-
     /* Call the function */
     Status = Function(Argument);
 
@@ -227,10 +281,10 @@ KeIpiGenericCall(IN PKIPI_BROADCAST_WORKER Function, IN ULONG_PTR Argument)
     if (Affinity)
     {
         /* Sanity check */
-      //  ASSERT(Prcb == KeGetCurrentPrcb());
+        ASSERT(Prcb == KeGetCurrentPrcb());
 
         /* FIXME: TODO */
-       // ASSERTMSG("Not yet implemented\n", FALSE);
+      //  ASSERTMSG("Not yet implemented\n", FALSE);
     }
 #endif
 
@@ -239,12 +293,24 @@ KeIpiGenericCall(IN PKIPI_BROADCAST_WORKER Function, IN ULONG_PTR Argument)
 
     /* Lower IRQL back */
     KeLowerIrql(OldIrql);
+   // DPRINT1("releasing\n");
     return Status;
 }
 
-VOID FASTCALL
+/**
+ * @brief
+ * Send a interrupt of whatever type is assigned in IpiRequest to the target CPU set
+ *
+ * @param[in] TargetSet
+ * List of CPUs being sent IPIs
+ *
+ * @param[in] IpiRequest
+ * The Interrupt type being sent to target CPUs
+ */
+VOID
+FASTCALL
 KiIpiSend(IN KAFFINITY TargetProcessors, IN ULONG IpiRequest)
 {
-    /* Long term this isn't correct, but fine for getting us up and running */
+    /* Call private function */
     KiIpiSendRequest(TargetProcessors, IpiRequest);
 }
