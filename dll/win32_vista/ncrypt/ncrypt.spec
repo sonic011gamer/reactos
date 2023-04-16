@@ -1,24 +1,24 @@
-@ stdcall -stub BCryptAddContextFunction(long wstr long wstr long) bcrypt.BCryptAddContextFunction
-@ stdcall -stub BCryptAddContextFunctionProvider(long wstr long wstr wstr long) bcrypt.BCryptAddContextFunctionProvider
-@ stdcall -stub BCryptCloseAlgorithmProvider(ptr long) bcrypt.BCryptCloseAlgorithmProvider
+@ stdcall BCryptAddContextFunction(long wstr long wstr long) bcrypt.BCryptAddContextFunction
+@ stdcall BCryptAddContextFunctionProvider(long wstr long wstr wstr long) bcrypt.BCryptAddContextFunctionProvider
+@ stdcall BCryptCloseAlgorithmProvider(ptr long) bcrypt.BCryptCloseAlgorithmProvider
 @ stub BCryptConfigureContext
 @ stub BCryptConfigureContextFunction
 @ stub BCryptCreateContext
-@ stdcall -stub BCryptCreateHash(ptr ptr ptr long ptr long long) bcrypt.BCryptCreateHash
-@ stdcall -stub BCryptDecrypt(ptr ptr long ptr ptr long ptr long ptr long) bcrypt.BCryptDecrypt
+@ stdcall BCryptCreateHash(ptr ptr ptr long ptr long long) bcrypt.BCryptCreateHash
+@ stdcall BCryptDecrypt(ptr ptr long ptr ptr long ptr long ptr long) bcrypt.BCryptDecrypt
 @ stub BCryptDeleteContext
-@ stdcall -stub BCryptDeriveKey(ptr wstr ptr ptr long ptr long) bcrypt.BCryptDeriveKey
-@ stdcall -stub BCryptDeriveKeyCapi(ptr ptr ptr long long) bcrypt.BCryptDeriveKeyCapi
-@ stdcall -stub BCryptDeriveKeyPBKDF2(ptr ptr long ptr long int64 ptr long long) bcrypt.BCryptDeriveKeyPBKDF2
-@ stdcall -stub BCryptDestroyHash(ptr) bcrypt.BCryptDestroyHash
-@ stdcall -stub BCryptDestroyKey(ptr) bcrypt.BCryptDestroyKey
-@ stdcall -stub BCryptDestroySecret(ptr) bcrypt.BCryptDestroySecret
-@ stdcall -stub BCryptDuplicateHash(ptr ptr ptr long long) bcrypt.BCryptDuplicateHash
-@ stdcall -stub BCryptDuplicateKey(ptr ptr ptr long long) bcrypt.BCryptDuplicateKey
-@ stdcall -stub BCryptEncrypt(ptr ptr long ptr ptr long ptr long ptr long) bcrypt.BCryptEncrypt
-@ stdcall -stub BCryptEnumAlgorithms(long ptr ptr long) bcrypt.BCryptEnumAlgorithms
+@ stdcall BCryptDeriveKey(ptr wstr ptr ptr long ptr long) bcrypt.BCryptDeriveKey
+@ stdcall BCryptDeriveKeyCapi(ptr ptr ptr long long) bcrypt.BCryptDeriveKeyCapi
+@ stdcall BCryptDeriveKeyPBKDF2(ptr ptr long ptr long int64 ptr long long) bcrypt.BCryptDeriveKeyPBKDF2
+@ stdcall BCryptDestroyHash(ptr) bcrypt.BCryptDestroyHash
+@ stdcall BCryptDestroyKey(ptr) bcrypt.BCryptDestroyKey
+@ stdcall BCryptDestroySecret(ptr) bcrypt.BCryptDestroySecret
+@ stdcall BCryptDuplicateHash(ptr ptr ptr long long) bcrypt.BCryptDuplicateHash
+@ stdcall BCryptDuplicateKey(ptr ptr ptr long long) bcrypt.BCryptDuplicateKey
+@ stdcall BCryptEncrypt(ptr ptr long ptr ptr long ptr long ptr long) bcrypt.BCryptEncrypt
+@ stdcall BCryptEnumAlgorithms(long ptr ptr long) bcrypt.BCryptEnumAlgorithms
 @ stub BCryptEnumContextFunctionProviders
-@ stdcall -stub BCryptEnumContextFunctions(long wstr long ptr ptr) bcrypt.BCryptEnumContextFunctions
+@ stdcall BCryptEnumContextFunctions(long wstr long ptr ptr) bcrypt.BCryptEnumContextFunctions
 @ stub BCryptEnumContexts
 @ stub BCryptEnumProviders
 @ stub BCryptEnumRegisteredProviders
