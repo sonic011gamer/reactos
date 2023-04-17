@@ -240,6 +240,7 @@ END
 
 STRINGTABLE
 BEGIN
+    IDS_REACTIVE "Reactive"
     IDS_CLASSIC "Klasik"
     IDS_LAUTUS "Lautus"
     IDS_LUNAR "Lunar"
