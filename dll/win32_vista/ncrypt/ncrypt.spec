@@ -36,7 +36,7 @@
 @ stdcall BCryptImportKey(ptr ptr wstr ptr ptr long ptr long long) bcrypt.BCryptImportKey
 @ stdcall BCryptImportKeyPair(ptr ptr wstr ptr ptr long long) bcrypt.BCryptImportKeyPair
 @ stub BCryptKeyDerivation
-@ stdcall CryptOpenAlgorithmProvider(ptr wstr wstr long) bcrypt.BCryptOpenAlgorithmProvider
+@ stdcall BCryptOpenAlgorithmProvider(ptr wstr wstr long) bcrypt.BCryptOpenAlgorithmProvider
 @ stub BCryptQueryContextConfiguration
 @ stub BCryptQueryContextFunctionConfiguration
 @ stub BCryptQueryContextFunctionProperty
@@ -44,53 +44,53 @@
 @ stub BCryptRegisterConfigChangeNotify
 @ stdcall BCryptRegisterProvider(wstr long ptr) bcrypt.BCryptRegisterProvider
 @ stdcall BCryptRemoveContextFunction(long wstr long wstr) bcrypt.BCryptRemoveContextFunction
-@ stdcall  BCryptRemoveContextFunctionProvider(long wstr long wstr wstr) bcrypt.BCryptRemoveContextFunctionProvider
+@ stdcall BCryptRemoveContextFunctionProvider(long wstr long wstr wstr) bcrypt.BCryptRemoveContextFunctionProvider
 @ stub BCryptResolveProviders
-@ stdcall  BCryptSecretAgreement(ptr ptr ptr long) bcrypt.BCryptSecretAgreement
+@ stdcall BCryptSecretAgreement(ptr ptr ptr long) bcrypt.BCryptSecretAgreement
 @ stub BCryptSetAuditingInterface
 @ stub BCryptSetContextFunctionProperty
 @ stdcall BCryptSetProperty(ptr wstr ptr long long) bcrypt.BCryptSetProperty
 @ stdcall BCryptSignHash(ptr ptr ptr long ptr long ptr long) bcrypt.BCryptSignHash
 @ stub BCryptUnregisterConfigChangeNotify
 @ stdcall BCryptUnregisterProvider(wstr) bcrypt.BCryptUnregisterProvider
-@ stdcall  BCryptVerifySignature(ptr ptr ptr long ptr long long) bcrypt.BCryptVerifySignature
+@ stdcall BCryptVerifySignature(ptr ptr ptr long ptr long long) bcrypt.BCryptVerifySignature
 @ stub GetIsolationServerInterface
 @ stub GetKeyStorageInterface
 @ stub GetSChannelInterface
 @ stub NCryptCloseKeyProtector
 @ stub NCryptCloseProtectionDescriptor
 @ stub NCryptCreateClaim
-@ stdcall -stub NCryptCreatePersistedKey(long ptr wstr wstr long long)
+@ stdcall NCryptCreatePersistedKey(long ptr wstr wstr long long)
 @ stub NCryptCreateProtectionDescriptor
-@ stdcall -stub NCryptDecrypt(long ptr long ptr ptr long ptr long)
-@ stdcall -stub NCryptDeleteKey(long long)
+@ stdcall NCryptDecrypt(long ptr long ptr ptr long ptr long)
+@ stdcall NCryptDeleteKey(long long)
 @ stub NCryptDeriveKey
 @ stub NCryptDuplicateKeyProtectorHandle
-@ stdcall -stub NCryptEncrypt(long ptr long ptr ptr long ptr long)
-@ stdcall -stub NCryptEnumAlgorithms(long long ptr ptr long)
-@ stdcall -stub NCryptEnumKeys(long wstr ptr ptr long)
+@ stdcall NCryptEncrypt(long ptr long ptr ptr long ptr long)
+@ stdcall NCryptEnumAlgorithms(long long ptr ptr long)
+@ stdcall NCryptEnumKeys(long wstr ptr ptr long)
 @ stub NCryptEnumStorageProviders
-@ stub NCryptExportKey
-@ stdcall -stub NCryptFinalizeKey(long long)
-@ stdcall -stub NCryptFreeBuffer(ptr)
-@ stdcall -stub NCryptFreeObject(long)
-@ stdcall -stub NCryptGetProperty(ptr wstr ptr long ptr long)
+@ stdcall NCryptExportKey(long long wstr ptr ptr long ptr long)
+@ stdcall NCryptFinalizeKey(long long)
+@ stdcall NCryptFreeBuffer(ptr)
+@ stdcall NCryptFreeObject(long)
+@ stdcall NCryptGetProperty(ptr wstr ptr long ptr long)
 @ stub NCryptGetProtectionDescriptorInfo
-@ stdcall -stub NCryptImportKey(long long wstr ptr ptr ptr long long)
-@ stdcall -stub NCryptIsAlgSupported(long wstr long)
-@ stdcall -stub NCryptIsKeyHandle(long)
+@ stdcall NCryptImportKey(long long wstr ptr ptr ptr long long)
+@ stdcall NCryptIsAlgSupported(long wstr long)
+@ stdcall NCryptIsKeyHandle(long)
 @ stub NCryptKeyDerivation
 @ stub NCryptNotifyChangeKey
-@ stdcall -stub NCryptOpenKey(long ptr wstr long long)
+@ stdcall NCryptOpenKey(long ptr wstr long long)
 @ stub NCryptOpenKeyProtector
-@ stdcall -stub NCryptOpenStorageProvider(ptr wstr long)
+@ stdcall NCryptOpenStorageProvider(ptr wstr long)
 @ stub NCryptProtectKey
 @ stub NCryptProtectSecret
 @ stub NCryptQueryProtectionDescriptorName
 @ stub NCryptRegisterProtectionDescriptorName
 @ stub NCryptSecretAgreement
 @ stub NCryptSetAuditingInterface
-@ stdcall -stub NCryptSetProperty(ptr wstr ptr long long)
+@ stdcall NCryptSetProperty(ptr wstr ptr long long)
 @ stdcall -stub NCryptSignHash(long ptr ptr long ptr long long long)
 @ stub NCryptStreamClose
 @ stub NCryptStreamOpenToProtect
@@ -101,7 +101,7 @@
 @ stub NCryptUnprotectKey
 @ stub NCryptUnprotectSecret
 @ stub NCryptVerifyClaim
-@ stdcall -stub NCryptVerifySignature(ptr ptr ptr long ptr long long)
+@ stdcall NCryptVerifySignature(ptr ptr ptr long ptr long long)
 @ stub SslChangeNotify
 @ stub SslComputeClientAuthHash
 @ stub SslComputeEapKeyBlock

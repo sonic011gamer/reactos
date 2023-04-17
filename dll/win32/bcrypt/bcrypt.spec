@@ -13,19 +13,19 @@
 @ stub BCryptDestroySecret
 @ stub BCryptDuplicateHash
 @ stub BCryptDuplicateKey
-@ stub BCryptEncrypt
+@ stdcall BCryptEncrypt(ptr ptr long ptr ptr long ptr long ptr long)
 @ stdcall BCryptEnumAlgorithms(long ptr ptr long)
 @ stub BCryptEnumContextFunctionProviders
-@ stub BCryptEnumContextFunctions
+@ stdcall BCryptEnumContextFunctions(long wstr long ptr ptr)
 @ stub BCryptEnumContexts
 @ stub BCryptEnumProviders
 @ stub BCryptEnumRegisteredProviders
-@ stub BCryptExportKey
-@ stub BCryptFinalizeKeyPair
+@ stdcall BCryptExportKey(ptr ptr wstr ptr long ptr long)
+@ stdcall BCryptFinalizeKeyPair(ptr long)
 @ stdcall BCryptFinishHash(ptr ptr long long)
-@ stub BCryptFreeBuffer
+@ stdcall BCryptFreeBuffer(ptr)
 @ stdcall BCryptGenRandom(ptr ptr long long)
-@ stub BCryptGenerateKeyPair
+@ stdcall BCryptGenerateKeyPair(ptr ptr long long)
 @ stub BCryptGenerateSymmetricKey
 @ stdcall BCryptGetFipsAlgorithmMode(ptr)
 @ stdcall BCryptGetProperty(ptr wstr ptr long ptr long)
@@ -40,13 +40,13 @@
 @ stub BCryptQueryProviderRegistration
 @ stub BCryptRegisterConfigChangeNotify
 @ stub BCryptRegisterProvider
-@ stub BCryptRemoveContextFunction
-@ stub BCryptRemoveContextFunctionProvider
+@ stdcall BCryptRemoveContextFunction(long wstr long wstr)
+@ stdcall BCryptRemoveContextFunctionProvider(long wstr long wstr wstr)
 @ stub BCryptResolveProviders
 @ stub BCryptSecretAgreement
 @ stub BCryptSetAuditingInterface
 @ stub BCryptSetContextFunctionProperty
-@ stub BCryptSetProperty
+@ stdcall BCryptSetProperty(ptr wstr ptr long long)
 @ stub BCryptSignHash
 @ stub BCryptUnregisterConfigChangeNotify
 @ stub BCryptUnregisterProvider

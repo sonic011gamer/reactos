@@ -2903,8 +2903,17 @@
 #define NTE_TOKEN_KEYSET_STORAGE_FULL                      _HRESULT_TYPEDEF_(0x80090023L)
 #define NTE_TEMPORARY_PROFILE                              _HRESULT_TYPEDEF_(0x80090024L)
 #define NTE_FIXEDPARAMETER                                 _HRESULT_TYPEDEF_(0x80090025L)
+#define NTE_INVALID_HANDLE                                 _HRESULT_TYPEDEF_(0x80090026L)
+#define NTE_INVALID_PARAMETER                              _HRESULT_TYPEDEF_(0x80090027L)
+#define NTE_BUFFER_TOO_SMALL                               _HRESULT_TYPEDEF_(0x80090028L)
+#define NTE_NOT_SUPPORTED                                  _HRESULT_TYPEDEF_(0x80090029L)
+#define NTE_NO_MORE_ITEMS                                  _HRESULT_TYPEDEF_(0x8009002AL)
+#define NTE_BUFFERS_OVERLAP                                _HRESULT_TYPEDEF_(0x8009002BL)
+#define NTE_DECRYPTION_FAILURE                             _HRESULT_TYPEDEF_(0x8009002CL)
+#define NTE_INTERNAL_ERROR                                 _HRESULT_TYPEDEF_(0x8009002DL)
+#define NTE_UI_REQUIRED                                    _HRESULT_TYPEDEF_(0x8009002EL)
+#define NTE_HMAC_NOT_SUPPORTED                             _HRESULT_TYPEDEF_(0x8009002FL)
 #define NTE_OP_OK                                          _HRESULT_TYPEDEF_(0)
-/* #define NTE_TOKEN_KEYSET_STORAGE ??? */
 
 #define SEC_E_INSUFFICIENT_MEMORY                          _HRESULT_TYPEDEF_(0x80090300L)
 #define SEC_E_INVALID_HANDLE                               _HRESULT_TYPEDEF_(0x80090301L)
