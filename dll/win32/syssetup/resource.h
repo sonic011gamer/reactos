@@ -20,12 +20,13 @@
 
 #define IDB_WATERMARK 100
 #define IDB_HEADER    101
-#define IDB_CLASSIC   102
-#define IDB_LAUTUS    103
-#define IDB_LUNAR     104
-#define IDB_MIZU      105
-#define IDB_REACTOS   106
-#define IDB_LINE      107
+#define IDB_REACTIVE  102
+#define IDB_CLASSIC   103
+#define IDB_LAUTUS    104
+#define IDB_LUNAR     105
+#define IDB_MIZU      106
+#define IDB_REACTOS   107
+#define IDB_LINE      108
 
 #define IDI_ICON1 10
 #define IDI_ICON2 11
@@ -158,10 +159,11 @@
 #define IDS_LOOKFORWHEEL      3701
 #define IDS_ASSUMEPRESENT     3702
 
-#define IDS_CLASSIC 3800
-#define IDS_LAUTUS  3801
-#define IDS_LUNAR   3802
-#define IDS_MIZU    3803
+#define IDS_REACTIVE 3800
+#define IDS_CLASSIC  3801
+#define IDS_LAUTUS   3802
+#define IDS_LUNAR    3803
+#define IDS_MIZU     3804
 
 #define IDS_PRODUCTTITLE            3900
 #define IDS_PRODUCTSUBTITLE         3901

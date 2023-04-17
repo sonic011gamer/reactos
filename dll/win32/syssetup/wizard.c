@@ -428,7 +428,7 @@ static const PRODUCT_OPTION_DATA s_ProductOptionData[] =
     { L"\0", L"WinNT", 1, 0x300, 1 }
 };
 
-static const WCHAR* s_DefaultSoundEvents[][2] = 
+static const WCHAR* s_DefaultSoundEvents[][2] =
 {
     { L".Default", L"%SystemRoot%\\Media\\ReactOS_Default.wav" },
     { L"AppGPFault", L"" },
@@ -458,7 +458,7 @@ static const WCHAR* s_DefaultSoundEvents[][2] =
 /* Logon sound is already set by default for both Server and Workstation */
 };
 
-static const WCHAR* s_ExplorerSoundEvents[][2] = 
+static const WCHAR* s_ExplorerSoundEvents[][2] =
 {
     { L"EmptyRecycleBin", L"%SystemRoot%\\Media\\ReactOS_Recycle.wav" },
     { L"Navigating", L"%SystemRoot%\\Media\\ReactOS_Start.wav" }
@@ -1892,11 +1892,11 @@ static struct ThemeInfo
     LPCWSTR ThemeFile;
 
 } Themes[] = {
-    { MAKEINTRESOURCE(IDB_CLASSIC), IDS_CLASSIC, NULL },
+    { MAKEINTRESOURCE(IDB_REACTIVE), IDS_REACTIVE, L"themes\\Reactive\\reactive.msstyles"},
     { MAKEINTRESOURCE(IDB_LAUTUS), IDS_LAUTUS, L"themes\\lautus\\lautus.msstyles" },
     { MAKEINTRESOURCE(IDB_LUNAR), IDS_LUNAR, L"themes\\lunar\\lunar.msstyles" },
     { MAKEINTRESOURCE(IDB_MIZU), IDS_MIZU, L"themes\\mizu\\mizu.msstyles"},
-    { MAKEINTRESOURCE(IDB_MIZU), IDS_MIZU, L"themes\\Reactive\\reactive.msstyles"},
+    { MAKEINTRESOURCE(IDB_CLASSIC), IDS_CLASSIC, NULL },
 };
 
 static INT_PTR CALLBACK
@@ -1969,10 +1969,15 @@ ThemePageDlgProc(HWND hwndDlg,
                         DPRINT1("Selected theme: %u\n", Themes[iTheme].DisplayName);
 
                         WCHAR wszParams[1024];
+                        WCHAR* format = L"desk.cpl desk,@Appearance /Action:ActivateMSTheme";
                         WCHAR wszTheme[MAX_PATH];
-                        WCHAR* format = L"desk.cpl desk,@Appearance /Action:ActivateMSTheme /file:\"%s\"";
 
-                        SHGetFolderPathAndSubDirW(0, CSIDL_RESOURCES, NULL, SHGFP_TYPE_DEFAULT, L"themes\\Reactive\\reactive.msstyles", wszTheme);
+                        if (Themes[iTheme].ThemeFile)
+                        {
+                            format = L"desk.cpl desk,@Appearance /Action:ActivateMSTheme /file:\"%s\"";
+                            SHGetFolderPathAndSubDirW(0, CSIDL_RESOURCES, NULL, SHGFP_TYPE_DEFAULT, Themes[iTheme].ThemeFile, wszTheme);
+                        }
+
                         swprintf(wszParams, format, wszTheme);
                         RunControlPanelApplet(hwndDlg, wszParams);
                     }
