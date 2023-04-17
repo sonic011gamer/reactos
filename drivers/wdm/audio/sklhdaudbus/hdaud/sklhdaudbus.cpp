@@ -16,7 +16,7 @@ SklHdAudBusEvtDeviceAdd(
 	// you are okay with the defaults.
 	//
 	WdfDeviceInitSetDeviceType(DeviceInit, FILE_DEVICE_BUS_EXTENDER);
-
+	//__debugbreak();
 	status = Fdo_Create(DeviceInit);
 	return status;
 }
