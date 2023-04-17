@@ -146,7 +146,7 @@ FxInterrupt::ConnectInternal(
     // interrupt code,) so tell the PnP manager everything we can about this
     // device.
     //
-   //    RtlZeroMemory(&connectParams, sizeof(connectParams));
+    RtlZeroMemory(&connectParams, sizeof(connectParams));
 
     if (FxIsProcessorGroupSupported()) {
         connectParams.Version = CONNECT_FULLY_SPECIFIED_GROUP;

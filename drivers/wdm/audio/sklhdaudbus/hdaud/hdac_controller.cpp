@@ -204,8 +204,8 @@ static UINT16 HDACommandAddr(UINT32 cmd) {
 }
 
 NTSTATUS SendHDACmds(PFDO_CONTEXT fdoCtx, ULONG count, PHDAUDIO_CODEC_TRANSFER CodecTransfer) {
-//	__debugbreak();
-	//WdfInterruptAcquireLock(fdoCtx->Interrupt);
+	__debugbreak();
+	WdfInterruptAcquireLock(fdoCtx->Interrupt);
 	for (ULONG i = 0; i < count; i++) {
 		PHDAUDIO_CODEC_TRANSFER transfer = &CodecTransfer[i];
 		RtlZeroMemory(&transfer->Input, sizeof(transfer->Input));
@@ -218,7 +218,7 @@ NTSTATUS SendHDACmds(PFDO_CONTEXT fdoCtx, ULONG count, PHDAUDIO_CODEC_TRANSFER C
 			//Something wrong, controller likely went to sleep
 			SklHdAudBusPrint(DEBUG_LEVEL_ERROR, DBG_IOCTL,
 				"%s: device not found\n", __func__);
-		//	WdfInterruptReleaseLock(fdoCtx->Interrupt);
+			WdfInterruptReleaseLock(fdoCtx->Interrupt);
 			return STATUS_DEVICE_DOES_NOT_EXIST;
 		}
 
@@ -230,7 +230,7 @@ NTSTATUS SendHDACmds(PFDO_CONTEXT fdoCtx, ULONG count, PHDAUDIO_CODEC_TRANSFER C
 			//Oops it's full
 			SklHdAudBusPrint(DEBUG_LEVEL_ERROR, DBG_IOCTL,
 				"%s: device busy\n", __func__);
-		//	WdfInterruptReleaseLock(fdoCtx->Interrupt);
+			WdfInterruptReleaseLock(fdoCtx->Interrupt);
 			return STATUS_RETRY;
 		}
 
@@ -239,10 +239,10 @@ NTSTATUS SendHDACmds(PFDO_CONTEXT fdoCtx, ULONG count, PHDAUDIO_CODEC_TRANSFER C
 
 		fdoCtx->corb.buf[wp] = transfer->Output.Command;
 
-		hda_write16(fdoCtx, CORBWP, wp);
+	  hda_write16(fdoCtx, CORBWP, wp);
 	}
 
-	//WdfInterruptReleaseLock(fdoCtx->Interrupt);
+	WdfInterruptReleaseLock(fdoCtx->Interrupt);
 	return STATUS_SUCCESS;
 }
 
@@ -273,9 +273,9 @@ NTSTATUS RunSingleHDACmd(PFDO_CONTEXT fdoCtx, ULONG val, ULONG* res) {
 		UINT16 addr = HDACommandAddr(transfer.Output.Command);
 
 		if (((CurrentTime.QuadPart - StartTime.QuadPart) / (10 * 1000)) >= timeout_ms) {
-			//WdfInterruptAcquireLock(fdoCtx->Interrupt);
+			WdfInterruptAcquireLock(fdoCtx->Interrupt);
 			InterlockedDecrement(&fdoCtx->rirb.cmds[addr]);
-			//WdfInterruptReleaseLock(fdoCtx->Interrupt);
+			WdfInterruptReleaseLock(fdoCtx->Interrupt);
 			return STATUS_IO_TIMEOUT;
 		}
 
