@@ -204,6 +204,7 @@ static UINT16 HDACommandAddr(UINT32 cmd) {
 }
 
 NTSTATUS SendHDACmds(PFDO_CONTEXT fdoCtx, ULONG count, PHDAUDIO_CODEC_TRANSFER CodecTransfer) {
+	__debugbreak();
 	WdfInterruptAcquireLock(fdoCtx->Interrupt);
 	for (ULONG i = 0; i < count; i++) {
 		PHDAUDIO_CODEC_TRANSFER transfer = &CodecTransfer[i];
