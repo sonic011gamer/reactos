@@ -166,4 +166,46 @@ IoDisconnectInterrupt(PKINTERRUPT InterruptObject)
     ExFreePool(IoInterrupt); // ExFreePoolWithTag(IoInterrupt, TAG_KINTERRUPT);
 }
 
+#if 0
+    if (FxIsProcessorGroupSupported()) {
+        connectParams.Version = CONNECT_FULLY_SPECIFIED_GROUP;
+    }
+    else {
+        connectParams.Version = CONNECT_FULLY_SPECIFIED;
+    }
+
+    connectParams.FullySpecified.PhysicalDeviceObject = m_Device->GetPhysicalDevice();
+    connectParams.FullySpecified.InterruptObject      = &m_Interrupt;
+    connectParams.FullySpecified.ServiceRoutine       = _InterruptThunk;
+    connectParams.FullySpecified.ServiceContext       = this;
+    connectParams.FullySpecified.SpinLock             = m_SpinLock;
+    connectParams.FullySpecified.FloatingSave         = m_FloatingSave;
+    connectParams.FullySpecified.Vector               = m_InterruptInfo.Vector;
+    connectParams.FullySpecified.Irql                 = m_InterruptInfo.Irql;
+    connectParams.FullySpecified.ProcessorEnableMask  = m_InterruptInfo.TargetProcessorSet;
+    connectParams.FullySpecified.Group                = m_InterruptInfo.Group;
+    connectParams.FullySpecified.InterruptMode        = m_InterruptInfo.Mode;
+    connectParams.FullySpecified.ShareVector          =
+        m_InterruptInfo.ShareDisposition == CmResourceShareShared ? TRUE : FALSE;
+    connectParams.FullySpecified.SynchronizeIrql      = m_SynchronizeIrql;
+#endif
+/* Vista+ */
+NTSTATUS
+NTAPI
+IoConnectInterruptEx(
+  _Inout_ PIO_CONNECT_INTERRUPT_PARAMETERS Parameters)
+{
+    DPRINT1("Calling IoConnectInterruptEx");
+    __debugbreak();
+    return 1;
+}
+
+VOID
+NTAPI
+IoDisconnectInterruptEx(
+  _In_ PIO_DISCONNECT_INTERRUPT_PARAMETERS Parameters)
+{
+    DPRINT1("Calling IoDsiconnectInterruptEx");
+    __debugbreak();
+}
 /* EOF */
