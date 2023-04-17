@@ -33,10 +33,10 @@ add_library(serial MODULE
     ${PCH_SKIP_SOURCE}
     serial.rc)
 
-set_module_type(serial kernelmodedriver)
+set_module_type(serial kmdfdriver)
 target_compile_definitions(serial PRIVATE DEBUG_USE_KDPRINT)
-target_link_libraries(serial rtlver wdf01000 ntoskrnl_vista ${PSEH_LIB})
-add_importlibs(serial ntoskrnl hal)
+target_link_libraries(serial rtlver ntoskrnl_vista ${PSEH_LIB})
+add_importlibs(serial wdfldr ntoskrnl hal)
 add_dependencies(serial serlog)
 # add_pch(serial serial.h "${PCH_SKIP_SOURCE}")
 add_cd_file(TARGET serial DESTINATION reactos/system32/drivers FOR all)
