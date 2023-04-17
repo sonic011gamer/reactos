@@ -59,10 +59,9 @@ extern PUCHAR *KdComPortInUse;
 // performance and IRQL reasons.
 //
 
-#ifndef __REACTOS__
 ULONG DebugLevel = TRACE_LEVEL_INFORMATION;
 ULONG DebugFlag = 0xf;//0x46;//0x4FF; //0x00000006;
-#endif
+
 
 #ifdef ALLOC_PRAGMA
 #pragma alloc_text(INIT, DriverEntry)

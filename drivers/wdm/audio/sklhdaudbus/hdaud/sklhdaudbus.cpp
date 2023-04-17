@@ -42,7 +42,7 @@ __in PUNICODE_STRING RegistryPath
 	ExInitializeDriverRuntime(DrvRtPoolNxOptIn);
 #endif
 	WDF_DRIVER_CONFIG_INIT(&config, SklHdAudBusEvtDeviceAdd);
-	__debugbreak();
+	//__debugbreak();
 	status = WdfDriverCreate(DriverObject,
 		RegistryPath,
 		WDF_NO_OBJECT_ATTRIBUTES,
@@ -54,6 +54,6 @@ __in PUNICODE_STRING RegistryPath
 		SklHdAudBusPrint(DEBUG_LEVEL_ERROR, DBG_INIT,
 			"WdfDriverCreate failed %x\n", status);
 	}
-	__debugbreak();
+	//__debugbreak();
 	return status;
 }

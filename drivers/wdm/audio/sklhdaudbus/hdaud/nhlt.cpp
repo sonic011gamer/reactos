@@ -12,7 +12,7 @@ NHLTQuery(
 	_In_ ULONG Arg2,
 	_Out_ WDFMEMORY* outputBufferMemoryArg
 ) {
-	__debugbreak();
+	//__debugbreak();
 	ULONG_PTR bytesReturned;
 	NTSTATUS status = STATUS_ACPI_NOT_INITIALIZED;
 	WDFMEMORY inputBufferMemory = NULL;

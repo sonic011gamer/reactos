@@ -12,6 +12,14 @@
 #define NDEBUG
 #include <debug.h>
 
+#ifndef CONNECT_LINE_BASED
+#define CONNECT_FULLY_SPECIFIED         0x1
+#define CONNECT_LINE_BASED              0x2
+#define CONNECT_MESSAGE_BASED           0x3
+#define CONNECT_FULLY_SPECIFIED_GROUP   0x4
+#define CONNECT_CURRENT_VERSION         0x4
+#endif
+
 /* FUNCTIONS *****************************************************************/
 
 /*
@@ -189,15 +197,53 @@ IoDisconnectInterrupt(PKINTERRUPT InterruptObject)
         m_InterruptInfo.ShareDisposition == CmResourceShareShared ? TRUE : FALSE;
     connectParams.FullySpecified.SynchronizeIrql      = m_SynchronizeIrql;
 #endif
+
+VOID
+NTAPI
+PIOConnectInterruptEx_FullySpecific(_Inout_ PIO_CONNECT_INTERRUPT_PARAMETERS Parameters)
+{
+    IO_CONNECT_INTERRUPT_PARAMETERS LocParameters;
+    LocParameters = *Parameters;
+    //TODO: Fix Process proc cluser handling.
+    DPRINT1("Calling PIOConnectInterruptEx_FullySpecific\n");
+    //__debugbreak();
+    /* On this fully specified API i dont see any reason we can't just call legacy routine */
+    IoConnectInterrupt(LocParameters.FullySpecified.InterruptObject,
+                       LocParameters.FullySpecified.ServiceRoutine,
+                       LocParameters.FullySpecified.ServiceContext,
+                       LocParameters.FullySpecified.SpinLock,
+                       LocParameters.FullySpecified.Vector,
+                       LocParameters.FullySpecified.Irql,
+                       LocParameters.FullySpecified.SynchronizeIrql,
+                       LocParameters.FullySpecified.InterruptMode,
+                       LocParameters.FullySpecified.ShareVector,
+                       LocParameters.FullySpecified.ProcessorEnableMask,
+                       LocParameters.FullySpecified.FloatingSave);
+}
+
 /* Vista+ */
 NTSTATUS
 NTAPI
 IoConnectInterruptEx(
-  _Inout_ PIO_CONNECT_INTERRUPT_PARAMETERS Parameters)
+    _Inout_ PIO_CONNECT_INTERRUPT_PARAMETERS Parameters)
 {
-    DPRINT1("Calling IoConnectInterruptEx");
-    __debugbreak();
-    return 1;
+    DPRINT1("Calling IoConnectInterruptEx\n");
+    switch (Parameters->Version)
+    {
+        case CONNECT_FULLY_SPECIFIED:
+            PIOConnectInterruptEx_FullySpecific(Parameters);
+            break;
+        case CONNECT_FULLY_SPECIFIED_GROUP:
+            PIOConnectInterruptEx_FullySpecific(Parameters);
+            break;
+        case CONNECT_MESSAGE_BASED:
+            UNIMPLEMENTED;
+            break;
+        case CONNECT_LINE_BASED:
+            UNIMPLEMENTED;
+            break;
+    }
+    return STATUS_SUCCESS;
 }
 
 VOID
@@ -205,7 +251,8 @@ NTAPI
 IoDisconnectInterruptEx(
   _In_ PIO_DISCONNECT_INTERRUPT_PARAMETERS Parameters)
 {
-    DPRINT1("Calling IoDsiconnectInterruptEx");
-    __debugbreak();
+    DPRINT1("Calling IoDsiconnectInterruptEx\n");
+    IoDisconnectInterrupt(Parameters->ConnectionContext.InterruptObject);
+   // __debugbreak();
 }
 /* EOF */
