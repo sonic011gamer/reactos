@@ -248,6 +248,7 @@ END
 
 STRINGTABLE
 BEGIN
+    IDS_REACTIVE "Reactive"
     IDS_CLASSIC "Классическая"
     IDS_LAUTUS "Тема ""Lautus"""
     IDS_LUNAR "Тема ""Lunar"""
