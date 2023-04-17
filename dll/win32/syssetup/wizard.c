@@ -1892,12 +1892,31 @@ static struct ThemeInfo
     LPCWSTR ThemeFile;
 
 } Themes[] = {
-    { MAKEINTRESOURCE(IDB_REACTIVE), IDS_REACTIVE, L"themes\\Reactive\\reactive.msstyles"},
+    { MAKEINTRESOURCE(IDB_REACTIVE), IDS_REACTIVE, L"themes\\Reactive\\reactive.msstyles" },
     { MAKEINTRESOURCE(IDB_LAUTUS), IDS_LAUTUS, L"themes\\lautus\\lautus.msstyles" },
     { MAKEINTRESOURCE(IDB_LUNAR), IDS_LUNAR, L"themes\\lunar\\lunar.msstyles" },
-    { MAKEINTRESOURCE(IDB_MIZU), IDS_MIZU, L"themes\\mizu\\mizu.msstyles"},
+    { MAKEINTRESOURCE(IDB_MIZU), IDS_MIZU, L"themes\\mizu\\mizu.msstyles" },
     { MAKEINTRESOURCE(IDB_CLASSIC), IDS_CLASSIC, NULL },
 };
+
+static void SetTheme(HWND hwndDlg, LPCWSTR themeFile)
+{
+    WCHAR wszParams[1024];
+    WCHAR* format = L"desk.cpl desk,@Appearance /Action:ActivateMSTheme";
+    WCHAR wszTheme[MAX_PATH];
+
+    if (themeFile)
+    {
+        format = L"desk.cpl desk,@Appearance /Action:ActivateMSTheme /file:\"%s\"";
+        SHGetFolderPathAndSubDirW(0, CSIDL_RESOURCES, NULL, SHGFP_TYPE_DEFAULT, themeFile, wszTheme);
+    }
+
+    swprintf(wszParams, format, wszTheme);
+    RunControlPanelApplet(hwndDlg, wszParams);
+
+    //Run twice because metrics act kinda weirdly the first time
+    RunControlPanelApplet(hwndDlg, wszParams);
+}
 
 static INT_PTR CALLBACK
 ThemePageDlgProc(HWND hwndDlg,
@@ -1967,19 +1986,7 @@ ThemePageDlgProc(HWND hwndDlg,
                     {
                         int iTheme = pnmv->iItem;
                         DPRINT1("Selected theme: %u\n", Themes[iTheme].DisplayName);
-
-                        WCHAR wszParams[1024];
-                        WCHAR* format = L"desk.cpl desk,@Appearance /Action:ActivateMSTheme";
-                        WCHAR wszTheme[MAX_PATH];
-
-                        if (Themes[iTheme].ThemeFile)
-                        {
-                            format = L"desk.cpl desk,@Appearance /Action:ActivateMSTheme /file:\"%s\"";
-                            SHGetFolderPathAndSubDirW(0, CSIDL_RESOURCES, NULL, SHGFP_TYPE_DEFAULT, Themes[iTheme].ThemeFile, wszTheme);
-                        }
-
-                        swprintf(wszParams, format, wszTheme);
-                        RunControlPanelApplet(hwndDlg, wszParams);
+                        SetTheme(hwndDlg, Themes[iTheme].ThemeFile);
                     }
                     break;
                 case PSN_SETACTIVE:
@@ -3305,13 +3312,8 @@ InstallWizard(VOID)
 
     if (1==1)
     {
-        WCHAR wszParams[1024];
-        WCHAR wszTheme[MAX_PATH];
-        WCHAR* format = L"desk.cpl desk,@Appearance /Action:ActivateMSTheme /file:\"%s\"";
-
-        SHGetFolderPathAndSubDirW(0, CSIDL_RESOURCES, NULL, SHGFP_TYPE_DEFAULT, L"themes\\Reactive\\reactive.msstyles", wszTheme);
-        swprintf(wszParams, format, wszTheme);
-        RunControlPanelApplet(hWnd, wszParams);
+        SetTheme(hWnd, Themes[0].ThemeFile);
+        //SetWindowLongPtr(hWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
     }
 
     ShowWindow(hWnd, SW_SHOW);
