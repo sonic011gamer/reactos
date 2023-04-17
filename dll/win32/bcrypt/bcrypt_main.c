@@ -1315,6 +1315,7 @@ static NTSTATUS key_asymmetric_create( enum alg_id alg_id, ULONG bitlen, struct 
     struct key *key;
 
     //TODO: __wine_unixlib_handle?????
+    WARN("(!__wine_unixlib_handle)");
     /*if (!__wine_unixlib_handle)
     {
         ERR( "no encryption support\n" );
@@ -1353,6 +1354,7 @@ static NTSTATUS key_symmetric_set_vector( struct key *key, UCHAR *vector, ULONG 
     if (needs_reset)
     {
         //TODO: UNIX_CALL????
+        WARN("UNIX_CALL( key_symmetric_vector_reset, key )");
         //UNIX_CALL( key_symmetric_vector_reset, key );
         return STATUS_NOT_IMPLEMENTED;
     }
@@ -1495,36 +1497,41 @@ static NTSTATUS key_export( struct key *key, const WCHAR *type, UCHAR *output, U
         }
         return STATUS_SUCCESS;
     }
-    //TODO: UNIX_CALL????
-    /*else if (!wcscmp( type, BCRYPT_DSA_PRIVATE_BLOB ) || !wcscmp( type, LEGACY_DSA_V2_PRIVATE_BLOB ) ||
+    else if (!wcscmp( type, BCRYPT_DSA_PRIVATE_BLOB ) || !wcscmp( type, LEGACY_DSA_V2_PRIVATE_BLOB ) ||
              !wcscmp( type, BCRYPT_ECCPRIVATE_BLOB ))
     {
-        params.key     = key;
+        //TODO: UNIX_CALL????
+        /*params.key     = key;
         params.flags   = 0;
         params.buf     = output;
         params.len     = output_len;
-        params.ret_len = size;
-        return UNIX_CALL( key_asymmetric_export, &params );
+        params.ret_len = size;*/
+        WARN("UNIX_CALL( key_asymmetric_export, &params )");
+        //return UNIX_CALL( key_asymmetric_export, &params );
     }
     else if (!wcscmp( type, BCRYPT_RSAPRIVATE_BLOB ) || !wcscmp( type, BCRYPT_RSAFULLPRIVATE_BLOB ))
     {
-        params.key     = key;
+        //TODO: UNIX_CALL????
+        /*params.key     = key;
         params.flags   = (wcscmp( type, BCRYPT_RSAPRIVATE_BLOB )) ? KEY_EXPORT_FLAG_RSA_FULL : 0;
         params.buf     = output;
         params.len     = output_len;
-        params.ret_len = size;
-        return UNIX_CALL( key_asymmetric_export, &params );
+        params.ret_len = size;*/
+        WARN("UNIX_CALL( key_asymmetric_export, &params )");
+        //return UNIX_CALL( key_asymmetric_export, &params );
     }
     else if (!wcscmp( type, BCRYPT_DSA_PUBLIC_BLOB ) || !wcscmp( type, LEGACY_DSA_V2_PUBLIC_BLOB ) ||
              !wcscmp( type, BCRYPT_ECCPUBLIC_BLOB ) || !wcscmp( type, BCRYPT_RSAPUBLIC_BLOB ))
     {
-        params.key     = key;
+        //TODO: UNIX_CALL????
+        /*params.key     = key;
         params.flags   = KEY_EXPORT_FLAG_PUBLIC;
         params.buf     = output;
         params.len     = output_len;
-        params.ret_len = size;
-        return UNIX_CALL( key_asymmetric_export, &params );
-    }*/
+        params.ret_len = size;*/
+        WARN("UNIX_CALL( key_asymmetric_export, &params )");
+        //return UNIX_CALL( key_asymmetric_export, &params );
+    }
 
     FIXME( "unsupported key type %s\n", debugstr_w(type) );
     return STATUS_NOT_IMPLEMENTED;
@@ -1540,8 +1547,7 @@ static NTSTATUS key_symmetric_encrypt( struct key *key,  UCHAR *input, ULONG inp
     UCHAR *buf;
     NTSTATUS status;
 
-    //TODO: UNIX_CALL?????
-    /*if (key->u.s.mode == CHAIN_MODE_GCM)
+    if (key->u.s.mode == CHAIN_MODE_GCM)
     {
         BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO *auth_info = padding;
 
@@ -1560,23 +1566,29 @@ static NTSTATUS key_symmetric_encrypt( struct key *key,  UCHAR *input, ULONG inp
         if (input && !output) return STATUS_SUCCESS;
         if (output_len < *ret_len) return STATUS_BUFFER_TOO_SMALL;
 
-        auth_params.key = key;
+        //TODO: UNIX_CALL?????
+        /*auth_params.key = key;
         auth_params.auth_data = auth_info->pbAuthData;
-        auth_params.len = auth_info->cbAuthData;
-        if ((status = UNIX_CALL( key_symmetric_set_auth_data, &auth_params ))) return status;
+        auth_params.len = auth_info->cbAuthData;*/
+        WARN("UNIX_CALL( key_symmetric_set_auth_data, &auth_params )");
+        //if ((status = UNIX_CALL( key_symmetric_set_auth_data, &auth_params ))) return status;
 
         encrypt_params.key = key;
         encrypt_params.input = input;
         encrypt_params.input_len = input_len;
         encrypt_params.output = output;
         encrypt_params.output_len = output_len;
-        if ((status = UNIX_CALL( key_symmetric_encrypt, &encrypt_params ))) return status;
+        //TODO: UNIX_CALL?????
+        WARN("UNIX_CALL( key_symmetric_encrypt, &encrypt_params )");
+        //if ((status = UNIX_CALL( key_symmetric_encrypt, &encrypt_params ))) return status;
 
-        tag_params.key = key;
+        //TODO: UNIX_CALL?????
+        /*tag_params.key = key;
         tag_params.tag = auth_info->pbTag;
-        tag_params.len = auth_info->cbTag;
-        return UNIX_CALL( key_symmetric_get_tag, &tag_params );
-    }*/
+        tag_params.len = auth_info->cbTag;*/
+        WARN("UNIX_CALL( key_symmetric_get_tag, &tag_params )");
+        //return UNIX_CALL( key_symmetric_get_tag, &tag_params );
+    }
 
     *ret_len = input_len;
 
@@ -1598,6 +1610,7 @@ static NTSTATUS key_symmetric_encrypt( struct key *key,  UCHAR *input, ULONG inp
     while (bytes_left >= key->u.s.block_size)
     {
         //TODO: UNIX_CALL?????
+        WARN("UNIX_CALL( key_symmetric_encrypt, &encrypt_params )");
         /*if ((status = UNIX_CALL( key_symmetric_encrypt, &encrypt_params )))
             return status;
         */
@@ -1615,6 +1628,7 @@ static NTSTATUS key_symmetric_encrypt( struct key *key,  UCHAR *input, ULONG inp
         memset( buf + bytes_left, key->u.s.block_size - bytes_left, key->u.s.block_size - bytes_left );
         encrypt_params.input = buf;
         //TODO: UNIX_CALL?????
+        WARN("UNIX_CALL( key_symmetric_encrypt, &encrypt_params )");
         //status = UNIX_CALL( key_symmetric_encrypt, &encrypt_params );
         free( buf );
     }
@@ -1632,6 +1646,7 @@ NTSTATUS WINAPI BCryptGenerateSymmetricKey( BCRYPT_ALG_HANDLE handle, BCRYPT_KEY
     if (object) FIXME( "ignoring object buffer\n" );
 
     //TODO: __wine_unixlib_handle?????
+    WARN("__wine_unixlib_handle");
     /*if (!__wine_unixlib_handle)
     {
         ERR( "no encryption support\n" );
@@ -1667,6 +1682,7 @@ NTSTATUS WINAPI BCryptFinalizeKeyPair( BCRYPT_KEY_HANDLE handle, ULONG flags )
 
     if (!key) return STATUS_INVALID_HANDLE;
     //TODO: UNIX_CALL?????
+    WARN("UNIX_CALL( key_asymmetric_generate, key )");
     //return UNIX_CALL( key_asymmetric_generate, key );
     return STATUS_NOT_SUPPORTED;
 }
@@ -1835,8 +1851,7 @@ NTSTATUS WINAPI BCryptEncrypt( BCRYPT_KEY_HANDLE handle, UCHAR *input, ULONG inp
         ret = key_symmetric_encrypt( key, input, input_len, padding, iv, iv_len, output, output_len, ret_len, flags );
         LeaveCriticalSection( &key->u.s.cs );
     }
-    //TODO: UNIX_CALL????
-    /*else
+    else
     {
         if (flags & BCRYPT_PAD_NONE || flags & BCRYPT_PAD_OAEP)
         {
@@ -1845,14 +1860,16 @@ NTSTATUS WINAPI BCryptEncrypt( BCRYPT_KEY_HANDLE handle, UCHAR *input, ULONG inp
         }
         if (!is_asymmetric_encryption_key( key )) return STATUS_NOT_SUPPORTED;
 
-        asymmetric_params.input = input;
+        //TODO: UNIX_CALL????
+        /*asymmetric_params.input = input;
         asymmetric_params.input_len = input_len;
         asymmetric_params.key = key;
         asymmetric_params.output = output;
         asymmetric_params.output_len = output_len;
-        asymmetric_params.ret_len = ret_len;
-        ret = UNIX_CALL(key_asymmetric_encrypt, &asymmetric_params);
-    }*/
+        asymmetric_params.ret_len = ret_len;*/
+        WARN("UNIX_CALL(key_asymmetric_encrypt, &asymmetric_params)");
+        //ret = UNIX_CALL(key_asymmetric_encrypt, &asymmetric_params);
+    }
 
     return ret;
 }
