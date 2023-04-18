@@ -166,6 +166,11 @@ IsFriendlyUIActive(VOID)
         RegCloseKey(hKey);
         return TRUE;
     }
+    else if (lRet != ERROR_SUCCESS)
+    {
+        // [TROLLCOMMIT] moment
+        return TRUE;
+    }
 
     /* Check product version number */
     dwValue = 0;
