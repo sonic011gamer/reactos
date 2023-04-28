@@ -134,7 +134,9 @@ FsRtlWorkerThread(IN PVOID StartContext)
         Irql = KeGetCurrentIrql();
         if (Irql != PASSIVE_LEVEL)
         {
-
+            KeBugCheckEx(IRQL_NOT_LESS_OR_EQUAL, (ULONG_PTR)WorkItem->WorkerRoutine,
+                        (ULONG_PTR)Irql, (ULONG_PTR)WorkItem->WorkerRoutine,
+                        (ULONG_PTR)WorkItem);
         }
     }
 }

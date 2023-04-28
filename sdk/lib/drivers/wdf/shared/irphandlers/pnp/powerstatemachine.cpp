@@ -2218,7 +2218,7 @@ Return Value:
             This->m_Device->GetHandle(),
             This->m_Device->GetDeviceObject(),
             This->m_DevicePowerState, status);
-        return WdfDevStatePowerD0StartingDmaEnable;
+        return WdfDevStatePowerInitialConnectInterruptFailed;
     }
 
     //
@@ -3549,7 +3549,7 @@ Return Value:
             This->m_Device->GetHandle(),
             This->m_Device->GetDeviceObject(),
             This->m_DevicePowerState, status);
-        return WdfDevStatePowerWakingDmaEnable;
+        return WdfDevStatePowerWakingConnectInterruptFailed;
     }
 
     return WdfDevStatePowerWakingDmaEnable;
@@ -3598,7 +3598,7 @@ Return Value:
             This->m_Device->GetHandle(),
             This->m_Device->GetDeviceObject(),
             This->m_DevicePowerState, status);
-        return WdfDevStatePowerWakingDmaEnableNP;
+        return WdfDevStatePowerWakingConnectInterruptFailedNP;
     }
 
     return WdfDevStatePowerWakingDmaEnableNP;
