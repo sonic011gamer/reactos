@@ -148,6 +148,7 @@ const char *debug_dxgi_format(DXGI_FORMAT format)
         WINE_DXGI_TO_STR(DXGI_FORMAT_BC7_TYPELESS);
         WINE_DXGI_TO_STR(DXGI_FORMAT_BC7_UNORM);
         WINE_DXGI_TO_STR(DXGI_FORMAT_BC7_UNORM_SRGB);
+        WINE_DXGI_TO_STR(DXGI_FORMAT_B4G4R4A4_UNORM);
         default:
             FIXME("Unrecognized DXGI_FORMAT %#x.\n", format);
             return "unrecognized";
@@ -260,6 +261,7 @@ DXGI_FORMAT dxgi_format_from_wined3dformat(enum wined3d_format_id format)
         case WINED3DFMT_BC7_TYPELESS: return DXGI_FORMAT_BC7_TYPELESS;
         case WINED3DFMT_BC7_UNORM: return DXGI_FORMAT_BC7_UNORM;
         case WINED3DFMT_BC7_UNORM_SRGB: return DXGI_FORMAT_BC7_UNORM_SRGB;
+        case WINED3DFMT_B4G4R4A4_UNORM: return DXGI_FORMAT_B4G4R4A4_UNORM;
         default:
             FIXME("Unhandled wined3d format %#x.\n", format);
             return DXGI_FORMAT_UNKNOWN;
@@ -370,6 +372,7 @@ enum wined3d_format_id wined3dformat_from_dxgi_format(DXGI_FORMAT format)
         case DXGI_FORMAT_BC7_TYPELESS: return WINED3DFMT_BC7_TYPELESS;
         case DXGI_FORMAT_BC7_UNORM: return WINED3DFMT_BC7_UNORM;
         case DXGI_FORMAT_BC7_UNORM_SRGB: return WINED3DFMT_BC7_UNORM_SRGB;
+        case DXGI_FORMAT_B4G4R4A4_UNORM: return WINED3DFMT_B4G4R4A4_UNORM;
         default:
             FIXME("Unhandled DXGI_FORMAT %#x.\n", format);
             return WINED3DFMT_UNKNOWN;
@@ -407,7 +410,7 @@ UINT dxgi_rational_to_uint(const DXGI_RATIONAL *rational)
         return rational->Numerator;
 }
 
-enum wined3d_scanline_ordering wined3d_scanline_ordering_from_dxgi(DXGI_MODE_SCANLINE_ORDER scanline_order)
+static enum wined3d_scanline_ordering wined3d_scanline_ordering_from_dxgi(DXGI_MODE_SCANLINE_ORDER scanline_order)
 {
     switch (scanline_order)
     {
@@ -453,6 +456,36 @@ void wined3d_display_mode_from_dxgi(struct wined3d_display_mode *wined3d_mode,
     wined3d_mode->scanline_ordering = wined3d_scanline_ordering_from_dxgi(mode->ScanlineOrdering);
 }
 
+DXGI_USAGE dxgi_usage_from_wined3d_usage(DWORD wined3d_usage)
+{
+    DXGI_USAGE dxgi_usage = 0;
+
+    if (wined3d_usage & WINED3DUSAGE_TEXTURE)
+        dxgi_usage |= DXGI_USAGE_SHADER_INPUT;
+    if (wined3d_usage & WINED3DUSAGE_RENDERTARGET)
+        dxgi_usage |= DXGI_USAGE_RENDER_TARGET_OUTPUT;
+
+    wined3d_usage &= ~(WINED3DUSAGE_TEXTURE | WINED3DUSAGE_RENDERTARGET);
+    if (wined3d_usage)
+        FIXME("Unhandled wined3d usage %#x.\n", wined3d_usage);
+    return dxgi_usage;
+}
+
+DWORD wined3d_usage_from_dxgi_usage(DXGI_USAGE dxgi_usage)
+{
+    DWORD wined3d_usage = 0;
+
+    if (dxgi_usage & DXGI_USAGE_SHADER_INPUT)
+        wined3d_usage |= WINED3DUSAGE_TEXTURE;
+    if (dxgi_usage & DXGI_USAGE_RENDER_TARGET_OUTPUT)
+        wined3d_usage |= WINED3DUSAGE_RENDERTARGET;
+
+    dxgi_usage &= ~(DXGI_USAGE_SHADER_INPUT | DXGI_USAGE_RENDER_TARGET_OUTPUT);
+    if (dxgi_usage)
+        FIXME("Unhandled DXGI usage %#x.\n", dxgi_usage);
+    return wined3d_usage;
+}
+
 #define DXGI_WINED3D_SWAPCHAIN_FLAGS \
         (WINED3D_SWAPCHAIN_USE_CLOSEST_MATCHING_MODE | WINED3D_SWAPCHAIN_RESTORE_WINDOW_RECT)
 
@@ -466,6 +499,12 @@ unsigned int dxgi_swapchain_flags_from_wined3d(unsigned int wined3d_flags)
     {
         wined3d_flags &= ~WINED3D_SWAPCHAIN_ALLOW_MODE_SWITCH;
         flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+    }
+
+    if (wined3d_flags & WINED3D_SWAPCHAIN_GDI_COMPATIBLE)
+    {
+        wined3d_flags &= ~WINED3D_SWAPCHAIN_GDI_COMPATIBLE;
+        flags |= DXGI_SWAP_CHAIN_FLAG_GDI_COMPATIBLE;
     }
 
     if (wined3d_flags)
@@ -482,6 +521,12 @@ unsigned int wined3d_swapchain_flags_from_dxgi(unsigned int flags)
     {
         flags &= ~DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
         wined3d_flags |= WINED3D_SWAPCHAIN_ALLOW_MODE_SWITCH;
+    }
+
+    if (flags & DXGI_SWAP_CHAIN_FLAG_GDI_COMPATIBLE)
+    {
+        flags &= ~DXGI_SWAP_CHAIN_FLAG_GDI_COMPATIBLE;
+        wined3d_flags |= WINED3D_SWAPCHAIN_GDI_COMPATIBLE;
     }
 
     if (flags)
@@ -640,3 +685,4 @@ D3D_FEATURE_LEVEL dxgi_check_feature_level_support(struct dxgi_factory *factory,
 
     return selected_feature_level;
 }
+
