@@ -20,6 +20,9 @@
 #define __WINE_DXGI_PRIVATE_H
 
 #include "wine/debug.h"
+#include "wine/heap.h"
+
+#include <assert.h>
 
 #define COBJMACROS
 #include "winbase.h"
@@ -27,12 +30,13 @@
 #include "winuser.h"
 #include "objbase.h"
 #include "winnls.h"
-#include "config.h"
 
+#include "d3d10_1.h"
+#include "dxgi1_6.h"
 #ifdef DXGI_INIT_GUID
 #include "initguid.h"
 #endif
-#include "wine/wined3d.h"
+#include "wined3d.h"
 #include "winedxgi.h"
 
 #if 0
@@ -68,7 +72,7 @@ DEFINE_GUID(IID_ID3D10Counter,0x9B7E4C11,0x342C,0x4106,0xA1,0x9F,0x4F,0x27,0x04,
 DEFINE_GUID(IID_ID3D10Device,0x9B7E4C0F,0x342C,0x4106,0xA1,0x9F,0x4F,0x27,0x04,0xF6,0x89,0xF0);
 DEFINE_GUID(IID_ID3D10Multithread,0x9B7E4E00,0x342C,0x4106,0xA1,0x9F,0x4F,0x27,0x04,0xF6,0x89,0xF0);
 #endif
-#if 0
+#if 1
 DEFINE_GUID(IID_IDXGIObject,0xaec22fb8,0x76f3,0x4639,0x9b,0xe0,0x28,0xeb,0x43,0xa6,0x7a,0x2e);
 DEFINE_GUID(IID_IDXGIDeviceSubObject,0x3d3e0379,0xf9de,0x4d58,0xbb,0x6c,0x18,0xd6,0x29,0x92,0xf1,0xa6);
 DEFINE_GUID(IID_IDXGIResource,0x035f3ab4,0x482e,0x4e50,0xb4,0x1f,0x8a,0x7f,0x8b,0xd8,0x96,0x0b);
@@ -84,48 +88,42 @@ DEFINE_GUID(IID_IDXGIFactory1,0x770aae78,0xf26f,0x4dba,0xa8,0x29,0x25,0x3c,0x83,
 DEFINE_GUID(IID_IDXGIAdapter1,0x29038f61,0x3839,0x4626,0x91,0xfd,0x08,0x68,0x79,0x01,0x1a,0x05);
 DEFINE_GUID(IID_IDXGIDevice1,0x77db970f,0x6276,0x48ba,0xba,0x28,0x07,0x01,0x43,0xb4,0x39,0x2c);
 
+DEFINE_GUID(IID_IDXGIDisplayControl,0xea9dbf1a,0xc88e,0x4486,0x85,0x4a,0x98,0xaa,0x01,0x38,0xf3,0x0c);
+DEFINE_GUID(IID_IDXGIOutputDuplication,0x191cfac3,0xa341,0x470d,0xb2,0x6e,0xa8,0x64,0xf4,0x28,0x31,0x9c);
+DEFINE_GUID(IID_IDXGISurface2,0xaba496dd,0xb617,0x4cb8,0xa8,0x66,0xbc,0x44,0xd7,0xeb,0x1f,0xa2);
+DEFINE_GUID(IID_IDXGIResource1,0x30961379,0x4609,0x4a41,0x99,0x8e,0x54,0xfe,0x56,0x7e,0xe0,0xc1);
+DEFINE_GUID(IID_IDXGIDevice2,0x05008617,0xfbfd,0x4051,0xa7,0x90,0x14,0x48,0x84,0xb4,0xf6,0xa9);
+DEFINE_GUID(IID_IDXGISwapChain1,0x790a45f7,0x0d42,0x4876,0x98,0x3a,0x0a,0x55,0xcf,0xe6,0xf4,0xaa);
+DEFINE_GUID(IID_IDXGIFactory2,0x50c83a1c,0xe072,0x4c48,0x87,0xb0,0x36,0x30,0xfa,0x36,0xa6,0xd0);
+DEFINE_GUID(IID_IDXGIAdapter2,0x0AA1AE0A,0xFA0E,0x4B84,0x86,0x44,0xE0,0x5F,0xF8,0xE5,0xAC,0xB5);
+DEFINE_GUID(IID_IDXGIOutput1,0x00cddea8,0x939b,0x4b83,0xa3,0x40,0xa6,0x85,0x22,0x66,0x66,0xcc);
+DEFINE_GUID(IID_IDXGISwapChain3,0x94d99bdb,0xf1f8,0x4ab0,0xb2,0x36,0x7d,0xa0,0x17,0x0e,0xda,0xb1);
+DEFINE_GUID(IID_IDXGIOutput4,0xdc7dca35,0x2196,0x414d,0x9F,0x53,0x61,0x78,0x84,0x03,0x2a,0x60);
+DEFINE_GUID(IID_IDXGIFactory4,0x1bc6ea02,0xef36,0x464f,0xbf,0x0c,0x21,0xca,0x39,0xe5,0x16,0x8a);
+DEFINE_GUID(IID_IDXGIAdapter3,0x645967A4,0x1392,0x4310,0xA7,0x98,0x80,0x53,0xCE,0x3E,0x93,0xFD);
+DEFINE_GUID(IID_IDXGIFactory3,0x25483823,0xcd46,0x4c7d,0x86,0xca,0x47,0xaa,0x95,0xb8,0x37,0xbd);
+DEFINE_GUID(IID_IDXGIFactory5,0x7632e1f5,0xee65,0x4dca,0x87,0xfd,0x84,0xcd,0x75,0xf8,0x83,0x8d);
 
 #endif
 
-#define DXGI_ERROR_INVALID_CALL          _HRESULT_TYPEDEF_(0x887A0001L)
+/*
+ * Copyright 2008 Henri Verbeet for CodeWeavers
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ */
 
-//
-// MessageId: DXGI_ERROR_NOT_FOUND
-//
-// MessageText:
-//
-// The object was not found. If calling IDXGIFactory::EnumAdaptes, there is no adapter with the specified ordinal.
-//
-#define DXGI_ERROR_NOT_FOUND             _HRESULT_TYPEDEF_(0x887A0002L)
-
-//
-// MessageId: DXGI_ERROR_MORE_DATA
-//
-// MessageText:
-//
-// The caller did not supply a sufficiently large buffer.
-//
-#define DXGI_ERROR_MORE_DATA             _HRESULT_TYPEDEF_(0x887A0003L)
-
-//
-// MessageId: DXGI_ERROR_UNSUPPORTED
-//
-// MessageText:
-//
-// The specified device interface or feature level is not supported on this system.
-//
-#define DXGI_ERROR_UNSUPPORTED           _HRESULT_TYPEDEF_(0x887A0004L)
-
-typedef enum D3D_FEATURE_LEVEL
-{
-    D3D_FEATURE_LEVEL_9_1 = 0x9100,
-    D3D_FEATURE_LEVEL_9_2 = 0x9200,
-    D3D_FEATURE_LEVEL_9_3 = 0x9300,
-    D3D_FEATURE_LEVEL_10_0 = 0xa000,
-    D3D_FEATURE_LEVEL_10_1 = 0xa100,
-    D3D_FEATURE_LEVEL_11_0 = 0xb000,
-    D3D_FEATURE_LEVEL_11_1 = 0xb100
-} D3D_FEATURE_LEVEL;
 
 enum dxgi_frame_latency
 {
@@ -175,14 +173,14 @@ void dump_feature_levels(const D3D_FEATURE_LEVEL *feature_levels, unsigned int l
 DXGI_FORMAT dxgi_format_from_wined3dformat(enum wined3d_format_id format) DECLSPEC_HIDDEN;
 enum wined3d_format_id wined3dformat_from_dxgi_format(DXGI_FORMAT format) DECLSPEC_HIDDEN;
 UINT dxgi_rational_to_uint(const DXGI_RATIONAL *rational) DECLSPEC_HIDDEN;
-enum wined3d_scanline_ordering wined3d_scanline_ordering_from_dxgi(
-        DXGI_MODE_SCANLINE_ORDER scanline_order) DECLSPEC_HIDDEN;
 void dxgi_sample_desc_from_wined3d(DXGI_SAMPLE_DESC *desc,
         enum wined3d_multisample_type wined3d_type, unsigned int wined3d_quality) DECLSPEC_HIDDEN;
 void wined3d_sample_desc_from_dxgi(enum wined3d_multisample_type *wined3d_type,
         unsigned int *wined3d_quality, const DXGI_SAMPLE_DESC *dxgi_desc) DECLSPEC_HIDDEN;
 void wined3d_display_mode_from_dxgi(struct wined3d_display_mode *wined3d_mode,
         const DXGI_MODE_DESC *mode) DECLSPEC_HIDDEN;
+DXGI_USAGE dxgi_usage_from_wined3d_usage(DWORD wined3d_usage) DECLSPEC_HIDDEN;
+DWORD wined3d_usage_from_dxgi_usage(DXGI_USAGE usage) DECLSPEC_HIDDEN;
 unsigned int dxgi_swapchain_flags_from_wined3d(unsigned int wined3d_flags) DECLSPEC_HIDDEN;
 unsigned int wined3d_swapchain_flags_from_dxgi(unsigned int flags) DECLSPEC_HIDDEN;
 HRESULT dxgi_get_private_data(struct wined3d_private_store *store,
@@ -195,7 +193,7 @@ HRESULT dxgi_set_private_data_interface(struct wined3d_private_store *store,
 /* IDXGIFactory */
 struct dxgi_factory
 {
-    IDXGIFactory1 IDXGIFactory1_iface;
+    IWineDXGIFactory IWineDXGIFactory_iface;
     LONG refcount;
     struct wined3d_private_store private_store;
     struct wined3d *wined3d;
@@ -205,7 +203,7 @@ struct dxgi_factory
 
 HRESULT dxgi_factory_create(REFIID riid, void **factory, BOOL extended) DECLSPEC_HIDDEN;
 HWND dxgi_factory_get_device_window(struct dxgi_factory *factory) DECLSPEC_HIDDEN;
-struct dxgi_factory *unsafe_impl_from_IDXGIFactory1(IDXGIFactory1 *iface) DECLSPEC_HIDDEN;
+struct dxgi_factory *unsafe_impl_from_IDXGIFactory(IDXGIFactory *iface) DECLSPEC_HIDDEN;
 
 /* IDXGIDevice */
 struct dxgi_device
@@ -215,7 +213,7 @@ struct dxgi_device
     LONG refcount;
     struct wined3d_private_store private_store;
     struct wined3d_device *wined3d_device;
-    IDXGIAdapter1 *adapter;
+    IWineDXGIAdapter *adapter;
 };
 
 HRESULT dxgi_device_init(struct dxgi_device *device, struct dxgi_device_layer *layer,
@@ -225,7 +223,7 @@ HRESULT dxgi_device_init(struct dxgi_device *device, struct dxgi_device_layer *l
 /* IDXGIOutput */
 struct dxgi_output
 {
-    IDXGIOutput IDXGIOutput_iface;
+    IDXGIOutput4 IDXGIOutput4_iface;
     LONG refcount;
     struct wined3d_private_store private_store;
     struct dxgi_adapter *adapter;
@@ -236,7 +234,7 @@ HRESULT dxgi_output_create(struct dxgi_adapter *adapter, struct dxgi_output **ou
 /* IDXGIAdapter */
 struct dxgi_adapter
 {
-    IDXGIAdapter1 IDXGIAdapter1_iface;
+    IWineDXGIAdapter IWineDXGIAdapter_iface;
     LONG refcount;
     struct wined3d_private_store private_store;
     UINT ordinal;
@@ -245,12 +243,12 @@ struct dxgi_adapter
 
 HRESULT dxgi_adapter_create(struct dxgi_factory *factory, UINT ordinal,
         struct dxgi_adapter **adapter) DECLSPEC_HIDDEN;
-struct dxgi_adapter *unsafe_impl_from_IDXGIAdapter1(IDXGIAdapter1 *iface) DECLSPEC_HIDDEN;
+struct dxgi_adapter *unsafe_impl_from_IDXGIAdapter(IDXGIAdapter *iface) DECLSPEC_HIDDEN;
 
 /* IDXGISwapChain */
 struct dxgi_swapchain
 {
-    IDXGISwapChain IDXGISwapChain_iface;
+    IDXGISwapChain1 IDXGISwapChain1_iface;
     LONG refcount;
     struct wined3d_private_store private_store;
     struct wined3d_swapchain *wined3d_swapchain;
