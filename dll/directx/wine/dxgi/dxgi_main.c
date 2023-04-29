@@ -24,13 +24,6 @@
 #include "dxgi_private.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(dxgi);
-HRESULT dxgi_factory_create(REFIID riid, void **factory, BOOL extended);
-
-
-void dump_feature_levels(const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count);
-HRESULT dxgi_device_init(struct dxgi_device *device, struct dxgi_device_layer *layer,
-        IDXGIFactory *factory, IDXGIAdapter *adapter,
-        const D3D_FEATURE_LEVEL *feature_levels, unsigned int level_count);
 
 struct dxgi_main
 {
@@ -42,7 +35,7 @@ static struct dxgi_main dxgi_main;
 
 static void dxgi_main_cleanup(void)
 {
-    HeapFree(GetProcessHeap(), 0, dxgi_main.device_layers);
+    heap_free(dxgi_main.device_layers);
     FreeLibrary(dxgi_main.d3d10core);
 }
 
@@ -63,18 +56,28 @@ BOOL WINAPI DllMain(HINSTANCE inst, DWORD reason, void *reserved)
     return TRUE;
 }
 
-HRESULT WINAPI CreateDXGIFactory1(REFIID riid, void **factory)
+HRESULT WINAPI CreateDXGIFactory2(UINT flags, REFIID iid, void **factory)
 {
-    TRACE("riid %s, factory %p\n", debugstr_guid(riid), factory);
+    TRACE("flags %#x, iid %s, factory %p.\n", flags, debugstr_guid(iid), factory);
 
-    return dxgi_factory_create(riid, factory, TRUE);
+    if (flags)
+        FIXME("Ignoring flags %#x.\n", flags);
+
+    return dxgi_factory_create(iid, factory, TRUE);
 }
 
-HRESULT WINAPI CreateDXGIFactory(REFIID riid, void **factory)
+HRESULT WINAPI CreateDXGIFactory1(REFIID iid, void **factory)
 {
-    TRACE("riid %s, factory %p\n", debugstr_guid(riid), factory);
+    TRACE("iid %s, factory %p.\n", debugstr_guid(iid), factory);
 
-    return dxgi_factory_create(riid, factory, FALSE);
+    return dxgi_factory_create(iid, factory, TRUE);
+}
+
+HRESULT WINAPI CreateDXGIFactory(REFIID iid, void **factory)
+{
+    TRACE("iid %s, factory %p.\n", debugstr_guid(iid), factory);
+
+    return dxgi_factory_create(iid, factory, FALSE);
 }
 
 static BOOL get_layer(enum dxgi_device_layer_id id, struct dxgi_device_layer *layer)
@@ -118,7 +121,8 @@ static HRESULT register_d3d10core_layers(HMODULE d3d10core)
         hr = d3d11core_register_layers();
         if (FAILED(hr))
         {
-            ERR("Failed to register d3d11 layers, returning %#x\n", hr);
+            ERR("Failed to register d3d11 layers, returning %#x.\n", hr);
+            FreeLibrary(mod);
             wined3d_mutex_unlock();
             return hr;
         }
@@ -184,23 +188,23 @@ HRESULT WINAPI DXGID3D10CreateDevice(HMODULE d3d10core, IDXGIFactory *factory, I
     device_size = d3d10_layer.get_size(d3d10_layer.id, &get_size_args, 0);
     device_size += sizeof(*dxgi_device);
 
-    dxgi_device = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, device_size);
-    if (!dxgi_device)
+    if (!(dxgi_device = heap_alloc_zero(device_size)))
     {
         ERR("Failed to allocate device memory.\n");
         return E_OUTOFMEMORY;
     }
 
-   hr = dxgi_device_init(dxgi_device, &d3d10_layer, factory, adapter, feature_levels, level_count);    if (FAILED(hr))
+    hr = dxgi_device_init(dxgi_device, &d3d10_layer, factory, adapter, feature_levels, level_count);
+    if (FAILED(hr))
     {
         WARN("Failed to initialize device, hr %#x.\n", hr);
-        HeapFree(GetProcessHeap(), 0, dxgi_device);
+        heap_free(dxgi_device);
         *device = NULL;
         return hr;
     }
 
     TRACE("Created device %p.\n", dxgi_device);
-    *device = dxgi_device;
+    *device = &dxgi_device->IWineDXGIDevice_iface;
 
     return S_OK;
 }
@@ -215,9 +219,9 @@ HRESULT WINAPI DXGID3D10RegisterLayers(const struct dxgi_device_layer *layers, U
     wined3d_mutex_lock();
 
     if (!dxgi_main.layer_count)
-        new_layers = HeapAlloc(GetProcessHeap(), 0, layer_count * sizeof(*new_layers));
+        new_layers = heap_alloc(layer_count * sizeof(*new_layers));
     else
-        new_layers = HeapReAlloc(GetProcessHeap(), 0, dxgi_main.device_layers,
+        new_layers = heap_realloc(dxgi_main.device_layers,
                 (dxgi_main.layer_count + layer_count) * sizeof(*new_layers));
 
     if (!new_layers)
@@ -244,4 +248,3 @@ HRESULT WINAPI DXGID3D10RegisterLayers(const struct dxgi_device_layer *layers, U
 
     return S_OK;
 }
-
