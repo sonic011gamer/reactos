@@ -16,6 +16,7 @@ list(APPEND UEFILDR_ARC_SOURCE
     arch/uefi/stubs.c
     arch/uefi/ueficon.c
     arch/uefi/uefidisk.c
+    arch/uefi/uefihw.c
     arch/uefi/uefimem.c
     arch/uefi/uefisetup.c
     arch/uefi/uefiutil.c
@@ -25,9 +26,7 @@ list(APPEND UEFILDR_ARC_SOURCE
 if(ARCH STREQUAL "i386")
     list(APPEND UEFILDR_COMMON_ASM_SOURCE
         arch/i386/i386trap.S)
-
 elseif(ARCH STREQUAL "amd64")
-    #TBD
 elseif(ARCH STREQUAL "arm")
     list(APPEND UEFILDR_ARC_SOURCE
         arch/arm/macharm.c

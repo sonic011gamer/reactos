@@ -41,6 +41,8 @@ DxgkPortStartAdapter()
         __debugbreak();
         return Status;
     }
+
+    DxgkrnlSetupInterrupt();
     Status = DxgkpExtension->DxgkDdiStartDevice(DxgkpExtension->MiniportContext, &DxgkStartInfo,
                                                  &DxgkrnlInterface, &NumberOfVideoPresentSources, &NumberOfChildren);
     if (Status == STATUS_SUCCESS)
@@ -53,6 +55,20 @@ DxgkPortStartAdapter()
 
     //__debugbreak();
     return Status;
+}
+
+VOID
+NTAPI
+IntVideoPortDeferredRoutine(
+    IN PKDPC Dpc,
+    IN PVOID DeferredContext,
+    IN PVOID SystemArgument1,
+    IN PVOID SystemArgument2)
+{
+    PVOID HwDeviceExtension =
+        &((PDXGKRNL_PRIVATE_EXTENSION)DeferredContext)->MiniportContext;
+        DxgkpExtension->DxgkDdiDpcRoutine(HwDeviceExtension);
+  //  ((PMINIPORT_DPC_ROUTINE)SystemArgument1)(HwDeviceExtension, SystemArgument2);
 }
 
 
@@ -167,6 +183,10 @@ DxgkPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
     DPRINT1("Device Number: %d\n",  SlotNumber.u.bits.DeviceNumber);
     DPRINT1("FunctionNumber: %d\n", SlotNumber.u.bits.FunctionNumber);
     DPRINT1("Create IDs success\n");
+
+    KeInitializeDpc((PRKDPC)&DxgkpExtension->DpcObject,
+                    IntVideoPortDeferredRoutine,
+                    DxgkpExtension);
     /* Remove the initializing flag */
     (DriverObject->DeviceObject)->Flags &= ~DO_DEVICE_INITIALIZING;
     DxgkpExtension->NextDeviceObject = IoAttachDeviceToDeviceStack(

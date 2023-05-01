@@ -86,7 +86,7 @@ NTSTATUS VioGpuVidPN::Start(ULONG* pNumberOfViews, ULONG* pNumberOfChildren) {
        // VioGpuDbgBreak();
     }
 
-    if (m_pAdapter->IsVgaDevice())
+    if (1)
     {
         Status = AcquirePostDisplayOwnership();
         if (!NT_SUCCESS(Status))
@@ -110,19 +110,13 @@ NTSTATUS VioGpuVidPN::Start(ULONG* pNumberOfViews, ULONG* pNumberOfChildren) {
         }
     }
 
-    m_CurrentModes[0].DispInfo.Width = max(MIN_WIDTH_SIZE, 1920);
-    m_CurrentModes[0].DispInfo.Height = max(MIN_HEIGHT_SIZE, 1080);
+    m_CurrentModes[0].DispInfo.Width = max(MIN_WIDTH_SIZE, m_SystemDisplayInfo.Width);
+    m_CurrentModes[0].DispInfo.Height = max(MIN_HEIGHT_SIZE, m_SystemDisplayInfo.Height);
     m_CurrentModes[0].DispInfo.ColorFormat = D3DDDIFMT_X8R8G8B8;
     m_CurrentModes[0].DispInfo.Pitch = (BPPFromPixelFormat(m_CurrentModes[0].DispInfo.ColorFormat) / BITS_PER_BYTE) * m_CurrentModes[0].DispInfo.Width;
     m_CurrentModes[0].DispInfo.TargetId = 0;
     if (m_CurrentModes[0].DispInfo.PhysicAddress.QuadPart == 0LL && m_SystemDisplayInfo.PhysicAddress.QuadPart != 0LL) {
         m_CurrentModes[0].DispInfo.PhysicAddress = m_SystemDisplayInfo.PhysicAddress;
-    }
-
-    Status = SetCurrentMode(2, &m_CurrentModes[0]);
-    if (NT_SUCCESS(Status))
-    {
-        DbgPrint(TRACE_LEVEL_INFORMATION, ("SetCurrentMode Failed"));
     }
 
     PVOID VAFramebuf;

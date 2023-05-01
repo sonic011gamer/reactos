@@ -65,6 +65,7 @@ typedef struct _DXGKRNL_PRIVATE_EXTENSION
 	KMDDOD_INITIALIZATION_DATA DriverInitKmdodData;
 	PDRIVER_OBJECT MiniportDriverObject;
     PDRIVER_EXTENSION MiniportDriverExtend;
+       KSPIN_LOCK InterruptSpinLock;
     PDEVICE_OBJECT MiniportFdo;
     PDEVICE_OBJECT MiniportPdo;
 	INTERFACE_TYPE AdapterInterfaceType;
@@ -76,6 +77,10 @@ typedef struct _DXGKRNL_PRIVATE_EXTENSION
 	ULONG SystemIoSlotNumber;
     ULONG InternalDeviceNumber;
     BUS_INTERFACE_STANDARD BusInterface;
+    ULONG BusInterruptLevel;
+    ULONG BusInterruptVector;
+    PKDPC DpcObject;
+    PKINTERRUPT InterruptObject;
 } DXGKRNL_PRIVATE_EXTENSION, *PDXGKRNL_PRIVATE_EXTENSION;
 
 NTSTATUS
@@ -85,6 +90,30 @@ DxgkCbQueryVidPnInterface(IN_CONST_D3DKMDT_HVIDPN                hVidPn,
                                IN_CONST_DXGK_VIDPN_INTERFACE_VERSION  VidPnInterfaceVersion,
                                DEREF_OUT_CONST_PPDXGK_VIDPN_INTERFACE ppVidPnInterface);
 
+BOOLEAN
+APIENTRY
+DxgkCbQueueDpc(_In_ HANDLE DeviceHandle);
+
+NTSTATUS
+APIENTRY
+DxgkCbSynchronizeExecution(_In_ HANDLE DeviceHandle,
+                                _In_ PKSYNCHRONIZE_ROUTINE SynchronizeRoutine,
+                                _In_ PVOID Context,
+                                _In_ ULONG MessageNumber,
+                                _Out_ PBOOLEAN ReturnValue);
+VOID
+APIENTRY
+CALLBACK
+DxgkCbNotifyInterrupt(IN_CONST_HANDLE hAdapter,
+                        IN_CONST_PDXGKARGCB_NOTIFY_INTERRUPT_DATA NotifyInterruptData);
+
+VOID
+APIENTRY
+CALLBACK
+DxgkCbNotifyDpc(IN_CONST_HANDLE hAdapter);
+
+BOOLEAN NTAPI
+DxgkrnlSetupInterrupt();
 #include "dxgkport.h"
 
 #ifdef __cplusplus

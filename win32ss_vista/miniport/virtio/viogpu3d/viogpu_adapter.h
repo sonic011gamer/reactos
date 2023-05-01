@@ -136,12 +136,12 @@ public:
 #ifdef RENDER_ONLY
         return FALSE;
 #else
-        return 0;
+        return 1;
 #endif
     }
     void SetVgaDevice(BOOLEAN Vga)
     {
-        m_Flags.VgaDevice = 0;
+        m_Flags.VgaDevice = Vga;
     }
     BOOLEAN IsFlexResolution(void) const
     {

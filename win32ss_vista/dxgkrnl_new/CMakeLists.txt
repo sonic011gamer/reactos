@@ -10,6 +10,7 @@ list(APPEND SOURCE
     registry.cpp
     resource.cpp
     dxgkinterface.cpp
+    dxgkinterrupts.cpp
     miniport/dxgkport.cpp
     miniport/miniport.cpp
     vidpnss/vidpnmgr.cpp

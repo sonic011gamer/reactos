@@ -27,6 +27,7 @@ AddMemoryDescriptor(
 
 /* GLOBALS *******************************************************************/
 
+extern ULONG LoaderPagesSpanned;
 extern EFI_SYSTEM_TABLE* GlobalSystemTable;
 extern EFI_HANDLE GlobalImageHandle;
 extern REACTOS_INTERNAL_BGCONTEXT framebufferData;
@@ -256,6 +257,16 @@ UefiMemGetMemoryMap(ULONG *MemoryMapSize)
             }
         }
 
+        /* Sometimes our loader can be loaded into higher memory than we ever allocate */
+        if (MemoryType == LoaderLoadedProgram)
+        {
+            if ((MapEntry->PhysicalStart / EFI_PAGE_SIZE) > LoaderPagesSpanned)
+            {
+                /* This value needs to be adjusted if this occurs */
+                LoaderPagesSpanned = (MapEntry->PhysicalStart / EFI_PAGE_SIZE);
+            }
+        }
+
         UefiSetMemory(FreeldrMem,
                       MapEntry->PhysicalStart,
                       MapEntry->NumberOfPages,
@@ -306,10 +317,23 @@ UefiExitBootServices(VOID)
     }
 }
 
+
+BOOLEAN
+MempSetupPaging(IN PFN_NUMBER StartPage,
+                IN PFN_NUMBER NumberOfPages,
+                IN BOOLEAN KernelMapping);
+
 VOID
 UefiPrepareForReactOS(VOID)
 {
+    ULONG* StackPtrNew;
+    ULONG* StackPtrEnd;
+    ULONG StackVar = 0;
+
+    /* Technically UEFI defines that stack space as 32kb */
+    StackPtrNew = &StackVar;
+    StackPtrEnd = (&StackVar + 0x2000);
     UefiExitBootServices();
-    ExitStack = MmAllocateMemoryWithType(EXIT_STACK_SIZE, LoaderOsloaderStack);
-    EndofExitStack = (PVOID)((ULONG_PTR)ExitStack + EXIT_STACK_SIZE);
+    //TODO: Let's take another look at this
+    MempSetupPaging((ULONG_PTR)StackPtrEnd >> MM_PAGE_SHIFT, 0x2000 >> MM_PAGE_SHIFT, FALSE);
 }

@@ -47,21 +47,18 @@ struct NOTIFY_CONTEXT {
 };
 
 BOOLEAN NotifyRoutine(PVOID ctx_void) {
-  //   DbgPrint(TRACE_LEVEL_ERROR, ("<---> %s\n", __FUNCTION__));
-     #if 0
+     DbgPrint(TRACE_LEVEL_ERROR, ("<---> %s\n", __FUNCTION__));
     NOTIFY_CONTEXT* ctx = (NOTIFY_CONTEXT*)ctx_void;
     DXGKRNL_INTERFACE* pDxgkInterface = ctx->pDxgkInterface;
     pDxgkInterface->DxgkCbNotifyInterrupt(pDxgkInterface->DeviceHandle, ctx->interrupt);
     if (ctx->triggerDpc) {
         pDxgkInterface->DxgkCbQueueDpc(pDxgkInterface->DeviceHandle);
     }
-    #endif
     return TRUE;
 }
 
 NTSTATUS VioGpuAdapter::NotifyInterrupt(DXGKARGCB_NOTIFY_INTERRUPT_DATA* interruptData, BOOL triggerDpc) {
-      //  DbgPrint(TRACE_LEVEL_ERROR, ("<---> %s\n", __FUNCTION__));
-    #if  0
+    DbgPrint(TRACE_LEVEL_ERROR, ("<---> %s\n", __FUNCTION__));
     NOTIFY_CONTEXT notify;
     notify.pDxgkInterface = &m_DxgkInterface;
     notify.interrupt = interruptData;
@@ -74,8 +71,6 @@ NTSTATUS VioGpuAdapter::NotifyInterrupt(DXGKARGCB_NOTIFY_INTERRUPT_DATA* interru
         0,
         &bRet
     );
-    #endif
-    return 0;
 }
 
 
@@ -165,7 +160,7 @@ BOOLEAN NTAPI VioGpuAdapter::CheckHardware()
         if (Header.VendorID == REDHAT_PCI_VENDOR_ID &&
             Header.DeviceID == 0x1050)
         {
-         //   SetVgaDevice(Header.SubClass == PCI_SUBCLASS_VID_VGA_CTLR);
+            SetVgaDevice(Header.SubClass == PCI_SUBCLASS_VID_VGA_CTLR);
             return TRUE;
         }
 

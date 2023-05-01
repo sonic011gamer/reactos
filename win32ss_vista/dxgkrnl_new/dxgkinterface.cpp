@@ -193,15 +193,6 @@ DxgkCbMapMemory(_In_ HANDLE DeviceHandle,
     return STATUS_SUCCESS;
 }
 
-BOOLEAN
-APIENTRY
-DxgkCbQueueDpc(_In_ HANDLE DeviceHandle)
-{
-    //TODO: Implement meh
-    UNIMPLEMENTED;
-    return TRUE;
-}
-
 
 NTSTATUS
 APIENTRY
@@ -209,27 +200,13 @@ DxgkCbQueryServices(_In_ HANDLE DeviceHandle,
                          _In_ DXGK_SERVICES ServicesType,
                          _Inout_ PINTERFACE Interface)
 {
+
     //TODO: Implement meh
     UNIMPLEMENTED;
 
     return STATUS_UNSUCCESSFUL;
 }
 
-
-NTSTATUS
-APIENTRY
-DxgkCbSynchronizeExecution(_In_ HANDLE DeviceHandle,
-                                _In_ PKSYNCHRONIZE_ROUTINE SynchronizeRoutine,
-                                _In_ PVOID Context,
-                                _In_ ULONG MessageNumber,
-                                _Out_ PBOOLEAN ReturnValue)
-{
-
-    SynchronizeRoutine(Context);
-    *ReturnValue = TRUE;
-    UNIMPLEMENTED;
-    return STATUS_SUCCESS;
-}
 
 NTSTATUS
 APIENTRY
@@ -284,25 +261,6 @@ DxgkCbEnumHandleChildren(IN_CONST_PDXGKARGCB_ENUMHANDLECHILDREN EnumHandleChildr
     return STATUS_UNSUCCESSFUL;
 }
 
-VOID
-APIENTRY
-CALLBACK
-DxgkCbNotifyInterrupt(IN_CONST_HANDLE hAdapter,
-                           IN_CONST_PDXGKARGCB_NOTIFY_INTERRUPT_DATA NotifyInterruptData)
-{
-   //TODO: Implement meh
-    UNIMPLEMENTED;
-}
-
-VOID
-APIENTRY
-CALLBACK
-DxgkCbNotifyDpc(IN_CONST_HANDLE hAdapter)
-{
-   //TODO: Implement meh
-    UNIMPLEMENTED;
-}
-
 NTSTATUS
 APIENTRY
 CALLBACK
@@ -335,7 +293,14 @@ DxgkCbLogEtwEvent(_In_ CONST LPCGUID EventGuid,
    //TODO: Implement meh
     UNIMPLEMENTED;
 }
-
+#include <inbvtypes.h>
+extern "C"
+{
+VOID
+NTAPI
+InbvNotifyDisplayOwnershipLost(
+    _In_ INBV_RESET_DISPLAY_PARAMETERS Callback);
+}
 NTSTATUS
 APIENTRY
 CALLBACK
@@ -343,12 +308,14 @@ DxgkCbAcquirePostDisplayOwnership(_In_ HANDLE DeviceHandle,
                                   _Out_ PDXGK_DISPLAY_INFORMATION DisplayInfo)
 {
     DPRINT1("DxgkCbAcquirePostDisplayOwnership: Enter with device handle %X\n", DeviceHandle);
-    DisplayInfo->Width = 800;
-    DisplayInfo->Height = 600;
+    InbvNotifyDisplayOwnershipLost(NULL);
+    DPRINT1("Inbv Lost the power of grey skull\n");
+    DisplayInfo->Width = 640;
+    DisplayInfo->Height = 480;
     DisplayInfo->Pitch = 4;
-    DisplayInfo->ColorFormat = D3DDDIFMT_R8G8B8;
-    DisplayInfo->PhysicAddress.QuadPart = 0x80000000;
-    DisplayInfo->TargetId = 1;
+    DisplayInfo->ColorFormat = D3DDDIFMT_X8R8G8B8;
+    DisplayInfo->PhysicAddress.QuadPart = NULL;
+    DisplayInfo->TargetId = D3DDDI_ID_UNINITIALIZED;
     DisplayInfo->AcpiId = 0;
     return STATUS_SUCCESS;
 }
@@ -518,7 +485,7 @@ DxgkpSetupDxgkrnl(
 {
     DXGKRNL_INTERFACE DxgkrnlInterfaceLoc = {0};
     DxgkrnlInterfaceLoc.Size = sizeof(DXGKRNL_INTERFACE);
-    DxgkrnlInterfaceLoc.Version = DXGKDDI_INTERFACE_VERSION_VISTA_SP1;
+    DxgkrnlInterfaceLoc.Version = DXGKDDI_INTERFACE_VERSION_WDDM2_0;
     DxgkrnlInterfaceLoc.DeviceHandle = (HANDLE)DriverObject;
     DxgkrnlInterfaceLoc.DxgkCbEvalAcpiMethod = DxgkCbEvalAcpiMethod;
     DxgkrnlInterfaceLoc.DxgkCbGetDeviceInformation = DxgkCbGetDeviceInformation;
@@ -541,7 +508,6 @@ DxgkpSetupDxgkrnl(
     DxgkrnlInterfaceLoc.DxgkCbGetCaptureAddress = DxgkCbGetCaptureAddress;
     DxgkrnlInterfaceLoc.DxgkCbLogEtwEvent = DxgkCbLogEtwEvent;
     DxgkrnlInterfaceLoc.DxgkCbExcludeAdapterAccess = DxgkCbExcluseAdapterAccess;
-#if 0
     DxgkrnlInterfaceLoc.DxgkCbCreateContextAllocation = (DXGKCB_CREATECONTEXTALLOCATION          )HandleUnimplemented;
     DxgkrnlInterfaceLoc.DxgkCbDestroyContextAllocation = (DXGKCB_DESTROYCONTEXTALLOCATION         )HandleUnimplemented;
     DxgkrnlInterfaceLoc.DxgkCbSetPowerComponentActive = (DXGKCB_SETPOWERCOMPONENTACTIVE          )HandleUnimplemented;
@@ -558,6 +524,7 @@ DxgkpSetupDxgkrnl(
     DxgkrnlInterfaceLoc.DxgkCbAcquireHandleData = (DXGKCB_ACQUIREHANDLEDATA                )HandleUnimplemented;
     DxgkrnlInterfaceLoc.DxgkCbReleaseHandleData = (DXGKCB_RELEASEHANDLEDATA                )HandleUnimplemented;
     DxgkrnlInterfaceLoc.DxgkCbHardwareContentProtectionTeardown = (DXGKCB_HARDWARECONTENTPROTECTIONTEARDOWN)HandleUnimplemented;
+ #if 0
     DXGKCB_CREATECONTEXTALLOCATION           DxgkCbCreateContextAllocation;
     DXGKCB_DESTROYCONTEXTALLOCATION          DxgkCbDestroyContextAllocation;
     DXGKCB_SETPOWERCOMPONENTACTIVE           DxgkCbSetPowerComponentActive;
