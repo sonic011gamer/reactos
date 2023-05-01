@@ -61,7 +61,6 @@ UefiConsPutChar(int c)
     }
 }
 
-
 /* Read into the public Keystroke handler */
 BOOLEAN
 UefiConsKbHit(VOID)

@@ -125,3 +125,15 @@ WinLdrSetupMachineDependent(
     /* Map stuff like PCR, KI_USER_SHARED_DATA and Apic */
     WinLdrMapSpecialPages(0);
 }
+
+PLOADER_PARAMETER_BLOCK PubLoaderBlockVA;
+KERNEL_ENTRY_POINT PubKiSystemStartup;
+VOID
+WinldrFinalizeBoot(PLOADER_PARAMETER_BLOCK LoaderBlockVA,
+                   KERNEL_ENTRY_POINT KiSystemStartup)
+{
+    TRACE("Preparing to jump to kernel\n");
+    PubLoaderBlockVA = LoaderBlockVA;
+    PubKiSystemStartup = KiSystemStartup;
+   // _LeaveUEFIStack();
+}
