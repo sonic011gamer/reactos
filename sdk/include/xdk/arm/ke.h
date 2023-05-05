@@ -6,6 +6,7 @@ $if (_WDMDDK_)
 #define LOW_LEVEL               0
 #define APC_LEVEL               1
 #define DISPATCH_LEVEL          2
+#define CMCI_LEVEL              5
 #define CLOCK_LEVEL             13
 #define IPI_LEVEL               14
 #define DRS_LEVEL               14

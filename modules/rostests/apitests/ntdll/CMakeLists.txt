@@ -96,8 +96,11 @@ list(APPEND SOURCE
     RtlxUnicodeStringToOemSize.c
     StackOverflow.c
     SystemInfo.c
-    UserModeException.c
     Timer.c)
+
+if(ARCH STREQUAL "i386" OR ARCH STREQUAL "amd64")
+    list(APPEND SOURCE UserModeException.c) ##FIXME: ARM support
+endif()
 
 if(ARCH STREQUAL "i386")
     add_asm_files(ntdll_apitest_asm i386/NtContinue.S)

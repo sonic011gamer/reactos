@@ -262,12 +262,14 @@ VOID
 TestInterlockedFunctional(VOID)
 {
     NTSTATUS Status;
-    PKSPIN_LOCK pSpinLock = &SpinLock;
+    PKSPIN_LOCK pSpinLock;
     PROCESSOR_STATE OldState, NewState;
 
     /* on x86, most of these are supported intrinsically and don't need a spinlock! */
 #if defined _M_IX86 || defined _M_AMD64
     pSpinLock = NULL;
+#else
+    pSpinLock = &SpinLock;
 #endif
 
     /* CompareExchange */

@@ -92,7 +92,9 @@ extern void func_RtlxUnicodeStringToAnsiSize(void);
 extern void func_RtlxUnicodeStringToOemSize(void);
 extern void func_StackOverflow(void);
 extern void func_TimerResolution(void);
+#if defined(_M_IX86) || defined(_M_AMD64)
 extern void func_UserModeException(void);
+#endif
 
 const struct test winetest_testlist[] =
 {
@@ -185,7 +187,9 @@ const struct test winetest_testlist[] =
     { "RtlValidateUnicodeString",       func_RtlValidateUnicodeString },
     { "StackOverflow",                  func_StackOverflow },
     { "TimerResolution",                func_TimerResolution },
+#if defined(_M_IX86) || defined(_M_AMD64)
     { "UserModeException",              func_UserModeException },
+#endif
 
     { 0, 0 }
 };
