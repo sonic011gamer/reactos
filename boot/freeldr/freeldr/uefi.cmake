@@ -114,7 +114,7 @@ endif()
 
 set_entrypoint(uefildr EfiEntry)
 
-if(ARCH STREQUAL "i386")
+if(ARCH STREQUAL "i386" OR ARCH STREQUAL "arm")
     target_link_libraries(uefildr mini_hal)
 endif()
 

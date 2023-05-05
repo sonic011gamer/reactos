@@ -12,12 +12,14 @@ PUCHAR KdComPortInUse;
 
 /* FUNCTIONS ******************************************************************/
 
+#ifndef _MINIHAL_
 VOID
 HalpInitializeInterrupts(VOID)
 {
    UNIMPLEMENTED;
    while (TRUE);
 }
+#endif
 
 #undef KeGetCurrentIrql
 
@@ -29,6 +31,7 @@ KeGetCurrentIrql(VOID)
     return PASSIVE_LEVEL;
 }
 
+#ifndef _MINIHAL_
 ULONG
 HalGetInterruptSource(VOID)
 {
@@ -170,5 +173,6 @@ HalEndSystemInterrupt(IN KIRQL OldIrql,
     UNIMPLEMENTED;
     while (TRUE);
 }
+#endif /* _MINIHAL_ */
 
 /* EOF */

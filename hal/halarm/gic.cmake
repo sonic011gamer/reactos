@@ -3,6 +3,8 @@
 list(APPEND HAL_GIC_SOURCE
     gic/gic.c
     gic/halinit_up.c)
+	
+add_subdirectory(minihal)
 
 # Needed to compile while using ACPICA
 if(ARCH STREQUAL "arm64")
