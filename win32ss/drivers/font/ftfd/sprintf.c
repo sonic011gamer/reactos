@@ -49,6 +49,10 @@ _isinf(double __x)
 	return ( x.x->exponent == 0x7ff  && ( x.x->mantissah == 0 && x.x->mantissal == 0 ));
 }
 
+#ifdef _MSC_VER
+#pragma function(_isnan)
+#endif
+
 static
 __inline
 int

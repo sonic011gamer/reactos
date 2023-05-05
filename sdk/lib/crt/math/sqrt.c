@@ -8,6 +8,10 @@
 #include <math.h>
 #include <assert.h>
 
+#ifdef _MSC_VER
+#pragma function(sqrt)
+#endif
+
 double
 __cdecl
 sqrt(
