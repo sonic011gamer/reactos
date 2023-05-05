@@ -5,7 +5,7 @@
  * PROGRAMMER:      Thomas Faber <thomas.faber@reactos.org>
  */
 
-#ifndef _M_AMD64
+#if defined(_M_IX86) || defined(_X86_)
 __declspec(dllimport) void __stdcall KeRaiseIrql(unsigned char, unsigned char *);
 __declspec(dllimport) void __stdcall KeLowerIrql(unsigned char);
 #else
@@ -123,7 +123,7 @@ START_TEST(KeIrql)
         KeLowerIrql(PASSIVE_LEVEL);
     }
 
-#ifndef _M_AMD64
+#if defined(_M_IX86) || defined(_X86_)
     /* try the actual exports, not only the fastcall versions */
     ok_irql(PASSIVE_LEVEL);
     (KeRaiseIrql)(HIGH_LEVEL, &Irql);

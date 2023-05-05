@@ -31,11 +31,14 @@ list(APPEND SOURCE
     SetComputerNameExW.c
     SetConsoleWindowInfo.c
     SetCurrentDirectory.c
-    SetUnhandledExceptionFilter.c
     SystemFirmware.c
     TerminateProcess.c
     TunnelCache.c
     WideCharToMultiByte.c)
+
+if(ARCH STREQUAL "i386" OR ARCH STREQUAL "amd64")
+    list(APPEND SOURCE SetUnhandledExceptionFilter.c) ##FIXME: ARM support
+endif()
 
 list(APPEND PCH_SKIP_SOURCE
     testlist.c)

@@ -57,7 +57,12 @@ VOID KmtSetIrql(IN KIRQL NewIrql)
 
 BOOLEAN KmtAreInterruptsEnabled(VOID)
 {
+#if defined(_M_IX86) || defined(_M_AMD64)
     return (__readeflags() & (1 << 9)) != 0;
+#else
+#pragma message ("unsupported architecture")
+    return FALSE; /* FIXME */
+#endif
 }
 
 typedef struct _POOL_HEADER

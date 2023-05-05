@@ -1,6 +1,5 @@
 
 list(APPEND SOURCE_MSVCRT
-    fpcontrol.c
 #    _CrtCheckMemory.c
 #    _CrtDbgBreak.c
 #    _CrtDbgReport.c
@@ -1260,6 +1259,10 @@ list(APPEND SOURCE_MSVCRT
     static_construct.cpp
     static_init.c
 )
+
+if(ARCH STREQUAL "i386" OR ARCH STREQUAL "amd64")
+    list(APPEND SOURCE_MSVCRT fpcontrol.c) ##FIXME: ARM support
+endif()
 
 if(ARCH STREQUAL "i386")
     list(APPEND SOURCE_MSVCRT

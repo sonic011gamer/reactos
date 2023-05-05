@@ -12,7 +12,7 @@
 // char (*__kaboom1)[FIELD_OFFSET(IO_STACK_LOCATION, Parameters.Create.EaLength)] = 1;
 // Taken from https://stackoverflow.com/a/35261673
 
-#if !defined(_AMD64_)
+#if defined(_X86_)
 
 C_ASSERT(sizeof(IO_STACK_LOCATION) == 36);
 
@@ -40,7 +40,7 @@ C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.SetFile.AdvanceOnly) == 17);
 C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.SetFile.ClusterCount) == 16);
 C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.SetFile.DeleteHandle) == 16);
 
-#else
+#elif defined(_AMD64_)
 
 C_ASSERT(sizeof(IO_STACK_LOCATION) == 72);
 
@@ -68,4 +68,34 @@ C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.SetFile.AdvanceOnly) == 33);
 C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.SetFile.ClusterCount) == 32);
 C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.SetFile.DeleteHandle) == 32);
 
+#elif defined(_ARM_)
+
+C_ASSERT(sizeof(IO_STACK_LOCATION) == 40);
+
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, MajorFunction) == 0);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, MinorFunction) == 1);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Flags) == 2);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Control) == 3);
+
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.Create.SecurityContext) == 8);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.Create.Options) == 12);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.Create.FileAttributes) == 16);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.Create.ShareAccess) == 18);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.Create.EaLength) == 20);
+
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.ReadWriteConfig.WhichSpace) == 8);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.ReadWriteConfig.Buffer) == 12);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.ReadWriteConfig.Offset) == 16);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.ReadWriteConfig.Length) == 20);
+
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.SetFile.Length) == 8);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.SetFile.FileInformationClass) == 12);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.SetFile.FileObject) == 16);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.SetFile.ReplaceIfExists) == 20);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.SetFile.AdvanceOnly) == 21);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.SetFile.ClusterCount) == 20);
+C_ASSERT(FIELD_OFFSET(IO_STACK_LOCATION, Parameters.SetFile.DeleteHandle) == 20);
+
+#else
+#error unsupported architecture
 #endif

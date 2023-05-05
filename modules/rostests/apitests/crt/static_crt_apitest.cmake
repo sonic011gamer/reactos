@@ -10,7 +10,6 @@ list(APPEND SOURCE_STATIC
     ceil.c
     fabs.c
     floor.c
-    fpcontrol.c
     mbstowcs.c
     mbtowc.c
     sprintf.c
@@ -21,6 +20,10 @@ list(APPEND SOURCE_STATIC
     wcstoul.c
     wctomb.c
 )
+
+if(ARCH STREQUAL "i386" OR ARCH STREQUAL "amd64")
+    list(APPEND SOURCE_MSVCRT fpcontrol.c) ##FIXME: ARM support
+endif()
 
 if(ARCH STREQUAL "i386")
     list(APPEND SOURCE_STATIC

@@ -553,10 +553,10 @@
 @ cdecl -arch=x86_64,arm KeAcquireInStackQueuedSpinLock(ptr ptr)
 @ fastcall KeAcquireInStackQueuedSpinLockAtDpcLevel(ptr ptr)
 @ fastcall KeAcquireInStackQueuedSpinLockForDpc(ptr ptr)
-@ cdecl -arch=x86_64 KeAcquireInStackQueuedSpinLockRaiseToSynch(ptr ptr)
+@ cdecl -arch=x86_64,arm KeAcquireInStackQueuedSpinLockRaiseToSynch(ptr ptr) ; CHECKME ARM
 @ stdcall KeAcquireInterruptSpinLock(ptr)
 @ cdecl -arch=x86_64,arm KeAcquireQueuedSpinLock(long)
-@ cdecl -arch=x86_64 KeAcquireQueuedSpinLockRaiseToSynch(long)
+@ cdecl -arch=x86_64,arm KeAcquireQueuedSpinLockRaiseToSynch(long) ; CHECKME ARM
 @ stdcall KeAcquireSpinLockAtDpcLevel(ptr)
 @ fastcall KeAcquireSpinLockForDpc(ptr)
 @ stdcall -arch=x86_64,arm KeAcquireSpinLockRaiseToDpc(ptr) ; CHECKME ARM
@@ -708,7 +708,7 @@
 @ extern -arch=i386,arm KeTickCount
 @ fastcall KeTryToAcquireGuardedMutex(ptr)
 @ cdecl -arch=x86_64,arm KeTryToAcquireQueuedSpinLock(long long)
-@ cdecl -arch=x86_64 KeTryToAcquireQueuedSpinLockRaiseToSynch(long long)
+@ cdecl -arch=x86_64,arm KeTryToAcquireQueuedSpinLockRaiseToSynch(long long) ; CHECKME ARM
 @ fastcall KeTryToAcquireSpinLockAtDpcLevel(ptr)
 @ stdcall KeUnstackDetachProcess(ptr)
 @ stdcall KeUpdateRunTime(ptr long)

@@ -130,7 +130,7 @@ void check(CONTEXT * pContext)
     ok((pContext->SegSs & NTC_SEGMENT_BITS) ==
        (continueContext.SegSs & NTC_SEGMENT_BITS),
        "SegSs: 0x%lx != 0x%lx\n", pContext->SegSs, continueContext.SegSs);
-#else
+#elif defined(_M_AMD64)
     ok_eq_hex64(pContext->ContextFlags, CONTEXT_FULL | CONTEXT_SEGMENTS);
     ok_eq_hex(pContext->MxCsr, continueContext.MxCsr);
     ok_eq_hex(pContext->SegCs, continueContext.SegCs);
