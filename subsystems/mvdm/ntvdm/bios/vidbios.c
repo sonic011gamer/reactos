@@ -2414,7 +2414,10 @@ static inline VOID VidBiosClearScreen(VOID)
     DWORD VideoAddress;
     DWORD BufferSize;
     BYTE Misc;
-    BYTE Buffer[0x20000];
+
+    LPBYTE Buffer = RtlAllocateHeap(RtlGetProcessHeap(),
+                                    HEAP_ZERO_MEMORY,
+                                    0x20000 * sizeof(BYTE));
 
     /* Read the misc register */
     IOWriteB(VGA_GC_INDEX, VGA_GC_MISC_REG);
