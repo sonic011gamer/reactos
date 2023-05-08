@@ -133,3 +133,73 @@ if(RUNTIME_CHECKS)
 endif()
 
 add_dependencies(uefildr xdk)
+
+
+spec2def(rosload.exe freeldr.spec)
+
+list(APPEND ROSLOAD_BASE_SOURCE
+    include/arch/uefi/uefildr.h
+    arch/uefi/rosload.c
+    ${FREELDR_BASE_SOURCE})
+
+if(ARCH STREQUAL "i386")
+    # Must be included together with disk/scsiport.c
+    list(APPEND ROSLOAD_BASE_SOURCE
+        ${CMAKE_CURRENT_BINARY_DIR}/rosload.def)
+endif()
+
+add_executable(rosload ${ROSLOAD_BASE_SOURCE})
+set_target_properties(rosload PROPERTIES SUFFIX ".efi")
+
+target_compile_definitions(rosload PRIVATE UEFIBOOT)
+
+if(MSVC)
+if(NOT ARCH STREQUAL "arm")
+    target_link_options(rosload PRIVATE /DYNAMICBASE:NO)
+endif()
+    target_link_options(rosload PRIVATE /NXCOMPAT:NO /ignore:4078 /ignore:4254 /DRIVER)
+    # We don't need hotpatching
+    remove_target_compile_option(rosload "/hotpatch")
+else()
+    target_link_options(rosload PRIVATE -Wl,--exclude-all-symbols,--file-alignment,0x200,--section-alignment,0x200)
+    # Strip everything, including rossym data
+    add_custom_command(TARGET rosload
+                    POST_BUILD
+                    COMMAND ${CMAKE_STRIP} --remove-section=.rossym $<TARGET_FILE:rosload>
+                    COMMAND ${CMAKE_STRIP} --strip-all $<TARGET_FILE:rosload>)
+endif()
+
+if(ARCH STREQUAL "arm64")
+set_image_base(rosload 0x800000000)
+else()
+set_image_base(rosload 0x10000)
+endif()
+
+if(MSVC)
+    set_subsystem(rosload BOOT_APPLICATION)
+else()
+    set_subsystem(rosload 16)
+endif()
+
+if(ARCH STREQUAL "i386")
+    set_entrypoint(rosload OslMain 4)
+else()
+    set_entrypoint(rosload OslMain)
+endif()
+
+if(ARCH STREQUAL "i386" OR ARCH STREQUAL "arm")
+    target_link_libraries(rosload mini_hal)
+endif()
+
+target_link_libraries(rosload uefifreeldr_common cportlib blcmlib blrtl libcntpr)
+
+# dynamic analysis switches
+if(STACK_PROTECTOR)
+    target_sources(rosload PRIVATE $<TARGET_OBJECTS:gcc_ssp_nt>)
+endif()
+
+if(RUNTIME_CHECKS)
+    target_link_libraries(rosload runtmchk)
+endif()
+
+add_dependencies(rosload xdk)

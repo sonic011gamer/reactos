@@ -1,10 +1,10 @@
 #include <uefildr.h>
 
-#include "../../../../environ/include/bl.h"
+#include "../../../../environ/include/bltypes.h"
 #include <debug.h>
 
-extern EFI_HANDLE GlobalImageHandle;
-extern EFI_SYSTEM_TABLE *GlobalSystemTable;
+EFI_HANDLE GlobalImageHandle;
+EFI_SYSTEM_TABLE *GlobalSystemTable;
 
 
 /*
@@ -14,7 +14,8 @@ extern EFI_SYSTEM_TABLE *GlobalSystemTable;
  * So behold the birth of the weirdest fucking idea Illen has ever given me
  * Freeldr.epic
  */
-EFI_STATUS
+NTSTATUS
+NTAPI
 OslMain(_In_ PBOOT_APPLICATION_PARAMETER_BLOCK BootAppParameters,
 	    _In_ PBL_LIBRARY_PARAMETERS LibraryParameters)
 {
