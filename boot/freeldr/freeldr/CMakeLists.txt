@@ -140,4 +140,5 @@ endif()
 
 if(NOT ARCH STREQUAL "i386" OR NOT (SARCH STREQUAL "pc98" OR SARCH STREQUAL "xbox"))
     include(uefi.cmake)
+    include(rosload.cmake)
 endif()
