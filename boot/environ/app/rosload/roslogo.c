@@ -9768,61 +9768,13 @@ OslDrawLogo (
     VOID
     )
 {
-    EFI_GRAPHICS_OUTPUT_BLT_PIXEL* GopBlt;
-    UINTN GopBltSize, BmpHeight, BmpWidth, CoordinateY, CoordinateX;
-    PHYSICAL_ADDRESS GopBltPhys;
-    EFI_GRAPHICS_OUTPUT_PROTOCOL* GraphicsOutput;
-    EFI_STATUS EfiStatus;
-
-    /* Convert ReactOS Logo */
-    ConvertBmpToGopBlt(g_Logo,
-                       sizeof(g_Logo),
-                       (PVOID*)&GopBlt,
-                       &GopBltSize,
-                       &BmpHeight,
-                       &BmpWidth);
-
-    CoordinateX = (DspGraphicalConsole->DisplayMode.HRes / 2) - (BmpWidth / 2);
-    CoordinateY = (DspGraphicalConsole->DisplayMode.VRes / 2) - (BmpHeight / 2);
-    BlMmTranslateVirtualAddress(GopBlt, &GopBltPhys);
-    GopBlt = PhysicalAddressToPtr(GopBltPhys);
-
-    /* Make the screen black */
-    RtlFillMemory(DspGraphicalConsole->FrameBuffer,
-                  DspGraphicalConsole->FrameBufferSize,
-                  0x00);
-
-    /* Switch to real mode */
-    BlpArchSwitchContext(BlRealMode);
-
-    /* Get the UEFI GOP Protocol */
-    EfiStatus = EfiBS->HandleProtocol(EfiST->ConsoleOutHandle,
-                                      &EfiGraphicsOutputProtocol,
-                                      (PVOID*)&GraphicsOutput);
-    if (EfiStatus== EFI_SUCCESS)
-    {
-        /* Draw the logo */
-        GraphicsOutput->Blt(GraphicsOutput,
-                            GopBlt,
-                            EfiBltBufferToVideo,
-                            0,
-                            0,
-                            CoordinateX,
-                            CoordinateY,
-                            BmpWidth,
-                            BmpHeight,
-                            BmpWidth * sizeof(EFI_GRAPHICS_OUTPUT_BLT_PIXEL));
-    }
-
-    /* Go back to protected mode */
-    BlpArchSwitchContext(BlProtectedMode);
 
     /* Display text below the logo */
     EfiPrintf(L"\n\n\n\n\nReactOS UEFI OS Loader Initializing... %lx\r\n",
-              EfiStatus);
-    EfiStall(1000000);
+              1);
+  for(;;)
+  {
 
-    /* Clear the screen and return */
-    BlDisplayClearScreen();
+  }
 }
 

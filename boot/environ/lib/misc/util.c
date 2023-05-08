@@ -939,7 +939,7 @@ BlArchGetCpuVendor (
     )
 {
     CPU_INFO CpuInfo;
-    INT Temp;
+    //INT Temp;
 
     /* Get the CPU Vendor */
     BlArchCpuId(0, 0, &CpuInfo);

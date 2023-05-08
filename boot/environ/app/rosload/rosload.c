@@ -1037,6 +1037,16 @@ OslpMain (
     return Status;
 }
 
+volatile unsigned int* const UART0 = (unsigned int*)0x09000000;
+
+static void uart_print(const char *s)
+{
+while(*s != ' ') {
+*UART0 = (unsigned int)(*s); /* send to UART */
+s++;
+}
+}
+
 /*++
  * @name OslMain
  *
@@ -1050,36 +1060,36 @@ OslpMain (
  *         otherwise.
  *
  *--*/
+EFI_HANDLE GlobalImageHandle;
+EFI_SYSTEM_TABLE *GlobalSystemTable;
 NTSTATUS
 NTAPI
 OslMain (
     _In_ PBOOT_APPLICATION_PARAMETER_BLOCK BootParameters
     )
 {
-    BL_LIBRARY_PARAMETERS LibraryParameters;
-    NTSTATUS Status;
-    PBL_RETURN_ARGUMENTS ReturnArguments;
-    PBL_APPLICATION_ENTRY AppEntry;
-    CPU_INFO CpuInfo;
-    ULONG Flags;
+ //PBL_LIBRARY_PARAMETERS	LibraryParams;
+	PBL_FIRMWARE_DESCRIPTOR FirmwareDescriptor;
+    UINTN ParamPointer;
 
-    /* Get the return arguments structure, and set our version */
-    ReturnArguments = (PBL_RETURN_ARGUMENTS)((ULONG_PTR)BootParameters +
-                                             BootParameters->ReturnArgumentsOffset);
-    ReturnArguments->Version = BL_RETURN_ARGUMENTS_VERSION;
 
-    /* Get the application entry, and validate it */
-    AppEntry = (PBL_APPLICATION_ENTRY)((ULONG_PTR)BootParameters +
-                                       BootParameters->AppEntryOffset);
-    if (!RtlEqualMemory(AppEntry->Signature,
-                        BL_APP_ENTRY_SIGNATURE,
-                        sizeof(AppEntry->Signature)))
-    {
-        /* Unrecognized, bail out */
-        Status = STATUS_INVALID_PARAMETER_9;
-        goto Quickie;
-    }
+	//LibraryParams = LibraryParameters;
+	ParamPointer = (UINTN) BootParameters;
+	FirmwareDescriptor = (PBL_FIRMWARE_DESCRIPTOR) (ParamPointer + BootParameters->FirmwareParametersOffset);
 
+	// Do what ever you want now
+    if (FirmwareDescriptor->SystemTable)
+	{
+            GlobalImageHandle = FirmwareDescriptor->ImageHandle;
+			GlobalSystemTable = FirmwareDescriptor->SystemTable;
+	}
+    /* Some idiot decided to boot freeldr as a bootmgr app*/
+    GlobalSystemTable->BootServices->Exit(GlobalImageHandle, 1, 0, NULL);
+for(;;)
+{
+
+}
+#if 0
 #if !defined(_M_ARM)
     /* Check if CPUID 01h is supported */
     if (BlArchIsCpuIdFunctionSupported(1))
@@ -1108,10 +1118,15 @@ OslMain (
 
     /* Initialize the boot library */
     Status = BlInitializeLibrary(BootParameters, &LibraryParameters);
+
     if (NT_SUCCESS(Status))
     {
         /* For testing, draw the logo */
         OslDrawLogo();
+            for(;;)
+    {
+
+    }
 
         /* Call the main routine */
         Status = OslpMain(&Flags);
@@ -1125,5 +1140,6 @@ Quickie:
     /* Return back to boot manager */
     ReturnArguments->Status = Status;
     return Status;
+    #endif
 }
 

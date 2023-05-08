@@ -42,11 +42,12 @@ CCHAR FrLdrBootPath[MAX_PATH] = "";
 
 VOID __cdecl BootMain(IN PCCH CmdLine)
 {
+#ifndef ROSLOAD
     CmdLineParse(CmdLine);
 
     /* Debugger pre-initialization */
     DebugInit(0);
-
+#endif
     MachInit(CmdLine);
 
     TRACE("BootMain() called.\n");

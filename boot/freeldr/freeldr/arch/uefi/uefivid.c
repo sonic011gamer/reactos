@@ -33,7 +33,7 @@ UefiInitalizeVideo(VOID)
     EFI_STATUS Status;
     EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = NULL;
 
-    RtlZeroMemory(&framebufferData, sizeof(framebufferData));
+    //RtlZeroMemory(&framebufferData, sizeof(framebufferData));
     Status = GlobalSystemTable->BootServices->LocateProtocol(&EfiGraphicsOutputProtocol, 0, (void**)&gop);
     if (Status != EFI_SUCCESS)
     {
