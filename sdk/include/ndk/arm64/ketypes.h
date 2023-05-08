@@ -26,6 +26,10 @@ extern "C" {
 #define IPI_FREEZE              4
 #define IPI_PACKET_READY        6
 #define IPI_SYNCH_REQUEST       16
+//
+// Static Kernel-Mode Address start (use MM_KSEG0_BASE for actual)
+//
+#define KSEG0_BASE 0xfffff80000000000ULL
 
 //
 // PRCB Flags

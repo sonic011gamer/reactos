@@ -90,7 +90,6 @@ target_compile_definitions(uefildr PRIVATE UEFIBOOT)
 
 if(MSVC)
 if(NOT ARCH STREQUAL "arm")
-    target_link_options(uefildr PRIVATE /DYNAMICBASE:NO)
 endif()
     target_link_options(uefildr PRIVATE /NXCOMPAT:NO /ignore:4078 /ignore:4254 /DRIVER)
     # We don't need hotpatching

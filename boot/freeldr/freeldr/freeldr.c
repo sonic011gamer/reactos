@@ -76,8 +76,9 @@ VOID __cdecl BootMain(IN PCCH CmdLine)
     RunLoader();
 
 Quit:
+    TRACE("test");
     /* If we reach this point, something went wrong before, therefore reboot */
-    Reboot();
+   // Reboot();
 }
 
 // We need to emulate these, because the original ones don't work in freeldr
