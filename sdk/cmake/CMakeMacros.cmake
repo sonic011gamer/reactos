@@ -653,9 +653,9 @@ function(set_module_type MODULE TYPE)
     elseif(TYPE IN_LIST KERNEL_MODULE_TYPES)
         # special case for kernel
         if (TYPE STREQUAL kernel)
-            set_image_base(${MODULE} 0x00400000)
+            set_image_base(${MODULE} 0x800000000)
         else()
-            set_image_base(${MODULE} 0x00010000)
+            set_image_base(${MODULE} 0x800000000)
         endif()
     endif()
 
