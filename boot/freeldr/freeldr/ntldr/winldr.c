@@ -1145,7 +1145,7 @@ LoadAndBootWindows(
                                     BootOptions,
                                     BootPath);
 }
-
+extern REACTOS_INTERNAL_BGCONTEXT framebufferData;
 ARC_STATUS
 LoadAndBootWindowsCommon(
     IN USHORT OperatingSystemVersion,
@@ -1174,7 +1174,7 @@ LoadAndBootWindowsCommon(
     /* Detect hardware */
     UiUpdateProgressBar(20, "Detecting hardware...");
     LoaderBlock->ConfigurationRoot = MachHwDetect();
-
+    LoaderBlock->BgContext = framebufferData;
     /* Initialize the PE loader import-DLL callback, so that we can obtain
      * feedback (for example during SOS) on the PE images that get loaded. */
     PeLdrImportDllLoadCallback = NtLdrImportDllLoadCallback;
@@ -1205,7 +1205,7 @@ LoadAndBootWindowsCommon(
 
     /* Load boot drivers */
     UiSetProgressBarText("Loading boot drivers...");
-    Success = WinLdrLoadBootDrivers(LoaderBlock, BootPath);
+  //  Success = WinLdrLoadBootDrivers(LoaderBlock, BootPath);
     TRACE("Boot drivers loading %s\n", Success ? "successful" : "failed");
 
     UiSetProgressBarSubset(0, 100);

@@ -334,7 +334,15 @@ typedef struct _LOADER_PERFORMANCE_DATA
     ULONGLONG StartTime;
     ULONGLONG EndTime;
 } LOADER_PERFORMANCE_DATA, *PLOADER_PERFORMANCE_DATA;
-
+typedef struct _REACTOS_INTERNAL_BGCONTEXT
+{
+    ULONG_PTR    BaseAddress;
+    ULONG        BufferSize;
+    UINT32       ScreenWidth;
+    UINT32       ScreenHeight;
+    UINT32       PixelsPerScanLine;
+    UINT32       PixelFormat;
+} REACTOS_INTERNAL_BGCONTEXT, *PREACTOS_INTERNAL_BGCONTEXT;
 //
 // Extended Loader Parameter Block
 //
@@ -519,6 +527,7 @@ typedef struct _LOADER_PARAMETER_BLOCK
         ARM_LOADER_BLOCK Arm;
     } u;
     FIRMWARE_INFORMATION_LOADER_BLOCK FirmwareInformation;
+    REACTOS_INTERNAL_BGCONTEXT BgContext;
 } LOADER_PARAMETER_BLOCK, *PLOADER_PARAMETER_BLOCK;
 
 typedef int CONFIGTYPE;
