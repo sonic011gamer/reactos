@@ -514,7 +514,7 @@ RtlAssert(IN PVOID FailedAssertion,
                  LineNumber);
     }
 
-    DbgBreakPoint();
+    //DbgBreakPoint();
 }
 
 char *BugCodeStrings[] =

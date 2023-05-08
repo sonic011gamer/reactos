@@ -17,7 +17,7 @@
 // FIXME: hack
 #undef ASSERT
 #define ASSERT(...)
-
+#define RtlFillMemoryUlong(dst, len, val) memset(dst, val, len)
 #ifdef USE_RTL_BITMAP64
 #define _BITCOUNT 64
 #define MAXINDEX 0xFFFFFFFFFFFFFFFF
