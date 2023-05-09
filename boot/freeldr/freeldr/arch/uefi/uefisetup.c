@@ -21,7 +21,7 @@ BOOLEAN AcpiPresent = FALSE;
 VOID
 MachInit(const char *CmdLine)
 {
-    RtlZeroMemory(&MachVtbl, sizeof(MachVtbl));
+    //RtlZeroMemory(&MachVtbl, sizeof(MachVtbl));
 
     MachVtbl.ConsPutChar = UefiConsPutChar;
     MachVtbl.ConsKbHit = UefiConsKbHit;

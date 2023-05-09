@@ -30,7 +30,7 @@ extern ULONG SecondLevelIcacheSize;
 extern ULONG SecondLevelIcacheFillSize;
 
 extern ULONG gDiskReadBuffer, gFileSysBuffer;
-#define DiskReadBuffer ((PVOID)gDiskReadBuffer)
+//#define DiskReadBuffer ((PVOID)gDiskReadBuffer)
 
 #define DriveMapGetBiosDriveNumber(DeviceName) 0
 

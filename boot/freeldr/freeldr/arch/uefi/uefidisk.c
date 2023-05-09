@@ -212,14 +212,6 @@ UefiSetupBlockDevices()
     GlobalSystemTable->BootServices->LocateHandle(ByProtocol, &bioGuid, NULL, &handle_size, handles);
     for (ULONG i = 0; i < handle_size / sizeof(EFI_HANDLE); i++) {
     status = GlobalSystemTable->BootServices->HandleProtocol(handles[i], &bioGuid, (void **) &bio);
-    /* if unsuccessful, skip and go over to the next device */
-    if (EFI_ERROR(status) || bio == NULL || bio->Media->BlockSize==0){
-            printf("Failed");
-            continue;
-        }
-        else{
-            printf("Sucess!, Block size: %d\r\n", bio->Media->BlockSize);
-        }
     }
 
     status = GlobalSystemTable->BootServices->HandleProtocol(PublicBootHandle, &bioGuid, (void **) &bio);
@@ -346,7 +338,6 @@ UefiGetFloppyCount(VOID)
     /* no floppy for you */
     return 0;
 }
-
 BOOLEAN
 UefiDiskReadLogicalSectors(
     IN UCHAR DriveNumber,
@@ -354,11 +345,9 @@ UefiDiskReadLogicalSectors(
     IN ULONG SectorCount,
     OUT PVOID Buffer)
 {
-    PVOID mbr[2048];
-
+    //TRACE("reading\n");
     /* Devices setup */
-    bio->ReadBlocks(bio, bio->Media->MediaId, SectorNumber, (bio->Media->BlockSize * SectorCount),  &mbr);
-    RtlCopyMemory(Buffer, mbr, SectorCount * bio->Media->BlockSize);
+    bio->ReadBlocks(bio, bio->Media->MediaId, SectorNumber, (bio->Media->BlockSize * SectorCount),  Buffer);
 
     return TRUE;
 }

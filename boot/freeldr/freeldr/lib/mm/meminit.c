@@ -420,7 +420,7 @@ PVOID MmFindLocationForPageLookupTable(PFN_NUMBER TotalPageCount)
     PFN_NUMBER RequiredPages;
     PFN_NUMBER CandidateBasePage = 0;
     PFN_NUMBER CandidatePageCount;
-    PFN_NUMBER PageLookupTableEndPage;
+  //  PFN_NUMBER PageLookupTableEndPage;
     PVOID PageLookupTableMemAddress = NULL;
 
     // Calculate how much pages we need to keep the page lookup table
@@ -447,12 +447,8 @@ PVOID MmFindLocationForPageLookupTable(PFN_NUMBER TotalPageCount)
         CandidatePageCount = MemoryDescriptor->PageCount;
     }
 
-    // Calculate the end address for the lookup table
-    PageLookupTableEndPage = min(CandidateBasePage + CandidatePageCount,
-                                 MM_MAX_PAGE_LOADER);
-
     // Calculate the virtual address
-    PageLookupTableMemAddress = (PVOID)0x8000;
+    PageLookupTableMemAddress = (PVOID)0x40000000;
 
     TRACE("MmFindLocationForPageLookupTable() returning 0x%x\n", PageLookupTableMemAddress);
 
@@ -489,10 +485,17 @@ VOID MmInitPageLookupTable(PVOID PageLookupTable, PFN_NUMBER TotalPageCount)
                                      MemoryDescriptor->MemoryType);
         }
         else
-            TRACE("Ignoring pages 0x%lx-0x%lx (%s)\n",
+        {
+            TotalPageCount += MemoryDescriptor->BasePage + MemoryDescriptor->PageCount;
+            TRACE("Marking pages 0x%lx-0x%lx as type %s\n",
                   MemoryDescriptor->BasePage,
                   MemoryDescriptor->BasePage + MemoryDescriptor->PageCount,
                   MmGetSystemMemoryMapTypeString(MemoryDescriptor->MemoryType));
+            MmMarkPagesInLookupTable(PageLookupTable,
+                                     MemoryDescriptor->BasePage,
+                                     MemoryDescriptor->PageCount,
+                                     MemoryDescriptor->MemoryType);
+        }
     }
 
     // Mark the pages that the lookup table occupies as reserved
@@ -504,7 +507,31 @@ VOID MmInitPageLookupTable(PVOID PageLookupTable, PFN_NUMBER TotalPageCount)
 
 VOID MmMarkPagesInLookupTable(PVOID PageLookupTable, PFN_NUMBER StartPage, PFN_NUMBER PageCount, TYPE_OF_MEMORY PageAllocated)
 {
+    PPAGE_LOOKUP_TABLE_ITEM RealPageLookupTable = (PPAGE_LOOKUP_TABLE_ITEM)PageLookupTable;
+    PFN_NUMBER Index;
+    TRACE("MmMarkPagesInLookupTable()\n");
 
+    /* Validate the range */
+    if ((StartPage < MmLowestPhysicalPage) ||
+        ((StartPage + PageCount - 1) > MmHighestPhysicalPage))
+    {
+        ERR("Memory (0x%lx:0x%lx) outside of lookup table! Valid range: 0x%lx-0x%lx.\n",
+            StartPage, PageCount, MmLowestPhysicalPage, MmHighestPhysicalPage);
+        return;
+    }
+
+    StartPage -= MmLowestPhysicalPage;
+    for (Index=StartPage; Index<(StartPage+PageCount); Index++)
+    {
+#if 0
+        if ((Index <= (StartPage + 16)) || (Index >= (StartPage+PageCount-16)))
+        {
+            TRACE("Index = 0x%x StartPage = 0x%x PageCount = 0x%x\n", Index, StartPage, PageCount);
+        }
+#endif
+        RealPageLookupTable[Index].PageAllocated = PageAllocated;
+        RealPageLookupTable[Index].PageAllocationLength = (PageAllocated != LoaderFree) ? 1 : 0;
+    }
     TRACE("MmMarkPagesInLookupTable() Done\n");
 }
 

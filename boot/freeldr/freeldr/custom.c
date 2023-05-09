@@ -39,8 +39,11 @@ const CHAR ReactOSSystemPathPrompt[] = "Enter the path to your ReactOS system di
 const CHAR ReactOSOptionsPrompt[] = "Enter the load options you want passed to the kernel.\n\nExamples:\n/DEBUG /DEBUGPORT=COM1 /BAUDRATE=115200\n/FASTDETECT /SOS /NOGUIBOOT\n/BASEVIDEO /MAXMEM=64\n/KERNEL=NTKRNLMP.EXE /HAL=HALMPS.DLL";
 const CHAR ReactOSSetupOptionsPrompt[] = "Enter additional load options you want passed to the ReactOS Setup.\nThese options will supplement those obtained from the TXTSETUP.SIF\nfile, unless you also specify the /SIFOPTIONSOVERRIDE option switch.\n\nExample:\n/DEBUG /DEBUGPORT=COM1 /BAUDRATE=115200 /NOGUIBOOT";
 const CHAR CustomBootPrompt[] = "Press ENTER to boot your custom boot setup.";
+
+#ifndef _M_ARM
 UCHAR
 DriveMapGetBiosDriveNumber(PCSTR DeviceName);
+#endif
 /* FUNCTIONS ******************************************************************/
 
 #ifdef HAS_OPTION_MENU_CUSTOM_BOOT

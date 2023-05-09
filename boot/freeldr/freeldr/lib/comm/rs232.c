@@ -19,8 +19,25 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _M_ARM
 
+#ifndef _M_ARM
+#include <freeldr.h>
+#define QEMUUART 0x09000000
+volatile unsigned int * UART0DR = (unsigned int *) QEMUUART;
+
+BOOLEAN
+Rs232PortInitialize(IN ULONG ComPort,
+                    IN ULONG BaudRate)
+{
+    return TRUE;
+}
+
+VOID
+Rs232PortPutByte(UCHAR ByteToSend)
+{
+    *UART0DR = ByteToSend;
+}
+#ifndef _M_ARM64
 /* INCLUDES *******************************************************************/
 
 #include <freeldr.h>
@@ -147,5 +164,5 @@ BOOLEAN Rs232PortInUse(PUCHAR Base)
     return FALSE;
 #endif
 }
-
+#endif
 #endif /* not _M_ARM */
