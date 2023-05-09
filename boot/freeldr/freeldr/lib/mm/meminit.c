@@ -341,7 +341,7 @@ BOOLEAN MmInitializeMemoryManager(VOID)
     TotalPagesInLookupTable = MmGetAddressablePageCountIncludingHoles();
     PageLookupTableAddress = MmFindLocationForPageLookupTable(TotalPagesInLookupTable);
     LastFreePageHint = MmHighestPhysicalPage;
-
+    TRACE("Freedom\n");
     if (PageLookupTableAddress == 0)
     {
         // If we get here then we probably couldn't
@@ -452,8 +452,7 @@ PVOID MmFindLocationForPageLookupTable(PFN_NUMBER TotalPageCount)
                                  MM_MAX_PAGE_LOADER);
 
     // Calculate the virtual address
-    PageLookupTableMemAddress = (PVOID)((PageLookupTableEndPage * PAGE_SIZE)
-                                        - PageLookupTableSize);
+    PageLookupTableMemAddress = (PVOID)0x8000;
 
     TRACE("MmFindLocationForPageLookupTable() returning 0x%x\n", PageLookupTableMemAddress);
 
@@ -505,31 +504,7 @@ VOID MmInitPageLookupTable(PVOID PageLookupTable, PFN_NUMBER TotalPageCount)
 
 VOID MmMarkPagesInLookupTable(PVOID PageLookupTable, PFN_NUMBER StartPage, PFN_NUMBER PageCount, TYPE_OF_MEMORY PageAllocated)
 {
-    PPAGE_LOOKUP_TABLE_ITEM RealPageLookupTable = (PPAGE_LOOKUP_TABLE_ITEM)PageLookupTable;
-    PFN_NUMBER Index;
-    TRACE("MmMarkPagesInLookupTable()\n");
 
-    /* Validate the range */
-    if ((StartPage < MmLowestPhysicalPage) ||
-        ((StartPage + PageCount - 1) > MmHighestPhysicalPage))
-    {
-        ERR("Memory (0x%lx:0x%lx) outside of lookup table! Valid range: 0x%lx-0x%lx.\n",
-            StartPage, PageCount, MmLowestPhysicalPage, MmHighestPhysicalPage);
-        return;
-    }
-
-    StartPage -= MmLowestPhysicalPage;
-    for (Index=StartPage; Index<(StartPage+PageCount); Index++)
-    {
-#if 0
-        if ((Index <= (StartPage + 16)) || (Index >= (StartPage+PageCount-16)))
-        {
-            TRACE("Index = 0x%x StartPage = 0x%x PageCount = 0x%x\n", Index, StartPage, PageCount);
-        }
-#endif
-        RealPageLookupTable[Index].PageAllocated = PageAllocated;
-        RealPageLookupTable[Index].PageAllocationLength = (PageAllocated != LoaderFree) ? 1 : 0;
-    }
     TRACE("MmMarkPagesInLookupTable() Done\n");
 }
 

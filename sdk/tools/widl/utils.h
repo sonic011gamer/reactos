@@ -78,8 +78,6 @@ extern void align_output( unsigned int align );
 #ifndef max
 #define max(a,b)   (((a) > (b)) ? (a) : (b))
 #endif
-#ifndef min
+#undef min
 #define min(a,b)   (((a) < (b)) ? (a) : (b))
-#endif
-
 #endif
