@@ -5,11 +5,13 @@
  * COPYRIGHT:   Copyright 2023 Justin Miller <justinmiller100@gmail.com>
  */
  #include <ksarm64.h>
-
+    EXTERN EndofExitStack
+    EXTERN Arm64MegaEnter
     NESTED_ENTRY _ChangeStack
     PROLOG_END _ChangeStack
-
-
+    ldr x1, =EndofExitStack
+    mov sp, x1
+    bl Arm64MegaEnter
     NESTED_END _ChangeStack
 
 //L_ArmInit:

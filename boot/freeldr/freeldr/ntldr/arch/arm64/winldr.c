@@ -126,6 +126,7 @@ WinLdrSetupMachineDependent(
     WinLdrMapSpecialPages(0);
 }
 
+void _ChangeStack();
 PLOADER_PARAMETER_BLOCK PubLoaderBlockVA;
 KERNEL_ENTRY_POINT PubKiSystemStartup;
 VOID
@@ -135,5 +136,16 @@ WinldrFinalizeBoot(PLOADER_PARAMETER_BLOCK LoaderBlockVA,
     TRACE("Preparing to jump to kernel\n");
     PubLoaderBlockVA = LoaderBlockVA;
     PubKiSystemStartup = KiSystemStartup;
+    _ChangeStack();
    // _LeaveUEFIStack();
+}
+
+VOID
+Arm64MegaEnter()
+{
+    TRACE("ARM64 CPU Stack space has changed\n");
+    for(;;)
+    {
+
+    }
 }
