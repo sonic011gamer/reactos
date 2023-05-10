@@ -289,6 +289,7 @@ MmCheckFreeldrImageFile(VOID)
         (OptionalHeader->SizeOfImage > MAX_FREELDR_PE_SIZE) ||
         (OptionalHeader->SectionAlignment != OptionalHeader->FileAlignment))
     {
+    #ifndef UEFIBOOT
         ERR("FreeLdr OptionalHeader is invalid.\n");
         FrLdrBugCheckWithMessage(
             FREELDR_IMAGE_CORRUPTION,
@@ -305,6 +306,7 @@ MmCheckFreeldrImageFile(VOID)
             OptionalHeader->ImageBase, FREELDR_PE_BASE,
             OptionalHeader->SizeOfImage, MAX_FREELDR_PE_SIZE,
             OptionalHeader->SectionAlignment, OptionalHeader->FileAlignment);
+    #endif
     }
 
     /* Calculate the full image size */
@@ -341,7 +343,7 @@ BOOLEAN MmInitializeMemoryManager(VOID)
     TotalPagesInLookupTable = MmGetAddressablePageCountIncludingHoles();
     PageLookupTableAddress = MmFindLocationForPageLookupTable(TotalPagesInLookupTable);
     LastFreePageHint = MmHighestPhysicalPage;
-    TRACE("Freedom\n");
+
     if (PageLookupTableAddress == 0)
     {
         // If we get here then we probably couldn't
@@ -420,7 +422,7 @@ PVOID MmFindLocationForPageLookupTable(PFN_NUMBER TotalPageCount)
     PFN_NUMBER RequiredPages;
     PFN_NUMBER CandidateBasePage = 0;
     PFN_NUMBER CandidatePageCount;
-  //  PFN_NUMBER PageLookupTableEndPage;
+    PFN_NUMBER PageLookupTableEndPage;
     PVOID PageLookupTableMemAddress = NULL;
 
     // Calculate how much pages we need to keep the page lookup table
@@ -447,8 +449,13 @@ PVOID MmFindLocationForPageLookupTable(PFN_NUMBER TotalPageCount)
         CandidatePageCount = MemoryDescriptor->PageCount;
     }
 
+    // Calculate the end address for the lookup table
+    PageLookupTableEndPage = min(CandidateBasePage + CandidatePageCount,
+                                 MM_MAX_PAGE_LOADER);
+
     // Calculate the virtual address
-    PageLookupTableMemAddress = (PVOID)0x40000000;
+    PageLookupTableMemAddress = (PVOID)((PageLookupTableEndPage * PAGE_SIZE)
+                                        - PageLookupTableSize);
 
     TRACE("MmFindLocationForPageLookupTable() returning 0x%x\n", PageLookupTableMemAddress);
 
@@ -487,11 +494,8 @@ VOID MmInitPageLookupTable(PVOID PageLookupTable, PFN_NUMBER TotalPageCount)
         else
         {
             TotalPageCount += MemoryDescriptor->BasePage + MemoryDescriptor->PageCount;
-            TRACE("Marking pages 0x%lx-0x%lx as type %s\n",
-                  MemoryDescriptor->BasePage,
-                  MemoryDescriptor->BasePage + MemoryDescriptor->PageCount,
-                  MmGetSystemMemoryMapTypeString(MemoryDescriptor->MemoryType));
-            MmMarkPagesInLookupTable(PageLookupTable,
+
+                         MmMarkPagesInLookupTable(PageLookupTable,
                                      MemoryDescriptor->BasePage,
                                      MemoryDescriptor->PageCount,
                                      MemoryDescriptor->MemoryType);

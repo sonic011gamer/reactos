@@ -1,6 +1,7 @@
 
 #include <freeldr.h>
 #include <debug.h>
+DBG_DEFAULT_CHANNEL(WINDOWS);
 #include <internal/arm/mm.h>
 //#include <internal/arm/intrin_i.h>
 #include "../../winldr.h"
@@ -53,12 +54,14 @@ MempSetupPaging(IN PFN_NUMBER StartPage,
                 IN PFN_NUMBER NumberOfPages,
                 IN BOOLEAN KernelMapping)
 {
+    TRACE("MempSetupPaging for page %X with %X pages in size Kernelmapping is %d\n", StartPage, NumberOfPages, KernelMapping);
     return TRUE;
 }
 
 VOID
 MempUnmapPage(IN PFN_NUMBER Page)
 {
+    TRACE("Unmapping %X\n", Page);
     return;
 }
 
@@ -72,23 +75,17 @@ static
 BOOLEAN
 WinLdrMapSpecialPages(ULONG PcrBasePage)
 {
+     TRACE("WinLdrMapSpecialPages: Entry\n");
     /* TODO: Map in the kernel CPTs */
     return TRUE;
 }
 
-VOID
-WinLdrSetupForNt(IN PLOADER_PARAMETER_BLOCK LoaderBlock,
-                 IN PVOID *GdtIdt,
-                 IN PULONG PcrBasePage,
-                 IN PULONG TssBasePage)
-{
-
-}
 
 static
 BOOLEAN
 MempAllocatePageTables(VOID)
 {
+    TRACE("MempAllocatePageTables: Entry\n");
 
     /* Done */
     return TRUE;
@@ -97,6 +94,7 @@ MempAllocatePageTables(VOID)
 VOID
 WinLdrSetProcessorContext(VOID)
 {
+    TRACE("WinLdrSetProcessorContext: Entry\n");
     //TODO: Enable paging
     //ARM_CONTROL_REGISTER ControlRegister
 }
@@ -105,4 +103,25 @@ VOID
 WinLdrSetupMachineDependent(
     PLOADER_PARAMETER_BLOCK LoaderBlock)
 {
+    TRACE("WinLdrSetupMachineDependent: Entry\n");
+
+#if 0
+    /* Allocate 2 pages for PCR: one for the boot processor PCR and one for KI_USER_SHARED_DATA */
+    Pcr = (ULONG_PTR)MmAllocateMemoryWithType(sizeof(KPCR) + MM_PAGE_SIZE, LoaderStartupPcrPage);
+    PcrBasePage = (ULONG_PTR)PCR >> MM_PAGE_SHIFT;
+    if (Pcr == 0)
+    {
+        UiMessageBox("Could not allocate PCR.");
+        return;
+    }
+#endif
+    // Before we start mapping pages, create a block of memory, which will contain
+    // PDE and PTEs
+    if (MempAllocatePageTables() == FALSE)
+    {
+        BugCheck("MempAllocatePageTables failed!\n");
+    }
+
+    /* Map stuff like PCR, KI_USER_SHARED_DATA and Apic */
+    WinLdrMapSpecialPages(0);
 }

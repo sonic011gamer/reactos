@@ -56,8 +56,6 @@ VOID
 NTAPI
 KiSystemStartup(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
 {
-    framebufferData = LoaderBlock->BgContext;
-    UefiVideoClearScreenColor(0xF0, TRUE);
     for(;;)
     {
 

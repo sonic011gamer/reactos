@@ -1190,8 +1190,8 @@ LoadAndBootWindowsCommon(
         /* Reset the PE loader import-DLL callback */
         PeLdrImportDllLoadCallback = NULL;
 
-        UiMessageBox("Error loading NTOS core.");
-        return ENOEXEC;
+//UiMessageBox("Error loading NTOS core.");
+       // return ENOEXEC;
     }
 
     /* Cleanup INI file */
@@ -1240,7 +1240,11 @@ LoadAndBootWindowsCommon(
 
     /* Set processor context */
     WinLdrSetProcessorContext();
+    for(;;)
+    {
 
+    }
+#if 0
     /* Save final value of LoaderPagesSpanned */
     LoaderBlock->Extension->LoaderPagesSpanned = LoaderPagesSpanned;
 
@@ -1255,7 +1259,7 @@ LoadAndBootWindowsCommon(
 #ifndef _M_AMD64
     WinLdrpDumpArcDisks(LoaderBlockVA);
 #endif
-
+#endif
     /* Pass control */
     (*KiSystemStartup)(LoaderBlockVA);
 

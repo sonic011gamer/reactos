@@ -245,25 +245,23 @@ UefiMemGetMemoryMap(ULONG *MemoryMapSize)
         TYPE_OF_MEMORY MemoryType = UefiConvertToFreeldrDesc(MapEntry->Type);
         if (MemoryType == LoaderFree)
         {
-            #if 0
+
             Status = GlobalSystemTable->BootServices->AllocatePages(AllocateAddress,
                                                                     EfiLoaderData,
                                                                     MapEntry->NumberOfPages,
                                                                     &MapEntry->PhysicalStart);
-            if (Status != EFI_SUCCESS)
+            if (Status == EFI_SUCCESS)
             {
-                /* We failed to reserve the page, so change its type */
-                MemoryType = LoaderFirmwareTemporary;
-            }
-            #endif
-        }
-
 
                     UefiSetMemory(FreeldrMem,
                       MapEntry->PhysicalStart,
                       MapEntry->NumberOfPages,
                       MemoryType);
-
+            }
+            else
+            {
+            }
+        }
 
         MapEntry = NEXT_MEMORY_DESCRIPTOR(MapEntry, DescriptorSize);
     }

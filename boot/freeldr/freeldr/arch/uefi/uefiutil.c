@@ -24,8 +24,6 @@ UefiGetTime(VOID)
     EFI_TIME time = {0};
 
     Status = GlobalSystemTable->RuntimeServices->GetTime(&time, NULL);
-    if (Status != EFI_SUCCESS)
-        ERR("UefiGetTime: cannot get time status %d\n", Status);
 
     TimeInfo.Year = time.Year;
     TimeInfo.Month = time.Month;
