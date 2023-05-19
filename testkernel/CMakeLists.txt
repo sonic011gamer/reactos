@@ -26,3 +26,8 @@ add_executable(testkernel
     testkernel.rc
     ${CMAKE_CURRENT_BINARY_DIR}/testkernel.def)
 set_module_type(testkernel kernel)
+
+
+
+target_link_libraries(testkernel cportlib csq cmlib ntlsalib ${ROSSYM_LIB} libcntpr wdmguid ioevent)
+add_dependencies(testkernel psdk asm)
