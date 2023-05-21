@@ -413,6 +413,12 @@ void _sgdt(void *Destination);
 #pragma intrinsic(__static_assert)
 #endif
 
+
+
+#ifdef _M_ARM64
+#pragma intrinsic(__emit)
+#endif
+
 #ifdef __cplusplus
 }
 #endif

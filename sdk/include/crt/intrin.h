@@ -837,6 +837,9 @@ __int64 _InterlockedOr64(_Interlocked_operand_ __int64 volatile * _Value, __int6
 __int64 _InterlockedXor64(_Interlocked_operand_ __int64 volatile * _Value, __int64 _Mask);
 
 #endif /* _M_ARM || _M_X64 */
+#if defined(_M_ARM64)
+void __emit(unsigned __int32);
+#endif
 
 #if defined(_M_ARM)
 

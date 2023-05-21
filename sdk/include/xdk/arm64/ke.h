@@ -39,6 +39,33 @@ KeGetCurrentThread(VOID);
 
 #define DbgRaiseAssertionFailure() __break(0xf001)
 
+_IRQL_requires_max_(HIGH_LEVEL)
+_IRQL_saves_
+NTHALAPI
+KIRQL
+NTAPI
+KeGetCurrentIrql(
+    VOID);
+
+_IRQL_requires_max_(HIGH_LEVEL)
+NTHALAPI
+VOID
+FASTCALL
+KfLowerIrql(
+    _In_ _IRQL_restores_ _Notliteral_ KIRQL NewIrql);
+#define KeLowerIrql(a) KfLowerIrql(a)
+
+_IRQL_requires_max_(HIGH_LEVEL)
+_IRQL_raises_(NewIrql)
+_IRQL_saves_
+NTHALAPI
+KIRQL
+FASTCALL
+KfRaiseIrql(
+    _In_ KIRQL NewIrql);
+#define KeRaiseIrql(a,b) *(b) = KfRaiseIrql(a)
+
+
 $endif (_WDMDDK_)
 $if (_NTDDK_)
 

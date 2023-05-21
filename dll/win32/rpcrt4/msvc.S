@@ -168,4 +168,19 @@ TEXTAREA
 
 #endif
 
+#elif _M_ARM64
+    LEAF_ENTRY call_stubless_func
+
+    /* Unimplemented */
+    ret
+
+    LEAF_END call_stubless_func
+
+    LEAF_ENTRY call_server_func
+
+    /* Unimplemented */
+    ret
+
+    LEAF_END call_server_func
+#endif
 END
