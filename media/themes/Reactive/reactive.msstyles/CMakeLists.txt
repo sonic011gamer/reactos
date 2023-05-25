@@ -2,7 +2,10 @@
 list(APPEND TEXTFILES
     textfiles/ExtraLargeDefault.INI
     textfiles/LargeDefault.INI
-    textfiles/NormalDefault.INI)
+    textfiles/NormalDefault.INI
+    textfiles/ExtraLargeWithOrb.INI
+    textfiles/LargeWithOrb.INI
+    textfiles/NormalWithOrb.INI)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/textfiles)
 foreach(_file ${TEXTFILES})

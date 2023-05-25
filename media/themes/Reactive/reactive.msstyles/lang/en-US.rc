@@ -3,11 +3,13 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 STRINGTABLE
 {
 1000, "Reactive"
+1001, "Reactive with Start Orb"
 }
 
 STRINGTABLE
 {
 2000, "Reactive"
+2001, "Reactive with Start Orb"
 }
 
 STRINGTABLE
