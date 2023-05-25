@@ -1586,7 +1586,7 @@
 @ cdecl -version=0x600+ _get_initial_narrow_environment() winecrt._get_initial_narrow_environment
 @ cdecl -version=0x600+ _get_initial_wide_environment() winecrt._get_initial_wide_environment
 @ cdecl -version=0x600+ _initialize_narrow_environment() winecrt._initialize_narrow_environment
-@ cdecl -version=0x600+ _initialize_wide_environment() winecrt._initialize_wide_environment
+@ cdecl -version=0x600+ _initialize_wide_environment() ; winecrt._initialize_wide_environment
 @ cdecl -version=0x600+ _invalid_parameter_noinfo() winecrt._invalid_parameter_noinfo
 @ cdecl -version=0x600+ _invalid_parameter_noinfo_noreturn() winecrt._invalid_parameter_noinfo_noreturn
 @ cdecl -version=0x600+ _register_thread_local_exe_atexit_callback() winecrt._register_thread_local_exe_atexit_callback

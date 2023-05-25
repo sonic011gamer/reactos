@@ -467,6 +467,8 @@
 756 stub -noname DeleteFileThumbnail
 757 stdcall -stub -version=0x600+ SHGetStockIconInfo(long long ptr)
 760 stub -noname -version=0x600+ SHConfirmOperation
+761 stub -noname -version=0x600+ ShUnknown
+778 stub -noname -version=0x600+ SHUnknownTwo
 781 stub -noname -version=0x600+ SHApplyPropertiesToItem
 787 stub -version=0x600+ SHMapIDListToSystemImageListIndexAsync
 790 stub -version=0x600+ SHMapIDListToSystemImageListIndex
@@ -563,3 +565,4 @@
 @   stdcall -version=0x600+ Shell_GetCachedImageIndexA(str long long)
 @   stdcall -version=0x600+ Shell_GetCachedImageIndexW(wstr long long) Shell_GetCachedImageIndexAW
 @   stdcall -stub -version=0x601+ Shell_NotifyIconGetRect(ptr ptr)
+@ stdcall -stub SHAddDefaultPropertiesByExt(ptr)

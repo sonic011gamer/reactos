@@ -12,6 +12,13 @@ int __get_app_type()
 
 int _fileinfo = -1;
 
+int 
+CDECL
+_initialize_wide_environment(VOID)
+{
+    return 0;
+}
+
 void *
 __p__fileinfo()
 {

@@ -91,22 +91,7 @@ HideMinimizedWindows(IN BOOL bHide)
 static INT
 StartWithCommandLine(IN HINSTANCE hInstance)
 {
-    BOOL b = FALSE;
-    EXPLORER_CMDLINE_PARSE_RESULTS parseResults = { 0 };
-
-    if (SHExplorerParseCmdLine(&parseResults))
-        b = SHCreateFromDesktop(&parseResults);
-
-    if (parseResults.strPath)
-        SHFree(parseResults.strPath);
-
-    if (parseResults.pidlPath)
-        ILFree(parseResults.pidlPath);
-
-    if (parseResults.pidlRoot)
-        ILFree(parseResults.pidlRoot);
-
-    return b;
+    return 1;
 }
 #endif
 

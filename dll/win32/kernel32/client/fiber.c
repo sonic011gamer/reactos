@@ -330,7 +330,7 @@ WINAPI
 IsThreadAFiber(VOID)
 {
     /* Return flag in the TEB */
-    return NtCurrentTeb()->HasFiberData;
+    return 0;
 }
 
 /*

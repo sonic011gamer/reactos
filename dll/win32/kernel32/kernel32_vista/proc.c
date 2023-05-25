@@ -4,6 +4,15 @@
 #include <debug.h>
 
 
+BOOL CopyContext(
+    PCONTEXT Destination,
+    DWORD    ContextFlags,
+    PCONTEXT Source
+)
+{
+    return FALSE;
+}
+
 /***********************************************************************
  *           K32EnumProcesses (KERNEL32.@)
  */

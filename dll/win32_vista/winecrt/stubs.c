@@ -103,12 +103,7 @@ int CDECL _configure_wide_argv(int mode)
 /*********************************************************************
  *      _initialize_wide_environment (UCRTBASE.@)
  */
-int CDECL _initialize_wide_environment(void)
-{
-    ERR("Calling stub _initialize_wide_environment: This will probably fail\n");
-        ///__debugbreak();
-  return 0;
-}
+
 /*********************************************************************
  *      _get_narrow_winmain_command_line (UCRTBASE.@)
  */

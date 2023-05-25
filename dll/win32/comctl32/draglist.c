@@ -74,6 +74,13 @@ UINT uDragListMessage = 0; /* registered window message code */
 static DWORD dwLastScrollTime = 0;
 static HICON hDragArrow = NULL;
 
+
+void
+NTAPI
+Unnamedvistabullshit(void* test)
+{
+
+}
 /***********************************************************************
  *		DragList_Notify (internal)
  *

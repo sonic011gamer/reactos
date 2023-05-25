@@ -29,7 +29,7 @@
 @ cdecl _get_initial_narrow_environment()
 @ cdecl _get_initial_wide_environment()
 @ cdecl _initialize_narrow_environment()
-@ cdecl _initialize_wide_environment()
+;@ cdecl _initialize_wide_environment()
 
 @ cdecl -stub  _register_thread_local_exe_atexit_callback(ptr)
 

@@ -9,5 +9,13 @@ HKCR
 				val ThreadingModel = s 'Both'
 			}
 		}
+		ForceRemove {c0b4e2f3-ba21-4773-8dba-335ec946eb8b} = s 'File Save Dialoge'
+        {
+            InprocServer32 = s '%SystemRoot%\System32\comdlg32.dll' { val ThreadingModel = s 'Apartment' }
+        }
+        ForceRemove {dc1c5a9c-e88a-4dde-a5a1-60f82a20aef7} = s 'File Open Dialoge'
+        {
+            InprocServer32 = s '%SystemRoot%\System32\comdlg32.dll' { val ThreadingModel = s 'Apartment' }
+        }
 	}
 }

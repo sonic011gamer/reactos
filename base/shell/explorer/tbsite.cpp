@@ -714,6 +714,7 @@ public:
 
 HRESULT CTrayBandSite_CreateInstance(IN ITrayWindow *tray, IN IDeskBand* pTaskBand, OUT ITrayBandSite** pBandSite)
 {
+#if 0
     HRESULT hr;
 
     CTrayBandSite * tb = new CTrayBandSite();
@@ -730,6 +731,6 @@ HRESULT CTrayBandSite_CreateInstance(IN ITrayWindow *tray, IN IDeskBand* pTaskBa
     }
 
     *pBandSite = tb;
-
-    return S_OK;
+#endif
+    return E_FAIL;
 }
