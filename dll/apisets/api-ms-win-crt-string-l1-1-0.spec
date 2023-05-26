@@ -137,6 +137,7 @@
 @ stdcall strcmp() msvcrt.strcmp
 @ stdcall strcoll() msvcrt.strcoll
 @ stdcall strcpy() msvcrt.strcpy
+@ cdecl strnlen() msvcrt.strlen
 @ cdecl -version=0x600+ strcpy_s(ptr long str) msvcrt.strcpy_s
 @ stdcall strcspn() msvcrt.strcspn
 @ stdcall strlen() msvcrt.strlen
