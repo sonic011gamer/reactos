@@ -730,6 +730,5 @@ HRESULT CTrayBandSite_CreateInstance(IN ITrayWindow *tray, IN IDeskBand* pTaskBa
     }
 
     *pBandSite = tb;
-
     return S_OK;
 }
