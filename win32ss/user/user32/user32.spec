@@ -786,3 +786,11 @@
 @ stdcall -version=0x600+ GetProcessDpiAwarenessInternal(ptr ptr) user32_vista.GetProcessDpiAwarenessInternal
 @ stdcall -version=0x600+ SetProcessDpiAwarenessInternal(long) user32_vista.SetProcessDpiAwarenessInternal
 @ stdcall -version=0x600+ GetDpiForMonitorInternal(ptr long ptr ptr) user32_vista.GetDpiForMonitorInternal
+@ stdcall -stub ShutdownBlockReasonCreate(ptr wstr)
+@ stdcall -stub DwmHintDxUpdate(ptr)
+@ stub UnregisterSessionPort
+@ stub RegisterSessionPort
+@ stub CheckDesktopByThreadId
+@ stub DwmStopRedirection
+@ stub DwmStartRedirection
+@ stub GetWindowRgnEx

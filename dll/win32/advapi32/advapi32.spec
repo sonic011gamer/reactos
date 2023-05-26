@@ -696,3 +696,4 @@
 @ stdcall -version=0x600+ RegLoadMUIStringA(ptr str str long ptr long str) advapi32_vista.RegLoadMUIStringA
 @ stdcall -version=0x600+ RegDeleteTreeA(long str) advapi32_vista.RegDeleteTreeA
 @ stdcall -version=0x600+ RegDeleteTreeW(long wstr) advapi32_vista.RegDeleteTreeW
+@ stdcall -stub -version=0x600+ NotifyServiceStatusChangeW(ptr long ptr)

@@ -441,7 +441,7 @@
 @ stdcall NtQueryIntervalProfile(long ptr)
 @ stdcall NtQueryIoCompletion(long long ptr long ptr)
 @ stdcall NtQueryKey (long long ptr long ptr)
-;@ stdcall -stub -version=0x600+ NtQueryLicenseValue ; CHECKME
+@ stdcall -version=0x600+ NtQueryLicenseValue(ptr ptr ptr long ptr) ; CHECKME
 @ stdcall NtQueryMultipleValueKey(long ptr long ptr long ptr)
 @ stdcall NtQueryMutant(long long ptr long ptr)
 @ stdcall NtQueryObject(long long long long long)
