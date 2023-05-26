@@ -192,6 +192,8 @@
 @ stdcall UnDecorateSymbolNameW(wstr ptr long long)
 @ stdcall UnmapDebugInformation(ptr)
 @ stdcall WinDbgExtensionDllInit(ptr long long)
+@ stdcall -stub SymGetSymbolInfo64(ptr long ptr)
+@ stdcall -stub SymGetModuleInfoEx64(ptr long ptr)
 #@ stdcall block
 #@ stdcall chksym
 @ stdcall -stub dbghelp(ptr ptr)
