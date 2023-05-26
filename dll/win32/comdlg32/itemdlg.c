@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-#ifndef __REACTOS__ /* Win 7 */
+#if 1// __REACTOS__ /* Win 7 */
 
 #include <stdarg.h>
 
@@ -2260,7 +2260,7 @@ static HRESULT create_dialog(FileDialogImpl *This, HWND parent)
 
     SetLastError(0);
     res = DialogBoxParamW(COMDLG32_hInstance,
-                          MAKEINTRESOURCEW(NEWFILEOPENV3ORD),
+                          MAKEINTRESOURCEW(1553),
                           parent, itemdlg_dlgproc, (LPARAM)This);
     This->dlg_hwnd = NULL;
     if(res == -1)
@@ -2511,7 +2511,7 @@ static HRESULT WINAPI IFileDialog2_fnSetOptions(IFileDialog2 *iface, FILEOPENDIA
             | FOS_ALLNONSTORAGEITEMS | FOS_NOVALIDATE | FOS_ALLOWMULTISELECT | FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST
             | FOS_CREATEPROMPT | FOS_SHAREAWARE | FOS_NOREADONLYRETURN | FOS_NOTESTFILECREATE | FOS_HIDEMRUPLACES
             | FOS_HIDEPINNEDPLACES | FOS_NODEREFERENCELINKS | FOS_DONTADDTORECENT | FOS_FORCESHOWHIDDEN
-            | FOS_DEFAULTNOMINIMODE | FOS_FORCEPREVIEWPANEON | FOS_SUPPORTSTREAMABLEITEMS))
+            | FOS_DEFAULTNOMINIMODE | FOS_FORCEPREVIEWPANEON | 0x80000000))
     {
         WARN("Invalid option %#x\n", fos);
         return E_INVALIDARG;
