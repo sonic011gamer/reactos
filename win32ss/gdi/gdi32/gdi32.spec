@@ -673,3 +673,5 @@
 @ stdcall -stub -version=0x600+ D3DKMTSetQueuedLimit(ptr)
 @ stub -version=0x600+ LoadImageColorMatcherA
 @ stub -version=0x600+ LoadImageColorMatcherW
+@ stub DwmGetSurfaceData
+@ stub DwmGetDirtyRgn

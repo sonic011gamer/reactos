@@ -15,6 +15,12 @@ WINSTAAPI WinStationOpenServerA(PVOID A)
 }
 
 VOID
+WINSTAAPI WinStationFreePropertyValue(PVOID A)
+{
+
+}
+
+VOID
 WINSTAAPI WinStationOpenServerW(PVOID A)
 {
     UNIMPLEMENTED;

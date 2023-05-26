@@ -267,5 +267,11 @@ BOOLEAN WINAPI RtlGetProductInfo(DWORD dwOSMajorVersion, DWORD dwOSMinorVersion,
     return TRUE;
 }
 
+NTSTATUS WINAPI NtQueryLicenseValue( const UNICODE_STRING *name, ULONG *type,
+                                     void *data, ULONG length, ULONG *retlen )
+{
+
+    return STATUS_SUCCESS;
+}
 
 /* EOF */
