@@ -20,6 +20,7 @@
 @ stdcall __threadid() msvcrt.__threadid
 @ stdcall __wcserror() msvcrt.__wcserror
 @ cdecl -version=0x600+ __wcserror_s(ptr long wstr) msvcrt.__wcserror_s
+@ cdecl -version=0x600+ _wcserror_s(ptr long wstr) msvcrt.__wcserror_s
 @ stdcall _assert() msvcrt._assert
 @ stdcall _beginthread() msvcrt._beginthread
 @ stdcall _beginthreadex() msvcrt._beginthreadex
