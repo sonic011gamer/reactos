@@ -595,7 +595,6 @@ CON_API(SrvSetConsoleNumberOfCommands,
 CON_API_NOCONSOLE(SrvGetConsoleHistory,
                   CONSOLE_GETSETHISTORYINFO, HistoryInfoRequest)
 {
-#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
     NTSTATUS Status;
     PCONSRV_CONSOLE Console;
 
@@ -610,17 +609,13 @@ CON_API_NOCONSOLE(SrvGetConsoleHistory,
 
     ConSrvReleaseConsole(Console, TRUE);
     return Status;
-#else
-    DPRINT1("%s not yet implemented\n", __FUNCTION__);
-    return STATUS_NOT_IMPLEMENTED;
-#endif
 }
 
 /* API_NUMBER: ConsolepSetHistory */
 CON_API_NOCONSOLE(SrvSetConsoleHistory,
                   CONSOLE_GETSETHISTORYINFO, HistoryInfoRequest)
 {
-#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
+#if 1//(_WIN32_WINNT >= _WIN32_WINNT_VISTA)
     NTSTATUS Status;
     PCONSRV_CONSOLE Console;
 
