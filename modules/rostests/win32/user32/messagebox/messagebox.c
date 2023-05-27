@@ -18,7 +18,7 @@
 
 /* Adjust according to your platform! -- ReactOS is currently compatible with Windows Server 2003 */
 #undef _WIN32_WINNT
-#define _WIN32_WINNT _WIN32_WINNT_WS03 // _WIN32_WINNT_WIN2K // _WIN32_WINNT_WS03 // _WIN32_WINNT_WIN7
+#define _WIN32_WINNT _WIN32_WINNT_WIN7 // _WIN32_WINNT_WIN2K // _WIN32_WINNT_WS03 // _WIN32_WINNT_WIN7
 
 typedef struct _MSGBOXDATA
 {

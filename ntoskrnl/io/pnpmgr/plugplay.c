@@ -573,7 +573,7 @@ IopGetDeviceProperty(PPLUGPLAY_CONTROL_PROPERTY_DATA PropertyData)
                 break;
 #endif
 
-#if (WINVER >= _WIN32_WINNT_WIN7)
+#if 1//(WINVER >= _WIN32_WINNT_WIN7)
             case PNP_PROPERTY_CONTAINERID:
                 DeviceProperty = DevicePropertyContainerID;
                 break;

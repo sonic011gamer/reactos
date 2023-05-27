@@ -16,7 +16,15 @@
 
 /* PUBLIC FUNCTIONS ***********************************************************/
 
-#if (_WIN32_WINNT >= _WIN32_WINNT_VISTA)
+#if 1//(_WIN32_WINNT >= _WIN32_WINNT_VISTA)
+#define HISTORY_NO_DUP_FLAG 0x1
+
+typedef struct _CONSOLE_HISTORY_INFO {
+    UINT cbSize;
+    UINT HistoryBufferSize;
+    UINT NumberOfHistoryBuffers;
+    DWORD dwFlags;
+} CONSOLE_HISTORY_INFO, *PCONSOLE_HISTORY_INFO;
 
 /*
  * @implemented
@@ -116,7 +124,26 @@ GetConsoleOriginalTitleA(OUT LPSTR lpConsoleTitle,
     SetLastError(ERROR_CALL_NOT_IMPLEMENTED);
     return 0;
 }
+typedef struct _CONSOLE_SCREEN_BUFFER_INFOEX {
+    ULONG cbSize;
+    COORD dwSize;
+    COORD dwCursorPosition;
+    WORD wAttributes;
+    SMALL_RECT srWindow;
+    COORD dwMaximumWindowSize;
+    WORD wPopupAttributes;
+    BOOL bFullscreenSupported;
+    COLORREF ColorTable[16];
+} CONSOLE_SCREEN_BUFFER_INFOEX, *PCONSOLE_SCREEN_BUFFER_INFOEX;
 
+typedef struct _CONSOLE_FONT_INFOEX {
+    ULONG cbSize;
+    DWORD nFont;
+    COORD dwFontSize;
+    UINT FontFamily;
+    UINT FontWeight;
+    WCHAR FaceName[LF_FACESIZE];
+} CONSOLE_FONT_INFOEX, *PCONSOLE_FONT_INFOEX;
 
 /*
  * @unimplemented
