@@ -71,8 +71,8 @@
 @ stdcall    QueryUnbiasedInterruptTime(ptr)
 @ stdcall CopyContext(ptr long ptr)
 @ stdcall GetProcessPreferredUILanguages(long ptr ptr ptr)
-
-@ stdcall -version=0x600+ UpdateProcThreadAttribute(ptr long ptr ptr long ptr ptr)
+@ stdcall DeleteProcThreadAttributeList(ptr)
+@ stdcall UpdateProcThreadAttribute(ptr long ptr ptr long ptr ptr)
 @ stdcall CallbackMayRunLong(ptr)
 @ stdcall CreateThreadpool(ptr)
 @ stdcall CreateThreadpoolCleanupGroup()

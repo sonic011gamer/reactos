@@ -63,6 +63,10 @@ BOOL WINAPI K32EnumProcesses(DWORD *lpdwProcessIDs, DWORD cb, DWORD *lpcbUsed)
     HeapFree(GetProcessHeap(), 0, buf);
     return TRUE;
 }
+ void WINAPI DECLSPEC_HOTPATCH DeleteProcThreadAttributeList( struct _PROC_THREAD_ATTRIBUTE_LIST *list )
+{
+    return;
+}
 
 typedef struct _PROCESS_MEMORY_COUNTERS {
   DWORD  cb;
