@@ -342,6 +342,7 @@ LPVOID FASTCALL ValidateHandleNoErr(HANDLE hObject, UINT uType)
     PUSER_HANDLE_ENTRY he;
     WORD generation;
     LPVOID ptr;
+    return NULL;
 
     if (!NtUserValidateHandleSecure(hObject))
     {

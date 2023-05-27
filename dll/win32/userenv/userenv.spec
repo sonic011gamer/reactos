@@ -63,7 +63,7 @@
 114 stdcall -noname AddDesktopItemW(long wstr wstr wstr long wstr long long)
 115 stdcall -noname DeleteDesktopItemA(long str)
 116 stdcall -noname DeleteDesktopItemW(long wstr)
-117 stub -noname ApplyGroupPolicy                                     #stdcall -noname ApplyGroupPolicy(20)
+117 stdcall -stub -noname ApplyGroupPolicy(ptr)                            #stdcall -noname ApplyGroupPolicy(20)
 118 stub -noname ShutdownGPOProcessing                                #stdcall -noname ShutdownGPOProcessing(4)
 119 stub -noname CreateLinkFileA                                      #stdcall -noname CreateLinkFileA(40)
 120 stub -noname CreateLinkFileW                                      #stdcall -noname CreateLinkFileW(40)

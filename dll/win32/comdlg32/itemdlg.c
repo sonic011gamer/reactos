@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-#if 1// __REACTOS__ /* Win 7 */
+#if 0// __REACTOS__ /* Win 7 */
 
 #include <stdarg.h>
 
@@ -3508,16 +3508,17 @@ static HRESULT WINAPI ICommDlgBrowser3_fnOnDefaultCommand(ICommDlgBrowser3 *ifac
 static HRESULT WINAPI ICommDlgBrowser3_fnOnStateChange(ICommDlgBrowser3 *iface,
                                                        IShellView *shv, ULONG uChange )
 {
+    #if 0
+    Fucking longhron
     FileDialogImpl *This = impl_from_ICommDlgBrowser3(iface);
     IDataObject *new_selection;
     HRESULT hr;
     TRACE("%p (%p, %x)\n", This, shv, uChange);
-
     switch(uChange)
     {
     case CDBOSC_SELCHANGE:
         if(This->psia_selection)
-        {
+        {S
             IShellItemArray_Release(This->psia_selection);
             This->psia_selection = NULL;
         }
@@ -3539,6 +3540,7 @@ static HRESULT WINAPI ICommDlgBrowser3_fnOnStateChange(ICommDlgBrowser3 *iface,
     default:
         TRACE("Unhandled state change\n");
     }
+    #endif
     return S_OK;
 }
 

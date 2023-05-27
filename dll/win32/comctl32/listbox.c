@@ -2314,11 +2314,12 @@ static void LISTBOX_HandleMouseMove( LB_DESCR *descr,
     if (!LISTBOX_HandleTimer( descr, index, dir )) dir = LB_TIMER_NONE;
 
     /* Start/stop the system timer */
-
+#if 0
     if (dir != LB_TIMER_NONE)
         SetSystemTimer( descr->self, LB_TIMER_ID, LB_SCROLL_TIMEOUT, NULL);
     else if (LISTBOX_Timer != LB_TIMER_NONE)
         KillSystemTimer( descr->self, LB_TIMER_ID );
+#endif
     LISTBOX_Timer = dir;
 }
 

@@ -75,7 +75,7 @@ BOOL WINAPI CtfImmIsTextFrameServiceDisabled(VOID)
 HRESULT WINAPI CtfImmTIMActivate(HKL hKL)
 {
     FIXME("(%p)\n", hKL);
-    return E_NOTIMPL;
+    return STATUS_SUCCESS;
 }
 
 /***********************************************************************

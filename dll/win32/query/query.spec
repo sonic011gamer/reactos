@@ -14,6 +14,7 @@
 @ stub CITextToSelectTree
 @ stub CITextToSelectTreeEx
 @ stub CiSvcMain
+@ stdcall -stub LoadIFilterEx(ptr)
 @ stub CollectCIISAPIPerformanceData
 @ stub CollectCIPerformanceData
 @ stub CollectFILTERPerformanceData

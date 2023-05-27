@@ -550,15 +550,14 @@
 @ stdcall SaferGetPolicyInformation(long long long ptr ptr ptr)
 @ stdcall SaferIdentifyLevel(long ptr ptr ptr)
 @ stdcall SaferRecordEventLogEntry(ptr wstr ptr)
-@ stub SaferSetLevelInformation
-@ stub SaferSetPolicyInformation
-@ stub SaferiChangeRegistryScope
-@ stub SaferiCompareTokenLevels
-@ stub SaferiIsExecutableFileType
-@ stub SaferiPopulateDefaultsInRegistry
-@ stub SaferiRecordEventLogEntry
-@ stub SaferiReplaceProcessThreadTokens
-@ stub SaferiSearchMatchingHashRules
+@ stdcall -stub SaferSetLevelInformation(ptr)
+@ stdcall -stub SaferSetPolicyInformation(ptr)
+@ stdcall -stub SaferiChangeRegistryScope(ptr)
+@ stdcall -stub SaferiCompareTokenLevels(ptr)
+@ stdcall -stub SaferiPopulateDefaultsInRegistry(ptr)
+@ stdcall -stub SaferiRecordEventLogEntry(ptr)
+@ stdcall -stub SaferiReplaceProcessThreadTokens(ptr)
+@ stdcall -stub SaferiSearchMatchingHashRules(ptr)
 @ stdcall SetAclInformation(ptr ptr long long)
 @ stub SetEntriesInAccessListA
 @ stub SetEntriesInAccessListW
@@ -696,3 +695,4 @@
 @ stdcall -version=0x600+ RegLoadMUIStringA(ptr str str long ptr long str) advapi32_vista.RegLoadMUIStringA
 @ stdcall -version=0x600+ RegDeleteTreeA(long str) advapi32_vista.RegDeleteTreeA
 @ stdcall -version=0x600+ RegDeleteTreeW(long wstr) advapi32_vista.RegDeleteTreeW
+@ stdcall -stub SaferiIsExecutableFileType(ptr)

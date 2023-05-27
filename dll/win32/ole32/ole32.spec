@@ -325,3 +325,7 @@
 @ stdcall WriteFmtUserTypeStg(ptr long ptr)
 @ stub WriteOleStg
 @ stub WriteStringStream
+@ stub VariantToPropVariant ;longhorn
+@ stub StgSerializePropVariant
+@ stub StgDeserializePropVariant
+@ stub PropVariantToVariant

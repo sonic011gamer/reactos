@@ -4033,6 +4033,7 @@ RtlCreateTagHeap(_In_ HANDLE HeapHandle,
                  _In_opt_ PWSTR TagName,
                  _In_ PWSTR TagSubName)
 {
+    return 0xC0000;
     /* TODO */
     UNIMPLEMENTED;
     return 0;

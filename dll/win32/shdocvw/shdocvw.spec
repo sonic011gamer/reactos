@@ -50,10 +50,10 @@
 150 stdcall -stub -noname _GetStdLocation(ptr long long)
 151 stdcall -noname URLSubRegQueryA(str str long ptr long long) # FIXME: Inspect
 152 stub -noname CShellUIHelper_CreateInstance2 # FIXME: Inspect
-153 stub -noname IsURLChild
-154 stub HlinkFrameNavigate
-155 stub HlinkFrameNavigateNHL
-156 stub IEWriteErrorLog
+153 stdcall -stub -noname IsURLChild(ptr)
+154 stdcall -stub HlinkFrameNavigate(ptr)
+155 stdcall -stub HlinkFrameNavigateNHL(ptr)
+156 stdcall -stub IEWriteErrorLog(ptr)
 157 stdcall ImportPrivacySettings(wstr ptr ptr)
 158 stdcall -noname SHRestricted2A(long str long) # FIXME: Inspect
 159 stdcall -noname SHRestricted2W(long wstr long) # FIXME: Inspect

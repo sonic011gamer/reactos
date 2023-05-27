@@ -1,5 +1,5 @@
 @ stdcall AllowPermLayer(wstr)
-@ stub ApphelpCheckExe
+@ stdcall -stub ApphelpCheckExe(ptr)
 @ stdcall ApphelpCheckInstallShieldPackage(ptr wstr)
 @ stub ApphelpCheckMsiPackage
 @ stub ApphelpCheckRunApp
@@ -177,3 +177,4 @@
 @ stdcall ShimFlushCache(ptr ptr wstr long)
 @ stdcall SetPermLayerState(wstr wstr long long long)
 @ stdcall SdbRegisterDatabaseEx(wstr long ptr)
+@ stdcall -stub SbdQueryFlagMask(ptr)
