@@ -3,7 +3,7 @@
  *
  * Copyright 1997 Dimitrie O. Paun
  * Copyright 1998,2000 Eric Kohl
- * Copyright 2014-2015 Michael Müller
+ * Copyright 2014-2015 Michael Mï¿½ller
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -301,7 +301,7 @@ BOOLEAN WINAPI RegisterClassNameW(LPCWSTR className)
 
 #endif /* __REACTOS__ */
 
-#ifndef __REACTOS__
+#if 1// __REACTOS__
 static void unregister_versioned_classes(void)
 {
 #define VERSION "6.0.2600.2982!"
