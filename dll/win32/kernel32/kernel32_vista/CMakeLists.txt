@@ -15,6 +15,7 @@ list(APPEND SOURCE
     vista.c
     power.c
     proc.c
+    threadpool.c
     k32.c
     ${CMAKE_CURRENT_BINARY_DIR}/kernel32_vista_stubs.c
     ${CMAKE_CURRENT_BINARY_DIR}/kernel32_vista.def)

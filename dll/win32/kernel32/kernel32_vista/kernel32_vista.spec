@@ -71,6 +71,27 @@
 @ stdcall    QueryUnbiasedInterruptTime(ptr)
 @ stdcall CopyContext(ptr long ptr)
 @ stdcall GetProcessPreferredUILanguages(long ptr ptr ptr)
+
+
+@ stdcall CallbackMayRunLong(ptr)
+@ stdcall CreateThreadpool(ptr)
+@ stdcall CreateThreadpoolCleanupGroup()
+@ stdcall CreateThreadpoolIo(ptr ptr ptr ptr)
+@ stdcall CreateThreadpoolTimer(ptr ptr ptr)
+@ stdcall CreateThreadpoolWait(ptr ptr ptr)
+@ stdcall CreateThreadpoolWork(ptr ptr ptr)
+@ stdcall SetThreadpoolThreadMaximum(ptr long) ntdll.TpSetPoolMaxThreads
+@ stdcall SetThreadpoolThreadMinimum(ptr long) ntdll.TpSetPoolMinThreads
+@ stdcall SetThreadpoolTimer(ptr ptr long long)
+@ stdcall SetThreadpoolWait(ptr long ptr)
+@ stdcall TrySubmitThreadpoolCallback(ptr ptr ptr)
+@ stdcall CloseThreadpool(ptr) ntdll.TpReleasePool
+@ stdcall CloseThreadpoolCleanupGroup(ptr) ntdll.TpReleaseCleanupGroup
+@ stdcall CloseThreadpoolCleanupGroupMembers(ptr long ptr) ntdll.TpReleaseCleanupGroupMembers
+@ stdcall CloseThreadpoolTimer(ptr) ntdll.TpReleaseTimer
+@ stdcall CloseThreadpoolWait(ptr) ntdll.TpReleaseWait
+@ stdcall CloseThreadpoolWork(ptr) ntdll.TpReleaseWork
+
 ;@ stdcall GetActiveProcessorCount(long)
 ;@ stdcall GetActiveProcessorGroupCount()
 ;@ stdcall GetLogicalProcessorInformationEx(ptr ptr ptr)

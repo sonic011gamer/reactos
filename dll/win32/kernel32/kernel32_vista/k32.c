@@ -406,7 +406,7 @@ DWORD WINAPI K32GetModuleBaseNameA(HANDLE process, HMODULE module,
         return 0;
 
     len = K32GetModuleBaseNameW(process, module, base_name_w, size);
-    //TRACE("%d, %s\n", len, debugstr_w(base_name_w));
+    ////TRACE("%d, %s\n", len, debugstr_w(base_name_w));
     if (len)
     {
         ret = WideCharToMultiByte(CP_ACP, 0, base_name_w, len,
@@ -476,7 +476,7 @@ DWORD WINAPI K32GetModuleFileNameExA(HANDLE process, HMODULE module,
     WCHAR *ptr;
     DWORD len;
 
-    //TRACE("(hProcess=%p, hModule=%p, %p, %d)\n", process, module, file_name, size);
+    ////TRACE("(hProcess=%p, hModule=%p, %p, %d)\n", process, module, file_name, size);
 
     if (!file_name || !size)
     {

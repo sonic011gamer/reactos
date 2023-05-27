@@ -51,7 +51,7 @@
 @ stdcall BuildCommDCBW(wstr ptr)
 @ stdcall CallNamedPipeA(str ptr long ptr long ptr long)
 @ stdcall CallNamedPipeW(wstr ptr long ptr long ptr long)
-@ stdcall -stub -version=0x600+ CallbackMayRunLong(ptr)
+@ stdcall -version=0x600+ CallbackMayRunLong(ptr) kernel32_vista.CallbackMayRunLong
 @ stdcall CancelDeviceWakeupRequest(long)
 @ stdcall CancelIo(long)
 @ stdcall -stub -version=0x600+ CancelIoEx(ptr ptr)
@@ -72,13 +72,13 @@
 @ stdcall CloseHandle(long)
 @ stdcall -stub -version=0x600+ ClosePrivateNamespace(ptr long)
 @ stdcall CloseProfileUserMapping()
-@ stdcall -stub -version=0x600+ CloseThreadpool(ptr)
-@ stdcall -stub -version=0x600+ CloseThreadpoolCleanupGroup(ptr)
-@ stdcall -stub -version=0x600+ CloseThreadpoolCleanupGroupMembers(ptr long ptr)
+@ stdcall -version=0x600+ CloseThreadpool(ptr) kernel32_vista.CloseThreadpool
+@ stdcall -version=0x600+ CloseThreadpoolCleanupGroup(ptr) kernel32_vista.CloseThreadpoolCleanupGroup
+@ stdcall -version=0x600+ CloseThreadpoolCleanupGroupMembers(ptr long ptr) kernel32_vista.CloseThreadpoolCleanupGroupMembers
 @ stdcall -stub -version=0x600+ CloseThreadpoolIo(ptr)
-@ stdcall -stub -version=0x600+ CloseThreadpoolTimer(ptr)
-@ stdcall -stub -version=0x600+ CloseThreadpoolWait(ptr)
-@ stdcall -stub -version=0x600+ CloseThreadpoolWork(ptr)
+@ stdcall -version=0x600+ CloseThreadpoolTimer(ptr) kernel32_vista.CloseThreadpoolTimer
+@ stdcall -version=0x600+ CloseThreadpoolWait(ptr) kernel32_vista.CloseThreadpoolWait
+@ stdcall -version=0x600+ CloseThreadpoolWork(ptr) kernel32_vista.CloseThreadpoolWork
 @ stdcall CmdBatNotification(long)
 @ stdcall CommConfigDialogA(str long ptr)
 @ stdcall CommConfigDialogW(wstr long ptr)
@@ -169,12 +169,12 @@
 @ stdcall -version=0x600+ CreateSymbolicLinkW(wstr wstr long) kernel32_vista.CreateSymbolicLinkW
 @ stdcall CreateTapePartition(long long long long)
 @ stdcall CreateThread(ptr long ptr long long ptr)
-@ stdcall -stub -version=0x600+ CreateThreadpool(ptr)
-@ stdcall -stub -version=0x600+ CreateThreadpoolCleanupGroup()
-@ stdcall -stub -version=0x600+ CreateThreadpoolIo(ptr)
-@ stdcall -stub -version=0x600+ CreateThreadpoolTimer(ptr ptr ptr)
-@ stdcall -stub -version=0x600+ CreateThreadpoolWait(ptr ptr ptr)
-@ stdcall -stub -version=0x600+ CreateThreadpoolWork(ptr ptr ptr)
+@ stdcall -version=0x600+ CreateThreadpool(ptr) kernel32_vista.CreateThreadpool
+@ stdcall -version=0x600+ CreateThreadpoolCleanupGroup() kernel32_vista.CreateThreadpoolCleanupGroup
+@ stdcall -version=0x600+ CreateThreadpoolIo(ptr) kernel32_vista.CreateThreadpoolIo
+@ stdcall -version=0x600+ CreateThreadpoolTimer(ptr ptr ptr) kernel32_vista.CreateThreadpoolTimer
+@ stdcall -version=0x600+ CreateThreadpoolWait(ptr ptr ptr) kernel32_vista.CreateThreadpoolWait
+@ stdcall -version=0x600+ CreateThreadpoolWork(ptr ptr ptr) kernel32_vista.CreateThreadpoolWork
 @ stdcall CreateTimerQueue()
 @ stdcall CreateTimerQueueTimer(ptr long ptr ptr long long long)
 @ stdcall CreateToolhelp32Snapshot(long long)
@@ -1089,10 +1089,10 @@
 @ stdcall SetThreadPriorityBoost(long long)
 @ stdcall SetThreadStackGuarantee(ptr)
 @ stdcall SetThreadUILanguage(long)
-@ stdcall -stub -version=0x600+ SetThreadpoolThreadMaximum(ptr long)
-@ stdcall -stub -version=0x600+ SetThreadpoolThreadMinimum(ptr long)
-@ stdcall -stub -version=0x600+ SetThreadpoolTimer(ptr ptr long long)
-@ stdcall -stub -version=0x600+ SetThreadpoolWait(ptr ptr ptr)
+@ stdcall -version=0x600+ SetThreadpoolThreadMaximum(ptr long) kernel32_vista.SetThreadpoolThreadMaximum
+@ stdcall -version=0x600+ SetThreadpoolThreadMinimum(ptr long) kernel32_vista.SetThreadpoolThreadMinimum
+@ stdcall -version=0x600+ SetThreadpoolTimer(ptr ptr long long) kernel32_vista.SetThreadpoolTimer
+@ stdcall -version=0x600+ SetThreadpoolWait(ptr ptr ptr) kernel32_vista.SetThreadpoolWait
 @ stdcall SetTimeZoneInformation(ptr)
 @ stdcall SetTimerQueueTimer(long ptr ptr long long long)
 @ stdcall SetUnhandledExceptionFilter(ptr)
@@ -1134,7 +1134,7 @@
 @ stdcall -version=0x600+ TryAcquireSRWLockExclusive(ptr) ntdll.RtlTryAcquireSRWLockExclusive
 @ stdcall -version=0x600+ TryAcquireSRWLockShared(ptr) ntdll.RtlTryAcquireSRWLockShared
 @ stdcall TryEnterCriticalSection(ptr) ntdll.RtlTryEnterCriticalSection
-@ stdcall -stub -version=0x600+ TrySubmitThreadpoolCallback(ptr ptr ptr)
+@ stdcall -version=0x600+ TrySubmitThreadpoolCallback(ptr ptr ptr) kernel32_vista.TrySubmitThreadpoolCallback
 @ stdcall TzSpecificLocalTimeToSystemTime(ptr ptr ptr)
 @ stdcall UTRegister(long str str str ptr ptr ptr)
 @ stdcall UTUnRegister(long)

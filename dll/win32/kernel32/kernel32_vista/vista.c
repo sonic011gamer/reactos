@@ -464,7 +464,7 @@ GetFinalPathNameByHandleW(IN HANDLE file,
     ULONG dummy;
     WCHAR *ptr;
 
-    //TRACE( "(%p,%p,%d,%x)\n", file, path, charcount, flags );
+    ////TRACE( "(%p,%p,%d,%x)\n", file, path, charcount, flags );
 
     if (flags & ~(FILE_NAME_OPENED | VOLUME_NAME_GUID | VOLUME_NAME_NONE | VOLUME_NAME_NT))
     {
