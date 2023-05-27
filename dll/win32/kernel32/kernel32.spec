@@ -1148,7 +1148,7 @@
 @ stdcall UnregisterWait(long)
 @ stdcall UnregisterWaitEx(long long)
 @ stdcall -stub -version=0x600+ UpdateCalendarDayOfWeek(ptr)
-@ stdcall -stub -version=0x600+ UpdateProcThreadAttribute(ptr long long ptr long ptr ptr)
+@ stdcall -version=0x600+ UpdateProcThreadAttribute(ptr long ptr ptr long ptr ptr) kernel32_vista.UpdateProcThreadAttribute
 @ stdcall UpdateResourceA(long str str long ptr long)
 @ stdcall UpdateResourceW(long wstr wstr long ptr long)
 @ stdcall VDMConsoleOperation(long long)
