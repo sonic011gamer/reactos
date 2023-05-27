@@ -152,6 +152,7 @@
 375 stdcall -noname -private StrCSpnIW(wstr wstr)
 376 stdcall -noname -private IntlStrEqWorkerA(long str str long)
 377 stdcall -noname -private IntlStrEqWorkerW(long wstr wstr long)
+381 stdcall -noname UnknownComctl(ptr)
 382 stdcall -noname SmoothScrollWindow(ptr)
 383 stdcall -noname DoReaderMode(ptr)
 384 stdcall -noname SetPathWordBreakProc(ptr long)

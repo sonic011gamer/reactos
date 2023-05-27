@@ -2190,3 +2190,10 @@ void COMBOEX_Unregister (void)
 {
     UnregisterClassW (WC_COMBOBOXEXW, NULL);
 }
+
+void
+WINAPI
+UnknownComctl(void* test)
+{
+
+}

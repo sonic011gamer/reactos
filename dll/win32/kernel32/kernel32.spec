@@ -477,7 +477,7 @@
 @ stdcall GetFileAttributesW(wstr)
 @ stdcall -stub -version=0x600+ GetFileBandwidthReservation(ptr ptr ptr ptr ptr ptr)
 @ stdcall GetFileInformationByHandle(long ptr)
-@ stdcall -stub -version=0x600+ GetFileInformationByHandleEx(long long ptr long)
+@ stdcall -version=0x600+ GetFileInformationByHandleEx(long long ptr long) kernel32_vista.GetFileInformationByHandleEx
 @ stdcall -stub -version=0x600+ GetFileInformationByHandleExW(long long ptr long)
 @ stdcall -stub -version=0x600+ GetFileMUIInfo(long wstr ptr ptr)
 @ stdcall -stub -version=0x600+ GetFileMUIPath(long wstr wstr ptr wstr ptr ptr)
