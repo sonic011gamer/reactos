@@ -196,11 +196,10 @@ NTAPI
 LdrSetDllManifestProber(
     _In_ PLDR_MANIFEST_PROBER_ROUTINE Routine);
 
-NTSTATUS
+void
 NTAPI
-LdrShutdownProcess(
-    VOID
-);
+LdrShutdownProcess();
+
 
 NTSTATUS
 NTAPI

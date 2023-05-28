@@ -1425,6 +1425,7 @@ RtlDosPathNameToRelativeNtPathName_Ustr(IN PCUNICODE_STRING DosName,
                                                                RelativeName));
 }
 
+
 BOOLEAN
 NTAPI
 RtlDoesFileExists_UstrEx(IN PCUNICODE_STRING FileName,

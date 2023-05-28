@@ -1,17 +1,11 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <ldrp.h>
 
-#include <ntdll.h>
-#include <ndk/ldrtypes.h>
+EXTERN_C
+{
+
 #include <psdk/winreg.h>
-extern PCONTEXT LdrpProcessInitContextRecord;
 
-//extern PLDR_DATA_TABLE_ENTRY LdrpLoadedDllHandleCache;
-#ifdef __cplusplus
 }
-#endif
-extern LDRP_DEBUG_FLAGS LdrpDebugFlags;
 
 NTSTATUS
 NTAPI
@@ -45,13 +39,26 @@ LdrpRunInitializeRoutine(IN PLDR_DATA_TABLE_ENTRY Module)
     /* Break if asked */
     if (BreakOnDllLoad)
     {
-
+        /* Check if we should show a message */
+        if (LdrpDebugFlags.LogInformation)
+        {
+            DPRINT1("LDR: %wZ loaded.", &Module->BaseDllName);
+            DPRINT1(" - About to call init routine at " LDR_HEXPTR_FMT "\n", Module->EntryPoint);
+        }
 
         /* Break in debugger */
         DbgBreakPoint();
     }
 
-
+    /* Display debug message */
+    if (LdrpDebugFlags.LogTrace)
+    {
+        DPRINT1("[" LDR_HEXPTR_FMT "," LDR_HEXPTR_FMT "] LDR: %wZ init routine " LDR_HEXPTR_FMT "\n",
+                NtCurrentTeb()->RealClientId.UniqueThread,
+                NtCurrentTeb()->RealClientId.UniqueProcess,
+                &Module->FullDllName,
+                Module->EntryPoint);
+    }
 
     /* Save the old Dll Initializer and write the current one */
     const PLDR_DATA_TABLE_ENTRY OldInitializer = LdrpCurrentDllInitializer;
@@ -66,7 +73,8 @@ LdrpRunInitializeRoutine(IN PLDR_DATA_TABLE_ENTRY Module)
     RtlActivateActivationContextUnsafeFast(&ActCtx,
                                            Module->EntryPointActivationContext);
 
-
+    __try
+    {
         /* Check if it has TLS */
         if (Module->TlsIndex)
         {
@@ -78,18 +86,29 @@ LdrpRunInitializeRoutine(IN PLDR_DATA_TABLE_ENTRY Module)
         /* Make sure we have an entrypoint */
         if (Module->EntryPoint)
         {
-            PCONTEXT Context = Module->ProcessStaticImport
+            const PCONTEXT Context = Module->ProcessStaticImport
                                          ? LdrpProcessInitContextRecord
                                          : NULL;
 
-
+            /* Call the Entrypoint */
+            if (LdrpDebugFlags.LogTrace)
+            {
+                DPRINT1("%wZ - Calling entry point at " LDR_HEXPTR_FMT " for DLL_PROCESS_ATTACH\n",
+                        &Module->BaseDllName, Module->EntryPoint);
+            }
 
             DllStatus = LdrpCallInitRoutine((PDLL_INIT_ROUTINE)Module->EntryPoint,
                                             Module->DllBase,
                                             DLL_PROCESS_ATTACH,
                                             Context);
         }
-
+    }
+    __except(LdrpDebugExceptionFilter(GetExceptionCode(), GetExceptionInformation()))
+    {
+        DllStatus = FALSE;
+        DPRINT1("WARNING: Exception 0x%08lX during LdrpCallInitRoutine(DLL_PROCESS_ATTACH) for %wZ\n",
+                GetExceptionCode(), &Module->BaseDllName);
+    }
 
     /* Deactivate the ActCtx */
     RtlDeactivateActivationContextUnsafeFast(&ActCtx);
@@ -104,7 +123,8 @@ LdrpRunInitializeRoutine(IN PLDR_DATA_TABLE_ENTRY Module)
     /* Fail if DLL init failed */
     if (!DllStatus)
     {
-
+        DPRINT1("LDR: DLL_PROCESS_ATTACH for dll \"%wZ\" (InitRoutine: " LDR_HEXPTR_FMT ") failed\n",
+                &Module->BaseDllName, Module->EntryPoint);
 
         if (LdrpDebugFlags.BreakInDebugger)
             __debugbreak();
@@ -115,5 +135,6 @@ LdrpRunInitializeRoutine(IN PLDR_DATA_TABLE_ENTRY Module)
 
 Quickie:
     /* Return to caller */
+    DPRINT("LdrpRunInitializeRoutine(%wZ) done\n", &Module->BaseDllName);
     return Status;
 }

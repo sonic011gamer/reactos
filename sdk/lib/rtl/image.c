@@ -267,6 +267,122 @@ RtlImageNtHeader(IN PVOID Base)
 /*
  * @implemented
  */
+NTSTATUS
+NTAPI
+RtlpImageDirectoryEntryToData32(
+    PVOID BaseAddress,
+    BOOLEAN MappedAsImage,
+    USHORT Directory,
+    PULONG Size,
+    PVOID* Section,
+    PIMAGE_NT_HEADERS32 NtHeader)
+{
+    ULONG Va;
+    PVOID result;
+
+    if (Directory >= SWAPD(NtHeader->OptionalHeader.NumberOfRvaAndSizes))
+        return STATUS_INVALID_PARAMETER;
+
+    Va = SWAPD(NtHeader->OptionalHeader.DataDirectory[Directory].VirtualAddress);
+    if (Va == 0)
+        return STATUS_NOT_IMPLEMENTED;
+
+    *Size = SWAPD(NtHeader->OptionalHeader.DataDirectory[Directory].Size);
+
+    if (MappedAsImage || Va < SWAPD(NtHeader->OptionalHeader.SizeOfHeaders))
+    {
+        *Section = (PVOID)((ULONG_PTR)BaseAddress + Va);
+        return STATUS_SUCCESS;
+    }
+
+    /* Image mapped as ordinary file, we must find raw pointer */
+    result = RtlImageRvaToVa((PIMAGE_NT_HEADERS)NtHeader, BaseAddress, Va, NULL);
+    *Section = result;
+    return result ? STATUS_SUCCESS : STATUS_INVALID_PARAMETER;
+}
+
+/*
+ * @implemented
+ */
+NTSTATUS
+NTAPI
+RtlpImageDirectoryEntryToData64(
+    PVOID BaseAddress,
+    BOOLEAN MappedAsImage,
+    USHORT Directory,
+    PULONG Size,
+    PVOID* Section,
+    PIMAGE_NT_HEADERS64 NtHeader)
+{
+    ULONG Va;
+    PVOID result;
+
+    if (Directory >= SWAPD(NtHeader->OptionalHeader.NumberOfRvaAndSizes))
+        return STATUS_INVALID_PARAMETER;
+
+    Va = SWAPD(NtHeader->OptionalHeader.DataDirectory[Directory].VirtualAddress);
+    if (Va == 0)
+        return STATUS_NOT_IMPLEMENTED;
+
+    *Size = SWAPD(NtHeader->OptionalHeader.DataDirectory[Directory].Size);
+
+    if (MappedAsImage || Va < SWAPD(NtHeader->OptionalHeader.SizeOfHeaders))
+    {
+        *Section = (PVOID)((ULONG_PTR)BaseAddress + Va);
+        return STATUS_SUCCESS;
+    }
+
+    /* Image mapped as ordinary file, we must find raw pointer */
+    result = RtlImageRvaToVa((PIMAGE_NT_HEADERS)NtHeader, BaseAddress, Va, NULL);
+    *Section = result;
+    return result ? STATUS_SUCCESS : STATUS_INVALID_PARAMETER;
+}
+
+/*
+ * @implemented
+ */
+NTSTATUS
+NTAPI
+RtlImageDirectoryEntryToDataEx(
+    PVOID BaseAddress,
+    BOOLEAN MappedAsImage,
+    USHORT Directory,
+    PULONG Size,
+    OUT PVOID* Section)
+{
+    PIMAGE_NT_HEADERS NtHeader;
+    NTSTATUS Status;
+
+    if ((ULONG_PTR)BaseAddress & 3)
+    {
+        /* Magic flag for non-mapped images. */
+        if ((ULONG_PTR)BaseAddress & 1)
+            MappedAsImage = FALSE;
+        BaseAddress = (PVOID)((ULONG_PTR)BaseAddress & ~3);
+    }
+
+    Status = RtlImageNtHeaderEx(
+        RTL_IMAGE_NT_HEADER_EX_FLAG_NO_RANGE_CHECK,
+        BaseAddress,
+        0,
+        &NtHeader);
+
+    if (NtHeader)
+    {
+        if (NtHeader->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+            Status = RtlpImageDirectoryEntryToData32(BaseAddress, MappedAsImage, Directory, Size, Section, (PIMAGE_NT_HEADERS32)NtHeader);
+        else if (NtHeader->OptionalHeader.Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)
+            Status = RtlpImageDirectoryEntryToData64(BaseAddress, MappedAsImage, Directory, Size, Section, (PIMAGE_NT_HEADERS64)NtHeader);
+        else
+            Status = STATUS_INVALID_PARAMETER;
+    }
+
+    return Status;
+}
+
+/*
+ * @implemented
+ */
 PVOID
 NTAPI
 RtlImageDirectoryEntryToData(

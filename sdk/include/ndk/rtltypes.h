@@ -442,6 +442,42 @@ typedef enum _RTL_BSD_ITEM_TYPE
     RtlBsdItemMax
 } RTL_BSD_ITEM_TYPE, *PRTL_BSD_ITEM_TYPE;
 
+typedef enum _RTL_PATH_TYPE
+{
+    RtlPathTypeUnknown,
+    RtlPathTypeUncAbsolute,
+    RtlPathTypeDriveAbsolute,
+    RtlPathTypeDriveRelative,
+    RtlPathTypeRooted,
+    RtlPathTypeRelative,
+    RtlPathTypeLocalDevice,
+    RtlPathTypeRootLocalDevice,
+} RTL_PATH_TYPE;
+
+// Correct name unknown
+#pragma pack(push, 4)
+typedef struct _RTLP_PATH_INFO
+{
+    RTL_PATH_TYPE Type;
+    /* The one from relevant FILE_FS_DEVICE_INFORMATION, assigned when type is RtlPathTypeRelative */
+    /* Available flags (FILE_*), ref https://msdn.microsoft.com/library/windows/hardware/ff543147 */
+    ULONG32 Characteristics;
+} RTLP_PATH_INFO, *PRTLP_PATH_INFO;
+#pragma pack(pop)
+
+typedef union _RTLP_DosPathNameToRelativeNtPathName_FLAGS
+{
+    UINT8 Flags;
+
+    struct
+    {
+        UINT8 InputIsFullPath : 1;
+        UINT8 ReturnCurrentDirectoryReference : 1;
+        UINT8 ExplicitEnableLongPathAwareness : 1;
+        UINT8 DisableLongPathAwareness : 1;
+    };
+} RTLP_DosPathNameToRelativeNtPathName_FLAGS;
+
 #ifdef NTOS_MODE_USER
 //
 // Table and Compare result types
@@ -466,17 +502,7 @@ typedef enum _RTL_GENERIC_COMPARE_RESULTS
 //
 // RTL Path Types
 //
-typedef enum _RTL_PATH_TYPE
-{
-    RtlPathTypeUnknown,
-    RtlPathTypeUncAbsolute,
-    RtlPathTypeDriveAbsolute,
-    RtlPathTypeDriveRelative,
-    RtlPathTypeRooted,
-    RtlPathTypeRelative,
-    RtlPathTypeLocalDevice,
-    RtlPathTypeRootLocalDevice,
-} RTL_PATH_TYPE;
+
 
 #ifndef NTOS_MODE_USER
 

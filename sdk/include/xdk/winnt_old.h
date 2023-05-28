@@ -3542,28 +3542,69 @@ typedef struct _IMAGE_RESOURCE_DATA_ENTRY {
   DWORD Reserved;
 } IMAGE_RESOURCE_DATA_ENTRY, *PIMAGE_RESOURCE_DATA_ENTRY;
 
-typedef struct _IMAGE_LOAD_CONFIG_DIRECTORY32 {
-  DWORD Size;
-  DWORD TimeDateStamp;
-  WORD MajorVersion;
-  WORD MinorVersion;
-  DWORD GlobalFlagsClear;
-  DWORD GlobalFlagsSet;
-  DWORD CriticalSectionDefaultTimeout;
-  DWORD DeCommitFreeBlockThreshold;
-  DWORD DeCommitTotalFreeThreshold;
-  DWORD LockPrefixTable;
-  DWORD MaximumAllocationSize;
-  DWORD VirtualMemoryThreshold;
-  DWORD ProcessHeapFlags;
-  DWORD ProcessAffinityMask;
-  WORD CSDVersion;
-  WORD Reserved1;
-  DWORD EditList;
-  DWORD SecurityCookie;
-  DWORD SEHandlerTable;
-  DWORD SEHandlerCount;
+
+typedef struct _IMAGE_LOAD_CONFIG_CODE_INTEGRITY
+{
+  USHORT Flags; // Flags to indicate if CI information is available, etc.
+  USHORT Catalog; // 0xFFFF means not available
+  ULONG CatalogOffset;
+  ULONG Reserved; // Additional bitmask to be defined later
+} IMAGE_LOAD_CONFIG_CODE_INTEGRITY, *PIMAGE_LOAD_CONFIG_CODE_INTEGRITY;
+
+
+//
+// Load Configuration Directory Entry Format
+//
+typedef struct _IMAGE_LOAD_CONFIG_DIRECTORY32
+{
+  ULONG Size;
+  ULONG TimeDateStamp;
+  USHORT MajorVersion;
+  USHORT MinorVersion;
+  ULONG GlobalFlagsClear;
+  ULONG GlobalFlagsSet;
+  ULONG CriticalSectionDefaultTimeout;
+  ULONG DeCommitFreeBlockThreshold;
+  ULONG DeCommitTotalFreeThreshold;
+  ULONG LockPrefixTable; // VA
+  ULONG MaximumAllocationSize;
+  ULONG VirtualMemoryThreshold;
+  ULONG ProcessHeapFlags;
+  ULONG ProcessAffinityMask;
+  USHORT CSDVersion;
+  USHORT DependentLoadFlags;
+  ULONG EditList; // VA
+  ULONG SecurityCookie; // VA
+  ULONG SEHandlerTable; // VA
+  ULONG SEHandlerCount;
+  // Windows 7 cut
+  ULONG GuardCFCheckFunctionPointer; // VA
+  ULONG GuardCFDispatchFunctionPointer; // VA
+  ULONG GuardCFFunctionTable; // VA
+  ULONG GuardCFFunctionCount;
+  ULONG GuardFlags;
+  // Windows 8 cut
+  IMAGE_LOAD_CONFIG_CODE_INTEGRITY CodeIntegrity;
+  ULONG GuardAddressTakenIatEntryTable; // VA
+  ULONG GuardAddressTakenIatEntryCount;
+  ULONG GuardLongJumpTargetTable; // VA
+  ULONG GuardLongJumpTargetCount;
+  ULONG DynamicValueRelocTable; // VA
+  ULONG CHPEMetadataPointer;
+  // Windows 10.0.14393 cut
+  ULONG GuardRFFailureRoutine; // VA
+  ULONG GuardRFFailureRoutineFunctionPointer; // VA
+  ULONG DynamicValueRelocTableOffset;
+  USHORT DynamicValueRelocTableSection;
+  USHORT Reserved2;
+  ULONG GuardRFVerifyStackPointerFunctionPointer; // VA
+  ULONG HotPatchTableOffset;
+  ULONG Reserved3;
+  ULONG EnclaveConfigurationPointer; // VA
+  ULONG VolatileMetadataPointer; // VA
+  // Windows 10.0.17763 cut
 } IMAGE_LOAD_CONFIG_DIRECTORY32, *PIMAGE_LOAD_CONFIG_DIRECTORY32;
+
 
 typedef struct _IMAGE_LOAD_CONFIG_DIRECTORY64 {
   DWORD Size;

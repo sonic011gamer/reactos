@@ -7,17 +7,19 @@ EXTERN_C
 
 #include <ndk/ldrtypes.h>
 
-#if __cplusplus
-}
-#endif
-
 typedef PVOID(NTAPI LDRP_HEAPALLOC_FUNC)(IN ULONG Flags OPTIONAL, IN SIZE_T Size);
 typedef BOOLEAN(NTAPI LDRP_HEAPFREE_FUNC)(IN ULONG Flags OPTIONAL, IN PVOID BaseAddress);
 typedef PVOID(NTAPI LDRP_HEAPREALLOC_FUNC)(IN ULONG Flags OPTIONAL, IN PVOID Ptr, IN SIZE_T Size);
 
-EXTERN_C LDRP_HEAPALLOC_FUNC *LdrpHeapAllocProc;
-EXTERN_C LDRP_HEAPFREE_FUNC *LdrpHeapFreeProc;
-EXTERN_C LDRP_HEAPREALLOC_FUNC *LdrpHeapReAllocProc;
+LDRP_HEAPALLOC_FUNC *LdrpHeapAllocProc;
+LDRP_HEAPFREE_FUNC *LdrpHeapFreeProc;
+LDRP_HEAPREALLOC_FUNC *LdrpHeapReAllocProc;
+
+#if __cplusplus
+}
+#endif
+
+#define IMAGE_DLLCHARACTERISTICS_APPCONTAINER 0x1000     // Image should execute in an AppContainer
 
 _Must_inspect_result_
 _Ret_maybenull_

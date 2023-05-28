@@ -4584,6 +4584,22 @@ RtlIpv6StringToAddressExW(
 );
 
 
+NTSTATUS
+NTAPI
+RtlImageDirectoryEntryToDataEx(
+    PVOID BaseAddress,
+    BOOLEAN MappedAsImage,
+    USHORT Directory,
+    PULONG Size,
+    OUT PVOID* Section);
+
+NTSYSAPI
+BOOLEAN
+NTAPI
+RtlDoesFileExists_UstrEx(
+    _In_ PCUNICODE_STRING FileName,
+    _In_ BOOLEAN SucceedIfBusy
+);
 //
 // Time Functions
 //

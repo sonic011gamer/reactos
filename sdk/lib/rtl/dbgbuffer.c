@@ -251,6 +251,7 @@ RtlpQueryRemoteProcessModules(HANDLE ProcessHandle,
             ModulePtr->LoadOrderIndex = 0;      // FIXME:  ??
             ModulePtr->InitOrderIndex = 0;      // FIXME: ??
             ModulePtr->LoadCount      = lmModule.LoadCount;
+;
 
             AnsiString.Length        = 0;
             AnsiString.MaximumLength = 256;

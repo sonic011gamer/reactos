@@ -1,18 +1,5 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <ldrp.h>
 
-#include <ntdll.h>
-#include <ndk/ldrtypes.h>
-#include <ndk/rtlfuncs.h>
-//extern PLDR_DATA_TABLE_ENTRY LdrpLoadedDllHandleCache;
-extern PLDR_DATA_TABLE_ENTRY LdrpImageEntry;
-extern LDRP_DEBUG_FLAGS LdrpDebugFlags;
-#ifdef __cplusplus
-}
-#endif
-#define NDEBUG
-#include <debug.h>
 EXTERN_C PTEB LdrpTopLevelDllBeingLoadedTeb; // defined in rtlsupp.c!
 
 NTSTATUS
@@ -33,12 +20,12 @@ LdrpInitializeNode(IN PLDR_DDAG_NODE DdagNode)
     {
         const PLDR_DATA_TABLE_ENTRY CurrentEntry = CONTAINING_RECORD(Current, LDR_DATA_TABLE_ENTRY, NodeModuleLink);
 
-        //LDRP_ASSERT_MODULE_ENTRY(CurrentEntry);
+        LDRP_ASSERT_MODULE_ENTRY(CurrentEntry);
 
         if (CurrentEntry == LdrpImageEntry)
             continue;
 
-        //RtlpCheckListEntry(List);
+        RtlpCheckListEntry(List);
 
         // Insert current entry into the PEB list
         InsertTailList(List, &CurrentEntry->InInitializationOrderLinks);
@@ -55,7 +42,7 @@ LdrpInitializeNode(IN PLDR_DDAG_NODE DdagNode)
     {
         const PLDR_DATA_TABLE_ENTRY CurrentEntry = CONTAINING_RECORD(Current, LDR_DATA_TABLE_ENTRY, NodeModuleLink);
 
-       // LDRP_ASSERT_MODULE_ENTRY(CurrentEntry);
+        LDRP_ASSERT_MODULE_ENTRY(CurrentEntry);
 
         if (CurrentEntry == LdrpImageEntry)
             continue;
@@ -64,13 +51,15 @@ LdrpInitializeNode(IN PLDR_DDAG_NODE DdagNode)
         Status = LdrpRunInitializeRoutine(CurrentEntry);
         if (!NT_SUCCESS(Status))
         {
-
+            /* Failed, unload the DLL */
+            if (LdrpDebugFlags.LogWarning)
+            {
                 DPRINT1("LDR: Unloading %wZ because either its init "
                         "routine or one of its static imports failed; "
                         "status = 0x%08lx\n",
                         &CurrentEntry->BaseDllName,
                         Status);
-
+            }
         }
     }
 

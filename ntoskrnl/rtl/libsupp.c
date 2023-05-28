@@ -140,13 +140,6 @@ RtlReleasePebLock(VOID)
 
 }
 
-NTSTATUS
-NTAPI
-LdrShutdownThread(VOID)
-{
-    return STATUS_SUCCESS;
-}
-
 
 PPEB
 NTAPI

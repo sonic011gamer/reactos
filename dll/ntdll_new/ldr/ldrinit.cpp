@@ -637,7 +637,7 @@ LdrpInitSecurityCookie(PVOID BaseAddress,
     return TRUE;
     LDR_FUNC_END_IMPL(return FALSE)
 }
-
+ extern uintptr_t __security_cookie;
 void
 NTAPI
 InitSecurityCookie()
@@ -2722,7 +2722,7 @@ LdrpInitializeState0(PCONTEXT Context, PVOID SystemDllBaseAddress)
     Teb->RanProcessInit = TRUE;
     Peb->LoaderLock = &LdrpLoaderLock;
     LdrInitState = 0;
-    PspSetPebProcessInitializingFlagAssert(Peb);
+   // PspSetPebProcessInitializingFlagAssert(Peb);
 
     /* Protect with SEH */
     __try
@@ -2751,7 +2751,7 @@ LdrpInitializeState0(PCONTEXT Context, PVOID SystemDllBaseAddress)
     }
 
     LdrInitState = 3;
-    PspClearPebProcessInitializingFlagAssert(Peb);
+ //   PspClearPebProcessInitializingFlagAssert(Peb);
 
     if (!NT_SUCCESS(Status))
         return Status;
