@@ -54,7 +54,7 @@ typedef struct _VTableFixup {
     WORD count;
     WORD type;
 } VTableFixup;
-
+typedef BOOL (WINAPI *NativeEntryPointFunc)(HINSTANCE, DWORD, LPVOID);
 typedef struct tagASSEMBLY ASSEMBLY;
 
 extern HRESULT assembly_create(ASSEMBLY **out, LPCWSTR file) DECLSPEC_HIDDEN;
@@ -62,6 +62,7 @@ extern HRESULT assembly_from_hmodule(ASSEMBLY **out, HMODULE hmodule) DECLSPEC_H
 extern HRESULT assembly_release(ASSEMBLY *assembly) DECLSPEC_HIDDEN;
 extern HRESULT assembly_get_runtime_version(ASSEMBLY *assembly, LPSTR *version) DECLSPEC_HIDDEN;
 extern HRESULT assembly_get_vtable_fixups(ASSEMBLY *assembly, VTableFixup **fixups, DWORD *count) DECLSPEC_HIDDEN;
+extern HRESULT assembly_get_native_entrypoint(ASSEMBLY *assembly, NativeEntryPointFunc *func) DECLSPEC_HIDDEN;
 
 /* Mono embedding */
 typedef struct _MonoDomain MonoDomain;
@@ -136,7 +137,9 @@ extern HRESULT MetaDataDispenser_CreateInstance(IUnknown **ppUnk) DECLSPEC_HIDDE
 typedef struct parsed_config_file
 {
     struct list supported_runtimes;
+    LPWSTR private_path;
 } parsed_config_file;
+
 
 typedef struct supported_runtime
 {

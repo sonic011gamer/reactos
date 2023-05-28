@@ -23,6 +23,7 @@
 #include <winver.h>
 #include <dbghelp.h>
 
+
 typedef struct
 {
     ULONG Signature;
@@ -49,7 +50,7 @@ typedef struct tagCLRTABLE
 
 struct tagASSEMBLY
 {
-    int is_mapped_file;
+    BOOL is_mapped_file;
 
     /* mapped files */
     LPWSTR path;
@@ -253,7 +254,7 @@ HRESULT assembly_from_hmodule(ASSEMBLY **out, HMODULE hmodule)
     if (!assembly)
         return E_OUTOFMEMORY;
 
-    assembly->is_mapped_file = 0;
+    assembly->is_mapped_file = FALSE;
 
     assembly->data = (BYTE*)hmodule;
 
@@ -299,4 +300,19 @@ HRESULT assembly_get_vtable_fixups(ASSEMBLY *assembly, VTableFixup **fixups, DWO
     *count = size / sizeof(VTableFixup);
 
     return S_OK;
+}
+
+HRESULT assembly_get_native_entrypoint(ASSEMBLY *assembly, NativeEntryPointFunc *func)
+{
+    #
+    if (assembly->corhdr->Flags & COMIMAGE_FLAGS_NATIVE_ENTRYPOINT)
+    {
+        *func = assembly_rva_to_va(assembly, assembly->corhdr->EntryPointRVA);
+        return S_OK;
+    }
+    else
+    {
+        *func = NULL;
+        return S_FALSE;
+    }
 }
