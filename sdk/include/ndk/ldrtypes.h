@@ -24,6 +24,10 @@ Author:
 //
 #include <umtypes.h>
 
+#ifndef _NTIMAGE_
+typedef struct _IMAGE_IMPORT_DESCRIPTOR IMAGE_IMPORT_DESCRIPTOR, *PIMAGE_IMPORT_DESCRIPTOR;
+#endif
+
 //
 // Resource Type Levels
 //
@@ -104,6 +108,8 @@ Author:
 #define LDR_IS_IMAGEMAPPING(handle) (((ULONG_PTR)(handle)) & (ULONG_PTR)2)
 #define LDR_IS_RESOURCE(handle)     (LDR_IS_IMAGEMAPPING(handle) || LDR_IS_DATAFILE(handle))
 
+#define LDR_LOADCOUNT_MAX 0xFFFFFFFFul
+
 //
 // Activation Context
 //
@@ -121,17 +127,46 @@ typedef struct _PEB_LDR_DATA
     LIST_ENTRY InMemoryOrderModuleList;
     LIST_ENTRY InInitializationOrderModuleList;
     PVOID EntryInProgress;
-#if (NTDDI_VERSION >= NTDDI_WIN7)
+#if 1 || (NTDDI_VERSION >= NTDDI_WIN7)
     UCHAR ShutdownInProgress;
     PVOID ShutdownThreadId;
 #endif
 } PEB_LDR_DATA, *PPEB_LDR_DATA;
 
+#ifdef NTOS_MODE_USER
+
+typedef enum _LDR_DLL_LOAD_REASON
+{
+    LoadReasonStaticDependency = 0,
+    LoadReasonStaticForwarderDependency = 1,
+    LoadReasonDynamicForwarderDependency = 2,
+    LoadReasonDelayloadDependency = 3,
+    LoadReasonDynamicLoad = 4,
+    LoadReasonAsImageLoad = 5,
+    LoadReasonAsDataLoad = 6,
+    LoadReasonEnclavePrimary = 7,
+    LoadReasonEnclaveDependency = 8,
+    LoadReasonUnknown = -1
+} LDR_DLL_LOAD_REASON, *PLDR_DLL_LOAD_REASON;
+
+typedef union _LDRP_PATH_SEARCH_OPTIONS
+{
+    ULONG32 Flags;
+
+    struct
+    {
+        ULONG32 Unknown;
+    };
+} LDRP_PATH_SEARCH_OPTIONS, *PLDRP_PATH_SEARCH_OPTIONS;
+
+typedef struct _LDRP_LOAD_CONTEXT LDRP_LOAD_CONTEXT, *PLDRP_LOAD_CONTEXT;
+
+// Loader Distributed Dependency Graph Node (as in Windows Internals)
+// DDAG likely stands for Distributed Dependency Acyclic Graph
+typedef struct _LDR_DDAG_NODE LDR_DDAG_NODE, *PLDR_DDAG_NODE;
+
 //
 // Loader Data Table Entry
-//
-// NOTE: The field 'InMemoryOrderLinks' MUST have that name.
-// It's hard-coded into WinDbg for PEB dumping!
 //
 typedef struct _LDR_DATA_TABLE_ENTRY
 {
@@ -143,26 +178,119 @@ typedef struct _LDR_DATA_TABLE_ENTRY
     ULONG SizeOfImage;
     UNICODE_STRING FullDllName;
     UNICODE_STRING BaseDllName;
-    ULONG Flags;
-    USHORT LoadCount;
-    USHORT TlsIndex;
+
     union
     {
-        LIST_ENTRY HashLinks;
+        ULONG32 Flags;
+
         struct
         {
-            PVOID SectionPointer;
-            ULONG CheckSum;
+            ULONG32 PackagedBinary : 1; // 0
+            ULONG32 MarkedForRemoval : 1; // 1
+            ULONG32 ImageDll : 1; // 2
+            ULONG32 LoadNotificationsSent : 1; // 3
+            ULONG32 TelemetryEntryProcessed : 1; // 4
+            ULONG32 ProcessStaticImport : 1; // 5
+            ULONG32 InLegacyLists : 1; // 6
+            ULONG32 InIndexes : 1; // 7
+            ULONG32 ShimDll : 1; // 8
+            ULONG32 InExceptionTable : 1; // 9
+            ULONG32 ReactOSShimSuppress : 1; // 10
+            ULONG32 ReservedFlags1 : 1; // 11
+            ULONG32 LoadInProgress : 1; // 12
+            ULONG32 LoadConfigProcessed : 1; // 13
+            ULONG32 EntryProcessed : 1; // 14
+            ULONG32 ProtectDelayLoad : 1; // 15
+            ULONG32 ReservedFlags3 : 2; // 16
+            ULONG32 DontCallForThreads : 1; // 18
+            ULONG32 ProcessAttachCalled : 1; // 19
+            ULONG32 ProcessAttachFailed : 1; // 20
+            ULONG32 CorDeferredValidate : 1; // 21
+            ULONG32 CorImage : 1; // 22
+            ULONG32 DontRelocate : 1; // 23
+            ULONG32 CorILOnly : 1; // 24
+            ULONG32 ChpeImage : 1; // 25; CHPE = Compiled Hybrid Portable Executable
+            ULONG32 ReservedFlags5 : 2; // 26
+            ULONG32 Redirected : 1; // 28
+            ULONG32 ReservedFlags6 : 2; // 29
+            ULONG32 CompatDatabaseProcessed : 1; // 31
         };
     };
-    union
-    {
-        ULONG TimeDateStamp;
-        PVOID LoadedImports;
-    };
+
+    UINT16 LoadCount;
+    UINT16 TlsIndex;
+    LIST_ENTRY HashLinks;
+    ULONG32 TimeDateStamp;
     PACTIVATION_CONTEXT EntryPointActivationContext;
     PVOID PatchInformation;
+    PLDR_DDAG_NODE DdagNode;
+    LIST_ENTRY NodeModuleLink; // LDR_DDAG_NODE.Modules
+    PLDRP_LOAD_CONTEXT LoadContext;
+    PVOID ParentDllBase;
+    UINT_PTR OriginalBase;
+    LARGE_INTEGER LoadTime;
+    ULONG32 BaseNameHashValue;
+    LDR_DLL_LOAD_REASON LoadReason;
+    LDRP_PATH_SEARCH_OPTIONS ImplicitPathOptions;
+    ULONG32 ReferenceCount;
+    ULONG32 DependentLoadFlags;
+#ifndef NDEBUG
+    ULONG Debug;
+#endif
 } LDR_DATA_TABLE_ENTRY, *PLDR_DATA_TABLE_ENTRY;
+
+#else
+
+typedef struct _LDR_DATA_TABLE_ENTRY
+{
+    LIST_ENTRY InLoadOrderLinks;
+    PVOID ExceptionTable;
+    ULONG ExceptionTableSize;
+    PVOID GpValue;
+    struct _NON_PAGED_DEBUG_INFO* NonPagedDebugInfo;
+    PVOID DllBase;
+    PVOID EntryPoint;
+    ULONG SizeOfImage;
+    UNICODE_STRING FullDllName;
+    UNICODE_STRING BaseDllName;
+
+    union
+    {
+        ULONG32 Flags;
+
+        struct
+        {
+            ULONG32 SystemMapped : 1; // 0
+            ULONG32 LoadInProgress : 1; // 1
+            ULONG32 EntryProcessed : 1; // 2
+            ULONG32 LdrSymbolsLoaded : 1; // 3
+            ULONG32 DriverDependency : 1; // 4
+            ULONG32 ImageIntegrityForced : 1; // 5, FIXED!
+            ULONG32 DriverVerifying : 1; // 6
+            ULONG32 NativeMapped : 1; // 7
+            ULONG32 KernelLoaded : 1; // 8
+        };
+    };
+
+    USHORT LoadCount;
+    union
+    {
+        USHORT SignatureLevel : 4;
+        USHORT SignatureType : 3;
+        USHORT Unused : 9;
+        USHORT EntireField;
+    } u1;
+    PVOID SectionPointer;
+    ULONG CheckSum;
+    ULONG CoverageSectionSize;
+    PVOID CoverageSection;
+    PVOID LoadedImports;
+    ULONG SizeOfImageNotRounded;
+    ULONG TimeDateStamp;
+#ifndef NDEBUG
+    ULONG Debug;
+#endif
+} LDR_DATA_TABLE_ENTRY, * PLDR_DATA_TABLE_ENTRY;
 
 //
 // Loaded Imports Reference Counting in Kernel
@@ -172,6 +300,8 @@ typedef struct _LOAD_IMPORTS
     SIZE_T Count;
     PLDR_DATA_TABLE_ENTRY Entry[1];
 } LOAD_IMPORTS, *PLOAD_IMPORTS;
+
+#endif
 
 //
 // Loader Resource Information
@@ -189,10 +319,13 @@ typedef struct _LDR_ENUM_RESOURCE_INFO
     ULONG_PTR Name;
     ULONG_PTR Language;
     PVOID Data;
-    ULONG Size;
-    ULONG Reserved;
+    SIZE_T Size;
+    ULONG_PTR Reserved;
 } LDR_ENUM_RESOURCE_INFO, *PLDR_ENUM_RESOURCE_INFO;
 
+
+
+#ifdef NTOS_MODE_USER
 //
 // DLL Notifications
 //
@@ -217,6 +350,9 @@ typedef struct _LDR_DLL_LOADED_NOTIFICATION_ENTRY
     PLDR_DLL_LOADED_NOTIFICATION_CALLBACK Callback;
 } LDR_DLL_LOADED_NOTIFICATION_ENTRY, *PLDR_DLL_LOADED_NOTIFICATION_ENTRY;
 
+#endif
+
+
 //
 // Alternate Resources Support
 //
@@ -234,6 +370,9 @@ typedef struct _ALT_RESOURCE_MODULE
     ULONG ErrorCode;
 #endif
 } ALT_RESOURCE_MODULE, *PALT_RESOURCE_MODULE;
+
+
+#if 1//def NTOS_MODE_USER
 
 //
 // Callback function for LdrEnumerateLoadedModules
@@ -256,5 +395,8 @@ typedef BOOLEAN
     _In_ ULONG Reason,
     _In_opt_ PCONTEXT Context
 );
+
+#endif
+
 
 #endif
