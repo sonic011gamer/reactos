@@ -17,18 +17,12 @@ LdrpInitializeGraphRecurse(IN PLDR_DDAG_NODE DdagNode,
                            IN NTSTATUS* StatusResponse,
                            IN OUT BOOLEAN* HasInitializing)
 {
-    if (DdagNode->State == LdrModulesInitError)
-        return STATUS_DLL_INIT_FAILED;
-
     NTSTATUS Status;
-
-    const auto* const ListHead = DdagNode->Dependencies.Tail;
+    DPRINT1("assign lsit entry\n");
+    PSINGLE_LIST_ENTRY ListHead = NULL;//;DdagNode->Dependencies.Tail;
 
     BOOLEAN HasInitializingDependency = FALSE;
-
-    if (!ListHead)
-        goto SkipLoop;
-
+    DPRINT1("reaching for loop\n");
     for (const auto* ListEntry = ListHead ? ListHead->Next : NULL;
          ListEntry;
          ListEntry = (ListEntry != ListHead) ? ListEntry->Next : NULL)
@@ -64,7 +58,7 @@ LdrpInitializeGraphRecurse(IN PLDR_DDAG_NODE DdagNode,
             }
         }
     }
-
+    DPRINT1("enter HasInit Dependency\n");
     if (HasInitializingDependency)
     {
         const auto* const Module = LDRP_FIRST_MODULE(DdagNode);
@@ -91,12 +85,11 @@ LdrpInitializeGraphRecurse(IN PLDR_DDAG_NODE DdagNode,
     }
 
 SkipLoop:
-
-    Status = LdrpInitializeNode(DdagNode);
+    DPRINT1("LdrpinitializeNode entry\n");
+  //  Status = LdrpInitializeNode(DdagNode);
 
 Quickie:
-    if (!NT_SUCCESS(Status))
-        DdagNode->State = LdrModulesInitError;
+    DPRINT1("Quickie: enter\n");
 
-    return Status;
+    return STATUS_SUCCESS;
 }

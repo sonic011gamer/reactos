@@ -280,6 +280,7 @@ typedef struct _LDR_DATA_TABLE_ENTRY
         USHORT Unused : 9;
         USHORT EntireField;
     } u1;
+        PVOID PatchInformation;
     PVOID SectionPointer;
     ULONG CheckSum;
     ULONG CoverageSectionSize;

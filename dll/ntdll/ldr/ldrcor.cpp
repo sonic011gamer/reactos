@@ -72,12 +72,13 @@ LdrpCorInitialize(OUT PLDR_DATA_TABLE_ENTRY* TargetEntry)
     // todo: RtlQueryEnvironmentVariable_U doesn't allocate anything, it seems. Envvars are always failing.
     // todo: fix DllPathBundle leak on failure paths
 
+        DPRINT1("Loading DotNet DLL\n");
     if (!NT_SUCCESS(Status = LdrLoadDll(NULL, NULL, DllPath, &BaseAddress)))
     {
         DPRINT1("LDR .NET: MSCOREE failed to load [0x%08lX]\n", Status);
         return Status;
     }
-
+    DPRINT1("Loaded DotNet DLL");
     PVOID CorExeMainAddress = NULL, CorImageUnloadingAddress = NULL, CorValidateImageAddress = NULL;
     if (!NT_SUCCESS(Status = LdrGetProcedureAddress(BaseAddress, &LdrpCorExeMainName, 0, &CorExeMainAddress)))
     {
@@ -97,7 +98,7 @@ LdrpCorInitialize(OUT PLDR_DATA_TABLE_ENTRY* TargetEntry)
         LdrUnloadDll(BaseAddress);
         return Status;
     }
-
+    DPRINT1("Setting up routiness\n");
     LdrpCorExeMainRoutine = static_cast<decltype(LdrpCorExeMainRoutine)>(RtlEncodeSystemPointer(CorExeMainAddress));
     LdrpCorImageUnloadingRoutine = static_cast<decltype(LdrpCorImageUnloadingRoutine)>(RtlEncodeSystemPointer(CorImageUnloadingAddress));
     LdrpCorValidateImageRoutine = static_cast<decltype(LdrpCorValidateImageRoutine)>(RtlEncodeSystemPointer(CorValidateImageAddress));
@@ -106,7 +107,7 @@ LdrpCorInitialize(OUT PLDR_DATA_TABLE_ENTRY* TargetEntry)
     ASSERT(TargetEntry);
 
     LDR_DDAG_STATE State = LdrModulesPlaceHolder;
-
+    DPRINT1("calling FindLoadedDllByAddress\n");
     Status = LdrpFindLoadedDllByAddress(BaseAddress, TargetEntry, &State);
 
     DPRINT1("LDR .NET: MSCOREE found: [0x%08lX]:%d\n", Status, State);

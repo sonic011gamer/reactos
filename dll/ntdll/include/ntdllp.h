@@ -299,11 +299,6 @@ NTAPI
 LdrpSetProtection(PVOID ViewBase,
                   BOOLEAN Restore);
 
-BOOLEAN
-NTAPI
-LdrpCheckForLoadedDllHandle(IN PVOID Base,
-                            OUT PLDR_DATA_TABLE_ENTRY *LdrEntry);
-
 BOOLEAN NTAPI
 LdrpCheckForLoadedDll(IN PWSTR DllPath,
                       IN PUNICODE_STRING DllName,
@@ -452,7 +447,14 @@ VOID
 NTAPI
 LdrpCallTlsInitializers(IN PLDR_DATA_TABLE_ENTRY LdrEntry,
                         IN ULONG Reason);
+BOOLEAN
+NTAPI
+LdrpCheckForLoadedDllHandle(IN PVOID Base,
+                            OUT PLDR_DATA_TABLE_ENTRY *LdrEntry);
 
+                            NTSTATUS
+NTAPI
+LdrpCorProcessImports(IN PLDR_DATA_TABLE_ENTRY Module);
 BOOLEAN NTAPI LdrpCallInitRoutine(IN PDLL_INIT_ROUTINE EntryPoint, IN PVOID BaseAddress, IN ULONG Reason, IN PVOID Context);
 #ifdef __cplusplus
 }

@@ -1037,6 +1037,10 @@ void
 NTAPI
 LdrpInsertModuleToIndex(IN PLDR_DATA_TABLE_ENTRY Module, IN PIMAGE_NT_HEADERS NtHeader);
 
+BOOLEAN
+NTAPI
+LdrpCheckForLoadedDllHandle(IN PVOID Base,
+                            OUT PLDR_DATA_TABLE_ENTRY *LdrEntry);
 /* EOF */
 
 

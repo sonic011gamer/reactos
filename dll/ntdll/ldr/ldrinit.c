@@ -2314,20 +2314,15 @@ LdrpInitializeProcess(IN PCONTEXT Context,
 
     if (IsDotNetImage)
     {
+              DPRINT1("Jumping to CorInitialize\n");
         if (!NT_SUCCESS(Status = LdrpCorInitialize(&MscoreeEntry)))
             return Status;
-
-            if (!NT_SUCCESS(Status = LdrpCorValidateImage(Peb->ImageBaseAddress, LdrpImageEntry->FullDllName.Buffer)))
-            {
-                DPRINT1("LDR: LdrpCorValidateImage failed [0x%08lX]\n", Status);
-                return Status;
-            }
-
-
+        DPRINT1("Dot net image Init sucessful\n");
         if (Teb->InitialThread)
             LdrpCorReplaceStartContext(Context);
+                    DPRINT1("Dot net image StartContext\n");
     }
-#if 1
+
     /* Initialize TLS */
     Status = LdrpInitializeTls();
     if (!NT_SUCCESS(Status))
@@ -2336,10 +2331,11 @@ LdrpInitializeProcess(IN PCONTEXT Context,
             Status);
         return Status;
     }
-#endif
+
     /* Initialize COR subgraph */
     if (MscoreeEntry)
     {
+        DPRINT1("Preparing to launch .NET image\n");
         BOOLEAN CorHasInitializing = 0;
 
         Status = LdrpInitializeGraphRecurse(MscoreeEntry->DdagNode, NULL, &CorHasInitializing);
@@ -2395,6 +2391,12 @@ LdrpInitializeProcess(IN PCONTEXT Context,
         Kernel32BaseQueryModuleData = FunctionAddress;
     }
 
+    if (MscoreeEntry)
+    {
+
+        Status = LdrpCorProcessImports(LdrpImageEntry);
+
+    }
     /* Walk the IAT and load all the DLLs */
     ImportStatus = LdrpWalkImportDescriptor(LdrpDefaultPath.Buffer, LdrpImageEntry);
 

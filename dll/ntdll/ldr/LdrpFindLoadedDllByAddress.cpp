@@ -18,20 +18,23 @@ LdrpFindLoadedDllByAddress(IN PVOID Base,
                            OUT PLDR_DATA_TABLE_ENTRY *Module,
                            OUT LDR_DDAG_STATE *DdagState OPTIONAL)
 {
-    PLDR_DATA_TABLE_ENTRY FoundEntry = NULL;
 
+    DPRINT1("LoadedDllByAddress Entry\n");
+    PLDR_DATA_TABLE_ENTRY FoundEntry = NULL;
     if (Base)
     {
-        RtlAcquireSRWLockExclusive(&LdrpModuleDatatableLock);
+            DPRINT1("FindDLlByAddr: valid base\n");
+      //  RtlAcquireSRWLockExclusive(&LdrpModuleDatatableLock);
 
         /* Check the cache first */
-        if (LdrpLoadedDllHandleCache && LdrpLoadedDllHandleCache->DllBase == Base)
+        if (LdrpCheckForLoadedDllHandle(Base,Module))
         {
+            DPRINT1("checking the cache\n");
             /* We got lucky, return the cached entry */
             FoundEntry = LdrpLoadedDllHandleCache;
             goto Quickie;
         }
-
+        DPRINT1("looking uo\n");
         /* Time for a lookup */
         {
             const auto* const ListHead = &NtCurrentPeb()->Ldr->InLoadOrderModuleList;
@@ -54,18 +57,20 @@ LdrpFindLoadedDllByAddress(IN PVOID Base,
         }
 
 Quickie:
+        DPRINT1("quickie enter\n");
+        FoundEntry->ReferenceCount += 1;
+        #if 0
         if (FoundEntry && !LDRP_MODULE_PINNED(FoundEntry))
         {
             InterlockedIncrement(reinterpret_cast<long volatile*>(&FoundEntry->ReferenceCount));
         }
+        #endif
 
-        RtlReleaseSRWLockExclusive(&LdrpModuleDatatableLock);
+      //  RtlReleaseSRWLockExclusive(&LdrpModuleDatatableLock);
     }
-
+    DPRINT1("Left LdrpFindLoadedDllByAddr\n");
     *Module = FoundEntry;
-    if (FoundEntry && DdagState)
-        *DdagState = FoundEntry->DdagNode->State;
-
+        DPRINT1("returning\n");
     /* Nothing found */
-    return FoundEntry ? STATUS_SUCCESS : STATUS_DLL_NOT_FOUND;
+    return STATUS_SUCCESS;
 }
