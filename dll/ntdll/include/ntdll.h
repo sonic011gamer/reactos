@@ -21,6 +21,9 @@
 #define _INC_SWPRINTF_INL_
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /* SDK/DDK/NDK Headers. */
 #define WIN32_NO_STATUS
 #include <windef.h>
@@ -39,7 +42,9 @@
 #include <ndk/psfuncs.h>
 #include <ndk/rtlfuncs.h>
 #include <ndk/umfuncs.h>
-
+#ifdef __cplusplus
+}
+#endif
 /* Internal NTDLL */
 #include "ntdllp.h"
 

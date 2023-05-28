@@ -22,7 +22,11 @@ extern "C"
 }
 #endif
 
-
+#ifndef EXTERN_C
+#define EXTERN_C       extern "C"
+    #define EXTERN_C_START extern "C" {
+    #define EXTERN_C_END   }
+#endif
 typedef struct _LDRP_PATH_SEARCH_CONTEXT
 {
     UNICODE_STRING DllSearchPath;
@@ -32,8 +36,9 @@ typedef struct _LDRP_PATH_SEARCH_CONTEXT
 } LDRP_PATH_SEARCH_CONTEXT, *PLDRP_PATH_SEARCH_CONTEXT;
 
 #define LDR_HASH_TABLE_ENTRIES 32
+#ifndef LDR_GET_HASH_ENTRY
 #define LDR_GET_HASH_ENTRY(x) ((x) & (LDR_HASH_TABLE_ENTRIES - 1))
-
+#endif
 /* Loader flags */
 #define IMAGE_LOADER_FLAGS_COMPLUS 0x00000001
 #define IMAGE_LOADER_FLAGS_SYSTEM_GLOBAL 0x01000000

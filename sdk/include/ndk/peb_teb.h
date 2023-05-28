@@ -459,7 +459,19 @@ typedef struct STRUCT(_TEB)
     ULONG LockCount;
 #else
     BOOLEAN SafeThunkCall;
-    BOOLEAN BooleanSpare[3];
+    BOOLEAN BooleanSpare;
+    union
+    {
+        USHORT SameTebFlags;
+        struct
+        {
+            USHORT RanProcessInit : 1;
+            USHORT InitialThread : 1;
+            USHORT LoadOwner : 1;
+            USHORT LoaderWorker : 1;
+            USHORT SkipLoaderInit : 1;
+        };
+    };
 #endif
 
 #if (NTDDI_VERSION >= NTDDI_WIN10) // since 10.0.10041.0

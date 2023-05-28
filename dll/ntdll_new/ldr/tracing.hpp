@@ -994,7 +994,7 @@ public:
 // todo: checks, asserts
 // todo: ring buffer logging
 // todo: hard errors
-
+#endif
 
 #define CONCATENATE(arg1, arg2)   CONCATENATE1(arg1, arg2)
 #define CONCATENATE1(arg1, arg2)  CONCATENATE2(arg1, arg2)
@@ -1008,7 +1008,7 @@ public:
 #define FOR_EACH_C_6(what, x, ...) what(x), FOR_EACH_C_5(what,  __VA_ARGS__)
 #define FOR_EACH_C_7(what, x, ...) what(x), FOR_EACH_C_6(what,  __VA_ARGS__)
 #define FOR_EACH_C_8(what, x, ...) what(x), FOR_EACH_C_7(what,  __VA_ARGS__)
-#define FOR_EACH_S_1(what, x) what(x)
+#define FOR_EACH_S_1(what, x)      what(x)
 #define FOR_EACH_S_2(what, x, ...) what(x); FOR_EACH_S_1(what,  __VA_ARGS__);
 #define FOR_EACH_S_3(what, x, ...) what(x); FOR_EACH_S_2(what, __VA_ARGS__);
 #define FOR_EACH_S_4(what, x, ...) what(x); FOR_EACH_S_3(what,  __VA_ARGS__);
@@ -1025,12 +1025,12 @@ public:
 #define FOR_EACH_C_(N, what, ...) CONCATENATE(FOR_EACH_C_, N)(what, __VA_ARGS__)
 #define FOR_EACH_S_(N, what, ...) CONCATENATE(FOR_EACH_S_, N)(what, __VA_ARGS__)
 
-#define LDR_FUNC_IMPL(...) LoaderFunction ldr_function{__FUNCTION__ __VA_OPT__(,) __VA_ARGS__}; LoaderLogContext& ldr_log = ldr_function.LogContext(); (void)ldr_log;
+#define LDR_FUNC_IMPL(...)
 #define LDR_FUNC_VOID_MANUAL(...) __try { ([&]() -> void { LDR_FUNC_IMPL(__VA_ARGS__)
 #define LDR_FUNC_MANUAL(returntype, ...) __try { return LdrpWrapResultReturn([&]() -> returntype { LDR_FUNC_IMPL(__VA_ARGS__)
 #define LDR_FUNC_VOID(...) LDR_FUNC_VOID_MANUAL(FOR_EACH_C_(FOR_EACH_NARG(__VA_ARGS__), LDR_ARG, __VA_ARGS__))
 #define LDR_FUNC(returntype, ...) LDR_FUNC_MANUAL(returntype, FOR_EACH_C_(FOR_EACH_NARG(__VA_ARGS__), LDR_ARG, __VA_ARGS__))
-#define LDR_LOG_IMPL(context, level, fmtstr, ...) context.log(LoaderLogLevel::level, LDR_LOCATION_FMT_PREFIX fmtstr, __RELFILE__, __LINE__ __VA_OPT__(,) __VA_ARGS__)
+#define LDR_LOG_IMPL(context, level, fmtstr, ...)
 #define LDR_TRACE(fmtstr, ...) LDR_LOG_IMPL(ldr_function, Trace, fmtstr, __VA_ARGS__)
 #define LDR_DEBUG(fmtstr, ...) LDR_LOG_IMPL(ldr_function, Debug, fmtstr, __VA_ARGS__)
 #define LDR_INFO(fmtstr, ...) LDR_LOG_IMPL(ldr_function, Information, fmtstr, __VA_ARGS__)
@@ -1066,7 +1066,7 @@ public:
 #define ASSERT_EQ(exp, expected) ASSERTEX(exp, CHECK_EQ(expected), , "{} != {}", assert_value, expected)
 #define ASSERT_TRUE(exp) ASSERTEX(exp, CHECK_NONZERO, , "!{}", assert_value)
 #define ASSERT_FALSE(exp) ASSERTEX(exp, CHECK_ZERO, , "{}", assert_value)
-
+#if 0
 template <typename T>
 LoaderDataWatch<std::remove_cvref_t<T>>* LdrpGetOrCreateDataWatch(T* pointer)
 {

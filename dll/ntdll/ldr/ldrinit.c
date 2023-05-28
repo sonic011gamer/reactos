@@ -26,6 +26,7 @@ UNICODE_STRING Wow64OptionsString = RTL_CONSTANT_STRING(L"");
 UNICODE_STRING NtDllString = RTL_CONSTANT_STRING(L"ntdll.dll");
 UNICODE_STRING Kernel32String = RTL_CONSTANT_STRING(L"kernel32.dll");
 const UNICODE_STRING LdrpDotLocal = RTL_CONSTANT_STRING(L".Local");
+PCONTEXT LdrpProcessInitContextRecord;
 
 BOOLEAN LdrpInLdrInit;
 LONG LdrpProcessInitialized;
@@ -2302,8 +2303,54 @@ LdrpInitializeProcess(IN PCONTEXT Context,
 
     if (IsDotNetImage)
     {
+        LdrpImageEntry->CorImage = TRUE;
         /* FIXME */
-        DPRINT1("We don't support .NET applications yet\n");
+        DPRINT1("Attempt to support .NET image\n");
+    }
+
+
+
+    PLDR_DATA_TABLE_ENTRY MscoreeEntry = NULL;
+
+    if (IsDotNetImage)
+    {
+        if (!NT_SUCCESS(Status = LdrpCorInitialize(&MscoreeEntry)))
+            return Status;
+
+            if (!NT_SUCCESS(Status = LdrpCorValidateImage(Peb->ImageBaseAddress, LdrpImageEntry->FullDllName.Buffer)))
+            {
+                DPRINT1("LDR: LdrpCorValidateImage failed [0x%08lX]\n", Status);
+                return Status;
+            }
+
+
+        if (Teb->InitialThread)
+            LdrpCorReplaceStartContext(Context);
+    }
+#if 1
+    /* Initialize TLS */
+    Status = LdrpInitializeTls();
+    if (!NT_SUCCESS(Status))
+    {
+        DPRINT1("LDR: LdrpProcessInitialization failed to initialize TLS slots; status 0x%08lX\n",
+            Status);
+        return Status;
+    }
+#endif
+    /* Initialize COR subgraph */
+    if (MscoreeEntry)
+    {
+        BOOLEAN CorHasInitializing = 0;
+
+        Status = LdrpInitializeGraphRecurse(MscoreeEntry->DdagNode, NULL, &CorHasInitializing);
+
+        if (!NT_SUCCESS(Status))
+        {
+            DPRINT1("LDR: DllMain of MSCOREE (or its dependents) failed with status 0x%08lX\n", Status);
+            return Status;
+        }
+
+        MscoreeEntry = NULL;
     }
 
     if (NtHeader->OptionalHeader.Subsystem == IMAGE_SUBSYSTEM_WINDOWS_GUI ||

@@ -21,8 +21,14 @@ list(APPEND SOURCE
     dbg/dbgui.c
     ldr/ldrapi.c
     ldr/ldrinit.c
+    ldr/ldrcor.cpp
+    ldr/LdrpFindLoadedDllByAddress.cpp
+    ldr/LdrpInitializeGraphRecurse.cpp
+    ldr/LdrpInitializeNode.cpp
+    ldr/LdrpRunInitializeRoutine.cpp
     ldr/ldrpe.c
     ldr/ldrutils.c
+    ldr/ldrutils.cpp
     ldr/verifier.c
     rtl/libsupp.c
     rtl/uilist.c

@@ -9,11 +9,8 @@
 
 /* INCLUDES *****************************************************************/
 
-#include <ldrp.h>
 
-EXTERN_C
-{
-
+extern "C" {
 #include <ndk/mmfuncs.h>
 #include <ndk/cmfuncs.h>
 #include <ndk/obfuncs.h>
@@ -28,10 +25,10 @@ EXTERN_C
 #include <stdio.h>
 
 #include <reactos/ldrp.h>
-//#include <ndk/ntbits.h>
+};
 
-}
 
+#include <ldrp.h>
 /* GLOBALS *******************************************************************/
 
 HANDLE ImageExecOptionsKey;
@@ -437,7 +434,7 @@ LdrpFetchAddressOfSecurityCookie(PVOID BaseAddress,
                                  OUT PIMAGE_LOAD_CONFIG_DIRECTORY* OutLoadConfig)
 {
     LDR_FUNC(PULONG_PTR, BaseAddress, SizeOfImage, CookieNotWritable, OutLoadConfig)
-    ASSERT_TRUE(CookieNotWritable);
+    ASSERT(CookieNotWritable);
 
     *CookieNotWritable = FALSE;
 
@@ -763,10 +760,6 @@ LdrpInitializeThread(IN PCONTEXT Context)
                 }
 
                 /* Call the Entrypoint */
-                LDR_TRACE("{} - Calling entry point at " LDR_HEXPTR_FMT " for thread attaching, " LDR_HEXPTR_FMT "/" LDR_HEXPTR_FMT,
-                       &LdrEntry->BaseDllName, LdrEntry->EntryPoint,
-                       NtCurrentTeb()->RealClientId.UniqueProcess,
-                       NtCurrentTeb()->RealClientId.UniqueThread);
                 LdrpCallInitRoutine(static_cast<PDLL_INIT_ROUTINE>(LdrEntry->EntryPoint),
                                     LdrEntry->DllBase,
                                     DLL_THREAD_ATTACH,
@@ -898,8 +891,6 @@ LdrShutdownProcess()
             }
 
             /* Call the Entrypoint */
-            LDR_TRACE("{} - Calling entry point at " LDR_HEXPTR_FMT " for thread detaching",
-                   &LdrEntry->BaseDllName, LdrEntry->EntryPoint);
             LdrpCallInitRoutine(EntryPoint,
                                 LdrEntry->DllBase,
                                 DLL_PROCESS_DETACH,

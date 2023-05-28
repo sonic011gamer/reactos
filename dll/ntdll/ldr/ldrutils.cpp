@@ -8,16 +8,16 @@
  */
 
 /* INCLUDES *****************************************************************/
-#include <ldrp.h>
 
+#include <ntdll.h>
 EXTERN_C
 {
 
 #include <ndk/exfuncs.h>
-#include <reactos/ldrp.h>
+//#include <reactos/ldrp.h>
 
 }
-
+#include <debug.h>
 /* GLOBALS *******************************************************************/
 
 UNICODE_STRING SlashSystem32SlashString = RTL_CONSTANT_STRING(L"\\System32\\");
@@ -59,6 +59,114 @@ void operator delete[](void* ptr) noexcept
 {
     RtlFreeHeap(RtlGetProcessHeap(), 0, ptr);
 }
+
+PVOID
+NTAPI
+LdrpHeapAlloc(IN ULONG Flags OPTIONAL,
+              IN SIZE_T Size)
+{
+    return RtlAllocateHeap(LdrpHeap,
+                           Flags,
+                           Size);
+}
+
+BOOLEAN
+NTAPI
+LdrpHeapFree(IN ULONG Flags OPTIONAL,
+             IN PVOID BaseAddress)
+{
+    return RtlFreeHeap(LdrpHeap, Flags, BaseAddress);
+}
+
+PVOID
+NTAPI
+LdrpHeapReAlloc(IN ULONG Flags OPTIONAL,
+                IN PVOID Ptr,
+                IN SIZE_T Size)
+{
+    return RtlReAllocateHeap(LdrpHeap,
+                             Flags,
+                             Ptr,
+                             Size);
+}
+
+NTSTATUS
+NTAPI
+LdrpAllocateFileNameBufferIfNeeded(PLDRP_UNICODE_STRING_BUNDLE Destination, ULONG Length)
+{
+    PWSTR NewBuffer;
+
+    if (Length <= Destination->String.MaximumLength)
+        return STATUS_SUCCESS;
+
+    if (Length > UNICODE_STRING_MAX_BYTES)
+        return STATUS_NAME_TOO_LONG;
+
+    if (!LdrpIsUsingUnicodeStringBundleBufferPtr(Destination))
+    {
+        NewBuffer = (PWSTR)LdrpHeapReAlloc(HEAP_ZERO_MEMORY, Destination->String.Buffer, Length);
+    }
+    else
+    {
+        NewBuffer = (PWSTR)LdrpHeapAlloc(HEAP_ZERO_MEMORY, Length);
+
+        if (NewBuffer)
+        {
+            if (Destination->String.Length)
+                memcpy(NewBuffer, Destination->String.Buffer, Destination->String.Length);
+        }
+    }
+
+    if (NewBuffer)
+    {
+        Destination->String.Buffer = NewBuffer;
+        Destination->String.MaximumLength = Length;
+        return STATUS_SUCCESS;
+    }
+
+    return STATUS_NO_MEMORY;
+}
+
+
+NTSTATUS
+NTAPI
+LdrpAppendUnicodeStringToFilenameBuffer(PLDRP_UNICODE_STRING_BUNDLE Destination, UNICODE_STRING *Source)
+{
+    NTSTATUS Status = STATUS_SUCCESS;
+
+    if (Source->Length)
+    {
+        Status = LdrpAllocateFileNameBufferIfNeeded(Destination, Destination->String.Length + Source->Length + sizeof(WCHAR));
+
+        if (NT_SUCCESS(Status))
+        {
+            memcpy(PTR_ADD_OFFSET(Destination->String.Buffer, Destination->String.Length), Source->Buffer, Source->Length);
+            Destination->String.Length += Source->Length;
+            Destination->String.Buffer[Destination->String.Length / sizeof(WCHAR)] = 0;
+        }
+    }
+
+    return Status;
+}
+
+NTSTATUS
+NTAPI
+LdrpBuildSystem32FileName(IN PLDRP_UNICODE_STRING_BUNDLE DestinationString,
+                          IN PUNICODE_STRING FileName OPTIONAL)
+{
+    ASSERT(DestinationString);
+    DestinationString->String.Length = 0;
+
+    UNICODE_STRING NtSystemRoot;
+    RtlInitUnicodeString(&NtSystemRoot, SharedUserData->NtSystemRoot);
+    ASSERT(NT_SUCCESS(LdrpAppendUnicodeStringToFilenameBuffer(DestinationString, &NtSystemRoot)));
+    ASSERT(NT_SUCCESS(LdrpAppendUnicodeStringToFilenameBuffer(DestinationString, &SlashSystem32SlashString)));
+
+    if (!FileName)
+        return STATUS_SUCCESS;
+    return LdrpAppendUnicodeStringToFilenameBuffer(DestinationString, FileName);
+}
+
 #if 0
 EXTERN_C
 BOOLEAN
@@ -95,23 +203,7 @@ LdrpDllCharacteristicsToLoadFlags(ULONG DllCharacteristics)
     return Result;
 }
 
-NTSTATUS
-NTAPI
-LdrpBuildSystem32FileName(IN PLDRP_UNICODE_STRING_BUNDLE DestinationString,
-                          IN PUNICODE_STRING FileName OPTIONAL)
-{
-    ASSERT(DestinationString);
-    DestinationString->String.Length = 0;
 
-    UNICODE_STRING NtSystemRoot;
-    RtlInitUnicodeString(&NtSystemRoot, SharedUserData->NtSystemRoot);
-    ASSERT(NT_SUCCESS(LdrpAppendUnicodeStringToFilenameBuffer(DestinationString, &NtSystemRoot)));
-    ASSERT(NT_SUCCESS(LdrpAppendUnicodeStringToFilenameBuffer(DestinationString, &SlashSystem32SlashString)));
-
-    if (!FileName)
-        return STATUS_SUCCESS;
-    return LdrpAppendUnicodeStringToFilenameBuffer(DestinationString, FileName);
-}
 
 ULONG32
 NTAPI
@@ -142,35 +234,7 @@ LdrpIsBaseNameOnly(IN PUNICODE_STRING DllName)
     return TRUE;
 }
 
-PVOID
-NTAPI
-LdrpHeapAlloc(IN ULONG Flags OPTIONAL,
-              IN SIZE_T Size)
-{
-    return RtlAllocateHeap(LdrpHeap,
-                           Flags,
-                           Size);
-}
 
-BOOLEAN
-NTAPI
-LdrpHeapFree(IN ULONG Flags OPTIONAL,
-             IN PVOID BaseAddress)
-{
-    return RtlFreeHeap(LdrpHeap, Flags, BaseAddress);
-}
-
-PVOID
-NTAPI
-LdrpHeapReAlloc(IN ULONG Flags OPTIONAL,
-                IN PVOID Ptr,
-                IN SIZE_T Size)
-{
-    return RtlReAllocateHeap(LdrpHeap,
-                             Flags,
-                             Ptr,
-                             Size);
-}
 
 PSINGLE_LIST_ENTRY
 NTAPI
@@ -268,8 +332,8 @@ LdrpDropLastInProgressCount(void)
 LONG
 LdrpCompareModuleName(PLDR_DATA_TABLE_ENTRY SearchTarget, PLDR_DATA_TABLE_ENTRY Item)
 {
-    LDRP_ASSERT_MODULE_ENTRY(SearchTarget);
-    LDRP_ASSERT_MODULE_ENTRY(Item);
+    //SERT_MODULE_ENTRY(SearchTarget);
+    //SERT_MODULE_ENTRY(Item);
 
     const LONG Result = Item->BaseNameHashValue - SearchTarget->BaseNameHashValue;
 
@@ -283,7 +347,7 @@ BOOLEAN
 NTAPI
 LdrpCheckForRetryLoading(IN PLDRP_LOAD_CONTEXT LoadContext, IN BOOLEAN InsertIntoRetryQueue)
 {
-    LDRP_ASSERT_LOAD_CONTEXT(LoadContext);
+    //SERT_LOAD_CONTEXT(LoadContext);
 
     BOOLEAN Inserted = FALSE;
 
@@ -293,7 +357,7 @@ LdrpCheckForRetryLoading(IN PLDRP_LOAD_CONTEXT LoadContext, IN BOOLEAN InsertInt
         const PLIST_ENTRY ListHead = &LdrpRetryQueue;
         PLDRP_LOAD_CONTEXT Found = NULL;
 
-        LDRP_ASSERT_MODULE_ENTRY(Entry);
+        //SERT_MODULE_ENTRY(Entry);
 
         RtlEnterCriticalSection(&LdrpWorkQueueLock);
 
@@ -302,7 +366,7 @@ LdrpCheckForRetryLoading(IN PLDRP_LOAD_CONTEXT LoadContext, IN BOOLEAN InsertInt
             /* Get the current entry */
             const PLDRP_LOAD_CONTEXT Current = CONTAINING_RECORD(It, LDRP_LOAD_CONTEXT, QueueListEntry);
 
-            LDRP_ASSERT_LOAD_CONTEXT(Current);
+            //SERT_LOAD_CONTEXT(Current);
 
             if (LdrpCompareModuleName(Entry, Current->Module))
             {
@@ -328,7 +392,7 @@ NTSTATUS
 NTAPI
 LdrpAppCompatRedirect(PLDRP_LOAD_CONTEXT LoadContext, PUNICODE_STRING FullDosPath, PUNICODE_STRING BaseDllName, PLDRP_UNICODE_STRING_BUNDLE NtPath, NTSTATUS Status)
 {
-    LDRP_ASSERT_LOAD_CONTEXT(LoadContext);
+    //SERT_LOAD_CONTEXT(LoadContext);
 
     if (!g_ShimsEnabled || !g_pfnSE_LdrResolveDllName)
         return Status;

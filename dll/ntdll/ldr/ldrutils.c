@@ -1616,6 +1616,7 @@ LdrpFinalizeAndDeallocateDataTableEntry(IN PLDR_DATA_TABLE_ENTRY Entry)
     RtlFreeHeap(LdrpHeap, 0, Entry);
 }
 
+
 BOOLEAN
 NTAPI
 LdrpCheckForLoadedDllHandle(IN PVOID Base,
