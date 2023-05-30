@@ -24,7 +24,7 @@ DwmExtendFrameIntoClientArea(HWND hwnd,
     UNIMPLEMENTED;
     DPRINT("called, Parameters:(%p, %p) stub\n", hwnd, margins);
 
-    return STATUS_SUCCESS;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************
@@ -41,7 +41,7 @@ DwmGetColorizationColor(DWORD *colorization, BOOL *opaque_blend)
     UNIMPLEMENTED;
     DPRINT("called, Parameters:(%p, %p) stub\n", colorization, opaque_blend);
 
-    return E_NOTIMPL;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************
@@ -60,7 +60,7 @@ DwmFlush(void)
 
     if (!once++) DPRINT("called, Parameters:() stub\n");
 
-    return E_NOTIMPL;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************
@@ -79,7 +79,7 @@ DwmInvalidateIconicBitmaps(HWND hwnd)
 
     if (!once++) DPRINT("called, Parameters:(%p) stub\n", hwnd);
 
-    return E_NOTIMPL;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************
@@ -98,7 +98,7 @@ DwmSetWindowAttribute(HWND hwnd, DWORD attributenum, LPCVOID attribute, DWORD si
 
     if (!once++) DPRINT("called, Parameters:(%p, %lx, %p, %lx) stub\n", hwnd, attributenum, attribute, size);
 
-    return STATUS_SUCCESS;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************
@@ -115,7 +115,7 @@ DwmGetGraphicsStreamClient(UINT uIndex, UUID *pClientUuid)
     UNIMPLEMENTED;
     DPRINT("called, Parameters:(%d, %p) stub\n", uIndex, pClientUuid);
 
-    return E_NOTIMPL;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************
@@ -149,7 +149,7 @@ DwmUnregisterThumbnail(HTHUMBNAIL thumbnail)
     UNIMPLEMENTED;
     DPRINT("called, Parameters:(%p) stub\n", thumbnail);
 
-    return E_NOTIMPL;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************
@@ -166,7 +166,7 @@ DwmEnableMMCSS(BOOL enableMMCSS)
     UNIMPLEMENTED;
     DPRINT("called, Parameters:(%d) stub\n", enableMMCSS);
 
-    return STATUS_SUCCESS;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************
@@ -183,7 +183,7 @@ DwmGetGraphicsStreamTransformHint(UINT uIndex, MilMatrix3x2D *pTransform)
     UNIMPLEMENTED;
     DPRINT("called, Parameters:(%d, %p) stub\n", uIndex, pTransform);
 
-    return E_NOTIMPL;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************
@@ -200,7 +200,7 @@ DwmEnableBlurBehindWindow(HWND hWnd, const DWM_BLURBEHIND *pBlurBuf)
     UNIMPLEMENTED;
     DPRINT("called, Parameters:%p %p\n", hWnd, pBlurBuf);
 
-    return E_NOTIMPL;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************
@@ -219,7 +219,7 @@ DwmDefWindowProc(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam, LRESULT *plR
 
     if (!i++) DPRINT("called, Parameters:stub\n");
 
-    return FALSE;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************
@@ -236,7 +236,7 @@ DwmGetWindowAttribute(HWND hwnd, DWORD attribute, PVOID pv_attribute, DWORD size
     UNIMPLEMENTED;
     DPRINT("called, Parameters:(%p %ld %p %ld) stub\n", hwnd, attribute, pv_attribute, size);
 
-    return E_NOTIMPL;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************
@@ -253,7 +253,7 @@ DwmRegisterThumbnail(HWND dest, HWND src, PHTHUMBNAIL thumbnail_id)
     UNIMPLEMENTED;
     DPRINT("called, Parameters:(%p %p %p) stub\n", dest, src, thumbnail_id);
 
-    return E_NOTIMPL;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************
