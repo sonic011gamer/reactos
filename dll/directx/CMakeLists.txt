@@ -5,10 +5,9 @@ if(ARCH STREQUAL "i386")
         add_subdirectory(d3d8) #disabled in trunk, see wine subfolder
     endif()
 endif()
-if (NOT MSDX)
-    add_subdirectory(d3d8thk)
-endif()
+
 if (NOT MSDX OR DXTEST)
+    add_subdirectory(d3d8thk)
     add_subdirectory(d3d9)
 endif()
 if(ARCH STREQUAL "i386")
