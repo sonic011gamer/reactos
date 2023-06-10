@@ -18,8 +18,8 @@ Environment:
 
 #include "precomp.h"
 
-extern ULONG DebugLevel;
-extern ULONG DebugFlag;
+ULONG DebugLevel;
+ULONG DebugFlag;
 
 #if !defined(EVENT_TRACING)
 
