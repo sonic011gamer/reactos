@@ -14,6 +14,8 @@
 /* GLOBALS ********************************************************************/
 
 OSK_GLOBALS Globals;
+int prevWidth = 0;
+int prevHeight = 0;
 
 OSK_KEYLEDINDICATOR LedKey[] =
 {
@@ -179,6 +181,68 @@ VOID OSK_DestroyKeys(VOID)
     Globals.Keyboard = NULL;
 }
 
+
+int AdjustKeyBounds(float f, float relativeFrom, float relativeTo)
+{
+    return (int)((f / relativeFrom) * relativeTo);
+}
+
+
+void EnsureKeyPlacement(float newWidth, float newHeight)
+{
+    if ((newWidth <= 0) || (newHeight <= 0))
+        return;
+
+    float oldWidth = 736.0f;
+    float oldHeight = 184.0f;
+
+    PKEY Keys = Globals.Keyboard->Keys;
+    for (int i = 0; i < Globals.Keyboard->KeyCount; i++)
+    {
+        KEY keyInfo = Keys[i];
+        float xF = AdjustKeyBounds(keyInfo.x, oldWidth, newWidth);
+        float yF = AdjustKeyBounds(keyInfo.y, oldHeight, newHeight);
+        float cxF = AdjustKeyBounds(keyInfo.cx, oldWidth, newWidth);
+        float cyF = AdjustKeyBounds(keyInfo.cy, oldHeight, newHeight);
+
+        MoveWindow(Globals.hKeys[i], (int)xF, (int)yF, (int)cxF, (int) cyF, FALSE);
+    }
+    RedrawWindow(Globals.hMainWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+}
+void RefreshKeyPlacement()
+{
+    RECT oldClientRect;
+    GetClientRect(Globals.hMainWnd, &oldClientRect);
+    EnsureKeyPlacement(oldClientRect.right - oldClientRect.left, oldClientRect.bottom - oldClientRect.top);
+}
+
+
+
+/***********************************************************************
+ *
+ *           OSK_WindowPosChanging
+ *
+ *  Handling of WM_WINDOWPOSCHANGING
+ */
+LRESULT OSK_WindowPosChanging(LPARAM lParam)
+{
+    //RECT oldClientRect;
+    //GetClientRect(Globals.hMainWnd, &oldClientRect);
+    //float oldWidth = 736.0f; //oldClientRect.right - oldClientRect.left;
+    //float oldHeight = 184.0f; //oldClientRect.bottom - oldClientRect.top;
+
+    LPWINDOWPOS newRect = (LPWINDOWPOS)lParam;
+    POINT br = { newRect->cx, newRect->cy };
+    ScreenToClient(Globals.hMainWnd, &br);
+    float newWidth = br.x;
+    float newHeight = br.y;
+
+    EnsureKeyPlacement(newWidth, newHeight);
+
+    return 1;
+}
+
+
 /***********************************************************************
  *
  *           OSK_SetKeys
@@ -240,7 +304,7 @@ LRESULT OSK_SetKeys(int reason)
         }
         /* Fallthrough */
         case SETKEYS_INIT:
-        {             
+        {
             if (Globals.bIsEnhancedKeyboard)
             {
                 Globals.Keyboard = &EnhancedKeyboard;
@@ -273,7 +337,7 @@ LRESULT OSK_SetKeys(int reason)
                 {
                     szKey = Keys[i].name;
                 }
-                
+
                 Globals.hKeys[i] = CreateWindowW(WC_BUTTONW,
                                                  szKey,
                                                  WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | Keys[i].flags,
@@ -287,6 +351,9 @@ LRESULT OSK_SetKeys(int reason)
                                                  NULL);
                 if (Globals.hFont)
                     SendMessageW(Globals.hKeys[i], WM_SETFONT, (WPARAM)Globals.hFont, 0);
+
+
+                RefreshKeyPlacement();
             }
 
             /* Add additional padding for caption and menu */
@@ -299,7 +366,7 @@ LRESULT OSK_SetKeys(int reason)
                          Globals.Keyboard->Size.cx,
                          Globals.Keyboard->Size.cy + yPad,
                          SWP_NOMOVE);
-            
+
             /* Create LEDs */
             LedPos  = Globals.Keyboard->LedStart;
             LedSize = Globals.Keyboard->LedSize;
@@ -307,7 +374,7 @@ LRESULT OSK_SetKeys(int reason)
             CreateWindowW(WC_STATICW, L"", WS_VISIBLE | WS_CHILD | SS_CENTER | SS_NOTIFY,
                 LedPos.x, LedPos.y, LedSize.cx, LedSize.cy, Globals.hMainWnd,
                 (HMENU)IDC_LED_NUM, Globals.hInstance, NULL);
-            
+
             LedPos.x += Globals.Keyboard->LedGap;
 
             CreateWindowW(WC_STATICW, L"", WS_VISIBLE | WS_CHILD | SS_CENTER | SS_NOTIFY,
@@ -774,12 +841,12 @@ LRESULT OSK_Paint(HWND hwnd)
     DrawTextW(hdc, szTemp, -1, &rcText, DT_NOCLIP);
 
     OffsetRect(&rcText, Globals.Keyboard->LedTextOffset, 0);
-    
+
     LoadStringW(Globals.hInstance, IDS_CAPSLOCK, szTemp, _countof(szTemp));
     DrawTextW(hdc, szTemp, -1, &rcText, DT_NOCLIP);
 
     OffsetRect(&rcText, Globals.Keyboard->LedTextOffset, 0);
- 
+
     LoadStringW(Globals.hInstance, IDS_SCROLLLOCK, szTemp, _countof(szTemp));
     DrawTextW(hdc, szTemp, -1, &rcText, DT_NOCLIP);
 
@@ -806,6 +873,10 @@ LRESULT APIENTRY OSK_WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
         case WM_TIMER:
             return OSK_Timer();
+
+        case WM_WINDOWPOSCHANGED:
+            OSK_WindowPosChanging(lParam);
+            return DefWindowProcW(hwnd, msg, wParam, lParam);
 
         case WM_CTLCOLORSTATIC:
             if ((HWND)lParam == GetDlgItem(hwnd, IDC_LED_NUM))
@@ -1034,7 +1105,7 @@ int WINAPI wWinMain(HINSTANCE hInstance,
     hwnd = CreateWindowExW(WS_EX_TOPMOST | WS_EX_APPWINDOW | WS_EX_NOACTIVATE,
                            OSK_CLASS,
                            Globals.szTitle,
-                           WS_SYSMENU | WS_MINIMIZEBOX,
+                           WS_OVERLAPPEDWINDOW, //WS_SYSMENU | WS_MINIMIZEBOX,
                            CW_USEDEFAULT,
                            CW_USEDEFAULT,
                            CW_USEDEFAULT,
@@ -1049,7 +1120,7 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 
     ShowWindow(hwnd, SW_SHOW);
     UpdateWindow(hwnd);
-    
+
     while (GetMessageW(&msg, NULL, 0, 0))
     {
         TranslateMessage(&msg);
