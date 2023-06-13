@@ -597,6 +597,7 @@
 @ stdcall StartServiceCtrlDispatcherA(ptr)
 @ stdcall StartServiceCtrlDispatcherW(ptr)
 @ stdcall StartServiceW(long long ptr)
+@ stub CheckAppInitBlockedServiceIdentity
 @ stdcall StartTraceA(ptr str ptr) ntdll.EtwStartTraceA
 @ stdcall StartTraceW(ptr wstr ptr) ntdll.EtwStartTraceW
 @ stdcall StopTraceA(double str ptr) ntdll.EtwStopTraceA

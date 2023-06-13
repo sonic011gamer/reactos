@@ -88,6 +88,13 @@ CsrInitializeWait(IN CSR_WAIT_FUNCTION WaitFunction,
     return TRUE;
 }
 
+VOID
+NTAPI
+CsrReplyToMessage(PVOID test)
+{
+
+}
+
 /*++
  * @name CsrNotifyWaitBlock
  *
