@@ -9,11 +9,14 @@
 #ifndef _OSK_PRECOMP_H
 #define _OSK_PRECOMP_H
 
+#define OSK_KEY_SUBCLASSID 9994
+
 /* INCLUDES *******************************************************************/
 
 #include <stdio.h>
 
 #include <windows.h>
+#include <windowsx.h>
 #include <debug.h>
 #include <uxtheme.h>
 #include <vsstyle.h>
@@ -129,6 +132,9 @@ LONG SaveStringToRegistry(IN LPCWSTR lpValueDataName,
 
 VOID LoadSettings(VOID);
 VOID SaveSettings(VOID);
+
+LRESULT APIENTRY OSK_KeyProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
+                          UINT_PTR uId, DWORD_PTR ref_data);
 
 /* DEFINES ********************************************************************/
 

@@ -6,6 +6,9 @@
  */
 
 /* INCLUDES ******************************************************************/
+#include <windef.h>
+#include <winuser.h>
+
 #include "precomp.h"
 
 #define REACTOS_STR_FILE_DESCRIPTION  "ReactOS On Screen Keyboard"

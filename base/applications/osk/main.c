@@ -16,9 +16,6 @@
 OSK_GLOBALS Globals;
 
 HWND _prevActiveWnd = NULL;
-#ifdef USE_BS_ICON_WORKAROUND_SUBCLASS
-SUBCLASSPROC OSK_KeyProcPtr;
-#endif
 
 int _prevWidth = 0;
 int _prevHeight = 0;
@@ -60,6 +57,17 @@ int OSK_SetImage(int IdDlgItem, int IdResource)
     /* The system automatically deletes these resources when the process that created them terminates (MSDN) */
 
     return TRUE;
+}
+
+/***********************************************************************
+ *
+ *           OSK_GetImage
+ *
+ *  Get image from a button
+ */
+HICON OSK_GetImage(HWND hWndItem)
+{
+    return (HICON)SendMessageW(hWndItem, BM_GETIMAGE, (WPARAM)IMAGE_ICON, (LPARAM)NULL);
 }
 
 /***********************************************************************
@@ -385,10 +393,9 @@ LRESULT OSK_SetKeys(int reason)
                                                  Globals.hInstance,
                                                  NULL);
                 Globals.hKeys[i] = keyWnd;
-#ifdef USE_BS_ICON_WORKAROUND_SUBCLASS
-                //_keyProcPtr = (WNDPROC)SetWindowLongPtr(keyWnd, GWLP_WNDPROC, (LONG_PTR));
-                SetWindowSubclass(keyWnd, OSK_KeyProcPtr, 9994, -1); //key);
-#endif
+
+                if ((keyStyle & BS_ICON) == BS_ICON)
+                    SetWindowSubclass(keyWnd, OSK_KeyProc, OSK_KEY_SUBCLASSID, i);
 
                 if (Globals.hFont)
                     SendMessageW(Globals.hKeys[i], WM_SETFONT, (WPARAM)Globals.hFont, 0);
@@ -954,66 +961,89 @@ LRESULT OSK_Paint(HWND hwnd)
 
 
 
-
-#ifdef USE_BS_ICON_WORKAROUND_SUBCLASS
-LRESULT OSK_key_CustomDraw(HWND hwnd, LONG_PTR btnStyle, LPNMCUSTOMDRAW customDraw)
-{
-    HTHEME hTheme = OpenThemeData(hwnd, L"BUTTON");
-
-    int themeState = PBS_NORMAL;
-
-    UINT btnState = customDraw->uItemState;
-
-    if (btnStyle & WS_DISABLED)
-        themeState = PBS_DISABLED;
-    else if (btnState & CDIS_SELECTED)
-        themeState = PBS_PRESSED;
-    else if (btnState & CDIS_HOT)
-        themeState = PBS_HOT;
-    else if (btnStyle & BS_DEFPUSHBUTTON)
-        themeState = PBS_DEFAULTED;
-
-    if (DrawThemeBackground(hTheme, customDraw->hdc, BP_PUSHBUTTON, themeState, &(customDraw->rc), NULL) == S_OK)
-    {
-
-    }
-        return CDRF_SKIPDEFAULT;
-    /*else
-        return CDRF_DODEFAULT;*/
-}
-
-
 /***********************************************************************
  *
  *       OSK_KeyProc
  */
-LRESULT CALLBACK OSK_KeyProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+LRESULT APIENTRY OSK_KeyProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam,
+                          UINT_PTR uId, DWORD_PTR keyIndex)
 {
-    /*if (!IsThemeActive())
+    if (!IsThemeActive())
         goto exitKeyProc;
 
-    if (msg != WM_NOTIFY)
-        goto exitKeyProc;*/
+    PAINTSTRUCT ps;
+    HDC hdc;
+    LONG_PTR btnStyle;
+    UINT btnState;
+    int themeState;
 
-    /*UINT notifyCode = ((LPNMHDR)lParam)->code;
-    if (notifyCode != NM_CUSTOMDRAW)
-        goto exitKeyProc;*/
+    int btnWidth;
+    int btnHeight;
+    int iconSize;
+    int iconOffset;
 
-    LPNMCUSTOMDRAW customDraw = (LPNMCUSTOMDRAW)lParam;
-    HWND btnWnd = customDraw->hdr.hwndFrom;
-    LONG_PTR btnStyle = GetWindowLongPtr(btnWnd, GWL_STYLE);
-    /*if ((btnStyle & BS_ICON) != 0)
-        goto exitKeyProc;*/
+    switch(uMsg)
+    {
+        case WM_PAINT:
+        case WM_NCPAINT:
+            btnStyle = GetWindowLongPtr(hwnd, GWL_STYLE);
 
-    return OSK_key_CustomDraw(btnWnd, btnStyle, customDraw);
+            btnState = Button_GetState(hwnd);
 
-//exitKeyProc:
-    /*int index = lfind(hwnd, Globals.hKeyProcs[0], Globals.Keyboard->KeyCount, sizeof(WNDPROC), int (*compar)(const void *, const void *));
-    return CallWindowProc(Globals.hKeyProcs[index], hwnd, msg, wParam, lParam);
-    */
-    return DefSubclassProc(hwnd, msg, wParam, lParam);
+            hdc = BeginPaint(hwnd, &ps);
+
+            HTHEME hTheme = OpenThemeData(hwnd, L"BUTTON");
+            if (!hTheme)
+                goto exitKeyProc;
+
+            themeState = PBS_NORMAL;
+
+            if (btnStyle & WS_DISABLED)
+                themeState = PBS_DISABLED;
+            else if (btnState & CDIS_SELECTED)
+                themeState = PBS_PRESSED;
+            else if (btnState & CDIS_HOT)
+                themeState = PBS_HOT;
+            else if (btnStyle & BS_DEFPUSHBUTTON)
+                themeState = PBS_DEFAULTED;
+            /*else if ((MapVirtualKeyW(GetKeyState(Globals.Keyboard->Keys[keyIndex].scancode) & SCANCODE_MASK, MAPVK_VSC_TO_VK) & 0x0001) != 0)
+                themeState = PBS_PRESSED;*/
+
+            LPCRECT buttonBounds = &(ps.rcPaint);
+            BOOL result = (DrawThemeBackground(hTheme, hdc, BP_PUSHBUTTON, themeState, buttonBounds, NULL) == S_OK);
+            if (result)
+            {
+                HICON icon = OSK_GetImage(hwnd);
+                if (icon != NULL)
+                {
+                    iconSize = 16;
+                    iconOffset = iconSize / 2;
+                    btnWidth = (buttonBounds->right - buttonBounds->left);
+                    btnHeight = (buttonBounds->bottom - buttonBounds->top);
+                    DrawIconEx(hdc
+                        , (btnWidth / 2) - iconOffset
+                        , (btnHeight / 2) - iconOffset
+                        , icon
+                        , iconSize
+                        , iconSize
+                        , 0
+                        , NULL
+                        , DI_IMAGE | DI_MASK
+                    );
+                }
+            }
+
+            EndPaint(hwnd, &ps);
+
+            if (result)
+                return 0;
+        default:
+            break;
+    }
+
+exitKeyProc:
+    return DefSubclassProc(hwnd, uMsg, wParam, lParam);
 }
-#endif
 
 
 
@@ -1285,10 +1315,6 @@ int WINAPI wWinMain(HINSTANCE hInstance,
     /* Create a green brush for leds */
     Globals.hBrushGreenLed = CreateSolidBrush(RGB(0, 255, 0));
 
-#ifdef USE_BS_ICON_WORKAROUND_SUBCLASS
-    //_keyProcPtr = (LONG_PTR)&OSK_KeyProc;
-    OSK_KeyProcPtr = OSK_KeyProc;
-#endif
 
     /* Load window title */
     LoadStringW(Globals.hInstance, IDS_OSK, Globals.szTitle, _countof(Globals.szTitle));
