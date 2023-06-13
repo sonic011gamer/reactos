@@ -653,7 +653,7 @@
 @ stdcall KeProfileInterruptWithSource(ptr long)
 @ stdcall KePulseEvent(ptr long long)
 @ stdcall -stub -version=0x600+ KeQueryActiveProcessorCount(long)
-@ stdcall -stub -version=0x600+ KeQueryActiveProcessorCountEx(long)
+@ stdcall -version=0x600+ KeQueryActiveProcessorCountEx(long)
 @ stdcall KeQueryActiveProcessors()
 @ stdcall -arch=i386,arm KeQueryInterruptTime()
 ;@ cdecl -arch=x86_64 KeQueryMultiThreadProcessorSet
@@ -1480,6 +1480,7 @@
 @ stdcall -version=0x600+ ZwAlpcQueryInformation(ptr ptr ptr long long) NtAlpcQueryInformation
 @ stdcall -version=0x600+ ZwAlpcSendWaitReceivePort(ptr long ptr ptr ptr long ptr ptr) NtAlpcSendWaitReceivePort
 @ stdcall -version=0x600+ ZwAlpcSetInformation(ptr ptr ptr long) NtAlpcSetInformation
+@ stdcall -version=0x600+ ZwAllocateLocallyUniqueId(ptr)
 @ stdcall ZwAssignProcessToJobObject(ptr ptr)
 @ stdcall ZwCancelIoFile(ptr ptr)
 @ stdcall ZwCancelTimer(ptr ptr)
@@ -1604,7 +1605,13 @@
 @ cdecl -arch=x86_64,arm __C_specific_handler(ptr long ptr ptr)
 @ cdecl -arch=arm __jump_unwind()
 @ cdecl -arch=x86_64 __chkstk()
+@ cdecl _chkstk()
 ;@ cdecl -arch=x86_64 __misaligned_access()
+@ stdcall -stub KeSetActualBasePriorityThread(ptr)
+@ stdcall -stub MmRotatePhysicalView(ptr ptr ptr long ptr ptr)
+@ stdcall IoQueueWorkItemEx(ptr ptr long ptr)
+@ stdcall ZwQueryVirtualMemory(long ptr long ptr long ptr)
+@ stdcall KeInvalidateRangeAllCaches(ptr long)
 @ cdecl -arch=i386 _CIcos()
 @ cdecl -arch=i386 _CIsin()
 @ cdecl -arch=i386 _CIsqrt()

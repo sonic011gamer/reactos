@@ -104,6 +104,14 @@ setCx86(UCHAR reg, UCHAR data)
 
 /* FUNCTIONS *****************************************************************/
 
+VOID
+FASTCALL
+KeInvalidateRangeAllCaches(
+  _In_ PVOID BaseAddress,
+  _In_ ULONG Length)
+  {
+
+  }
 CODE_SEG("INIT")
 ULONG
 NTAPI

@@ -39,6 +39,14 @@ UNICODE_STRING KeRosVideoBiosDate, KeRosVideoBiosVersion;
 
 /* PRIVATE FUNCTIONS *********************************************************/
 
+
+ULONG
+NTAPI
+KeQueryActiveProcessorCountEx(
+  _In_ USHORT GroupNumber)
+  {
+    return 1;
+  }
 PVOID
 NTAPI
 KiPcToFileHeader(IN PVOID Pc,
