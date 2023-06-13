@@ -14,14 +14,20 @@
 /* GLOBALS ********************************************************************/
 
 OSK_GLOBALS Globals;
-int prevWidth = 0;
-int prevHeight = 0;
+
+HWND _prevActiveWnd = NULL;
+#ifdef USE_BS_ICON_WORKAROUND_SUBCLASS
+SUBCLASSPROC OSK_KeyProcPtr;
+#endif
+
+int _prevWidth = 0;
+int _prevHeight = 0;
 
 OSK_KEYLEDINDICATOR LedKey[] =
 {
-    {VK_NUMLOCK, IDC_LED_NUM, 0x0145, FALSE},
-    {VK_CAPITAL, IDC_LED_CAPS, 0x013A, FALSE},
-    {VK_SCROLL, IDC_LED_SCROLL, 0x0146, FALSE}
+    {VK_NUMLOCK, IDC_LED_NUM,    0x0145, FALSE, NULL, NULL },
+    {VK_CAPITAL, IDC_LED_CAPS,   0x013A, FALSE, NULL, NULL },
+    {VK_SCROLL , IDC_LED_SCROLL, 0x0146, FALSE, NULL, NULL }
 };
 
 /* FUNCTIONS ******************************************************************/
@@ -193,53 +199,76 @@ void EnsureKeyPlacement(float newWidth, float newHeight)
     if ((newWidth <= 0) || (newHeight <= 0))
         return;
 
-    float oldWidth = 736.0f;
-    float oldHeight = 184.0f;
-
     PKEY Keys = Globals.Keyboard->Keys;
     for (int i = 0; i < Globals.Keyboard->KeyCount; i++)
     {
         KEY keyInfo = Keys[i];
-        float xF = AdjustKeyBounds(keyInfo.x, oldWidth, newWidth);
-        float yF = AdjustKeyBounds(keyInfo.y, oldHeight, newHeight);
-        float cxF = AdjustKeyBounds(keyInfo.cx, oldWidth, newWidth);
-        float cyF = AdjustKeyBounds(keyInfo.cy, oldHeight, newHeight);
+        float xF = AdjustKeyBounds(keyInfo.x, Globals.Keyboard->baseWidth, newWidth) + 4;
+        float yF = AdjustKeyBounds(keyInfo.y, Globals.Keyboard->baseHeight, newHeight) + 4;
+        float cxF = AdjustKeyBounds(keyInfo.cx, Globals.Keyboard->baseWidth, newWidth);
+        float cyF = AdjustKeyBounds(keyInfo.cy, Globals.Keyboard->baseHeight, newHeight);
 
         MoveWindow(Globals.hKeys[i], (int)xF, (int)yF, (int)cxF, (int) cyF, FALSE);
     }
     RedrawWindow(Globals.hMainWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
 }
-void RefreshKeyPlacement()
+
+KB_CLIENT_BOUNDS GetClientSize(HWND hwnd)
 {
     RECT oldClientRect;
-    GetClientRect(Globals.hMainWnd, &oldClientRect);
-    EnsureKeyPlacement(oldClientRect.right - oldClientRect.left, oldClientRect.bottom - oldClientRect.top);
+    GetClientRect(hwnd, &oldClientRect);
+
+    KB_CLIENT_BOUNDS ret;
+    ret.width = oldClientRect.right - oldClientRect.left;
+    ret.height = oldClientRect.bottom - oldClientRect.top;
+    return ret;
+}
+
+void RefreshKeyPlacement()
+{
+    KB_CLIENT_BOUNDS clientSize = GetClientSize(Globals.hMainWnd);
+    EnsureKeyPlacement(clientSize.width - 8, clientSize.height - 8);
 }
 
 
 
+void SetCanActivate(BOOL allowActivate)
+{
+    HWND hWnd = Globals.hMainWnd;
+    LONG_PTR exStyle = GetWindowLongPtr(hWnd, GWL_EXSTYLE);
+
+    if (allowActivate)
+        exStyle &= (~WS_EX_NOACTIVATE);
+    else
+        exStyle |= WS_EX_NOACTIVATE;
+
+    SetWindowLongPtr(hWnd, GWL_EXSTYLE, exStyle);
+}
+
 /***********************************************************************
  *
- *           OSK_WindowPosChanging
+ *           OSK_EnterSizeMove
  *
- *  Handling of WM_WINDOWPOSCHANGING
+ *  Handling of WM_ENTERSIZEMOVE
  */
-LRESULT OSK_WindowPosChanging(LPARAM lParam)
+LRESULT OSK_EnterSizeMove()
 {
-    //RECT oldClientRect;
-    //GetClientRect(Globals.hMainWnd, &oldClientRect);
-    //float oldWidth = 736.0f; //oldClientRect.right - oldClientRect.left;
-    //float oldHeight = 184.0f; //oldClientRect.bottom - oldClientRect.top;
-
-    LPWINDOWPOS newRect = (LPWINDOWPOS)lParam;
-    POINT br = { newRect->cx, newRect->cy };
-    ScreenToClient(Globals.hMainWnd, &br);
-    float newWidth = br.x;
-    float newHeight = br.y;
-
-    EnsureKeyPlacement(newWidth, newHeight);
-
-    return 1;
+    _prevActiveWnd = GetForegroundWindow();
+    SetCanActivate(TRUE);
+    SetForegroundWindow(Globals.hMainWnd);
+    return 0;
+}
+/***********************************************************************
+ *
+ *           OSK_ExitSizeMove
+ *
+ *  Handling of WM_EXITSIZEMOVE
+ */
+LRESULT OSK_ExitSizeMove()
+{
+    SetCanActivate(FALSE);
+    SetForegroundWindow(_prevActiveWnd);
+    return 0;
 }
 
 
@@ -256,8 +285,6 @@ LRESULT OSK_SetKeys(int reason)
     LPCWSTR szKey;
     PKEY Keys;
     UINT uVirtKey;
-    POINT LedPos;
-    SIZE LedSize;
     int i, yPad;
 
     /* Get key states before doing anything */
@@ -327,28 +354,42 @@ LRESULT OSK_SetKeys(int reason)
             /* Create key buttons */
             for (i = 0; i < Globals.Keyboard->KeyCount; i++)
             {
-                uVirtKey = MapVirtualKeyW(Keys[i].scancode & SCANCODE_MASK, MAPVK_VSC_TO_VK);
+                KEY key = Keys[i];
 
-                if (Keys[i].translate && ToUnicode(uVirtKey, Keys[i].scancode & SCANCODE_MASK, bKeyStates, wKey, _countof(wKey), 0) >= 1)
+                uVirtKey = MapVirtualKeyW(key.scancode & SCANCODE_MASK, MAPVK_VSC_TO_VK);
+
+                if (key.translate && ToUnicode(uVirtKey, key.scancode & SCANCODE_MASK, bKeyStates, wKey, _countof(wKey), 0) >= 1)
                 {
                     szKey = wKey;
                 }
                 else
                 {
-                    szKey = Keys[i].name;
+                    szKey = key.name;
                 }
 
-                Globals.hKeys[i] = CreateWindowW(WC_BUTTONW,
+                DWORD keyStyle = WS_CHILD | BS_PUSHBUTTON | key.flags;
+                if (key.visible)
+                    keyStyle |= WS_VISIBLE;
+                else
+                    keyStyle &= (~WS_VISIBLE);
+
+                HWND keyWnd = CreateWindowW(WC_BUTTONW,
                                                  szKey,
-                                                 WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON | Keys[i].flags,
-                                                 Keys[i].x,
-                                                 Keys[i].y,
-                                                 Keys[i].cx,
-                                                 Keys[i].cy,
+                                                 keyStyle,
+                                                 key.x,
+                                                 key.y,
+                                                 key.cx,
+                                                 key.cy,
                                                  Globals.hMainWnd,
-                                                 (HMENU)Keys[i].scancode,
+                                                 (HMENU)key.scancode,
                                                  Globals.hInstance,
                                                  NULL);
+                Globals.hKeys[i] = keyWnd;
+#ifdef USE_BS_ICON_WORKAROUND_SUBCLASS
+                //_keyProcPtr = (WNDPROC)SetWindowLongPtr(keyWnd, GWLP_WNDPROC, (LONG_PTR));
+                SetWindowSubclass(keyWnd, OSK_KeyProcPtr, 9994, -1); //key);
+#endif
+
                 if (Globals.hFont)
                     SendMessageW(Globals.hKeys[i], WM_SETFONT, (WPARAM)Globals.hFont, 0);
 
@@ -359,33 +400,17 @@ LRESULT OSK_SetKeys(int reason)
             /* Add additional padding for caption and menu */
             yPad = GetSystemMetrics(SM_CYSIZE) + GetSystemMetrics(SM_CYMENU);
             /* Size window according to layout */
+
+            KB_CLIENT_BOUNDS clientSize = GetClientSize(Globals.hMainWnd);
+            RECT windowRect;
+            GetWindowRect(Globals.hMainWnd, &windowRect);
             SetWindowPos(Globals.hMainWnd,
                          (Globals.bAlwaysOnTop ? HWND_TOPMOST : HWND_NOTOPMOST),
                          0,
                          0,
-                         Globals.Keyboard->Size.cx,
-                         Globals.Keyboard->Size.cy + yPad,
+                         (((windowRect.right - windowRect.left) - ((int)(clientSize.width) - 8)) + Globals.Keyboard->baseWidth),
+                         (((windowRect.bottom - windowRect.top) - ((int)(clientSize.height) - 8)) + Globals.Keyboard->baseHeight) + yPad,
                          SWP_NOMOVE);
-
-            /* Create LEDs */
-            LedPos  = Globals.Keyboard->LedStart;
-            LedSize = Globals.Keyboard->LedSize;
-
-            CreateWindowW(WC_STATICW, L"", WS_VISIBLE | WS_CHILD | SS_CENTER | SS_NOTIFY,
-                LedPos.x, LedPos.y, LedSize.cx, LedSize.cy, Globals.hMainWnd,
-                (HMENU)IDC_LED_NUM, Globals.hInstance, NULL);
-
-            LedPos.x += Globals.Keyboard->LedGap;
-
-            CreateWindowW(WC_STATICW, L"", WS_VISIBLE | WS_CHILD | SS_CENTER | SS_NOTIFY,
-                LedPos.x, LedPos.y, LedSize.cx, LedSize.cy, Globals.hMainWnd,
-                (HMENU)IDC_LED_CAPS, Globals.hInstance, NULL);
-
-            LedPos.x += Globals.Keyboard->LedGap;
-
-            CreateWindowW(WC_STATICW, L"", WS_VISIBLE | WS_CHILD | SS_CENTER | SS_NOTIFY,
-                LedPos.x, LedPos.y, LedSize.cx, LedSize.cy, Globals.hMainWnd,
-                (HMENU)IDC_LED_SCROLL, Globals.hInstance, NULL);
 
             /* Set system keys text */
             OSK_SetText(SCAN_CODE_110, IDS_ESCAPE);
@@ -528,9 +553,6 @@ LRESULT OSK_Create(HWND hwnd)
         CheckMenuItem(GetMenu(hwnd), IDM_ON_TOP, MF_BYCOMMAND | MF_UNCHECKED);
         SetWindowPos(hwnd, HWND_NOTOPMOST, Globals.PosX, Globals.PosY, 0, 0, SWP_NOSIZE);
     }
-
-    /* Create a green brush for leds */
-    Globals.hBrushGreenLed = CreateSolidBrush(RGB(0, 255, 0));
 
     /* Set a timer for periodic tasks */
     Globals.iTimer = SetTimer(hwnd, 0, 100, NULL);
@@ -814,6 +836,7 @@ BOOL OSK_ReleaseKey(WORD ScanCode)
     return TRUE;
 }
 
+
 /***********************************************************************
  *
  *           OSK_Paint
@@ -824,31 +847,102 @@ LRESULT OSK_Paint(HWND hwnd)
 {
     PAINTSTRUCT ps;
     RECT rcText;
+    RECT rcLED;
     HFONT hOldFont = NULL;
-    WCHAR szTemp[MAX_PATH];
 
     HDC hdc = BeginPaint(hwnd, &ps);
 
     if (Globals.hFont)
         hOldFont = SelectObject(hdc, Globals.hFont);
 
-    rcText.left   = Globals.Keyboard->LedTextStart.x;
-    rcText.top    = Globals.Keyboard->LedTextStart.y;
-    rcText.right  = rcText.left + Globals.Keyboard->LedTextSize.cx;
-    rcText.bottom = rcText.top + Globals.Keyboard->LedTextSize.cy;
+    KB_CLIENT_BOUNDS clientSize = GetClientSize(Globals.hMainWnd);
+    float clientWidth = clientSize.width;
+    float clientHeight = clientSize.height;
 
-    LoadStringW(Globals.hInstance, IDS_NUMLOCK, szTemp, _countof(szTemp));
-    DrawTextW(hdc, szTemp, -1, &rcText, DT_NOCLIP);
+    int offsetRectByX = AdjustKeyBounds(Globals.Keyboard->LedTextOffset, Globals.Keyboard->baseWidth, clientWidth);
+    int textWidth = AdjustKeyBounds(Globals.Keyboard->LedTextSize.cx, Globals.Keyboard->baseWidth, clientWidth);
+    int textHalfWidth = textWidth / 2;
 
-    OffsetRect(&rcText, Globals.Keyboard->LedTextOffset, 0);
+    rcText.left   = AdjustKeyBounds(Globals.Keyboard->LedTextStart.x, Globals.Keyboard->baseWidth, clientWidth);
+    rcText.top    = AdjustKeyBounds(Globals.Keyboard->LedTextStart.y, Globals.Keyboard->baseHeight, clientHeight);
+    rcText.right  = rcText.left + textWidth;
+    rcText.bottom = rcText.top + AdjustKeyBounds(Globals.Keyboard->LedTextSize.cy, Globals.Keyboard->baseHeight, clientHeight);
 
-    LoadStringW(Globals.hInstance, IDS_CAPSLOCK, szTemp, _countof(szTemp));
-    DrawTextW(hdc, szTemp, -1, &rcText, DT_NOCLIP);
+    POINT ledStart = Globals.Keyboard->LedStart;
+    SIZE ledSize = Globals.Keyboard->LedSize;
 
-    OffsetRect(&rcText, Globals.Keyboard->LedTextOffset, 0);
+    int yLED = AdjustKeyBounds(ledStart.y, Globals.Keyboard->baseHeight, clientHeight);
 
-    LoadStringW(Globals.hInstance, IDS_SCROLLLOCK, szTemp, _countof(szTemp));
-    DrawTextW(hdc, szTemp, -1, &rcText, DT_NOCLIP);
+
+    int ledWidth = ledSize.cx;
+    int ledHalfWidth = ledWidth / 2;
+
+    int xMiddleLED = rcText.left + textHalfWidth;
+
+
+    rcLED.left   = xMiddleLED - ledHalfWidth;
+    rcLED.top    = yLED;
+    rcLED.right  = xMiddleLED + ledHalfWidth;
+    rcLED.bottom = yLED + ledSize.cy;
+
+    OffsetRect(&rcText, -8, 0);
+    OffsetRect(&rcLED, -8, 0);
+
+    int keyCount = _countof(LedKey);
+
+
+    if ((clientWidth != _prevWidth) || (clientHeight != _prevHeight))
+    {
+        RECT rcCombined;
+        rcCombined.left = rcText.left;
+        if (rcLED.left < rcCombined.left)
+            rcCombined.left = rcLED.left;
+
+        rcCombined.top = rcText.top;
+        if (rcLED.top < rcCombined.top)
+            rcCombined.top = rcLED.top;
+
+        rcCombined.right = rcText.right;
+        if (rcLED.right > rcCombined.right)
+            rcCombined.right = rcLED.right;
+
+        rcCombined.bottom = rcText.bottom;
+        if (rcLED.bottom > rcCombined.bottom)
+            rcCombined.bottom = rcLED.bottom;
+
+        int rcCombinedWidth = rcCombined.right - rcCombined.left;
+
+        for (int k = 1; k < keyCount; k++)
+        {
+            rcCombined.right += rcCombinedWidth;
+        }
+
+        int outset = 1;
+        rcCombined.left -= outset;
+        rcCombined.top -= outset;
+        rcCombined.right += outset;
+        rcCombined.bottom += outset;
+
+        InvalidateRect(hwnd, &rcCombined, TRUE);
+
+        _prevWidth = (int)clientSize.width;
+        _prevHeight = (int)clientSize.height;
+    }
+
+
+    for (int i = 0; i < keyCount; i++)
+    {
+        OSK_KEYLEDINDICATOR key = LedKey[i];
+        DrawTextW(hdc, key.displayString, -1, &rcText, DT_NOCLIP | DT_CENTER);
+
+        HBRUSH brush = ((GetKeyState(key.vKey) & 0x0001) != 0)
+            ? Globals.hBrushGreenLed
+            : GetStockObject(BLACK_BRUSH)
+        ;
+        FillRect(hdc, &rcLED, brush);
+        OffsetRect(&rcText, offsetRectByX, 0);
+        OffsetRect(&rcLED, offsetRectByX, 0);
+    }
 
     if (hOldFont)
         SelectObject(hdc, hOldFont);
@@ -857,6 +951,74 @@ LRESULT OSK_Paint(HWND hwnd)
 
     return 0;
 }
+
+
+
+
+#ifdef USE_BS_ICON_WORKAROUND_SUBCLASS
+LRESULT OSK_key_CustomDraw(HWND hwnd, LONG_PTR btnStyle, LPNMCUSTOMDRAW customDraw)
+{
+    HTHEME hTheme = OpenThemeData(hwnd, L"BUTTON");
+
+    int themeState = PBS_NORMAL;
+
+    UINT btnState = customDraw->uItemState;
+
+    if (btnStyle & WS_DISABLED)
+        themeState = PBS_DISABLED;
+    else if (btnState & CDIS_SELECTED)
+        themeState = PBS_PRESSED;
+    else if (btnState & CDIS_HOT)
+        themeState = PBS_HOT;
+    else if (btnStyle & BS_DEFPUSHBUTTON)
+        themeState = PBS_DEFAULTED;
+
+    if (DrawThemeBackground(hTheme, customDraw->hdc, BP_PUSHBUTTON, themeState, &(customDraw->rc), NULL) == S_OK)
+    {
+
+    }
+        return CDRF_SKIPDEFAULT;
+    /*else
+        return CDRF_DODEFAULT;*/
+}
+
+
+/***********************************************************************
+ *
+ *       OSK_KeyProc
+ */
+LRESULT CALLBACK OSK_KeyProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+{
+    /*if (!IsThemeActive())
+        goto exitKeyProc;
+
+    if (msg != WM_NOTIFY)
+        goto exitKeyProc;*/
+
+    /*UINT notifyCode = ((LPNMHDR)lParam)->code;
+    if (notifyCode != NM_CUSTOMDRAW)
+        goto exitKeyProc;*/
+
+    LPNMCUSTOMDRAW customDraw = (LPNMCUSTOMDRAW)lParam;
+    HWND btnWnd = customDraw->hdr.hwndFrom;
+    LONG_PTR btnStyle = GetWindowLongPtr(btnWnd, GWL_STYLE);
+    /*if ((btnStyle & BS_ICON) != 0)
+        goto exitKeyProc;*/
+
+    return OSK_key_CustomDraw(btnWnd, btnStyle, customDraw);
+
+//exitKeyProc:
+    /*int index = lfind(hwnd, Globals.hKeyProcs[0], Globals.Keyboard->KeyCount, sizeof(WNDPROC), int (*compar)(const void *, const void *));
+    return CallWindowProc(Globals.hKeyProcs[index], hwnd, msg, wParam, lParam);
+    */
+    return DefSubclassProc(hwnd, msg, wParam, lParam);
+}
+#endif
+
+
+
+
+
 /***********************************************************************
  *
  *       OSK_WndProc
@@ -874,8 +1036,16 @@ LRESULT APIENTRY OSK_WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         case WM_TIMER:
             return OSK_Timer();
 
+        case WM_ENTERSIZEMOVE:
+            OSK_EnterSizeMove();
+            break;
+
+        case WM_EXITSIZEMOVE:
+            OSK_ExitSizeMove();
+            break;
+
         case WM_WINDOWPOSCHANGED:
-            OSK_WindowPosChanging(lParam);
+            RefreshKeyPlacement();
             return DefWindowProcW(hwnd, msg, wParam, lParam);
 
         case WM_CTLCOLORSTATIC:
@@ -1084,6 +1254,19 @@ int WINAPI wWinMain(HINSTANCE hInstance,
     /* Load the application's settings from the registry */
     LoadSettings();
 
+
+    WCHAR szNumLock[MAX_PATH];
+    LoadStringW(Globals.hInstance, IDS_NUMLOCK, szNumLock, _countof(szNumLock));
+    LedKey[0].displayString = szNumLock;
+
+    WCHAR szCapsLock[MAX_PATH];
+    LoadStringW(Globals.hInstance, IDS_CAPSLOCK, szCapsLock, _countof(szCapsLock));
+    LedKey[1].displayString = szCapsLock;
+
+    WCHAR szScrollLock[MAX_PATH];
+    LoadStringW(Globals.hInstance, IDS_SCROLLLOCK, szScrollLock, _countof(szScrollLock));
+    LedKey[2].displayString = szScrollLock;
+
     /* Define the window class */
     wc.cbSize        = sizeof(wc);
     wc.hInstance     = Globals.hInstance;
@@ -1099,13 +1282,21 @@ int WINAPI wWinMain(HINSTANCE hInstance,
     if (!RegisterClassExW(&wc))
         goto quit;
 
+    /* Create a green brush for leds */
+    Globals.hBrushGreenLed = CreateSolidBrush(RGB(0, 255, 0));
+
+#ifdef USE_BS_ICON_WORKAROUND_SUBCLASS
+    //_keyProcPtr = (LONG_PTR)&OSK_KeyProc;
+    OSK_KeyProcPtr = OSK_KeyProc;
+#endif
+
     /* Load window title */
     LoadStringW(Globals.hInstance, IDS_OSK, Globals.szTitle, _countof(Globals.szTitle));
 
     hwnd = CreateWindowExW(WS_EX_TOPMOST | WS_EX_APPWINDOW | WS_EX_NOACTIVATE,
                            OSK_CLASS,
                            Globals.szTitle,
-                           WS_OVERLAPPEDWINDOW, //WS_SYSMENU | WS_MINIMIZEBOX,
+                           WS_OVERLAPPEDWINDOW,
                            CW_USEDEFAULT,
                            CW_USEDEFAULT,
                            CW_USEDEFAULT,

@@ -15,6 +15,9 @@
 
 #include <windows.h>
 #include <debug.h>
+#include <uxtheme.h>
+#include <vsstyle.h>
+#include <vssym32.h>
 #include "commctrl.h"
 #include "strsafe.h"
 
@@ -32,6 +35,7 @@ typedef struct _KEY
     INT cy;
     INT flags;
     BOOL translate;
+    BOOL visible;
 } KEY, *PKEY;
 
 typedef struct _KEYBOARD_STRUCT
@@ -41,10 +45,12 @@ typedef struct _KEYBOARD_STRUCT
     SIZE Size;
     POINT LedTextStart;
     SIZE LedTextSize;
-    INT LedTextOffset; 
+    INT LedTextOffset;
     POINT LedStart;
     SIZE LedSize;
     INT LedGap;
+    float baseWidth;
+    float baseHeight;
 } KEYBOARD_STRUCT, *PKEYBOARD_STRUCT;
 
 typedef struct
@@ -75,7 +81,16 @@ typedef struct
     INT DlgResource;
     WORD wScanCode;
     BOOL bWasKeyPressed;
+    LPCWSTR displayString;
+    HWND ledWnd;
 } OSK_KEYLEDINDICATOR;
+
+
+typedef struct
+{
+    float width;
+    float height;
+} KB_CLIENT_BOUNDS;
 
 /* PROTOTYPES *****************************************************************/
 
