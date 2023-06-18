@@ -26,7 +26,8 @@ if(ARCH STREQUAL "i386")
     add_subdirectory(dmusic)
     add_subdirectory(dplayx)
 endif()
-add_subdirectory(dsound_new) #disabled in trunk
+add_subdirectory(dsound_new)
+ #disabled in trunk
 #add_subdirectory(ksproxy) Not needed at the moment
 add_subdirectory(ksuser)
 #add_subdirectory(msdvbnp) #disabled in trunk

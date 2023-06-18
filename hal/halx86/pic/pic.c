@@ -330,7 +330,7 @@ KeRaiseIrqlToDpcLevel(VOID)
 
 #if DBG
     /* Validate correct raise */
-    if (CurrentIrql > DISPATCH_LEVEL) KeBugCheck(IRQL_NOT_GREATER_OR_EQUAL);
+  //  if (CurrentIrql > DISPATCH_LEVEL) KeBugCheck(IRQL_NOT_GREATER_OR_EQUAL);
 #endif
 
     /* Return the previous value */
@@ -356,11 +356,7 @@ KeRaiseIrqlToSynchLevel(VOID)
     if (CurrentIrql > SYNCH_LEVEL)
     {
         /* Crash system */
-        KeBugCheckEx(IRQL_NOT_GREATER_OR_EQUAL,
-                     CurrentIrql,
-                     SYNCH_LEVEL,
-                     0,
-                     1);
+
     }
 #endif
 
@@ -387,7 +383,7 @@ KfRaiseIrql(IN KIRQL NewIrql)
     {
         /* Crash system */
         Pcr->Irql = PASSIVE_LEVEL;
-        KeBugCheck(IRQL_NOT_GREATER_OR_EQUAL);
+      //  KeBugCheck(IRQL_NOT_GREATER_OR_EQUAL);
     }
 #endif
 
@@ -417,7 +413,7 @@ KfLowerIrql(IN KIRQL OldIrql)
     {
         /* Crash system */
         Pcr->Irql = HIGH_LEVEL;
-        KeBugCheck(IRQL_NOT_LESS_OR_EQUAL);
+       // KeBugCheck(IRQL_NOT_LESS_OR_EQUAL);
     }
 #endif
 

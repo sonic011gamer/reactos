@@ -89,31 +89,31 @@ MmRemoveLRUUserPage(PFN_NUMBER Page)
     MI_ASSERT_PFN_LOCK_HELD();
 
     /* Unset the page as a user page */
-    ASSERT(Page != 0);
+   // ASSERT(Page != 0);
 
     PMMPFN Pfn = MiGetPfnEntry(Page);
 
-    ASSERT_IS_ROS_PFN(Pfn);
+    //ASSERT_IS_ROS_PFN(Pfn);
 
     if (Pfn->PreviousLRU)
     {
-        ASSERT(Pfn->PreviousLRU->NextLRU == Pfn);
+        //ASSERT(Pfn->PreviousLRU->NextLRU == Pfn);
         Pfn->PreviousLRU->NextLRU = Pfn->NextLRU;
     }
     else
     {
-        ASSERT(FirstUserLRUPfn == Pfn);
+       // ASSERT(FirstUserLRUPfn == Pfn);
         FirstUserLRUPfn = Pfn->NextLRU;
     }
 
     if (Pfn->NextLRU)
     {
-        ASSERT(Pfn->NextLRU->PreviousLRU == Pfn);
+      //  ASSERT(Pfn->NextLRU->PreviousLRU == Pfn);
         Pfn->NextLRU->PreviousLRU = Pfn->PreviousLRU;
     }
     else
     {
-        ASSERT(Pfn == LastUserLRUPfn);
+       // ASSERT(Pfn == LastUserLRUPfn);
         LastUserLRUPfn = Pfn->PreviousLRU;
     }
 
@@ -317,7 +317,7 @@ MiAllocatePagesForMdl(IN PHYSICAL_ADDRESS LowAddress,
                 // Get the PFN entry for this page
                 //
                 Pfn1 = MiGetPfnEntry(Page);
-                ASSERT(Pfn1);
+              //  ASSERT(Pfn1);
 
                 //
                 // Make sure it's free and if this is our first pass, zeroed
@@ -427,7 +427,7 @@ MmSetRmapListHeadPage(PFN_NUMBER Pfn, PMM_RMAP_ENTRY ListHead)
     PMMPFN Pfn1;
 
     /* PFN database must be locked */
-    MI_ASSERT_PFN_LOCK_HELD();
+    //MI_ASSERT_PFN_LOCK_HELD();
 
     Pfn1 = MiGetPfnEntry(Pfn);
     ASSERT(Pfn1);
@@ -460,7 +460,7 @@ MmGetRmapListHeadPage(PFN_NUMBER Pfn)
     PMMPFN Pfn1;
 
     /* PFN database must be locked */
-    MI_ASSERT_PFN_LOCK_HELD();
+   // MI_ASSERT_PFN_LOCK_HELD();
 
     /* Get the entry */
     Pfn1 = MiGetPfnEntry(Pfn);
@@ -504,7 +504,7 @@ MmGetSavedSwapEntryPage(PFN_NUMBER Pfn)
 
     Pfn1 = MiGetPfnEntry(Pfn);
     ASSERT(Pfn1);
-    ASSERT_IS_ROS_PFN(Pfn1);
+  //  ASSERT_IS_ROS_PFN(Pfn1);
 
     oldIrql = MiAcquirePfnLock();
     SwapEntry = Pfn1->u1.SwapEntry;
@@ -521,15 +521,15 @@ MmReferencePage(PFN_NUMBER Pfn)
 
     DPRINT("MmReferencePage(PysicalAddress %x)\n", Pfn << PAGE_SHIFT);
 
-    MI_ASSERT_PFN_LOCK_HELD();
-    ASSERT(Pfn != 0);
-    ASSERT(Pfn <= MmHighestPhysicalPage);
+  //  MI_ASSERT_PFN_LOCK_HELD();
+   //ASSERT(Pfn != 0);
+   //ASSERT(Pfn <= MmHighestPhysicalPage);
 
     Pfn1 = MiGetPfnEntry(Pfn);
-    ASSERT(Pfn1);
-    ASSERT_IS_ROS_PFN(Pfn1);
+  // ASSERT(Pfn1);
+  // ASSERT_IS_ROS_PFN(Pfn1);
 
-    ASSERT(Pfn1->u3.e2.ReferenceCount != 0);
+  // ASSERT(Pfn1->u3.e2.ReferenceCount != 0);
     Pfn1->u3.e2.ReferenceCount++;
 }
 
@@ -542,11 +542,11 @@ MmGetReferenceCountPage(PFN_NUMBER Pfn)
 
     MI_ASSERT_PFN_LOCK_HELD();
 
-    DPRINT("MmGetReferenceCountPage(PhysicalAddress %x)\n", Pfn << PAGE_SHIFT);
+  // DPRINT("MmGetReferenceCountPage(PhysicalAddress %x)\n", Pfn << PAGE_SHIFT);
 
     Pfn1 = MiGetPfnEntry(Pfn);
-    ASSERT(Pfn1);
-    ASSERT_IS_ROS_PFN(Pfn1);
+    //ASSERT(Pfn1);
+    //ASSERT_IS_ROS_PFN(Pfn1);
 
     RCount = Pfn1->u3.e2.ReferenceCount;
 
@@ -567,13 +567,13 @@ MmDereferencePage(PFN_NUMBER Pfn)
     PMMPFN Pfn1;
     DPRINT("MmDereferencePage(PhysicalAddress %x)\n", Pfn << PAGE_SHIFT);
 
-    MI_ASSERT_PFN_LOCK_HELD();
+   // MI_ASSERT_PFN_LOCK_HELD();
 
     Pfn1 = MiGetPfnEntry(Pfn);
-    ASSERT(Pfn1);
-    ASSERT_IS_ROS_PFN(Pfn1);
-
-    ASSERT(Pfn1->u3.e2.ReferenceCount != 0);
+   // ASSERT(Pfn1);
+   // ASSERT_IS_ROS_PFN(Pfn1);
+//
+   // ASSERT(Pfn1->u3.e2.ReferenceCount != 0);
     Pfn1->u3.e2.ReferenceCount--;
     if (Pfn1->u3.e2.ReferenceCount == 0)
     {

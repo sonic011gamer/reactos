@@ -30,4 +30,4 @@ add_library(d3d9 MODULE
 set_module_type(d3d9 win32dll)
 target_link_libraries(d3d9 dxguid uuid)
 add_importlibs(d3d9 d3d8thk advapi32 version user32 gdi32 msvcrt kernel32 ntdll)
-add_cd_file(TARGET d3d9 DESTINATION reactos/system32 FOR all)
+#add_cd_file(TARGET d3d9 DESTINATION reactos/system32 FOR all)
