@@ -51,5 +51,5 @@ DwmEnableComposition(UINT uCompositionAction)
     UNIMPLEMENTED;
     DPRINT("called, Parameters:(%d) stub\n", uCompositionAction);
 
-    return STATUS_SUCCESS;
+    return 1;
 }

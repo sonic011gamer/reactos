@@ -98,7 +98,7 @@ DwmSetWindowAttribute(HWND hwnd, DWORD attributenum, LPCVOID attribute, DWORD si
 
     if (!once++) DPRINT("called, Parameters:(%p, %lx, %p, %lx) stub\n", hwnd, attributenum, attribute, size);
 
-    return STATUS_SUCCESS;
+    return DWM_E_COMPOSITIONDISABLED;
 }
 
 /**********************************************************************

@@ -50,3 +50,9 @@ EndBufferedAnimation(
     return E_NOTIMPL;
 }
 
+BOOL
+WINAPI
+IsCompositionActive()
+{
+    return FALSE;
+}

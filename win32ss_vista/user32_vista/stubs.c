@@ -45,7 +45,7 @@ ChangeWindowMessageFilterEx(HWND hwnd,
                             PVOID pChangeFilterStruct)
 {
     UNIMPLEMENTED;
-    return TRUE;
+ return FALSE;
 }
 
 BOOL
@@ -53,7 +53,7 @@ WINAPI
 ShutdownBlockReasonCreate(HWND hWnd, LPCWSTR pwszReason)
 {
     UNIMPLEMENTED;
-    return 1;
+    return FALSE;
 }
 
 BOOL
@@ -63,7 +63,7 @@ ShutdownBlockReasonQuery( HWND   hWnd,
   DWORD  *pcchBuff)
 {
     UNIMPLEMENTED;
-    return 1;
+     return FALSE;
 }
 
 BOOL
@@ -71,7 +71,7 @@ WINAPI
 ShutdownBlockReasonDestroy(HWND hWnd)
 {
     UNIMPLEMENTED;
-    return 1;
+     return FALSE;
 }
 
 BOOL
@@ -83,7 +83,7 @@ CalculatePopupWindowPosition(const POINT *anchorPoint,
                              RECT *popupWindowPosition)
 {
     UNIMPLEMENTED;
-    return TRUE;
+    return FALSE;
 }
 
 BOOL
@@ -96,7 +96,7 @@ DwmGetDxSharedSurface(HWND hwnd,
                       ULONGLONG* pWin32kUpdateId)
 {
     UNIMPLEMENTED;
-    return TRUE;
+    return FALSE;
 }
 
 HWND
@@ -120,7 +120,7 @@ WINAPI
 IsProcessDPIAware(VOID)
 {
     UNIMPLEMENTED;
-    return TRUE;
+    return FALSE;
 }
 
 BOOL
@@ -129,7 +129,7 @@ IsTouchWindow(HWND hwnd,
               PULONG pulFlags)
 {
     UNIMPLEMENTED;
-    return TRUE;
+    return FALSE;
 }
 
 BOOL
@@ -137,7 +137,7 @@ WINAPI
 IsThreadDesktopComposited(VOID)
 {
     UNIMPLEMENTED;
-    return TRUE;
+    return FALSE;
 } 
 
 BOOL
