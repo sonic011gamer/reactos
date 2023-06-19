@@ -438,7 +438,7 @@ WORD WINAPI InitializeWin32EntryTable(UCHAR* EntryTablePlus0x1000)
 BOOL WINAPI IsServerSideWindow(HWND wnd)
 {
   UNIMPLEMENTED;
-  return FALSE;
+  return TRUE;
 }
 
 /*

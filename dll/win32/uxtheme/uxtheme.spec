@@ -114,7 +114,7 @@
 @ stdcall -stub -version=0x600+ GetBufferedPaintTargetRect(ptr ptr)
 @ stdcall -stub -version=0x600+ GetThemeTransitionDuration(ptr long long long long ptr)
 @ stdcall -stub -version=0x600+ GetThemeBitmap(ptr long long long long ptr)
-@ stdcall -stub -version=0x600+ IsCompositionActive()
+@ stdcall -version=0x600+ IsCompositionActive()
 @ stdcall -stub -version=0x600+ SetWindowThemeAttribute(long long ptr long)
 @ stdcall -stub -version=0x601+ BeginPanningFeedback(ptr)
 @ stdcall -stub -version=0x601+ EndPanningFeedback(ptr long)

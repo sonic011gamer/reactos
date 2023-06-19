@@ -21,7 +21,7 @@
 420 stub PROPSYS_420
 421 stub PROPSYS_421
 422 stub PROPSYS_422
-
+423 stdcall -stub PSStrFormatByteSizeEx(long long ptr long)
 @ stub ClearPropVariantArray
 @ stub ClearVariantArray
 @ stdcall -private DllCanUnloadNow()
