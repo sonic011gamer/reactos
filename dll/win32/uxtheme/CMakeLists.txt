@@ -9,6 +9,7 @@ list(APPEND SOURCE
     main.c
     metric.c
     msstyles.c
+    png.cpp
     ncscrollbar.c
     nonclient.c
     property.c
@@ -27,6 +28,6 @@ add_library(uxtheme MODULE
 set_module_type(uxtheme win32dll)
 target_link_libraries(uxtheme wine)
 add_delay_importlibs(uxtheme msimg32)
-add_importlibs(uxtheme user32 advapi32 gdi32 msvcrt kernel32 ntdll)
+add_importlibs(uxtheme user32 advapi32 gdiplus ole32 gdi32 msvcrt kernel32 ntdll)
 add_pch(uxtheme uxthemep.h SOURCE)
 add_cd_file(TARGET uxtheme DESTINATION reactos/system32 FOR all)

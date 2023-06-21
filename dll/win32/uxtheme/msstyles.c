@@ -153,9 +153,9 @@ HRESULT MSSTYLES_OpenThemeFile(LPCWSTR lpThemeFile, LPCWSTR pszColorName, LPCWST
 
     *tf = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, sizeof(THEME_FILE));
     (*tf)->hTheme = hTheme;
-    
+
     GetFullPathNameW(lpThemeFile, MAX_PATH, (*tf)->szThemeFile, NULL);
-    
+
     (*tf)->pszAvailColors = pszColors;
     (*tf)->pszAvailSizes = pszSizes;
     (*tf)->pszSelectedColor = pszSelectedColor;
@@ -666,19 +666,19 @@ void MSSTYLES_ParseThemeIni(PTHEME_FILE tf)
 
     ini = MSSTYLES_GetActiveThemeIni(tf);
 
-    while((lpName=UXINI_GetNextSection(ini, &dwLen))) 
+    while((lpName=UXINI_GetNextSection(ini, &dwLen)))
     {
-        if(CompareStringW(LOCALE_SYSTEM_DEFAULT, NORM_IGNORECASE, lpName, dwLen, szSysMetrics, -1) == CSTR_EQUAL) 
+        if(CompareStringW(LOCALE_SYSTEM_DEFAULT, NORM_IGNORECASE, lpName, dwLen, szSysMetrics, -1) == CSTR_EQUAL)
         {
-            while((lpName=UXINI_GetNextValue(ini, &dwLen, &lpValue, &dwValueLen))) 
+            while((lpName=UXINI_GetNextValue(ini, &dwLen, &lpValue, &dwValueLen)))
             {
                 lstrcpynW(szPropertyName, lpName, min(dwLen+1, sizeof(szPropertyName)/sizeof(szPropertyName[0])));
-                if(MSSTYLES_LookupProperty(szPropertyName, &iPropertyPrimitive, &iPropertyId)) 
+                if(MSSTYLES_LookupProperty(szPropertyName, &iPropertyPrimitive, &iPropertyId))
                 {
                    /* Catch all metrics, including colors */
                    MSSTYLES_AddMetric(tf, iPropertyPrimitive, iPropertyId, lpValue, dwValueLen);
                 }
-                else 
+                else
                 {
                     TRACE("Unknown system metric %s\n", debugstr_w(szPropertyName));
                 }
@@ -686,24 +686,24 @@ void MSSTYLES_ParseThemeIni(PTHEME_FILE tf)
             continue;
         }
 
-        if(MSSTYLES_ParseIniSectionName(lpName, dwLen, szAppName, szClassName, &iPartId, &iStateId)) 
+        if(MSSTYLES_ParseIniSectionName(lpName, dwLen, szAppName, szClassName, &iPartId, &iStateId))
         {
             BOOL isGlobal = FALSE;
-            if(!lstrcmpiW(szClassName, szGlobals)) 
+            if(!lstrcmpiW(szClassName, szGlobals))
             {
                 isGlobal = TRUE;
             }
             cls = MSSTYLES_AddClass(tf, szAppName, szClassName);
             ps = MSSTYLES_AddPartState(cls, iPartId, iStateId);
 
-            while((lpName=UXINI_GetNextValue(ini, &dwLen, &lpValue, &dwValueLen))) 
+            while((lpName=UXINI_GetNextValue(ini, &dwLen, &lpValue, &dwValueLen)))
             {
                 lstrcpynW(szPropertyName, lpName, min(dwLen+1, sizeof(szPropertyName)/sizeof(szPropertyName[0])));
-                if(MSSTYLES_LookupProperty(szPropertyName, &iPropertyPrimitive, &iPropertyId)) 
+                if(MSSTYLES_LookupProperty(szPropertyName, &iPropertyPrimitive, &iPropertyId))
                 {
                     MSSTYLES_AddProperty(ps, iPropertyPrimitive, iPropertyId, lpValue, dwValueLen, isGlobal);
                 }
-                else 
+                else
                 {
                     TRACE("Unknown property %s\n", debugstr_w(szPropertyName));
                 }
@@ -714,24 +714,24 @@ void MSSTYLES_ParseThemeIni(PTHEME_FILE tf)
     /* App/Class combos override values defined by the base class, map these overrides */
     globals = MSSTYLES_FindClass(tf, NULL, szGlobals);
     cls = tf->classes;
-    while(cls) 
+    while(cls)
     {
-        if(*cls->szAppName) 
+        if(*cls->szAppName)
         {
             cls->overrides = MSSTYLES_FindClass(tf, NULL, cls->szClassName);
-            if(!cls->overrides) 
+            if(!cls->overrides)
             {
                 TRACE("No overrides found for app %s class %s\n", debugstr_w(cls->szAppName), debugstr_w(cls->szClassName));
             }
-            else 
+            else
             {
                 cls->overrides = globals;
             }
         }
-        else 
+        else
         {
             /* Everything overrides globals..except globals */
-            if(cls != globals) 
+            if(cls != globals)
                 cls->overrides = globals;
         }
         cls = cls->next;
@@ -920,9 +920,24 @@ HBITMAP MSSTYLES_LoadBitmap (PTHEME_CLASS tc, LPCWSTR lpFilename, BOOL* hasAlpha
     }
     /* Not found? Load from resources */
     img = HeapAlloc (GetProcessHeap(), 0, sizeof (THEME_IMAGE));
-    img->image = LoadImageW(tc->hTheme, szFile, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION);
-    prepare_alpha (img->image, hasAlpha);
-    img->hasAlpha = *hasAlpha;
+    HBITMAP hbitmap = LoadImageW(tc->hTheme, szFile, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_LOADTRANSPARENT);
+
+    BOOL isPng = FALSE;
+    if (hbitmap == NULL)
+    {
+        MSSTYLES_LoadPng(tc->hTheme, szFile, &hbitmap);
+        isPng = TRUE;
+    }
+    img->image = hbitmap;
+
+    if (isPng)
+        img->hasAlpha = TRUE;
+    else
+    {
+        prepare_alpha (img->image, hasAlpha);
+        img->hasAlpha = *hasAlpha;
+    }
+
     /* ...and stow away for later reuse. */
     lstrcpyW (img->name, szFile);
     img->next = tc->tf->images;
@@ -978,7 +993,7 @@ static BOOL MSSTYLES_GetNextToken(LPCWSTR lpStringStart, LPCWSTR lpStringEnd, LP
 /***********************************************************************
  *      MSSTYLES_GetPropertyBool
  *
- * Retrieve a color value for a property 
+ * Retrieve a color value for a property
  */
 HRESULT MSSTYLES_GetPropertyBool(PTHEME_PROPERTY tp, BOOL *pfVal)
 {
@@ -991,7 +1006,7 @@ HRESULT MSSTYLES_GetPropertyBool(PTHEME_PROPERTY tp, BOOL *pfVal)
 /***********************************************************************
  *      MSSTYLES_GetPropertyColor
  *
- * Retrieve a color value for a property 
+ * Retrieve a color value for a property
  */
 HRESULT MSSTYLES_GetPropertyColor(PTHEME_PROPERTY tp, COLORREF *pColor)
 {
@@ -1021,7 +1036,7 @@ HRESULT MSSTYLES_GetPropertyColor(PTHEME_PROPERTY tp, COLORREF *pColor)
 /***********************************************************************
  *      MSSTYLES_GetPropertyColor
  *
- * Retrieve a color value for a property 
+ * Retrieve a color value for a property
  */
 static HRESULT MSSTYLES_GetFont (LPCWSTR lpCur, LPCWSTR lpEnd,
                                  LPCWSTR *lpValEnd, LOGFONTW* pFont)
@@ -1067,7 +1082,7 @@ HRESULT MSSTYLES_GetPropertyFont(PTHEME_PROPERTY tp, HDC hdc, LOGFONTW *pFont)
 {
     LPCWSTR lpCur = tp->lpValue;
     LPCWSTR lpEnd = tp->lpValue + tp->dwValueLen;
-    HRESULT hr; 
+    HRESULT hr;
 
     ZeroMemory(pFont, sizeof(LOGFONTW));
     hr = MSSTYLES_GetFont (lpCur, lpEnd, &lpCur, pFont);
@@ -1078,7 +1093,7 @@ HRESULT MSSTYLES_GetPropertyFont(PTHEME_PROPERTY tp, HDC hdc, LOGFONTW *pFont)
 /***********************************************************************
  *      MSSTYLES_GetPropertyInt
  *
- * Retrieve an int value for a property 
+ * Retrieve an int value for a property
  */
 HRESULT MSSTYLES_GetPropertyInt(PTHEME_PROPERTY tp, int *piVal)
 {
@@ -1092,7 +1107,7 @@ HRESULT MSSTYLES_GetPropertyInt(PTHEME_PROPERTY tp, int *piVal)
 /***********************************************************************
  *      MSSTYLES_GetPropertyIntList
  *
- * Retrieve an int list value for a property 
+ * Retrieve an int list value for a property
  */
 HRESULT MSSTYLES_GetPropertyIntList(PTHEME_PROPERTY tp, INTLIST *pIntList)
 {
@@ -1111,7 +1126,7 @@ HRESULT MSSTYLES_GetPropertyIntList(PTHEME_PROPERTY tp, INTLIST *pIntList)
 /***********************************************************************
  *      MSSTYLES_GetPropertyPosition
  *
- * Retrieve a position value for a property 
+ * Retrieve a position value for a property
  */
 HRESULT MSSTYLES_GetPropertyPosition(PTHEME_PROPERTY tp, POINT *pPoint)
 {
@@ -1135,7 +1150,7 @@ HRESULT MSSTYLES_GetPropertyPosition(PTHEME_PROPERTY tp, POINT *pPoint)
 /***********************************************************************
  *      MSSTYLES_GetPropertyString
  *
- * Retrieve a string value for a property 
+ * Retrieve a string value for a property
  */
 HRESULT MSSTYLES_GetPropertyString(PTHEME_PROPERTY tp, LPWSTR pszBuff, int cchMaxBuffChars)
 {
@@ -1146,7 +1161,7 @@ HRESULT MSSTYLES_GetPropertyString(PTHEME_PROPERTY tp, LPWSTR pszBuff, int cchMa
 /***********************************************************************
  *      MSSTYLES_GetPropertyRect
  *
- * Retrieve a rect value for a property 
+ * Retrieve a rect value for a property
  */
 HRESULT MSSTYLES_GetPropertyRect(PTHEME_PROPERTY tp, RECT *pRect)
 {
@@ -1166,7 +1181,7 @@ HRESULT MSSTYLES_GetPropertyRect(PTHEME_PROPERTY tp, RECT *pRect)
 /***********************************************************************
  *      MSSTYLES_GetPropertyMargins
  *
- * Retrieve a margins value for a property 
+ * Retrieve a margins value for a property
  */
 HRESULT MSSTYLES_GetPropertyMargins(PTHEME_PROPERTY tp, RECT *prc, MARGINS *pMargins)
 {
