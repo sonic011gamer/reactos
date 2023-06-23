@@ -12,9 +12,12 @@
 #include <locd3d.h>
 #include <wdm.h>
 
+/* Create an IO request to fill out the function pointer list */
+#define IOCTL_VIDEO_DDI_FUNC_REGISTER \
+	CTL_CODE( FILE_DEVICE_VIDEO, 0xF, METHOD_NEITHER, FILE_ANY_ACCESS  )
 
-NTSTATUS
-RDDM_LoadDxgkrnl(FILE_OBJECT **FileObject, DEVICE_OBJECT **DeviceObject);
+ULONG
+RDDM_FindIoControlCode();
 
 VOID
-RDDM_SetupIoControlReq(DEVICE_OBJECT *DeviceObject);
+RDDM_UnloadDxgkrnl(_In_ PUNICODE_STRING DxgkrnlServiceName);

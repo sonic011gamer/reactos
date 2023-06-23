@@ -53,3 +53,12 @@ DxgkInitializeDisplayOnlyDriver(
     return 1;
 }
 #endif
+/* Note two: */
+/* During the setup of Windows 8+ there's a new IOCTRL that we're not exactly sure what it's name is */
+/*
+ * This value does a similar goal of IOCTL_VIDEO_DDI_FUNC_REGISTER but i haven't tried to figure out what
+ * it's name etc should be yet and behaviors. Will do this when i implement the windows 8 Startup sequence.
+ * 0x230047u <-
+ * for more information see this webpage
+ * https://win8displayarchitecture.blogspot.com/2012/02/win8developerpreviewdisplayarchitecture.html
+ */
