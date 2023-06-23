@@ -21,3 +21,7 @@ https://www.zerodayinitiative.com/blog/2018/12/4/directx-to-the-kernel
 Tuesday, February 14, 2017
 Attacking the Windows NVIDIA Driver:
 https://googleprojectzero.blogspot.com/2017/02/attacking-windows-nvidia-driver.html
+
+
+
+https://win8displayarchitecture.blogspot.com/2012/02/win8developerpreviewdisplayarchitecture.html

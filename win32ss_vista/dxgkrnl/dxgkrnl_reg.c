@@ -6,7 +6,7 @@
  */
 
 
-#include <dxgkrnl.h>
+#include <include/dxgkrnl.h>
 //#define NDEBUG
 #include <debug.h>
 
@@ -37,7 +37,7 @@ RDDM_AddDeviceMapLink()
                                    DeviceBuffer,
                                    REG_SZ,
                                    RegistryPath->Buffer,
-                                   RegistryPath->Length + sizeof(UNICODE_NULL));
+                                   0);
     if (!NT_SUCCESS(Status))
     {
         DPRINT1("Failed to create DEVICEMAP registry entry: 0x%X\n", Status);

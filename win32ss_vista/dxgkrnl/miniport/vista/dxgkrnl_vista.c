@@ -9,7 +9,7 @@
 #define NDEBUG
 #include <debug.h>
 
-
+DXGKRNL_INTERFACE DxgkrnlInterface;
 /*
  * I turned this into a internal function to keep better eventual seperation of the
  * WDDM 1.2+ and WDDM 1.0-1.1 APIs
@@ -20,7 +20,6 @@ RDDM_SetupDxgkrnl(
     IN PDRIVER_OBJECT DriverObject,
     IN PUNICODE_STRING RegistryPath)
 {
-    DXGKRNL_INTERFACE DxgkrnlInterface;
     DxgkrnlInterface.Size = sizeof(DXGKRNL_INTERFACE);
     DxgkrnlInterface.Version = DXGKDDI_INTERFACE_VERSION_VISTA;
     DxgkrnlInterface.DeviceHandle = (HANDLE)DriverObject;
@@ -47,5 +46,6 @@ RDDM_SetupDxgkrnl(
     DPRINT1("---------------------------ReactOS Display Driver Model---------------------------\n");
     DPRINT1("Targetting version: %X\n", DxgkrnlInterface.Version);
     DPRINT1("Dxgkrnl has started\n\n");
+   // RDDM_AddDeviceMapLink();
     return STATUS_SUCCESS;
 }

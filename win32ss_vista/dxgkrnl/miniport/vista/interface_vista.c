@@ -27,9 +27,15 @@ RDDM_DxgkCbEvalAcpiMethod(_In_ HANDLE DeviceHandle,
     return STATUS_UNSUCCESSFUL;
 }
 
-/*
- * https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/dispmprt/nc-dispmprt-dxgkcb_get_device_information
- * @ UNIMPLEMENTED
+/**
+ * @brief Fills out the DXGK_DEVICE_INFO parameter allocated
+ *  by a miniport driver
+ *
+ * @param DeviceHandle HANDLE Obtained via the DXGKRNL_INTERFACE passed to miniport
+ *
+ * @param DeviceInfo Strucutre that includes many use bits of information for miniports, Including the IO Ranges
+ *
+ * @return NTSTATUS
  */
 NTSTATUS
 APIENTRY

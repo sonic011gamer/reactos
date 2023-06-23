@@ -1,14 +1,17 @@
 
 remove_definitions(-D_WIN32_WINNT=0x502)
 add_definitions(-D_WIN32_WINNT=0x601)
+include_directories("include/")
 
 spec2def(dxgkrnl.sys dxgkrnl.spec ADD_IMPORTLIB)
 
 list(APPEND SOURCE
     dxgkrnl.c
-    dxgkrnl_vista.c
-    interface_vista.c
-    undocumented.c
+    dxgkrnl_reg.c
+    miniport/vista/dxgkrnl_vista.c
+    miniport/vista/interface_vista.c
+    miniport/vista/undocumented.c
+    miniport/rddmport.c
     )
 
 add_library(dxgkrnl MODULE
@@ -21,7 +24,7 @@ if(USE_CLANG_CL)
     target_compile_options(dxgkrnl PRIVATE "-Wno-missing-braces")
 endif()
 
-add_pch(dxgkrnl dxgkrnl.h "${PCH_SKIP_SOURCE}")
+add_pch(dxgkrnl include/dxgkrnl.h "${PCH_SKIP_SOURCE}")
 set_module_type(dxgkrnl kernelmodedriver ENTRYPOINT DriverEntry)
 add_importlibs(dxgkrnl ntoskrnl hal)
 add_cd_file(TARGET dxgkrnl DESTINATION reactos/system32/drivers NO_CAB FOR all)
