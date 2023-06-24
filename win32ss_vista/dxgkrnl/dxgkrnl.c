@@ -152,6 +152,7 @@ DxgkInternalDeviceIoctl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
             Irp->IoStatus.Status = STATUS_SUCCESS;
             *OutputBuffer = DpiInitialize;
             DPRINT1("IOCTL_VIDEO_DDI_FUNC_REGISTER - Queued DpiInitialize up\n");
+            break;
         default:
             DPRINT1("unknown IOCTRL Code: %X\n", IoControlCode);
             break;
