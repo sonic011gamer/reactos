@@ -1,3 +1,5 @@
+#include <pdevobj.h>
+#include <dxg_int.h>
 
 #define TRACE() \
     DbgPrint("DXG: %s\n", __FUNCTION__)
@@ -22,7 +24,6 @@ DxD3dContextDestroy(
     TRACE();
     return 0;
 }
-
 
 DWORD
 NTAPI
@@ -644,11 +645,275 @@ DxDdHeapVidMemAllocAligned(
     return 0;
 }
 
+VOID
+NTAPI
+insertIntoList(LPVMEML Block, LPVMEML *List)
+{
+/*  LPVMEML *ListStart;
+    LPVMEML *NextItem;
+    LPVMEML *PrevItem;
+    LPVMEML *pp_Var4;
+
+    ListStart = (LPVMEML *)*List;
+
+    if (ListStart != NULL)
+    {
+        PrevItem = ListStart;
+        pp_Var4 = NULL;
+
+        do
+        {
+            NextItem = PrevItem;
+            PrevItem = NextItem;
+
+            if (Block-> < NextItem[2])
+                break;
+
+            PrevItem = (LPVMEML *)*NextItem;
+            pp_Var4 = NextItem;
+        } while (PrevItem != NULL);
+
+        if (pp_Var4 != NULL)
+        {
+            *(LPVMEML **)Block = PrevItem;
+            *pp_Var4 = Block;
+            return;
+        }
+    }
+
+    *(LPVMEML **)Block = ListStart;
+    *List = Block;
+
+    return;*/
+}
+
+LPVMEML
+NTAPI
+coalesceFreeBlocks(LPVMEMHEAP Heap, LPVMEML Block)
+{
+    int EndBlock = Block->ptr + Block->size;
+    LPVMEML* FreeList = Heap->freeList;
+    LPVMEML v5 = *FreeList;
+    Block->next = NULL;
+    int v6;
+    int v7;
+    LPVMEML result;
+    LPVMEML* v9 = FreeList;
+    LPVMEML pContext0 = NULL;
+
+    if(v5)
+    {
+        while(TRUE)
+        {
+            v6 = v5->size;
+            v7 = Block->ptr;
+
+            if(v7 == v6 + v5->ptr)
+                break;
+
+            if(EndBlock == v5->ptr)
+            {
+                v5->ptr = v7;
+                v5->ptr = v6 + Block->ptr;
+                goto Done;
+            }
+
+            pContext0 = v5;
+            v5 = *(LPVMEML*)v5;
+
+            if(!v5)
+            {
+                FreeList = v9;
+                goto InsertIntoList;
+            }
+        }
+
+        v5->size += Block->size;
+Done:
+        if(pContext0)
+            *pContext0 = *v5;
+        else
+            *v9 = *(LPVMEML*)v5;
+        
+        EngFreeMem(Block);
+        result = v5;
+    }
+    else
+    {
+InsertIntoList:
+        insertIntoList(Block, FreeList);
+        result = NULL;
+    }
+
+    return result;
+}
+
+VOID NTAPI
+linFreeVidMem(LPVMEMHEAP Heap, int Ptr)
+{
+    LPVMEML Current;
+    LPVMEML Prev;
+
+    if (Heap && Ptr)
+    {
+        Current = *(LPVMEML *)(Heap->allocList);
+        Prev = NULL;
+
+        while (Current)
+        {
+            // If this is the pointer we are looking for
+            if (Current->ptr == Ptr)
+            {
+                if (Prev)
+                    // Copy Current to Prev
+                    *Prev = *Current;
+                else
+                    // Turn Current into VMEML** then store it as a void pointer
+                    Heap->allocList = (LPVOID)&Current;
+                do
+                    // Free all blocks in this line
+                    Current = coalesceFreeBlocks(Heap, Current);
+                while (Current);
+                return;
+            }
+
+            // Otherwise we set current to previous and move along
+            Prev = Current;
+            Current = *(LPVMEML *)Current;
+        }
+    }
+}
+
+VOID
+NTAPI
+rectFreeVidMem(int Heap, FLATPTR Ptr)
+{
+
+}
+
+VOID
+NTAPI
+DxDdHeapVidMemFree(LPVMEMHEAP Heap, FLATPTR Ptr)
+{
+    if ((Heap->dwFlags & VMEMHEAP_LINEAR) == 0)
+    {
+        // Free Rectangular Memory
+        rectFreeVidMem((int)Heap, Ptr);
+    }
+    else
+    {
+        // Free Linear Memory
+        linFreeVidMem(Heap, (int)Ptr);
+    }
+}
+
+VOID
+NTAPI
+vDdUnloadDxApiImage(PEDD_DIRECTDRAW_GLOBAL peDdGl)
+{
+
+}
+
+VOID
+NTAPI
+vDdDisableDriver(PEDD_DIRECTDRAW_GLOBAL peDdGl)
+{
+    // If we tried to disable a locked device?
+    // vDdAssertDevlock(a1);
+
+    VIDEOMEMORY *pvmList = peDdGl->pvmList;
+
+    if (pvmList)
+    {
+        DWORD dwHeapNum = 0;
+        VIDEOMEMORY *pvMemory = pvmList;
+
+        // If we have any video memory heaps to free
+        if (peDdGl->dwNumHeaps)
+        {
+            do
+            {
+                if (!(pvMemory->dwFlags & VIDMEM_HEAPDISABLED) && pvMemory->lpHeap)
+                    // HeapVidMemFini(v3, pContext);
+
+                    pvMemory += sizeof(VIDEOMEMORY);
+
+                ++dwHeapNum;
+            } while (dwHeapNum < peDdGl->dwNumHeaps);
+        }
+
+        EngFreeMem(peDdGl->pvmList);
+        peDdGl->pvmList = NULL;
+    }
+
+    if (peDdGl->pdwFourCC)
+    {
+        EngFreeMem(peDdGl->pdwFourCC);
+        peDdGl->pdwFourCC = NULL;
+    }
+
+    if (peDdGl->lpDDVideoPortCaps)
+    {
+        EngFreeMem(peDdGl->lpDDVideoPortCaps);
+        peDdGl->lpDDVideoPortCaps = NULL;
+    }
+
+    // Unload ApiImage
+    if (peDdGl->hModule)
+        vDdUnloadDxApiImage(peDdGl);
+
+    if(peDdGl->unk_610[0] != NULL)
+    {
+        peDdGl->unk_610[0] = NULL;
+    }
+
+    // Checking if DirectDraw acceleration was enabled
+    if (peDdGl->fl & 1)
+    {
+        // Reset DirectDraw acceleration flag
+        peDdGl->fl = peDdGl->fl & 0xFFFFFFFE;
+
+        PPDEVOBJ Obj = (PPDEVOBJ)gpEngFuncs.DxEngGetHdevData(peDdGl->hDev, DxEGShDevData_dhpdev);
+        Obj->pfn.DisableDirectDraw(peDdGl->hDev);
+    }
+
+    // We start to zero the structure at driver references?
+    memset(&peDdGl->cDriverReferences, 0, 0x590);
+}
+
+VOID
+NTAPI
+DxDdDisableDirectDraw(HDEV hDev, BOOLEAN bDisableVDd)
+{
+    PEDD_DIRECTDRAW_GLOBAL _Dst = NULL;
+
+    _Dst = (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_eddg);
+
+    if ((_Dst != NULL && _Dst->hDev != NULL))
+    {
+        gpEngFuncs.DxEngLockHdev(hDev);
+
+        if (bDisableVDd != 0)
+        {
+            vDdDisableDriver(_Dst);
+        }
+
+        // Destory an event?
+        if (_Dst->pAssertModeEvent != NULL)
+        {
+            EngFreeMem(_Dst->pAssertModeEvent);
+        }
+
+        // 0x618 size?
+        memset(_Dst, 0, sizeof(EDD_DIRECTDRAW_GLOBAL));
+
+        gpEngFuncs.DxEngUnlockHdev(hDev);
+    }
+}
+
 DWORD
 NTAPI
-DxDdHeapVidMemFree(
-    PVOID p1,
-    PVOID p2)
+DxDdSuspendDirectDraw(PVOID p1, PVOID p2)
 {
     TRACE();
     return 0;
@@ -656,9 +921,7 @@ DxDdHeapVidMemFree(
 
 DWORD
 NTAPI
-DxDdDisableDirectDraw(
-    PVOID p1,
-    PVOID p2)
+DxDdResumeDirectDraw(PVOID p1, PVOID p2)
 {
     TRACE();
     return 0;
@@ -666,116 +929,316 @@ DxDdDisableDirectDraw(
 
 DWORD
 NTAPI
-DxDdSuspendDirectDraw(
-    PVOID p1,
-    PVOID p2)
+DxDdDynamicModeChange(PVOID p1, PVOID p2, PVOID p3)
 {
     TRACE();
     return 0;
 }
 
-DWORD
+BOOL
 NTAPI
-DxDdResumeDirectDraw(
-    PVOID p1,
-    PVOID p2)
+DdHmgOwnedBy(PDD_ENTRY pDdObj, HANDLE hProcess)
 {
-    TRACE();
-    return 0;
+  BOOL Result = FALSE;
+  
+  if (pDdObj != NULL &&
+   ((ULONG_PTR)hProcess & 0xfffffffd ^ (ULONG_PTR)pDdObj->Pid & 0xfffffffe) == 0)
+  {
+    Result = TRUE;
+  }
+
+  return Result;
+}
+
+PDD_ENTRY
+NTAPI
+DdHmgNextOwned(PDD_ENTRY pDdObj, HANDLE hProcess)
+{
+  DWORD dwIndex;
+
+  dwIndex = ((DWORD)pDdObj & 0x1fffff) + 1;
+
+  if (dwIndex < gcMaxDdHmgr) 
+  {
+    DD_ENTRY* pEntry = (PDD_ENTRY)(gpentDdHmgr + (sizeof(DD_ENTRY) * dwIndex));
+
+    do 
+    {
+      if (DdHmgOwnedBy(pDdObj, hProcess)) 
+      {
+        // 0x15 or 21 to extract Entry from FullUnique?
+        return (PDD_ENTRY)((DWORD)pEntry->FullUnique << 0x15 | dwIndex);
+      }
+
+      dwIndex++;
+      pEntry = pEntry + sizeof(DD_ENTRY);
+    } 
+    while (dwIndex < gcMaxDdHmgr);
+  }
+
+  return NULL;
+}
+
+BOOL NTAPI
+DdHmgCloseProcess(HANDLE hProcess)
+{
+  PDD_ENTRY pDdObj;
+  DWORD dwObjectType;
+  DWORD dwCount;
+
+  BOOL bSUCCESS = TRUE;
+
+  // We are iterating a list here so we need to lock it
+  DdHmgAcquireHmgrSemaphore();
+  pDdObj = DdHmgNextOwned(NULL, hProcess);
+  DdHmgReleaseHmgrSemaphore();
+
+  do
+  {
+    // If the current object is NULL return the result of the last operation
+    if (pDdObj == NULL)
+    {
+      return bSUCCESS;
+    }
+
+    // Determine DD Object Type
+    // Either this or pDdObj->Objt
+    dwObjectType = (pDdObj->FullUnique >> 0x15) & 7;
+
+    // DDObject
+    if (dwObjectType == 1)
+    {
+      bSUCCESS = bDdDeleteDirectDrawObject(pDdObj, 1);
+    NEXT_OBJECT:
+      if (bSUCCESS == FALSE)
+        goto OBJ_FAILED;
+    }
+    else
+    {
+      // Surface
+      if (dwObjectType == 2)
+      {
+        bSUCCESS = bDdDeleteSurfaceObject(pDdObj, NULL);
+        goto NEXT_OBJECT;
+      }
+
+      // Handle
+      if (dwObjectType == 3)
+      {
+        DWORD dwHandle = D3dDeleteHandle(pDdObj, 0, NULL, &dwCount);
+        bSUCCESS = (dwHandle == 1);
+        goto NEXT_OBJECT;
+      }
+
+      // VideoPort
+      if (dwObjectType == 4)
+      {
+        bSUCCESS = bDdDeleteVideoPortObject(pDdObj, NULL);
+        goto NEXT_OBJECT;
+      }
+
+      // Motion Comp Object
+      if (dwObjectType == 5)
+      {
+        bSUCCESS = bDdDeleteMotionCompObject(pDdObj, NULL);
+        goto NEXT_OBJECT;
+      }
+
+      // We failed this was an unrecognized object type
+      bSUCCESS = 0;
+
+    OBJ_FAILED:
+      DbgPrint("DDRAW ERROR: DdHmgCloseProcess couldn\'t delete obj = %p, type j=%lx\n", pDdObj, dwObjectType);
+    }
+
+    DdHmgAcquireHmgrSemaphore();
+    pDdObj = DdHmgNextOwned(pDdObj, hProcess);
+    DdHmgReleaseHmgrSemaphore();
+  } while (TRUE);
+}
+
+VOID
+NTAPI
+DxDdCloseProcess(HANDLE hProcess)
+{
+    DdHmgCloseProcess(hProcess);
+}
+
+BOOL
+NTAPI
+DxDdGetDirectDrawBounds(HDEV hDev, LPRECT lpRect)
+{
+    BOOL Result = FALSE;
+    PEDD_DIRECTDRAW_GLOBAL peDdGl;
+
+    peDdGl = (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_eddg);
+
+    // vDdAssertDevlock(pEVar2);
+
+    // Do we have some kind of global bounds locked
+    Result = (peDdGl->fl & 4) != 0;
+
+    if (Result)
+    {
+        lpRect->left = peDdGl->rcbounds.left;
+        lpRect->top = peDdGl->rcbounds.top;
+        lpRect->right = peDdGl->rcbounds.right;
+        lpRect->bottom = peDdGl->rcbounds.bottom;
+
+        peDdGl->fl = peDdGl->fl & 0xfffffffb;
+    }
+
+    return Result;
 }
 
 DWORD
 NTAPI
-DxDdDynamicModeChange(
-    PVOID p1,
-    PVOID p2,
-    PVOID p3)
+DxDdEnableDirectDrawRedirection(PVOID p1, PVOID p2)
 {
-    TRACE();
+    // Not Implemented In Vista
     return 0;
 }
 
-DWORD
+PVOID
 NTAPI
-DxDdCloseProcess(
-    PVOID p1)
+DxDdAllocPrivateUserMem(PEDD_SURFACE pEDDSurface, SIZE_T cjMemSize, ULONG ulTag)
 {
-    TRACE();
-    return 0;
+    PVOID pvUserMem = NULL;
+
+    HANDLE hProcess = PsGetCurrentProcess();
+
+    // If the creator is this process allow the engine to allocate
+    if(pEDDSurface->ddsSurfaceGlobal.hCreatorProcess == hProcess)
+    {
+        pvUserMem = EngAllocUserMem(cjMemSize, ulTag);
+    }
+
+    return pvUserMem;
 }
 
-DWORD
+VOID
 NTAPI
-DxDdGetDirectDrawBound(
-    PVOID p1,
-    PVOID p2)
-{
-    TRACE();
-    return 0;
+SafeFreeUserMem(PVOID pvMem, HANDLE hProcess)
+{  
+  if (hProcess == PsGetCurrentProcess()) {
+    EngFreeUserMem(pvMem);
+  } 
+  else {
+    KeAttachProcess(hProcess);
+    EngFreeUserMem(pvMem);
+    KeDetachProcess();
+  }
 }
 
-DWORD
+VOID
 NTAPI
-DxDdEnableDirectDrawRedirection(
-    PVOID p1,
-    PVOID p2)
+DeferMemoryFree(PVOID pvMem, EDD_SURFACE *pEDDSurface)
 {
-    TRACE();
-    return 0;
+  PVOID* ppvMem;
+
+  ppvMem = (PVOID*)EngAllocMem(1, 0xc, TAG_GDDP);
+
+  if (ppvMem != NULL) {
+    ppvMem[0] = pvMem;
+
+    ppvMem[1] = pEDDSurface;
+
+    ppvMem[2] = pEDDSurface->ddsSurfaceGlobal.hCreatorProcess;
+
+    // *(void ***)(*(int *)(*(int *)(param_2 + 0xcc) + 0x24) + 0x608) = ppvVar1;
+    pEDDSurface->peDirectDrawGlobal->unk_608 = ppvMem;
+
+    pEDDSurface->ddsSurfaceLocal.dwFlags |= 0x1000;
+  }
 }
 
-DWORD
+
+VOID
 NTAPI
-DxDdAllocPrivateUserMem(
-    PVOID p1,
-    PVOID p2,
-    PVOID p3)
+DxDdFreePrivateUserMem(int p1, PVOID pvMem)
 {
-    TRACE();
-    return 0;
+    // Some strange pointer math going on here...
+    PEDD_SURFACE surface;
+
+    // This requires further investigation
+    if(p1 != NULL)
+    {
+        surface = (PEDD_SURFACE)(p1 - 0x10U);
+    }
+
+    // 0x800 is some system memory flag
+    if(surface->ddsSurfaceLocal.dwFlags & 0x800)
+    {
+        DeferMemoryFree(pvMem, surface);
+    }
+    else
+    {
+        SafeFreeUserMem(pvMem, surface->ddsSurfaceGlobal.hCreatorProcess);
+    }
 }
 
-DWORD
+VOID
 NTAPI
-DxDdFreePrivateUserMem(
-    PVOID p1,
-    PVOID p2)
+DxDdSetAccelLevel(HDEV hDev, DWORD dwLevel, BYTE bFlags)
 {
-    return 0;
+    PEDD_DIRECTDRAW_GLOBAL pGlobal = NULL;
+    (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_eddg);
+
+    if(dwLevel >= 3 || bFlags & 2)
+    {
+        pGlobal->llAssertModeTimeout.HighPart = 0;
+        pGlobal->llAssertModeTimeout.LowPart = 0;
+    }
 }
 
-DWORD
+PEDD_SURFACE
 NTAPI
-DxDdSetAccelLevel(
-    PVOID p1,
-    PVOID p2,
-    PVOID p3)
+DxDdGetSurfaceLock(HDEV hDev)
 {
-    TRACE();
-    return 0;
+    PEDD_DIRECTDRAW_GLOBAL peDdGl = NULL;
+
+    peDdGl = (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_eddg);
+
+    return peDdGl->peSurface_LockList;
 }
 
-DWORD
+PEDD_SURFACE
 NTAPI
-DxDdGetSurfaceLock(
-    PVOID p1)
+DxDdEnumLockedSurfaceRect(HDEV hDev, PEDD_SURFACE pEDDSurface, LPRECT lpRect)
 {
-    TRACE();
-    return 0;
+    PEDD_SURFACE result = NULL;
+
+    if(pEDDSurface == NULL)
+    {
+        PEDD_DIRECTDRAW_GLOBAL peDdGl = NULL;
+        peDdGl = (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_eddg);
+
+        // Do we have any locked surfaces in the global list?
+        result = peDdGl->peSurface_LockList;
+    }
+    else
+    {
+        // Is there another locked surface below this one?
+        result = pEDDSurface->peSurface_LockNext;
+    }
+
+    if(result)
+    {
+        // If we found a locked surface copy it's rectangle
+        lpRect->left = result->rclLock.left;
+        lpRect->top = result->rclLock.top;
+        lpRect->right = result->rclLock.right;
+        lpRect->bottom = result->rclLock.bottom;
+    }
+
+    // Return the surface we found
+    return result;
 }
 
-DWORD
-NTAPI
-DxDdEnumLockedSurfaceRect(
-    PVOID p1,
-    PVOID p2,
-    PVOID p3)
-{
-    TRACE();
-    return 0;
-}
+// This is a very common call gpEngFuncs + 0xa4(param_1 = HDEV?, DxEGShDevData_eddg = 7)
+// (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_eddg);
 
-DRVFN gaDxgFuncs [] =
+DRVFN gaDxgFuncs[] = 
 {
     {DXG_INDEX_DxDxgGenericThunk, (PFN)DxDxgGenericThunk},
     {DXG_INDEX_DxD3dContextCreate, (PFN)DxD3dContextCreate},
