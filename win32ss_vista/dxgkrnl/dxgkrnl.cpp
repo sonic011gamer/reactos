@@ -30,6 +30,7 @@ DpiInitialize(PDRIVER_OBJECT DriverObject, PCUNICODE_STRING SourceString, DRIVER
     PDRIVER_EXTENSION DriverExtend;
     PDXGKRNL_PRIVATE_EXTENSION DriverObjectExtension;
 
+    PAGED_CODE();
     /*
      * Okay so clearly this func does quite a few annoying things so why is it half implemented? you may ask if you're looking at this code
      * (Though why are you lol these notes are mostly for me to come back and fix crap)
@@ -50,7 +51,7 @@ DpiInitialize(PDRIVER_OBJECT DriverObject, PCUNICODE_STRING SourceString, DRIVER
     /* This function is the first real thing that happens to interact with the WDDM Miniport */
     DPRINT1("DpiInitialize: Wddm Miniport driver Reports version: 0x%X\n", DriverInitData->Version);
 
-    Status = IoAllocateDriverObjectExtension(DriverObject, DriverObject, sizeof(DXGKRNL_PRIVATE_EXTENSION), &DriverObjectExtension);
+    Status = IoAllocateDriverObjectExtension(DriverObject, DriverObject, sizeof(DXGKRNL_PRIVATE_EXTENSION), (PVOID*)&DriverObjectExtension);
 
     /* Fill out the internal structure - WIP */
     DriverObjectExtension->DriverInitData = DriverInitData;
@@ -130,7 +131,8 @@ DpiInitialize(PDRIVER_OBJECT DriverObject, PCUNICODE_STRING SourceString, DRIVER
     DriverObject->MajorFunction[IRP_MJ_INTERNAL_DEVICE_CONTROL] = (PDRIVER_DISPATCH)RDDM_MiniportDispatchInternalIoctl;
     DriverObject->MajorFunction[IRP_MJ_SYSTEM_CONTROL] = (PDRIVER_DISPATCH)RDDM_MiniportDispatchSystemControl;
     DriverObject->MajorFunction[IRP_MJ_CLOSE] = (PDRIVER_DISPATCH)RDDM_MiniportDispatchClose;
-    DriverExtend->AddDevice = RDDM_MiniportAddDevice;
+  // DriverObject->DriverInit =
+   DriverExtend->AddDevice = RDDM_MiniportAddDevice;
     DriverObject->DriverUnload = (PDRIVER_UNLOAD)RDDM_MiniportDriverUnload;
     DPRINT1("DpiInitialize: Finished\n");
     return STATUS_SUCCESS;
@@ -147,7 +149,7 @@ DxgkInternalDeviceIoctl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
     switch (IoControlCode)
     {
         case IOCTL_VIDEO_DDI_FUNC_REGISTER:
-            OutputBuffer = Irp->UserBuffer;
+            OutputBuffer = (PVOID*)Irp->UserBuffer;
             Irp->IoStatus.Information = 0;
             Irp->IoStatus.Status = STATUS_SUCCESS;
             *OutputBuffer = DpiInitialize;

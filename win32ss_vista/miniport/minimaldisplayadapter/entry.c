@@ -14,8 +14,8 @@ DriverEntry(
     DriverInitializationData.DxgkDdiStartDevice = OpenWDDM_StartDevice;
     DriverInitializationData.DxgkDdiStopDevice = OpenWDDM_StopDevice;
     DriverInitializationData.DxgkDdiRemoveDevice = OpenWDDM_RemoveDevice;
-#if 0
-    PDXGKDDI_DISPATCH_IO_REQUEST            DxgkDdiDispatchIoRequest;
+     DriverInitializationData.DxgkDdiDispatchIoRequest = OpenWDDM_Dispatch_IoRequest;
+    #if 0
     PDXGKDDI_INTERRUPT_ROUTINE              DxgkDdiInterruptRoutine;
     PDXGKDDI_DPC_ROUTINE                    DxgkDdiDpcRoutine;
     PDXGKDDI_QUERY_CHILD_RELATIONS          DxgkDdiQueryChildRelations;

@@ -6,12 +6,12 @@ include_directories("include/")
 spec2def(dxgkrnl.sys dxgkrnl.spec ADD_IMPORTLIB)
 
 list(APPEND SOURCE
-    dxgkrnl.c
-    dxgkrnl_reg.c
-    miniport/vista/dxgkrnl_vista.c
-    miniport/vista/interface_vista.c
-    miniport/vista/undocumented.c
-    miniport/rddmport.c
+    dxgkrnl.cpp
+    dxgkrnl_reg.cpp
+    miniport/vista/dxgkrnl_vista.cpp
+    miniport/vista/interface_vista.cpp
+    miniport/vista/undocumented.cpp
+    miniport/rddmport.cpp
     )
 
 add_library(dxgkrnl MODULE

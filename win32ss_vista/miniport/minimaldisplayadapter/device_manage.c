@@ -42,3 +42,14 @@ OpenWDDM_RemoveDevice(
     __debugbreak();
     return STATUS_SUCCESS;
 }
+
+NTSTATUS
+OpenWDDM_Dispatch_IoRequest(
+    IN_CONST_PVOID              MiniportDeviceContext,
+    IN_ULONG                    VidPnSourceId,
+    IN_PVIDEO_REQUEST_PACKET    VideoRequestPacket)
+{
+    DPRINT1("OpenWDDM_Dispatch_IoRequest\n");
+    __debugbreak();
+    return STATUS_SUCCESS;
+}

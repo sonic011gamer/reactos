@@ -19,3 +19,9 @@ OpenWDDM_StopDevice(
 NTSTATUS
 OpenWDDM_RemoveDevice(
     IN_CONST_PVOID  MiniportDeviceContext);
+
+NTSTATUS
+OpenWDDM_Dispatch_IoRequest(
+    IN_CONST_PVOID              MiniportDeviceContext,
+    IN_ULONG                    VidPnSourceId,
+    IN_PVIDEO_REQUEST_PACKET    VideoRequestPacket);

@@ -76,6 +76,28 @@ RDDM_MiniportDispatchClose(PDEVICE_OBJECT DeviceObject)
     return 0;
 }
 
+void
+internalCallObject(PDXGKRNL_PRIVATE_EXTENSION Extension, DEVICE_OBJECT *PhysicalDeviceObject
+                    , PVOID MiniportDeviceContext)
+{
+    NTSTATUS Status;
+
+    /* i dont think that's how these work, at all */
+    __try
+    {
+        __debugbreak();
+        Status = Extension->DxgkDdiAddDevice(PhysicalDeviceObject, (PVOID*)&MiniportDeviceContext);
+    }
+    __except(EXCEPTION_EXECUTE_HANDLER)
+    {
+        DPRINT1("Cannot call DxgkDdiAddDevice\n");
+       // return STATUS_UNSUCCESSFUL;
+    }
+
+
+    DPRINT1("DxgkDdiAddDevice: Returned with Status: %d", Status);
+    __debugbreak();
+}
 /**
  * @brief Intercepts and calls the AddDevice Miniport call back
  *
@@ -87,10 +109,53 @@ RDDM_MiniportDispatchClose(PDEVICE_OBJECT DeviceObject)
  *
  *  HALF-IMPLEMENTED
  */
+
+NTSTATUS
+NTAPI
+RDDM_MiniportAddDevice(_In_     DRIVER_OBJECT *DriverObject,
+                       _Inout_  DEVICE_OBJECT *PhysicalDeviceObject)
+{
+    ULONG_PTR Context = 0;
+    PDXGKRNL_PRIVATE_EXTENSION Extension = NULL;
+   //PhysicalDeviceObject->DeviceExtension
+    /* MS does a whole bunch of bullcrap here so we will try to track it */
+      PAGED_CODE();
+    if (!DriverObject || !PhysicalDeviceObject)
+    {
+        DPRINT1("Somethign has seriously fucked up\n");
+        return STATUS_INVALID_PARAMETER;
+    }
+
+    /*
+     * This routine implemented the Miniport AddDevice along with trying enumerate what
+     * the GPU is "attached to", On the off chance a GPU isn't enumerated over PCI we use ACPI here,
+     * This routine also decides when to use MSI-(X) Interrupts; A Royal pain in the butt.
+     *
+     * 1) First lets get the device extension for DXGKRNL
+     * 2) nextlet's call a private API to handle calling Add Device.
+     */
+
+    /* Grab the DXGKRNL internal extension */
+    Extension = (PDXGKRNL_PRIVATE_EXTENSION)IoGetDriverObjectExtension(DriverObject, DriverObject);
+    if (!Extension)
+    {
+        DPRINT1("Could not gather DXGKRNL Extension\n");
+    }
+
+    internalCallObject(Extension,PhysicalDeviceObject,(VOID*)Context);
+
+    __debugbreak();
+    return STATUS_SUCCESS;
+}
+#if 0
 NTSTATUS
 NTAPI
 RDDM_MiniportAddDevice(PDRIVER_OBJECT DriverObject, PDEVICE_OBJECT TargetDevice)
 {
+    PAGED_CODE();
+
+    PDXGKDDI_ADD_DEVICE                       LocDxgkDdiAddDevice;
+
     PDXGKRNL_PRIVATE_EXTENSION Extension = NULL;
     PVOID MiniportDeviceContext = NULL;
     NTSTATUS Status = 0;
@@ -103,13 +168,15 @@ RDDM_MiniportAddDevice(PDRIVER_OBJECT DriverObject, PDEVICE_OBJECT TargetDevice)
         DPRINT1("Could not gather DXGKRNL Extension\n");
     }
 
+    LocDxgkDdiAddDevice = Extension->DxgkDdiAddDevice;
+    __debugbreak();
     /* Call the actual miniport routine */
-    Status = Extension->DxgkDdiAddDevice(TargetDevice, &MiniportDeviceContext);
+    Status = (NTSTATUS)(LocDxgkDdiAddDevice(TargetDevice, &MiniportDeviceContext));
     DPRINT1("DxgkDdiAddDevice Status 0x%X\n", Status);
     __debugbreak();
     return Status;
 }
-
+#endif
 NTSTATUS
 NTAPI
 RDDM_MiniportDriverUnload(PDRIVER_OBJECT DriverObject)
