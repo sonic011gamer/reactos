@@ -155,6 +155,9 @@ DxgkInternalDeviceIoctl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
             *OutputBuffer = DpiInitialize;
             DPRINT1("IOCTL_VIDEO_DDI_FUNC_REGISTER - Queued DpiInitialize up\n");
             break;
+        case 0x23E057:
+            DPRINT1("IOCTL_VIDEO_REQUEST_WIN32K_INTERFACE\n");
+            break;
         default:
             DPRINT1("unknown IOCTRL Code: %X\n", IoControlCode);
             break;

@@ -839,24 +839,25 @@ DriverEntry(
     _In_  UNICODE_STRING* pRegistryPath)
 {
     NTSTATUS Status;
-    DRIVER_INITIALIZATION_DATA DriverInitializationData;
-
-    DriverInitializationData.Version = DXGKDDI_INTERFACE_VERSION_VISTA;
+    DRIVER_INITIALIZATION_DATA DriverInitializationData = {0};
+    DPRINT1("BOCHS WDDM ADAPTER\n");
+    __debugbreak();
+    DriverInitializationData.Version = DXGKDDI_INTERFACE_VERSION_VISTA_SP1;
     DriverInitializationData.DxgkDdiAddDevice = BochsWDDM_AddDevice;
     DriverInitializationData.DxgkDdiStartDevice = BochsWDDM_AddDevice;
     DriverInitializationData.DxgkDdiStopDevice = BochsWDDM_StopDevice;
     DriverInitializationData.DxgkDdiRemoveDevice = BochsWDDM_RemoveDevice;
     DriverInitializationData.DxgkDdiDispatchIoRequest = BochsWDDM_DispatchIoRequest;
-    DriverInitializationData.DxgkDdiInterruptRoutine = BochsWDDM_InterruptRoutine;
-   // DriverInitializationData.DxgkDdiDpcRoutine;
-   // DriverInitializationData.DxgkDdiQueryChildRelations;
-   // DriverInitializationData.DxgkDdiQueryChildStatus;
-   // DriverInitializationData.DxgkDdiQueryDeviceDescriptor;
-   // DriverInitializationData.DxgkDdiSetPowerState;
-   // DriverInitializationData.DxgkDdiNotifyAcpiEvent;
+    DriverInitializationData.DxgkDdiSetPowerState = BochsWDDM_SetPowerState;
     DriverInitializationData.DxgkDdiResetDevice = BochsWDDM_ResetDevice;
     DriverInitializationData.DxgkDdiUnload = BochsWDDM_Unload;
-    //PDXGKDDI_QUERY_INTERFACE                DxgkDdiQueryInterface;
+    DriverInitializationData.DxgkDdiQueryInterface = BochsWDDM_QueryInterface;
+   // DriverInitializationData.DxgkDdiInterruptRoutine = BochsWDDM_InterruptRoutine;
+   // DriverInitializationData.DxgkDdiDpcRoutine = BochsWDDM_DpcRoutine;
+   // DriverInitializationData.DxgkDdiQueryChildRelations = BochsWDDM_QueryChildRelations;
+   // DriverInitializationData.DxgkDdiQueryChildStatus = BochsWDDM_QueryChildStatus;
+   // DriverInitializationData.DxgkDdiQueryDeviceDescriptor = BochsWDDM_QueryDevceDescriptor;
+  //  DriverInitializationData.DxgkDdiNotifyAcpiEvent = BochsWDDM_NotifyAcpiEvent;
     #if 0
     PDXGKDDI_CONTROL_ETW_LOGGING            DxgkDdiControlEtwLogging;
     PDXGKDDI_QUERYADAPTERINFO               DxgkDdiQueryAdapterInfo;
