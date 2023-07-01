@@ -17,14 +17,17 @@ VOID *gpDummyPage = NULL;
 PEPROCESS gpepSession = NULL;
 PLARGE_INTEGER gpLockShortDelay = NULL;
 
+ULONG64 DxgUserProbeAddress;
+
 DXENG_FUNCTIONS gpEngFuncs;
 
 const ULONG gcDxgFuncs = DXG_INDEX_DxDdIoctl + 1;
 
 
-NTSTATUS NTAPI
-DriverEntry(IN PVOID Context1,
-            IN PVOID Context2)
+NTSTATUS 
+NTAPI
+DriverEntry(IN PDRIVER_OBJECT DriverObject,
+            IN PUNICODE_STRING RegistryPath)
 {
     return 0;
 }
@@ -89,6 +92,8 @@ DxDdStartupDxGraphics (ULONG SizeEngDrv,
     }
 
     /* Note 12/1-2004 : Why is this set to 0x618 */
+    /* There is a point where a zero memory operation is done on a EDD_DIRECTDRAW_GLOBAL object */
+    /* The size of this zero memory was 0x618 */
     *DirectDrawContext = 0x618;
 
     if (DdHmgCreate())
@@ -97,6 +102,7 @@ DxDdStartupDxGraphics (ULONG SizeEngDrv,
 
         if (ghsemDummyPage)
         {
+            DxgUserProbeAddress = MmUserProbeAddress;
             gpepSession = Proc;
             return STATUS_SUCCESS;
         }

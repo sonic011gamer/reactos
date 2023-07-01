@@ -186,11 +186,12 @@ typedef struct _EDD_DIRECTDRAW_GLOBAL
 /* 0x5F0 */    ULONG unk_5f0;
 /* 0x5F4 */    ULONG unk_5f4;
 /* 0x5F8 */    RECTL rcbounds;
-/* 0x608 */    ULONG unk_608;
+/* 0x608 */    ULONG unk_608;                               // 0x608 Some kind of deferred free memory list 
 /* 0x60C */    HDEV hDev;                                   // 0x60c <-- verified to match Windows XP, The real Pdev, hDev
 
 /* Windows XP and higher */
-/* 0x610 */    ULONG unk_610[63];
+/* 0x610 */    HDC unk_hdc;                                 // 0x610 some unknown HDC
+/* 0x610 */    ULONG unk_610[62];
 /* 0x70C */    ULONG unk_70C;
 } EDD_DIRECTDRAW_GLOBAL, *PEDD_DIRECTDRAW_GLOBAL;
 

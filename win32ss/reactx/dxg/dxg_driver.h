@@ -3,6 +3,26 @@
 #define TRACE() \
     DbgPrint("DXG: %s\n", __FUNCTION__)
 
+VOID
+NTAPI
+ProbeAndReadBuffer(void *Dst, void *Src, size_t MaxCount)
+{
+  if ( (char *)Src + MaxCount < Src || (unsigned int)Src + MaxCount > DxgUserProbeAddress )
+    *(_BYTE *)Dst = *(_BYTE *)DxgUserProbeAddress;
+
+  memcpy(Dst, Src, MaxCount);
+}
+
+VOID
+NTAPI
+ProbeAndWriteBuffer(void *Dst, void *Src, size_t MaxCount)
+{
+  if ( (char *)Dst + MaxCount < Dst || (unsigned int)Dst + MaxCount > DxgUserProbeAddress )
+      DxgUserProbeAddress = 0;
+
+  memcpy(Dst, Src, MaxCount);
+}
+
 DWORD
 NTAPI
 DxD3dContextCreate(
@@ -11,6 +31,8 @@ DxD3dContextCreate(
     PVOID p3,
     PVOID p4)
 {
+    DdHmgAcquireHmgrSemaphore();
+    DdHmgReleaseHmgrSemaphore();
     TRACE();
     return 0;
 }
@@ -71,31 +93,64 @@ NTAPI
 DxDdAddAttachedSurface(
     HANDLE hSurface1,
     HANDLE hSurface2,
-    PEDD_DIRECTDRAW_GLOBAL* ppeDdGl)
+    int a3)
 {
-    BOOL bSUCCESS = FALSE;
+    BOOL bFAILED = FALSE;
 
-    PEDD_SURFACE LockedSurface1 = NULL;
-    PEDD_SURFACE LockedSurface2 = NULL;
+    PEDD_SURFACE peDdS1 = NULL;
+    PEDD_SURFACE peDdS2 = NULL;
 
-    // We have to flip through the PEDD_DIRECTDRAW_GLOBAL pointers here
+    peDdS1 = (PEDD_SURFACE)DdHmgLock(hSurface1, ObjType_DDSURFACE_TYPE, FALSE);
+    peDdS2 = (PEDD_SURFACE)DdHmgLock(hSurface2, ObjType_DDSURFACE_TYPE, FALSE);
 
-    LockedSurface1 = (PEDD_SURFACE)DdHmgLock(hSurface1, ObjType_DDSURFACE_TYPE, FALSE);
-    LockedSurface2 = (PEDD_SURFACE)DdHmgLock(hSurface2, ObjType_DDSURFACE_TYPE, FALSE);
+    DD_ADDATTACHEDSURFACEDATA addSurfaceData = {0};
+    addSurfaceData.ddRVal = DDERR_GENERIC;
 
-    if(LockedSurface1 == NULL || LockedSurface2 == NULL ||
-        (LockedSurface1->pobj.BaseFlags & 0x800) != 0 ||
-        (LockedSurface2->pobj.BaseFlags & 0x800) != 0 ||
-        LockedSurface1->ddsSurfaceLocal.dwFlags != LockedSurface2->ddsSurfaceLocal.dwFlags)
+    if(peDdS1 && peDdS2 && 
+        (peDdS1->ddsSurfaceLocal.dwFlags & 0x800) == 0 &&
+        (peDdS2->ddsSurfaceLocal.dwFlags & 0x800) == 0 &&
+        peDdS1->peDirectDrawLocal->pobj.hHmgr == peDdS2->peDirectDrawLocal->pobj.hHmgr)
     {
-        DbgPrint("DxDdAddAttachedSurface: Invalid surface or dwFlags\n");
+        if(peDdS1->peDirectDrawGlobal->ddSurfaceCallbacks.dwFlags < 0) 
+        {
+            // Fill out attach surface data
+            addSurfaceData.lpDD = peDdS1->peDirectDrawGlobal;
+            addSurfaceData.lpDDSurface = &peDdS1->ddsSurfaceLocal;
+            addSurfaceData.lpSurfAttached = &peDdS2->ddsSurfaceLocal;
+
+            // Lock the surface hDev?
+            gpEngFuncs.DxEngLockHdev(peDdS1->peDirectDrawGlobal->hDev);
+
+            // Fail if either surface is marked lost
+            if(peDdS1->bLost || peDdS2->bLost)
+            {
+                bFAILED = TRUE;
+                addSurfaceData.ddRVal = DDERR_SURFACELOST;
+            }
+            else
+            {
+                // attach surface here return the result
+                bFAILED = peDdS1->peDirectDrawGlobal->ddSurfaceCallbacks.AddAttachedSurface(&addSurfaceData);
+            }
+
+            gpEngFuncs.DxEngUnlockHdev(peDdS1->peDirectDrawGlobal->hDev);
+        }
     }
     else
     {
-
+        DbgPrint("DxDdAddAttachedSurface: Invalid surface or dwFlags\n");
     }
 
-    return bSUCCESS;
+    // Uncertain about what structure is being passed here
+    *(DWORD*)(a3 + 12) = addSurfaceData.ddRVal;
+
+    if(peDdS1)
+        InterlockedDecrement(&peDdS1->pobj.cExclusiveLock);
+    
+    if(peDdS2)
+        InterlockedDecrement(&peDdS2->pobj.cExclusiveLock);
+
+    return bFAILED;
 }
 
 DWORD
@@ -839,54 +894,68 @@ VOID
 NTAPI
 HeapVidMemFini(VIDEOMEMORY* pvMemory, PEDD_DIRECTDRAW_GLOBAL peDdGl)
 {
+    DWORD CommitedSize;
+    LPVMEMHEAP CommitedHeap;
+
+    if(!pvMemory->lpHeap)
+    {
+        // No heap throw error
+    }
+
+    if((pvMemory->dwFlags & VIDMEM_ISNONLOCAL) != 0)
+    {
+        LPVMEMHEAP heap = pvMemory->lpHeap;
+        CommitedSize = heap->dwCommitedSize;
+    }
 /*int v2; // esi
-  void *v3; // edi
-  int v4; // ebx
-  _DWORD *v5; // eax
+  void *pAgpCommitMask; // edi
+  int CommitedSize; // ebx
+  _DWORD *heap; // eax
   size_t v6; // ecx
   int v7; // eax
-  int v8; // esi
+  BOOL bSUCCESS; // esi
   size_t Size; // [esp+Ch] [ebp-8h] BYREF
   int v10; // [esp+10h] [ebp-4h]
 
-  v2 = a1;
-  v3 = 0;
-  v4 = 0;
-  if ( !*(_DWORD *)(a1 + 20) )
+  v2 = pvMemory;
+  pAgpCommitMask = 0;
+  CommitedSize = 0;
+  if ( !heap )
     DoRip("DDASSERT");
-  if ( (*(_BYTE *)a1 & 8) != 0 )
+
+  if ( (pvMemory->dwFlags & VIDMEM_ISNONLOCAL) != 0 )
   {
-    v5 = *(_DWORD **)(a1 + 20);
-    v4 = v5[7];
-    v3 = (void *)v5[50];
-    a1 = v5[49];
-    v6 = v5[51];
-    v7 = v5[4];
+    heap = *(_DWORD **)(pvMemory + 20); // VMem Heap
+    CommitedSize = heap[7]; // Commited Size
+    pAgpCommitMask = (void *)heap[50]; // pAgpCommitMask
+    pvMemory = heap[49]; // pvPhysRsrv
+    v6 = heap[51]; // pAgpCommitMask
+    v7 = heap[4]; // DwTotal
     Size = v6;
     v10 = v7;
   }
-  VidMemFini(*(PVOID *)(v2 + 20));
-  *(_DWORD *)(v2 + 20) = 0;
-  if ( (*(_BYTE *)v2 & 8) != 0 )
+  VidMemFini(heap);
+  heap = 0;
+  if ( (pvMemory->dwFlags & VIDMEM_ISNONLOCAL) != 0 )
   {
-    v8 = 1;
-    if ( v4 )
+    bSUCCESS = 1;
+    if ( CommitedSize )
     {
-      if ( !v3 )
+      if ( !pAgpCommitMask )
       {
 LABEL_12:
-        if ( a1 )
-          v8 = AGPFree(a2, a1);
-        if ( !v8 )
+        if ( pvMemory )
+          bSUCCESS = AGPFree(peDdGl globalstate, pvMemory); // No Commit Mask
+        if ( !bSUCCESS )
           DoRip("DDASSERT");
         return;
       }
-      v8 = AGPDecommitAll(a2, a1, v3, Size, (int)&Size, v10);
-      if ( !v8 )
+      bSUCCESS = AGPDecommitAll(peDdGl, pvMemory, pAgpCommitMask, Size, (int)&Size, v10); // Has Commit Mask
+      if ( !bSUCCESS )
         DoRip("DDASSERT");
     }
-    if ( v3 )
-      EngFreeMem(v3);
+    if ( pAgpCommitMask )
+      EngFreeMem(pAgpCommitMask);
     goto LABEL_12;
   }*/
 }
@@ -938,9 +1007,12 @@ vDdDisableDriver(PEDD_DIRECTDRAW_GLOBAL peDdGl)
     if (peDdGl->hModule)
         vDdUnloadDxApiImage(peDdGl);
 
-    if(peDdGl->unk_610[0] != 0)
+    if(peDdGl->unk_hdc != NULL)
     {
-        peDdGl->unk_610[0] = 0;
+        gpEngFuncs.DxEngSetDCOwner((HGDIOBJ)&peDdGl->unk_hdc, 0x80000002 /*GDI_OBJ_HMGR_POWNED?*/);
+        // _gpEngFuncs+0x310 Used in DdReleaseDC which means that unk_610 is an HDC
+        gpEngFuncs.DxEngDeleteDC(peDdGl->unk_hdc, TRUE);
+        peDdGl->unk_hdc = NULL;
     }
 
     // Checking if DirectDraw acceleration was enabled
@@ -953,10 +1025,10 @@ vDdDisableDriver(PEDD_DIRECTDRAW_GLOBAL peDdGl)
         //Obj->pfn.DisableDirectDraw((DHPDEV)peDdGl->dhpdev);
 
         PDRIVER_FUNCTIONS DriverFunctions = (PDRIVER_FUNCTIONS)gpEngFuncs.DxEngGetHdevData(peDdGl->hDev, DxEGShDevData_DrvFuncs);
-        DriverFunctions->DisableDirectDraw(peDdGl->dhpdev);
+        DriverFunctions->DisableDirectDraw((DHPDEV)peDdGl->dhpdev);
     }
 
-    // We start to zero the structure at driver references?
+    // We zero the structure starting from cDriverReferences and ending right at peDirectDrawLocalList
     memset(&peDdGl->cDriverReferences, 0, 0x590);
 }
 
@@ -1070,9 +1142,9 @@ DdHmgCloseProcess(HANDLE hProcess)
   BOOL bSUCCESS = TRUE;
 
   // We are iterating a list here so we need to lock it
-  EngAcquireSemaphore(ghsemHmgr);
+  DdHmgAcquireHmgrSemaphore();
   pDdObj = DdHmgNextOwned(NULL, hProcess);
-  EngReleaseSemaphore(ghsemHmgr);
+  DdHmgReleaseHmgrSemaphore();
 
   while (pDdObj)
   {
@@ -1103,9 +1175,9 @@ DdHmgCloseProcess(HANDLE hProcess)
       //DbgPrint("DDRAW ERROR: DdHmgCloseProcess couldn\'t delete obj = %p, type j=%lx\n", pDdObj, dwObjectType);
     }
 
-    EngAcquireSemaphore(ghsemHmgr);
+    DdHmgAcquireHmgrSemaphore();
     pDdObj = DdHmgNextOwned(pDdObj, hProcess);
-    EngReleaseSemaphore(ghsemHmgr);
+    DdHmgReleaseHmgrSemaphore();
   }
 
   return bSUCCESS;
@@ -1197,12 +1269,13 @@ DeferMemoryFree(PVOID pvMem, EDD_SURFACE *pEDDSurface)
 
     ppvMem[1] = pEDDSurface;
 
-    ppvMem[2] = pEDDSurface->ddsSurfaceGlobal.hCreatorProcess;
+    ppvMem[2] = (PVOID)pEDDSurface->peDirectDrawLocal->peDirectDrawGlobal2->unk_608;
 
     // *(void ***)(*(int *)(*(int *)(param_2 + 0xcc) + 0x24) + 0x608) = ppvVar1;
-    pEDDSurface->peDirectDrawGlobal->unk_608 = (ULONG_PTR)ppvMem;
+    pEDDSurface->peDirectDrawLocal->peDirectDrawGlobal2->unk_608 = (ULONG_PTR)ppvMem;
 
-    pEDDSurface->ddsSurfaceLocal.dwFlags |= 0x1000;
+    // What is this madness?
+    pEDDSurface->cLocks |= 0x1000;
   }
 }
 
@@ -1289,7 +1362,7 @@ DxDdEnumLockedSurfaceRect(HDEV hDev, PEDD_SURFACE pEDDSurface, LPRECT lpRect)
     return result;
 }
 
-// This is a very common call gpEngFuncs + 0xa4(param_1 = HDEV?, DxEGShDevData_eddg = 7)
+// This is a very common call gpEngFuncs + 0xa4(164)(param_1 = HDEV?, DxEGShDevData_eddg = 7)
 // (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_eddg);
 
 DRVFN gaDxgFuncs[] = 

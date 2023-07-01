@@ -189,6 +189,7 @@ extern VOID *gpDummyPage;
 extern PEPROCESS gpepSession;
 extern PLARGE_INTEGER gpLockShortDelay;
 extern DXENG_FUNCTIONS gpEngFuncs;
+extern ULONG64 DxgUserProbeAddress;
 
 /* Driver list export functions */
 DWORD NTAPI DxDxgGenericThunk(ULONG_PTR ulIndex, ULONG_PTR ulHandle, SIZE_T *pdwSizeOfPtr1, PVOID pvPtr1, SIZE_T *pdwSizeOfPtr2, PVOID pvPtr2);
@@ -215,6 +216,8 @@ BOOL FASTCALL DdHmgCreate(VOID);
 BOOL FASTCALL DdHmgDestroy(VOID);
 PVOID FASTCALL DdHmgLock(HANDLE DdHandle, UCHAR ObjectType, BOOLEAN LockOwned);
 HANDLE FASTCALL DdHmgAlloc(ULONG objSize, CHAR objType, BOOLEAN objLock);
+VOID FASTCALL DdHmgAcquireHmgrSemaphore();
+VOID FASTCALL DdHmgReleaseHmgrSemaphore();
 PEDD_SURFACE NTAPI intDdCreateNewSurfaceObject(PEDD_DIRECTDRAW_LOCAL peDdL, HANDLE hDirectDrawLocal, 
                                                PDD_SURFACE_GLOBAL pDdSurfGlob, PDD_SURFACE_LOCAL pDdSurfLoc, PDD_SURFACE_MORE pDdSurfMore);
 
