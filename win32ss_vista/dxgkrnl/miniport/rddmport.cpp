@@ -76,28 +76,6 @@ RDDM_MiniportDispatchClose(PDEVICE_OBJECT DeviceObject)
     return 0;
 }
 
-void
-internalCallObject(PDXGKRNL_PRIVATE_EXTENSION Extension, DEVICE_OBJECT *PhysicalDeviceObject
-                    , PVOID MiniportDeviceContext)
-{
-    NTSTATUS Status;
-
-    /* i dont think that's how these work, at all */
-    __try
-    {
-        __debugbreak();
-        Status = Extension->DxgkDdiAddDevice(PhysicalDeviceObject, (PVOID*)&MiniportDeviceContext);
-    }
-    __except(EXCEPTION_EXECUTE_HANDLER)
-    {
-        DPRINT1("Cannot call DxgkDdiAddDevice\n");
-       // return STATUS_UNSUCCESSFUL;
-    }
-
-
-    DPRINT1("DxgkDdiAddDevice: Returned with Status: %d\n", Status);
-    __debugbreak();
-}
 /**
  * @brief Intercepts and calls the AddDevice Miniport call back
  *
@@ -148,7 +126,15 @@ RDDM_MiniportAddDevice(_In_     DRIVER_OBJECT *DriverObject,
         DPRINT1("Could not gather DXGKRNL Extension\n");
     }
 
-    internalCallObject(Extension,PhysicalDeviceObject,(VOID*)Context);
+    /* Call the miniport Routine */
+    Status = Extension->DxgkDdiAddDevice(PhysicalDeviceObject, (PVOID*)&Context);
+    if(Status != STATUS_SUCCESS)
+    {
+        DPRINT1("RDDM_MiniportAddDevice: AddDevice Miniport call failed with status %X\n", Status);
+    }
+    else{
+        DPRINT1("RDDM_MiniportAddDevice: AddDevice Miniport call has continued with success\n");
+    }
 
     IoStatusBlock.Information = 1024;
     Status = IoCreateDevice(DriverObject,
@@ -164,6 +150,7 @@ RDDM_MiniportAddDevice(_In_     DRIVER_OBJECT *DriverObject,
      * The return value of IoAttachDeviceToDeviceStack is the top of the
      * attachment chain.  This is where all the IRPs should be routed.
      */
+    #if 0
     PDEVICE_OBJECT NextLowerobject = IoAttachDeviceToDeviceStack (
                                     Fdo,
                                     PhysicalDeviceObject);
@@ -172,17 +159,7 @@ RDDM_MiniportAddDevice(_In_     DRIVER_OBJECT *DriverObject,
     {
         DPRINT1("RDDM_MiniportAddDevice: IoAttachDeviceToDeviceStack has failed\n");
     }
-    ULONG NumberOfViews;
-    ULONG NumberOfChildren;
-    DXGK_START_INFO DxgkStartInfo = {0};
-    Extension->MiniportFdo = Fdo;
-       Extension->MiniportPdo = PhysicalDeviceObject;
-    Extension->DxgkDdiStartDevice((PVOID)Context,
-                                  &DxgkStartInfo,
-                                   &DxgkrnlInterface,
-                                  &NumberOfViews,
-                                  &NumberOfChildren);
-    __debugbreak();
+   #endif
     return STATUS_SUCCESS;
 }
 #if 0

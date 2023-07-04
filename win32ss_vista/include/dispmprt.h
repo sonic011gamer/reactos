@@ -661,6 +661,7 @@ typedef _In_    PVIDEO_REQUEST_PACKET    IN_PVIDEO_REQUEST_PACKET;
 
 typedef
 NTSTATUS
+NTAPI
 DXGKDDI_ADD_DEVICE(_In_  PDEVICE_OBJECT     PhysicalDeviceObject,
                    _Out_ PVOID*             MiniportDeviceContext);
 
@@ -673,28 +674,22 @@ DXGKDDI_START_DEVICE(_In_ PVOID                MiniportDeviceContext,
                      _Out_ PULONG              NumberOfChildren);
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_STOP_DEVICE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_STOP_DEVICE(
     IN_CONST_PVOID  MiniportDeviceContext
     );
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_REMOVE_DEVICE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_REMOVE_DEVICE(
     IN_CONST_PVOID  MiniportDeviceContext
     );
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_DISPATCH_IO_REQUEST)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_DISPATCH_IO_REQUEST(
     IN_CONST_PVOID              MiniportDeviceContext,
     IN_ULONG                    VidPnSourceId,
@@ -702,10 +697,8 @@ DXGKDDI_DISPATCH_IO_REQUEST(
     );
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_QUERY_CHILD_RELATIONS)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_QUERY_CHILD_RELATIONS(
     IN_CONST_PVOID                                                    MiniportDeviceContext,
     _Inout_updates_bytes_(ChildRelationsSize) PDXGK_CHILD_DESCRIPTOR  ChildRelations,
@@ -713,10 +706,8 @@ DXGKDDI_QUERY_CHILD_RELATIONS(
     );
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_QUERY_CHILD_STATUS)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_QUERY_CHILD_STATUS(
     IN_CONST_PVOID              MiniportDeviceContext,
     INOUT_PDXGK_CHILD_STATUS    ChildStatus,

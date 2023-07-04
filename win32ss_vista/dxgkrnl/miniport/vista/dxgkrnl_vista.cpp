@@ -21,7 +21,7 @@ RDDM_SetupDxgkrnl(
     IN PUNICODE_STRING RegistryPath)
 {
     DxgkrnlInterface.Size = sizeof(DXGKRNL_INTERFACE);
-    DxgkrnlInterface.Version = DXGKDDI_INTERFACE_VERSION_VISTA;
+    DxgkrnlInterface.Version = DXGKDDI_INTERFACE_VERSION_VISTA_SP1;
     DxgkrnlInterface.DeviceHandle = (HANDLE)DriverObject;
     DxgkrnlInterface.DxgkCbEvalAcpiMethod = RDDM_DxgkCbEvalAcpiMethod;
     DxgkrnlInterface.DxgkCbGetDeviceInformation = RDDM_DxgkCbGetDeviceInformation;
