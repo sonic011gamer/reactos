@@ -21,7 +21,7 @@ RDDM_SetupDxgkrnl(
     IN PUNICODE_STRING RegistryPath)
 {
     DxgkrnlInterface.Size = sizeof(DXGKRNL_INTERFACE);
-    DxgkrnlInterface.Version = DXGKDDI_INTERFACE_VERSION_WIN7;
+    DxgkrnlInterface.Version = DXGKDDI_INTERFACE_VERSION_VISTA;
     DxgkrnlInterface.DeviceHandle = (HANDLE)DriverObject;
     DxgkrnlInterface.DxgkCbEvalAcpiMethod = RDDM_DxgkCbEvalAcpiMethod;
     DxgkrnlInterface.DxgkCbGetDeviceInformation = RDDM_DxgkCbGetDeviceInformation;
@@ -43,7 +43,6 @@ RDDM_SetupDxgkrnl(
     DxgkrnlInterface.DxgkCbQueryMonitorInterface = RDDM_DxgkCbQueryMonitorInterface;
     DxgkrnlInterface.DxgkCbGetCaptureAddress = RDDM_DxgkCbGetCaptureAddress;
     DxgkrnlInterface.DxgkCbLogEtwEvent = RDDM_DxgkCbLogEtwEvent;
-    DPRINT1("---------------------------ReactOS Display Driver Model---------------------------\n");
     DPRINT1("Targetting version: %X\n", DxgkrnlInterface.Version);
     DPRINT1("Dxgkrnl has started\n\n");
    // RDDM_AddDeviceMapLink();

@@ -121,12 +121,13 @@ RDDM_MiniportAddDevice(_In_     DRIVER_OBJECT *DriverObject,
     NTSTATUS Status ;
     ULONG_PTR Context = 0;
     PDXGKRNL_PRIVATE_EXTENSION Extension = NULL;
-   //PhysicalDeviceObject->DeviceExtension
+
+    PAGED_CODE();
+
     /* MS does a whole bunch of bullcrap here so we will try to track it */
-     PAGED_CODE();
     if (!DriverObject || !PhysicalDeviceObject)
     {
-        DPRINT1("Somethign has seriously fucked up\n");
+        DPRINT1("RDDM_MiniportAddDevice: Something has seriously fucked up\n");
         return STATUS_INVALID_PARAMETER;
     }
 

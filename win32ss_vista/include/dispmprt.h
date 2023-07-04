@@ -660,27 +660,17 @@ typedef _In_    PQUERY_INTERFACE         IN_PQUERY_INTERFACE;
 typedef _In_    PVIDEO_REQUEST_PACKET    IN_PVIDEO_REQUEST_PACKET;
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_ADD_DEVICE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
-DXGKDDI_ADD_DEVICE(
-    IN_CONST_PDEVICE_OBJECT     PhysicalDeviceObject,
-    OUT_PPVOID                  MiniportDeviceContext
-    );
+DXGKDDI_ADD_DEVICE(_In_  PDEVICE_OBJECT     PhysicalDeviceObject,
+                   _Out_ PPVOID             MiniportDeviceContext);
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_START_DEVICE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
-DXGKDDI_START_DEVICE(
-    IN_CONST_PVOID          MiniportDeviceContext,
-    IN_PDXGK_START_INFO     DxgkStartInfo,
-    IN_PDXGKRNL_INTERFACE   DxgkInterface,
-    OUT_PULONG              NumberOfVideoPresentSources,
-    OUT_PULONG              NumberOfChildren
-    );
+DXGKDDI_START_DEVICE(_In_ PVOID                MiniportDeviceContext,
+                     _IN_ PDXGK_START_INFO     DxgkStartInfo,
+                     _IN_ PDXGKRNL_INTERFACE   DxgkInterface,
+                     _Out_ PULONG              NumberOfVideoPresentSources,
+                     _Out_ PULONG              NumberOfChildren);
 
 typedef
     _Check_return_

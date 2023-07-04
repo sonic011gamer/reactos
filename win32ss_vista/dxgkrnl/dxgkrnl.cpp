@@ -12,7 +12,7 @@
 /**
  * @brief Setups all handles for the needed IRPs and passes the Miniports callback list into a internal strucutre
  *
- * @param DriverObject
+ * @param DriverObject DriverObject of the miniport driver itself
  *
  * @param SourceString
  *
@@ -23,8 +23,8 @@
  *  HALF-IMPLEMENTED
  */
 NTSTATUS
-NTAPI
-DpiInitialize(PDRIVER_OBJECT DriverObject, PCUNICODE_STRING SourceString, DRIVER_INITIALIZATION_DATA *DriverInitData)
+NTAPI /* In Windows this is called DpiInitialize, But i don't care. */
+RDDM_InitializeMiniport(PDRIVER_OBJECT DriverObject, PCUNICODE_STRING SourceString, DRIVER_INITIALIZATION_DATA *DriverInitData)
 {
     NTSTATUS Status;
     PDRIVER_EXTENSION DriverExtend;
@@ -47,9 +47,9 @@ DpiInitialize(PDRIVER_OBJECT DriverObject, PCUNICODE_STRING SourceString, DRIVER
      * I Just am not matching ALL of window's behaviors yet,
      */
 
-    DPRINT1("DpiInitialize: Entry Point\n");
+    DPRINT1("RDDM_InitializeMiniport: Entry Point\n");
     /* This function is the first real thing that happens to interact with the WDDM Miniport */
-    DPRINT1("DpiInitialize: Wddm Miniport driver Reports version: 0x%X\n", DriverInitData->Version);
+    DPRINT1("RDDM_InitializeMiniport: Wddm Miniport driver Reports version: 0x%X\n", DriverInitData->Version);
 
     Status = IoAllocateDriverObjectExtension(DriverObject, DriverObject, sizeof(DXGKRNL_PRIVATE_EXTENSION), (PVOID*)&DriverObjectExtension);
 
@@ -131,10 +131,10 @@ DpiInitialize(PDRIVER_OBJECT DriverObject, PCUNICODE_STRING SourceString, DRIVER
     DriverObject->MajorFunction[IRP_MJ_INTERNAL_DEVICE_CONTROL] = (PDRIVER_DISPATCH)RDDM_MiniportDispatchInternalIoctl;
     DriverObject->MajorFunction[IRP_MJ_SYSTEM_CONTROL] = (PDRIVER_DISPATCH)RDDM_MiniportDispatchSystemControl;
     DriverObject->MajorFunction[IRP_MJ_CLOSE] = (PDRIVER_DISPATCH)RDDM_MiniportDispatchClose;
-  // DriverObject->DriverInit =
-   DriverExtend->AddDevice = RDDM_MiniportAddDevice;
+   // DriverObject->DriverInit =
+    DriverExtend->AddDevice = RDDM_MiniportAddDevice;
     DriverObject->DriverUnload = (PDRIVER_UNLOAD)RDDM_MiniportDriverUnload;
-    DPRINT1("DpiInitialize: Finished\n");
+    DPRINT1("RDDM_InitializeMiniport: Finished\n");
     return STATUS_SUCCESS;
 }
 
@@ -145,11 +145,17 @@ NTSTATUS
 NTAPI   //TODO: Implement me
 DxgkInternalDeviceIoctl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
 {
-    ULONG Size = 0;
+    ULONG Size;
     PVOID *OutputBuffer;
     PDXGKWIN32K_INTERFACE Interface;
+
+    PAGED_CODE();
+
+    Size = 0;
     IO_STACK_LOCATION *IrpStack = Irp->Tail.Overlay.CurrentStackLocation;
     ULONG IoControlCode = IrpStack->Parameters.Read.ByteOffset.LowPart;
+    Irp->IoStatus.Status = STATUS_SUCCESS;
+
     switch (IoControlCode)
     {
         case IOCTL_VIDEO_DDI_FUNC_REGISTER:
@@ -159,7 +165,7 @@ DxgkInternalDeviceIoctl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
             *OutputBuffer = DpiInitialize;
             DPRINT1("IOCTL_VIDEO_DDI_FUNC_REGISTER - Queued DpiInitialize up\n");
             break;
-        case 0x23E057:
+        case 0x23E057: //TODO: maybe name this - but im lazy
             /* Convert to le function pointer list */
             Interface = (PDXGKWIN32K_INTERFACE)Irp->UserBuffer;
             /* gather le list */
@@ -173,9 +179,9 @@ DxgkInternalDeviceIoctl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
             break;
     }
 
-   Irp->IoStatus.Status = STATUS_SUCCESS;
-   IofCompleteRequest(Irp, 0);
-   return STATUS_SUCCESS;
+    /* We won! let's continue */
+    IofCompleteRequest(Irp, 0);
+    return STATUS_SUCCESS;
 }
 
 
@@ -190,7 +196,7 @@ DxgkUnload(_In_ DRIVER_OBJECT *DriverObject)
 }
 
 NTSTATUS
-NTAPI /* This doesn't do anything*/
+NTAPI /* This doesn't do anything? */
 DxgkCreateClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
     DPRINT1("DxgkCreateClose: Entry Point\n");
@@ -206,9 +212,9 @@ DriverEntry(
     IN PDRIVER_OBJECT DriverObject,
     IN PUNICODE_STRING RegistryPath)
 {
+    NTSTATUS Status;
     PDEVICE_OBJECT DxgkrnlDeviceObject;
     UNICODE_STRING DestinationString;
-    NTSTATUS Status;
 
     /* First fillout dispatch table */
     DriverObject->MajorFunction[IRP_MJ_CREATE] = (PDRIVER_DISPATCH)DxgkCreateClose;
@@ -219,7 +225,8 @@ DriverEntry(
     /* Grab Le strong*/
     RtlInitUnicodeString(&DestinationString, L"\\Device\\DxgKrnl");
 
-    DPRINT("DXGKNRL: Adding Device\n");
+    DPRINT1("---------------------------ReactOS Display Driver Model---------------------------\n");
+    DPRINT1("DXGKNRL: Adding Device\n");
     Status = IoCreateDevice(DriverObject,
                             0, /* lol okay vista */
                             &DestinationString,
