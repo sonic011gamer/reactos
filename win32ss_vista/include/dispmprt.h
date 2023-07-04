@@ -715,34 +715,34 @@ DXGKDDI_QUERY_CHILD_STATUS(
     );
 
 typedef
-NTAPI
 BOOLEAN
+NTAPI
 DXGKDDI_INTERRUPT_ROUTINE(_In_ PVOID MiniportDeviceContext,
                           _In_ ULONG MessageNumber);
 
 typedef
-NTAPI
 VOID
+NTAPI
 DXGKDDI_DPC_ROUTINE(_In_ PVOID  MiniportDeviceContext);
 
 typedef
-NTAPI
 NTSTATUS
+NTAPI
 DXGKDDI_QUERY_DEVICE_DESCRIPTOR(_In_ PVOID                        MiniportDeviceContext,
                                 _In_ ULONG                        ChildUid,
                                 _Inout_ PDXGK_DEVICE_DESCRIPTOR   DeviceDescriptor);
 
 typedef
-NTAPI
 NTSTATUS
+NTAPI
 DXGKDDI_SET_POWER_STATE(_In_ PVOID MiniportDeviceContext,
                         _In_ ULONG                DeviceUid,
                         _In_ DEVICE_POWER_STATE   DevicePowerState,
                         _In_ POWER_ACTION         ActionType);
 
 typedef
-NTAPI
 NTSTATUS
+NTAPI
 DXGKDDI_NOTIFY_ACPI_EVENT(_In_ PVOID            MiniportDeviceContext,
                           _In_ DXGK_EVENT_TYPE  EventType,
                           _In_ ULONG            Event,
@@ -750,35 +750,34 @@ DXGKDDI_NOTIFY_ACPI_EVENT(_In_ PVOID            MiniportDeviceContext,
                           _Out_ PULONG          AcpiFlags);
 
 typedef
-NTAPI
 VOID
+NTAPI
 DXGKDDI_RESET_DEVICE(
     IN_CONST_PVOID  MiniportDeviceContext
     );
 
 typedef
-NTAPI
 VOID
+NTAPI
 DXGKDDI_UNLOAD(
     VOID
     );
 
 typedef
-NTAPI
 NTSTATUS
+NTAPI
 DXGKDDI_QUERY_INTERFACE(
     IN_CONST_PVOID          MiniportDeviceContext,
     IN_PQUERY_INTERFACE     QueryInterface
     );
 
 typedef
-NTAPI
 VOID
+NTAPI
 DXGKDDI_CONTROL_ETW_LOGGING(
     IN_BOOLEAN  Enable,
     IN_ULONG    Flags,
-    IN_UCHAR    Level
-    );
+    IN_UCHAR    Level);
 
 typedef
 NTSTATUS
@@ -786,8 +785,7 @@ NTAPI
 DXGKDDI_LINK_DEVICE(
     IN_CONST_PDEVICE_OBJECT   PhysicalDeviceObject,
     IN_CONST_PVOID            MiniportDeviceContext,
-    INOUT_PLINKED_DEVICE      LinkedDevice
-    );
+    INOUT_PLINKED_DEVICE      LinkedDevice);
 
 
 typedef DXGKDDI_ADD_DEVICE                      *PDXGKDDI_ADD_DEVICE;
