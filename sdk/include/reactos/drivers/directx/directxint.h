@@ -34,6 +34,17 @@ typedef struct _EDD_DIRECTDRAW_LOCAL
 /* 0x50 */    ULONG unk_050;
 } EDD_DIRECTDRAW_LOCAL, *PEDD_DIRECTDRAW_LOCAL;
 
+typedef struct EDD_VIDEOPORT 
+{
+  /* 0x00 */ DD_BASEOBJECT pobj;
+  /* 0x10 */ DD_VIDEOPORT_LOCAL ddvVideoportLocal;
+  /* 0xB8 */ ULONG unk_0b8;
+  /* 0xBC */ struct _EDD_DIRECTDRAW_GLOBAL* peDirectDrawGlobal;
+
+  /* 0xEC */ ULONG unk_DxObj;
+  /* 0xEC */ HANDLE hVideoPort;
+
+} EDD_VIDEOPORT, *PEDD_VIDEOPORT;
 
 //
 // Surface Object
@@ -62,7 +73,7 @@ typedef struct _EDD_SURFACE
     //
     // Unknown
     //
-    ULONG field_C0;
+    struct _EDD_SURFACE *field_C0;
 
     //
     // Private Direct Draw Data
@@ -113,7 +124,6 @@ typedef struct _EDD_SURFACE
 #define EDDDGBL_D3DCALLBACKS3           0x200 // d3dNtHalCallbacks3
 #define EDDDGBL_NTCALLBACKS             0x400 // ddNtCallbacks
 #define EDDDGBL_PRIVATEDRIVERCAPS       0x800 // ddNtPrivateDriverCaps
-
 
 typedef struct _EDD_DIRECTDRAW_GLOBAL
 {
@@ -173,6 +183,7 @@ typedef struct _EDD_DIRECTDRAW_GLOBAL
 /* 0x534 */    D3DNTHAL_CALLBACKS3 d3dNtHalCallbacks3;                 // 0x524 <-- verified to match Windows Server 2003
 /* 0x54C */    DD_MOTIONCOMPCALLBACKS ddMotionCompCallbacks;           // 0x54C <-- verified to match Windows Server 2003
 /* 0x57C */    DDMORESURFACECAPS ddMoreSurfaceCaps;                    // 0x57C <-- verified to match Windows Server 2003
+/* 0x5A4 */    ULONG unk_5a4;
 /* 0x5A8 */    EDD_DIRECTDRAW_LOCAL* peDirectDrawLocalList; // 0x5A8 <-- verified to match Windows XP, it is a current local struct, not a list, peDirectDrawLocalList Current
 /* 0x5AC */    EDD_SURFACE* peSurface_LockList;
 /* 0x5B0 */    FLONG fl;                                    // Acceleration Flags
@@ -180,10 +191,13 @@ typedef struct _EDD_DIRECTDRAW_GLOBAL
 /* 0x5B8 */    PKEVENT pAssertModeEvent;
 /* 0x5BC */    EDD_SURFACE *peSurfaceCurrent;
 /* 0x5C0 */    EDD_SURFACE *peSurfacePrimary;
-/* 0x5C4 */    BOOL bSuspended;                             // 0x5C4 <-- verified to match Windows XP, tells dxg to use driver's own api or return error code instead
-/* 0x5C8 */    ULONG unk_5c8[9];
-/* 0x5EC */    HANDLE hModule;                              // dxapi.sys Image?
-/* 0x5F0 */    ULONG unk_5f0;
+/* 0x5C4 */    BOOL bSuspended;                            // 0x5C4 <-- verified to match Windows XP, tells dxg to use driver's own api or return error code instead
+/* 0x5C8 */    ULONG unk_5c8[2];
+/* 0x5D0 */    HANDLE hDxLoseObj;                          // DXOBJ list
+/* 0x5D4 */    HANDLE hDirectDraw;                         // DirectDraw Handle
+/* 0x5D8 */    ULONG dxApiCallbacks[5];                    // dxapi Function Pointers
+/* 0x5EC */    HANDLE hDxApi;                              // dxapi.sys Image?
+/* 0x5F0 */    DWORD dwApiReferences;                      // How many times LoadDxApi has been called
 /* 0x5F4 */    ULONG unk_5f4;
 /* 0x5F8 */    RECTL rcbounds;
 /* 0x608 */    ULONG unk_608;                               // 0x608 Some kind of deferred free memory list 

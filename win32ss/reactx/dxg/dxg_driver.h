@@ -3,12 +3,59 @@
 #define TRACE() \
     DbgPrint("DXG: %s\n", __FUNCTION__)
 
+DWORD gWarningLevel = 0;
+
+VOID 
+NTAPI
+DoDxgAssert(PCSTR Format)
+{
+    if(gWarningLevel >= 0)
+    {
+        DbgPrint("DXG Assertion: ");
+        DbgPrint(Format);
+        DbgPrint("\n");
+        DbgBreakPoint();
+    }
+}
+
+VOID 
+NTAPI 
+DoWarning(PCSTR Format, DWORD dwLevel)
+{
+  if (dwLevel <= gWarningLevel )
+  {
+    DbgPrint("DXG: ");
+    DbgPrint(Format);
+    DbgPrint("\n");
+  }
+}
+
+VOID
+NTAPI
+vDdAssertDevlock(PEDD_DIRECTDRAW_GLOBAL peDdGl)
+{
+    if(!gpEngFuncs.DxEngIsHdevLockedByCurrentThread(peDdGl->hDev))
+        DoDxgAssert("DD_ASSERTDEVLOCK failed because Devlock is not held");
+}
+
+VOID
+NTAPI
+vDdIncrementReferenceCount(PEDD_DIRECTDRAW_GLOBAL peDdGl)
+{
+    TRACE();
+
+    vDdAssertDevlock(peDdGl);
+
+    if (++peDdGl->unk_024 == 1)
+        gpEngFuncs.DxEngReferenceHdev(peDdGl->hDev);
+}
+
 VOID
 NTAPI
 ProbeAndReadBuffer(void *Dst, void *Src, size_t MaxCount)
 {
-  if ( (char *)Src + MaxCount < Src || (unsigned int)Src + MaxCount > DxgUserProbeAddress )
-    *(_BYTE *)Dst = *(_BYTE *)DxgUserProbeAddress;
+  if ( (char *)Src + MaxCount < (char *)Src || (unsigned int)Src + MaxCount > DxgUserProbeAddress )
+    *(BYTE *)Dst = *(BYTE*)DxgUserProbeAddress;
 
   memcpy(Dst, Src, MaxCount);
 }
@@ -17,24 +64,244 @@ VOID
 NTAPI
 ProbeAndWriteBuffer(void *Dst, void *Src, size_t MaxCount)
 {
-  if ( (char *)Dst + MaxCount < Dst || (unsigned int)Dst + MaxCount > DxgUserProbeAddress )
+  if ( (char *)Dst + MaxCount < (char *)Dst || (unsigned int)Dst + MaxCount > DxgUserProbeAddress )
       DxgUserProbeAddress = 0;
 
   memcpy(Dst, Src, MaxCount);
 }
 
+// Implemented
+BOOL
+NTAPI
+D3dSetup(EDD_DIRECTDRAW_GLOBAL *peDdGl, PKFLOATING_SAVE FloatSave)
+{
+    TRACE();
+
+    BOOL result; // eax
+
+    if (!peDdGl)
+        DoDxgAssert("D3dSetup on NULL global\n");
+
+    if (KeSaveFloatingPointState(FloatSave) >= 0)
+    {
+        gpEngFuncs.DxEngLockHdev(peDdGl->hDev);
+        result = TRUE;
+    }
+    else
+    {
+        DoWarning("D3dSetup: Unable to save FP state\n", 0);
+        result = FALSE;
+    }
+
+    return result;
+}
+
+// Implemented
+VOID 
+NTAPI
+D3dCleanup(EDD_DIRECTDRAW_GLOBAL *peDdGl, PKFLOATING_SAVE FloatSave)
+{
+    TRACE();
+
+    gpEngFuncs.DxEngUnlockHdev(peDdGl->hDev);
+    KeRestoreFloatingPointState(FloatSave);
+}
+
+typedef struct _D3D_SURFACE
+{
+    PEDD_SURFACE peDdSurf;       // 0
+    BOOL bMandatory;             // 1
+    PEDD_SURFACE peDdLocked;     // 2
+    PDD_SURFACE_LOCAL peDdLocal; // 3
+} D3D_SURFACE, *PD3D_SURFACE;
+
+BOOL
+NTAPI
+D3dLockSurfaces(DWORD dwCount, D3D_SURFACE **pD3dSurf)
+{
+    TRACE();
+
+    if(dwCount <= 0)
+        return TRUE;
+
+    for(DWORD i = 0; i < dwCount; i++)
+    {
+        if(pD3dSurf[i]->peDdSurf == NULL && pD3dSurf[i]->bMandatory)
+        {
+            DoWarning("D3dLockSurfaces: NULL for mandatory surface", 0);
+            return FALSE;
+        }
+
+        PEDD_SURFACE peDdSurf = DdHmgLock(pD3dSurf[i]->peDdSurf, ObjType_DDSURFACE_TYPE, TRUE);
+
+        if(!peDdSurf) 
+        {
+            DoWarning("D3dLockSurfaces unable to lock buffer\n", 0);
+            return FALSE;
+        }
+
+        if(peDdSurf->bLost)
+        {
+            DoWarning("D3DLockSurfaces unable to lock buffer Surface is Lost", 0);
+            return FALSE;
+        }
+
+        pD3dSurf[i]->peDdLocked = peDdSurf;
+        pD3dSurf[i]->peDdLocal = &peDdSurf->ddsSurfaceLocal;
+    }
+
+    return FALSE;
+}
+
 DWORD
 NTAPI
 DxD3dContextCreate(
-    PVOID p1,
-    PVOID p2,
-    PVOID p3,
-    PVOID p4)
+    HANDLE hDdLocal,
+    HANDLE Obj1,
+    HANDLE Obj2,
+    ULONG_PTR *RegionSize)
 {
-    DdHmgAcquireHmgrSemaphore();
-    DdHmgReleaseHmgrSemaphore();
     TRACE();
-    return 0;
+
+    DWORD result = 0;
+
+    BYTE* puByte = (BYTE*)RegionSize;
+
+    for(int i = 0; i < 0x70u; i++)
+    {
+        DbgPrint("%X ", puByte[i]);
+        DbgBreakPoint();
+    }
+
+    /*KFLOATING_SAVE FloatSave;
+
+    VOID* ContextHandle = NULL;
+    HANDLE SecureHandle = NULL;
+    PVOID BaseAddress = NULL;
+
+    D3D_SURFACE d3dSurfacesStorage[2] = {0};
+    D3D_SURFACE* d3dSurfaces = &d3dSurfacesStorage[0];
+
+    D3DNTHAL_CONTEXTCREATEDATA ContextCreateData = {0};
+
+    // Ensure the RegionSize is 4 Byte Aligned
+    if(RegionSize[0] & 3 != 0)
+        ExRaiseDatatypeMisalignment();
+
+    if(DxgUserProbeAddress <= (ULONG64)RegionSize) {
+        DxgUserProbeAddress = NULL;
+    }
+
+    if(RegionSize) 
+    {
+        if(RegionSize - 0x4000 > 0xFC000)
+        {
+            return 0;
+        }
+    }
+    else 
+    {
+        RegionSize = 0x10000;
+    }
+
+    PEDD_DIRECTDRAW_LOCAL peDdL = DdHmgLock(hDdLocal, ObjType_DDLOCAL_TYPE, FALSE);
+
+    if(!peDdL)
+    {
+        return 0;
+    }
+
+    PEDD_DIRECTDRAW_GLOBAL peDdGl = peDdL->peDirectDrawGlobal2;
+
+    d3dSurfaces[0].peDdSurf = Obj1;
+    d3dSurfaces[0].bMandatory = FALSE;
+    d3dSurfaces[1].peDdSurf = Obj2;
+    d3dSurfaces[1].bMandatory = TRUE;
+
+    DdHmgAcquireHmgrSemaphore();
+
+    if(D3dLockSurfaces(2, &d3dSurfaces))
+    {
+        DdHmgReleaseHmgrSemaphore();
+
+        ContextHandle = DdHmgAlloc(0x140u, ObjType_DDCONTEXT_TYPE, TRUE);
+
+        if(ContextHandle)
+        {
+            if(ZwAllocateVirtualMemory(NtCurrentProcess(), &BaseAddress, 0, &RegionSize, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE))
+            {
+                SecureHandle = MmSecureVirtualMemory(BaseAddress, RegionSize, PAGE_READWRITE);
+                
+                if(SecureHandle)
+                {
+                    if(D3dSetup(peDdGl, &FloatSave))
+                    {
+                        if(peDdGl->ddMiscellanous2Callbacks.CreateSurfaceEx)
+                        {
+                            if(peDdGl->d3dNtHalCallbacks.ContextCreate)
+                            {
+                                ContextCreateData.lpDDGbl = peDdL != NULL ? (PDD_DIRECTDRAW_GLOBAL)peDdL->peDirectDrawGlobal : NULL;
+                                ContextCreateData.lpDDS = d3dSurfaces[0].peDdLocal;
+                                ContextCreateData.lpDDSZ = d3dSurfaces[1].peDdLocal;
+
+                                result = peDdGl->d3dNtHalCallbacks.ContextCreate(&ContextCreateData);
+                            }
+                            else
+                                DoWarning("DxD3dContextCreate: ContextCreate callback not found", 0);
+
+                            if(result && !(RegionSize + 20))
+                            {
+                            }
+
+                            //InterlockedDecrement(v10 + 2);
+                            D3dCleanUp(peDdGl, &FloatSave);
+
+                            // v5 + 16 = v18
+                            // v5 + 20 = v19
+                            // v5 + 24 = v4
+                            // v5 + 28 = RegionSize
+                        }
+                        else
+                        {
+                            D3dCleanUp(peDdGl, &FloatSave);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            DoWarning("DxD3dContextCreate unable to alloc handle", 0);
+        }
+    }
+    else
+    {
+        DdHmgReleaseHmgrSemaphore();
+    }
+
+    for(DWORD i = 0; i < 2; i++)
+        if(d3dSurfaces[i].peDdSurf) InterlockedDecrement(&d3dSurfaces[i].peDdSurf->pobj.cExclusiveLock);
+
+    if(SecureHandle)
+        MmUnsecureVirtualMemory(SecureHandle);
+
+    if(BaseAddress)
+    {
+        RegionSize = 0;
+        ZwFreeVirtualMemory(NtCurrentProcess(), &BaseAddress, &RegionSize, MEM_RELEASE);
+    }
+
+    if(ContextHandle)
+    {
+        //DdHmgFree(ContextHandle);
+    }
+
+    if(peDdL)
+    {
+        InterlockedDecrement((VOID*)peDdL->pobj.cExclusiveLock);
+    }*/
+
+    return result;
 }
 
 DWORD
@@ -43,7 +310,16 @@ DxD3dContextDestroy(
     PVOID p1)
 {
     TRACE();
-    return 0;
+
+    struct HDD_OBJ__ **v1; // esi
+    unsigned int v3;       // [esp+14h] [ebp-1Ch]
+
+    v1 = (struct HDD_OBJ__ **)Address;
+    ProbeForWrite(Address, 8u, 4u);
+    v3 = D3dDeleteHandle(*v1, 0, 0, (int *)&Address);
+    v1[1] = (struct HDD_OBJ__ *)Address;
+
+    return v3;
 }
 
 DWORD
@@ -88,41 +364,48 @@ DxDdGetDriverState(
     return 0;
 }
 
+// Implemented (Not even the disassembler knew what was going on here)
 BOOL
 NTAPI
 DxDdAddAttachedSurface(
-    HANDLE hSurface1,
-    HANDLE hSurface2,
-    int a3)
+    HANDLE hSurfaceTarget,
+    HANDLE hSurfaceSrc,
+    PDD_ADDATTACHEDSURFACEDATA pDdAttachedSurfaceData)
 {
+    TRACE();
+
     BOOL bFAILED = FALSE;
 
-    PEDD_SURFACE peDdS1 = NULL;
-    PEDD_SURFACE peDdS2 = NULL;
+    PEDD_SURFACE peDdSTarget = NULL;
+    PEDD_SURFACE peDdSSrc = NULL;
 
-    peDdS1 = (PEDD_SURFACE)DdHmgLock(hSurface1, ObjType_DDSURFACE_TYPE, FALSE);
-    peDdS2 = (PEDD_SURFACE)DdHmgLock(hSurface2, ObjType_DDSURFACE_TYPE, FALSE);
+    peDdSTarget = (PEDD_SURFACE)DdHmgLock(hSurfaceTarget, ObjType_DDSURFACE_TYPE, FALSE);
+    peDdSSrc = (PEDD_SURFACE)DdHmgLock(hSurfaceSrc, ObjType_DDSURFACE_TYPE, FALSE);
 
     DD_ADDATTACHEDSURFACEDATA addSurfaceData = {0};
+
+    memcpy(&addSurfaceData, pDdAttachedSurfaceData, sizeof(addSurfaceData));
+
     addSurfaceData.ddRVal = DDERR_GENERIC;
 
-    if(peDdS1 && peDdS2 && 
-        (peDdS1->ddsSurfaceLocal.dwFlags & 0x800) == 0 &&
-        (peDdS2->ddsSurfaceLocal.dwFlags & 0x800) == 0 &&
-        peDdS1->peDirectDrawLocal->pobj.hHmgr == peDdS2->peDirectDrawLocal->pobj.hHmgr)
+    if(peDdSTarget && peDdSSrc && 
+        (peDdSTarget->ddsSurfaceLocal.dwFlags & 0x800) == 0 &&
+        (peDdSSrc->ddsSurfaceLocal.dwFlags & 0x800) == 0 &&
+        peDdSTarget->peDirectDrawLocal->pobj.hHmgr == peDdSSrc->peDirectDrawLocal->pobj.hHmgr)
     {
-        if(peDdS1->peDirectDrawGlobal->ddSurfaceCallbacks.dwFlags < 0) 
+        // Can we attach surfaces?
+        if(peDdSTarget->peDirectDrawGlobal->ddSurfaceCallbacks.dwFlags & DDHAL_SURFCB32_ADDATTACHEDSURFACE) 
         {
             // Fill out attach surface data
-            addSurfaceData.lpDD = peDdS1->peDirectDrawGlobal;
-            addSurfaceData.lpDDSurface = &peDdS1->ddsSurfaceLocal;
-            addSurfaceData.lpSurfAttached = &peDdS2->ddsSurfaceLocal;
+            addSurfaceData.lpDD = (PDD_DIRECTDRAW_GLOBAL)peDdSTarget->peDirectDrawGlobal;
+            addSurfaceData.lpDDSurface = &peDdSTarget->ddsSurfaceLocal;
+            addSurfaceData.lpSurfAttached = &peDdSSrc->ddsSurfaceLocal;
 
             // Lock the surface hDev?
-            gpEngFuncs.DxEngLockHdev(peDdS1->peDirectDrawGlobal->hDev);
+            gpEngFuncs.DxEngLockHdev(peDdSTarget->peDirectDrawGlobal->hDev);
 
             // Fail if either surface is marked lost
-            if(peDdS1->bLost || peDdS2->bLost)
+            if(peDdSTarget->bLost || peDdSSrc->bLost)
             {
                 bFAILED = TRUE;
                 addSurfaceData.ddRVal = DDERR_SURFACELOST;
@@ -130,25 +413,25 @@ DxDdAddAttachedSurface(
             else
             {
                 // attach surface here return the result
-                bFAILED = peDdS1->peDirectDrawGlobal->ddSurfaceCallbacks.AddAttachedSurface(&addSurfaceData);
+                bFAILED = peDdSTarget->peDirectDrawGlobal->ddSurfaceCallbacks.AddAttachedSurface(&addSurfaceData);
             }
 
-            gpEngFuncs.DxEngUnlockHdev(peDdS1->peDirectDrawGlobal->hDev);
+            gpEngFuncs.DxEngUnlockHdev(peDdSTarget->peDirectDrawGlobal->hDev);
         }
     }
     else
     {
-        DbgPrint("DxDdAddAttachedSurface: Invalid surface or dwFlags\n");
+        DoWarning("DxDdAddAttachedSurface: Invalid surface or dwFlags\n", 0);
     }
 
-    // Uncertain about what structure is being passed here
-    *(DWORD*)(a3 + 12) = addSurfaceData.ddRVal;
+    // We do this because AddAttachedSurface modifies this value
+    pDdAttachedSurfaceData->ddRVal = addSurfaceData.ddRVal;
 
-    if(peDdS1)
-        InterlockedDecrement(&peDdS1->pobj.cExclusiveLock);
+    if(peDdSTarget)
+        InterlockedDecrement((VOID*)&peDdSTarget->pobj.cExclusiveLock);
     
-    if(peDdS2)
-        InterlockedDecrement(&peDdS2->pobj.cExclusiveLock);
+    if(peDdSSrc)
+        InterlockedDecrement((VOID*)&peDdSSrc->pobj.cExclusiveLock);
 
     return bFAILED;
 }
@@ -710,11 +993,11 @@ DxDvpReleaseNotification(
 DWORD
 NTAPI
 DxDdHeapVidMemAllocAligned(
-    PVOID p1,
-    PVOID p2,
-    PVOID p3,
-    PVOID p4,
-    PVOID p5)
+                LPVIDMEM lpVidMem,
+                DWORD dwWidth,
+                DWORD dwHeight,
+                LPSURFACEALIGNMENT lpAlignment ,
+                LPLONG lpNewPitch)
 {
     TRACE();
     return 0;
@@ -887,25 +1170,99 @@ VOID
 NTAPI
 vDdUnloadDxApiImage(PEDD_DIRECTDRAW_GLOBAL peDdGl)
 {
+  vDdAssertDevlock(peDdGl);
 
+  EDD_DIRECTDRAW_LOCAL* v2 = peDdGl->peDirectDrawLocalList;
+
+  EDD_DIRECTDRAW_LOCAL* v10 = v2;
+
+  if ( v2 )
+  {
+    while ( 1 )
+    {
+        PEDD_SURFACE v3 = v2->fpProcess;
+        PEDD_SURFACE v4 = NULL;
+        PEDD_SURFACE v6 = NULL;
+      if ( v3 )
+      {
+        do
+        {
+          v4 = v3->peSurface_DdNext;
+          bDdDeleteVideoPortObject(*(struct HDD_OBJ__ **)v3, 0);
+          v3 = v4;
+        }
+        while ( v4 );
+      }
+      PEDD_SURFACE v5 = v2->peSurface_DdList;
+      if ( v5 )
+      {
+        do
+        {
+          v6 = (struct DXOBJ *)*((_DWORD *)v5 + 60);
+          if ( v6 )
+          {
+            vDdDxApiFreeSurface(v6, 0);
+            *((_DWORD *)v5 + 60) = 0;
+          }
+          v7 = (struct DXOBJ **)*((_DWORD *)v5 + 49);
+          if ( v7 )
+            vDdLoseDxObjects(a1, v7[25], v7, 2u);
+          v5 = EDD_DIRECTDRAW_LOCAL::peSurface_Enum(v10, v5);
+        }
+        while ( v5 );
+        v2 = v10;
+      }
+
+      v10 = v2->peDirectDrawLocal_prev;
+
+      // We reached the end of the list
+      if ( !v10 )
+        break;
+
+      v2 = v2->peDirectDrawLocal_prev;
+    }
+  }
+
+  HANDLE v8 = peDdGl->hDxHeldObj;
+  if ( v8 )
+    vDdDxApiFreeDirectDraw(v8, 0);
+
+  HANDLE v9 = peDdGl->hDxLoseObj;
+  if ( v9 )
+    vDdLoseDxObjects(peDdGl, v9[2], v9, 0);
+
+  EngUnloadImage(peDdGl->hDxApi);
+
+  peDdGl->hDxApi = NULL;
+  peDdGl->unk_5f0 = NULL;
+}
+
+VOID 
+NTAPI
+VidMemFini(VMEMHEAP* lpHeap)
+{
+  /*if ((lpHeap->dwFlags & VMEMHEAP_LINEAR) != 0 )
+    linVidMemFini(lpHeap);
+  else
+    rectVidMemFini(lpHeap);*/
 }
 
 VOID
 NTAPI
 HeapVidMemFini(VIDEOMEMORY* pvMemory, PEDD_DIRECTDRAW_GLOBAL peDdGl)
 {
+    TRACE();
+
     DWORD CommitedSize;
-    LPVMEMHEAP CommitedHeap;
+    //LPVMEMHEAP CommitedHeap;
 
     if(!pvMemory->lpHeap)
-    {
-        // No heap throw error
-    }
+        DoDxgAssert("DDASSERT");
 
     if((pvMemory->dwFlags & VIDMEM_ISNONLOCAL) != 0)
     {
-        LPVMEMHEAP heap = pvMemory->lpHeap;
-        CommitedSize = heap->dwCommitedSize;
+        LPVMEMHEAP lpHeap = pvMemory->lpHeap;
+        CommitedSize = lpHeap->dwCommitedSize;
     }
 /*int v2; // esi
   void *pAgpCommitMask; // edi
@@ -964,8 +1321,10 @@ VOID
 NTAPI
 vDdDisableDriver(PEDD_DIRECTDRAW_GLOBAL peDdGl)
 {
+    TRACE();
+
     // If we tried to disable a locked device?
-    // vDdAssertDevlock(a1);
+    vDdAssertDevlock(peDdGl);
 
     VIDEOMEMORY *pvmList = peDdGl->pvmList;
 
@@ -1004,12 +1363,12 @@ vDdDisableDriver(PEDD_DIRECTDRAW_GLOBAL peDdGl)
     }
 
     // Unload ApiImage
-    if (peDdGl->hModule)
+    if (peDdGl->hDxApi)
         vDdUnloadDxApiImage(peDdGl);
 
     if(peDdGl->unk_hdc != NULL)
     {
-        gpEngFuncs.DxEngSetDCOwner((HGDIOBJ)&peDdGl->unk_hdc, 0x80000002 /*GDI_OBJ_HMGR_POWNED?*/);
+        gpEngFuncs.DxEngSetDCOwner((HGDIOBJ)&peDdGl->unk_hdc, GDI_OBJ_HMGR_POWNED /*0x80000002*/);
         // _gpEngFuncs+0x310 Used in DdReleaseDC which means that unk_610 is an HDC
         gpEngFuncs.DxEngDeleteDC(peDdGl->unk_hdc, TRUE);
         peDdGl->unk_hdc = NULL;
@@ -1035,8 +1394,10 @@ vDdDisableDriver(PEDD_DIRECTDRAW_GLOBAL peDdGl)
 // Implemented
 VOID
 NTAPI
-DxDdDisableDirectDraw(HDEV hDev, BOOLEAN bDisableVDd)
+DxDdDisableDirectDraw(HDEV hDev, BOOL bDisableVDd)
 {
+    TRACE();
+
     PEDD_DIRECTDRAW_GLOBAL peDdGl = NULL;
 
     peDdGl = (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_eddg);
@@ -1057,7 +1418,7 @@ DxDdDisableDirectDraw(HDEV hDev, BOOLEAN bDisableVDd)
         }
 
         // 0x618 size?
-        memset(peDdGl, 0, sizeof(EDD_DIRECTDRAW_GLOBAL));
+        memset(peDdGl, 0, 0x618);
 
         gpEngFuncs.DxEngUnlockHdev(hDev);
     }
@@ -1090,116 +1451,126 @@ DxDdDynamicModeChange(PVOID p1, PVOID p2, PVOID p3)
 // Implemented
 BOOL
 NTAPI
-DdHmgOwnedBy(PDD_ENTRY pDdObj, HANDLE hProcess)
+DdHmgOwnedBy(PDD_ENTRY pDdObj, DWORD dwPid)
 {
-  BOOL bSUCCESS = FALSE;
-  
-  if (pDdObj != NULL &&
-   (((ULONG_PTR)hProcess ^ (ULONG_PTR)pDdObj->Pid) & 0xfffffffd) & 0xfffffffe == 0)
-  {
-    bSUCCESS = TRUE;
-  }
+    TRACE();
 
-  return bSUCCESS;
+    BOOL bSUCCESS = FALSE;
+
+    if (pDdObj != NULL && ((((ULONG_PTR)dwPid ^ (ULONG_PTR)pDdObj->Pid) & 0xfffffffd) & 0xfffffffe) == 0)
+    {
+        bSUCCESS = TRUE;
+    }
+
+    return bSUCCESS;
 }
 
 // Implemented
 PDD_ENTRY
 NTAPI
-DdHmgNextOwned(PDD_ENTRY pDdObj, HANDLE hProcess)
+DdHmgNextOwned(PDD_ENTRY pDdObj, DWORD dwPid)
 {
+  TRACE();
+
   DWORD dwIndex;
 
   dwIndex = ((DWORD)pDdObj & 0x1FFFFF) + 1;
 
-  if (dwIndex < gcMaxDdHmgr) 
+  if (dwIndex < gcMaxDdHmgr)
   {
-    DD_ENTRY* pEntry = (PDD_ENTRY)(gpentDdHmgr + (sizeof(DD_ENTRY) * dwIndex));
+    DD_ENTRY *pEntry = (PDD_ENTRY)(gpentDdHmgr + (sizeof(DD_ENTRY) * dwIndex));
 
-    do 
+    do
     {
-      if (DdHmgOwnedBy(pDdObj, hProcess)) 
-      {
-        return (PDD_ENTRY)(((DWORD)pEntry->FullUnique << 0x15) | dwIndex);
-      }
+            if (DdHmgOwnedBy(pDdObj, dwPid))
+            {
+                return (PDD_ENTRY)(((DWORD)pEntry->FullUnique << 0x15) | dwIndex);
+            }
 
-      dwIndex++;
-      pEntry++;
-    } 
-    while (dwIndex < gcMaxDdHmgr);
+            dwIndex++;
+            pEntry++;
+    } while (dwIndex < gcMaxDdHmgr);
   }
 
   return NULL;
 }
 
 BOOL NTAPI
-DdHmgCloseProcess(HANDLE hProcess)
+DdHmgCloseProcess(DWORD dwPid)
 {
-  PDD_ENTRY pDdObj;
-  DWORD dwObjectType;
-  //DWORD dwCount;
+    TRACE();
 
-  BOOL bSUCCESS = TRUE;
+    PDD_ENTRY pDdObj;
+    // DWORD dwObjectType;
+    // DWORD dwCount;
 
-  // We are iterating a list here so we need to lock it
-  DdHmgAcquireHmgrSemaphore();
-  pDdObj = DdHmgNextOwned(NULL, hProcess);
-  DdHmgReleaseHmgrSemaphore();
+    BOOL bSUCCESS = TRUE;
 
-  while (pDdObj)
-  {
-    switch (pDdObj->Objt)
-    {
-      case ObjType_DDLOCAL_TYPE:
-        //bSUCCESS = bDdDeleteDirectDrawObject(pDdObj, TRUE);
-        break;
-      case ObjType_DDSURFACE_TYPE:
-      //bSUCCESS = bDdDeleteSurfaceObject(pDdObj, 0);
-        break;
-      case ObjType_DDCONTEXT_TYPE:
-        // if(D3dDeleteHandle(pDdObj, 0, 0, &dwCount) == 1)
-        break;
-      case ObjType_DDVIDEOPORT_TYPE:
-      //bSUCCESS = bDdDeleteVideoPortObject(pDdObj, 0);
-        break;
-      case ObjType_DDMOTIONCOMP_TYPE:
-      //bSUCCESS = bDdDeleteMotionCompObject(pDdObj, 0);
-        break;
-      default:
-        bSUCCESS = FALSE;
-        break;
-    }
-
-    if (!bSUCCESS)
-    {
-      //DbgPrint("DDRAW ERROR: DdHmgCloseProcess couldn\'t delete obj = %p, type j=%lx\n", pDdObj, dwObjectType);
-    }
-
+    // We are iterating a list here so we need to lock it
     DdHmgAcquireHmgrSemaphore();
-    pDdObj = DdHmgNextOwned(pDdObj, hProcess);
+    pDdObj = DdHmgNextOwned(NULL, dwPid);
     DdHmgReleaseHmgrSemaphore();
-  }
 
-  return bSUCCESS;
+    while (pDdObj)
+    {
+        switch (pDdObj->Objt)
+        {
+            case ObjType_DDLOCAL_TYPE:
+            // bSUCCESS = bDdDeleteDirectDrawObject(pDdObj, TRUE);
+            break;
+            case ObjType_DDSURFACE_TYPE:
+            // bSUCCESS = bDdDeleteSurfaceObject(pDdObj, 0);
+            break;
+            case ObjType_DDCONTEXT_TYPE:
+            // if(D3dDeleteHandle(pDdObj, 0, 0, &dwCount) == 1)
+            break;
+            case ObjType_DDVIDEOPORT_TYPE:
+            // bSUCCESS = bDdDeleteVideoPortObject(pDdObj, 0);
+            break;
+            case ObjType_DDMOTIONCOMP_TYPE:
+            // bSUCCESS = bDdDeleteMotionCompObject(pDdObj, 0);
+            break;
+            default:
+            bSUCCESS = FALSE;
+            break;
+        }
+
+        if (!bSUCCESS)
+        {
+            // DbgPrint("DDRAW ERROR: DdHmgCloseProcess couldn\'t delete obj = %p, type j=%lx\n", pDdObj, dwObjectType);
+        }
+
+        DdHmgAcquireHmgrSemaphore();
+        pDdObj = DdHmgNextOwned(pDdObj, dwPid);
+        DdHmgReleaseHmgrSemaphore();
+    }
+
+    return bSUCCESS;
 }
 
+// Implemented
 VOID
 NTAPI
-DxDdCloseProcess(HANDLE hProcess)
+DxDdCloseProcess(DWORD dwPid)
 {
-    DdHmgCloseProcess(hProcess);
+    TRACE();
+
+    DdHmgCloseProcess(dwPid);
 }
 
+// Implemented
 BOOL
 NTAPI
 DxDdGetDirectDrawBound(HDEV hDev, LPRECT lpRect)
 {
+    TRACE();
+
     BOOL Result = FALSE;
     PEDD_DIRECTDRAW_GLOBAL peDdGl;
 
     peDdGl = (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_eddg);
 
-    // vDdAssertDevlock(pEVar2);
+    vDdAssertDevlock(peDdGl);
 
     // Do we have some kind of global bounds locked
     Result = (peDdGl->fl & 4) != 0;
@@ -1217,24 +1588,30 @@ DxDdGetDirectDrawBound(HDEV hDev, LPRECT lpRect)
     return Result;
 }
 
+// Implemented
 DWORD
 NTAPI
 DxDdEnableDirectDrawRedirection(PVOID p1, PVOID p2)
 {
+    TRACE();
+
     // Not Implemented In Vista
     return 0;
 }
 
+// Implemented
 PVOID
 NTAPI
 DxDdAllocPrivateUserMem(PEDD_SURFACE pEDDSurface, SIZE_T cjMemSize, ULONG ulTag)
 {
+    TRACE();
+
     PVOID pvUserMem = NULL;
 
     HANDLE hProcess = PsGetCurrentProcess();
 
-    // If the creator is this process allow the engine to allocate
-    if(pEDDSurface->ddsSurfaceGlobal.hCreatorProcess == hProcess)
+    // Check owning process?
+    if(pEDDSurface != NULL && pEDDSurface->peDirectDrawLocal->Process == hProcess)
     {
         pvUserMem = EngAllocUserMem(cjMemSize, ulTag);
     }
@@ -1242,27 +1619,33 @@ DxDdAllocPrivateUserMem(PEDD_SURFACE pEDDSurface, SIZE_T cjMemSize, ULONG ulTag)
     return pvUserMem;
 }
 
+// Implemented
 VOID
 NTAPI
-SafeFreeUserMem(PVOID pvMem, HANDLE hProcess)
-{  
-  if (hProcess == PsGetCurrentProcess()) {
-    EngFreeUserMem(pvMem);
-  } 
-  else {
-    KeAttachProcess((PKPROCESS)hProcess);
-    EngFreeUserMem(pvMem);
-    KeDetachProcess();
-  }
+SafeFreeUserMem(PVOID pvMem, PKPROCESS pKProcess)
+{
+    TRACE();
+
+    if (pKProcess == (PKPROCESS)PsGetCurrentProcess())
+    {
+        EngFreeUserMem(pvMem);
+    }
+    else
+    {
+        KeAttachProcess(pKProcess);
+        EngFreeUserMem(pvMem);
+        KeDetachProcess();
+    }
 }
 
+// Implemented
 VOID
 NTAPI
 DeferMemoryFree(PVOID pvMem, EDD_SURFACE *pEDDSurface)
 {
   PVOID* ppvMem;
 
-  ppvMem = (PVOID*)EngAllocMem(1, 0xc, TAG_GDDP);
+  ppvMem = (PVOID*)EngAllocMem(FL_ZERO_MEMORY, 0xc, TAG_GDDP);
 
   if (ppvMem != NULL) {
     ppvMem[0] = pvMem;
@@ -1274,40 +1657,40 @@ DeferMemoryFree(PVOID pvMem, EDD_SURFACE *pEDDSurface)
     // *(void ***)(*(int *)(*(int *)(param_2 + 0xcc) + 0x24) + 0x608) = ppvVar1;
     pEDDSurface->peDirectDrawLocal->peDirectDrawGlobal2->unk_608 = (ULONG_PTR)ppvMem;
 
-    // What is this madness?
     pEDDSurface->cLocks |= 0x1000;
   }
 }
-
 
 VOID
 NTAPI
 DxDdFreePrivateUserMem(int p1, PVOID pvMem)
 {
-    // Some strange pointer math going on here...
-    PEDD_SURFACE surface;
+    TRACE();
 
-    // This requires further investigation
-    if(p1 != 0)
-    {
-        surface = (PEDD_SURFACE)(p1 - 0x10U);
-    }
+    PEDD_SURFACE pEDDSurface = p1 != 0 ? (PEDD_SURFACE)(p1 - 0x10U) : NULL;
 
-    // 0x800 is some system memory flag
-    if(surface->ddsSurfaceLocal.dwFlags & 0x800)
+    if(pEDDSurface != NULL) 
     {
-        DeferMemoryFree(pvMem, surface);
-    }
-    else
-    {
-        SafeFreeUserMem(pvMem, surface->ddsSurfaceGlobal.hCreatorProcess);
+        // 0x800 is some system memory flag
+        // Unsure what exactly we are looking at for a flag here
+        if((pEDDSurface->cLocks & 0x800) != 0)
+        {
+            DeferMemoryFree(pvMem, pEDDSurface);
+        }
+        else
+        {
+            SafeFreeUserMem(pvMem, (PKPROCESS)pEDDSurface->peDirectDrawLocal->Process);
+        }
     }
 }
 
+// Implemented
 VOID
 NTAPI
 DxDdSetAccelLevel(HDEV hDev, DWORD dwLevel, BYTE bFlags)
 {
+    TRACE();
+
     PEDD_DIRECTDRAW_GLOBAL pGlobal = NULL;
     (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_eddg);
 
@@ -1318,10 +1701,13 @@ DxDdSetAccelLevel(HDEV hDev, DWORD dwLevel, BYTE bFlags)
     }
 }
 
+// Implemented
 PEDD_SURFACE
 NTAPI
 DxDdGetSurfaceLock(HDEV hDev)
 {
+    TRACE();
+
     PEDD_DIRECTDRAW_GLOBAL peDdGl = NULL;
 
     peDdGl = (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_eddg);
@@ -1329,10 +1715,13 @@ DxDdGetSurfaceLock(HDEV hDev)
     return peDdGl->peSurface_LockList;
 }
 
+// Implemented
 PEDD_SURFACE
 NTAPI
 DxDdEnumLockedSurfaceRect(HDEV hDev, PEDD_SURFACE pEDDSurface, LPRECT lpRect)
 {
+    TRACE();
+
     PEDD_SURFACE result = NULL;
 
     if(pEDDSurface == NULL)
@@ -1346,7 +1735,7 @@ DxDdEnumLockedSurfaceRect(HDEV hDev, PEDD_SURFACE pEDDSurface, LPRECT lpRect)
     else
     {
         // Is there another locked surface below this one?
-        result = pEDDSurface->peSurface_LockNext;
+        result = pEDDSurface->field_C0;
     }
 
     if(result)

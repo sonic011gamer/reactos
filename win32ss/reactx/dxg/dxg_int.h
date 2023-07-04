@@ -22,6 +22,7 @@
 #include <initguid.h>
 #include <ddrawi.h>
 #include <ntgdityp.h>
+#include <ntgdihdl.h>
 #include <psfuncs.h>
 
 DEFINE_GUID(GUID_NTCallbacks,             0x6fe9ecde, 0xdf89, 0x11d1, 0x9d, 0xb0, 0x00, 0x60, 0x08, 0x27, 0x71, 0xba);
