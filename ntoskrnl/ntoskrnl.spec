@@ -58,6 +58,7 @@
 @ stdcall -stub -version=0x600+ EmProviderRegister()
 @ stdcall -stub -version=0x600+ EtwActivityIdControl(long ptr)
 @ stdcall -version=0x600+ EtwEventEnabled(int64 ptr)
+@ stdcall -version=0x600+ EtwProviderEnabled(ptr long long)
 @ stdcall -version=0x600+ EtwRegister(ptr ptr ptr ptr)
 @ stdcall -version=0x600+ EtwUnregister(int64)
 @ stdcall -version=0x600+ EtwWrite(int64 ptr ptr long ptr)
@@ -143,6 +144,7 @@
 @ fastcall ExReInitializeRundownProtection(ptr) ExfReInitializeRundownProtection
 @ fastcall ExReInitializeRundownProtectionCacheAware(ptr) ExfReInitializeRundownProtectionCacheAware
 @ stdcall ExRegisterCallback(ptr ptr ptr)
+@ stdcall -stub -version=0x600+ ExRegisterExtension(ptr long ptr)
 @ stdcall ExReinitializeResourceLite(ptr)
 @ stdcall -arch=x86_64 ExReleaseFastMutex(ptr)
 @ fastcall ExReleaseFastMutexUnsafe(ptr)
@@ -165,6 +167,7 @@
 @ stdcall ExSystemTimeToLocalTime(ptr ptr)
 @ stdcall -arch=x86_64 ExTryToAcquireFastMutex(ptr)
 @ stdcall ExUnregisterCallback(ptr)
+@ stdcall -stub -version=0x600+ ExUnregisterExtension(ptr)
 @ stdcall ExUuidCreate(ptr)
 @ stdcall ExVerifySuite(long)
 @ fastcall ExWaitForRundownProtectionRelease(ptr) ExfWaitForRundownProtectionRelease
@@ -495,6 +498,7 @@
 @ stdcall IoReportTargetDeviceChangeAsynchronous(ptr ptr ptr ptr)
 @ stdcall IoRequestDeviceEject(ptr)
 @ stdcall IoReuseIrp(ptr long)
+@ stdcall -version=0x600+ IoSetActivityIdIrp(ptr ptr)
 @ stdcall IoSetCompletionRoutineEx(ptr ptr ptr ptr long long long)
 @ stdcall IoSetDeviceInterfaceState(ptr long)
 @ stdcall IoSetDeviceToVerify(ptr ptr)
@@ -608,7 +612,7 @@
 @ stdcall -arch=arm KeFlushIoBuffers(ptr long long)
 @ stdcall KeFlushQueuedDpcs()
 @ stdcall KeGenericCallDpc(ptr ptr)
-@ stdcall -stub -version=0x600+ KeGetCurrentProcessorNumberEx(ptr)
+@ stdcall -version=0x600+ KeGetCurrentProcessorNumberEx(ptr)
 @ stdcall KeGetCurrentThread()
 @ stdcall KeGetPreviousMode()
 @ stdcall -stub -version=0x600+ KeGetProcessorIndexFromNumber(ptr)
@@ -658,10 +662,10 @@
 @ stdcall -arch=i386,arm KeProfileInterrupt(ptr)
 @ stdcall KeProfileInterruptWithSource(ptr long)
 @ stdcall KePulseEvent(ptr long long)
-@ stdcall -stub -version=0x600+ KeQueryActiveProcessorCount(long)
-@ stdcall -stub -version=0x600+ KeQueryActiveProcessorCountEx(long)
+@ stdcall -version=0x600+ KeQueryActiveProcessorCount(long)
+@ stdcall -version=0x600+ KeQueryActiveProcessorCountEx(long)
 @ stdcall KeQueryActiveProcessors()
-@ stdcall -stub -version=0x600+ KeQueryDpcWatchdogInformation(ptr)
+@ stdcall -version=0x600+ KeQueryDpcWatchdogInformation(ptr)
 @ stdcall -arch=i386,arm KeQueryInterruptTime()
 ;@ cdecl -arch=x86_64 KeQueryMultiThreadProcessorSet
 ;@ cdecl -arch=x86_64 KeQueryPrcbAddress
@@ -792,6 +796,7 @@
 @ stdcall MmBuildMdlForNonPagedPool(ptr)
 @ stdcall MmCanFileBeTruncated(ptr ptr)
 @ stdcall MmCommitSessionMappedView(ptr ptr)
+@ stdcall MmCopyVirtualMemory(ptr ptr ptr ptr long ptr ptr)
 @ stdcall MmCreateMdl(ptr ptr long)
 @ stdcall MmCreateMirror()
 @ stdcall MmCreateSection(ptr long ptr ptr long long ptr ptr)
@@ -951,8 +956,8 @@
 @ stdcall ObDereferenceObject(ptr)
 @ stdcall ObDereferenceSecurityDescriptor(ptr long)
 @ stdcall ObFindHandleForObject(ptr ptr ptr ptr ptr)
-@ stdcall -stub -version=0x600+ ObfDereferenceObjectWithTag(ptr long)
-@ stdcall -stub -version=0x600+ ObfReferenceObjectWithTag(ptr long)
+@ stdcall -version=0x600+ ObfDereferenceObjectWithTag(ptr long)
+@ stdcall -version=0x600+ ObfReferenceObjectWithTag(ptr long)
 @ stdcall ObGetObjectSecurity(ptr ptr ptr)
 @ stdcall -version=0x601+ ObGetObjectType(ptr)
 @ stdcall ObInsertObject(ptr ptr long long ptr ptr)
@@ -980,6 +985,7 @@
 @ stdcall PoCallDriver(ptr ptr)
 @ stdcall PoCancelDeviceNotify(ptr)
 @ stdcall -stub -version=0x600+ PoDisableSleepStates()
+@ stdcall -version=0x600+ PoGetSystemWake(ptr)
 @ stdcall PoQueueShutdownWorkItem(ptr)
 @ stdcall -stub -version=0x600+ PoReenableSleepStates()
 @ stdcall PoRegisterDeviceForIdleDetection(ptr long long long)
@@ -991,6 +997,7 @@
 @ stdcall PoSetHiberRange(ptr long ptr long long)
 @ stdcall PoSetPowerState(ptr long long)
 @ stdcall PoSetSystemState(long)
+@ stdcall -version=0x600+ PoSetSystemWake(ptr)
 @ stdcall PoShutdownBugCheck(long long ptr ptr ptr ptr)
 @ stdcall PoStartNextPowerIrp(ptr)
 @ stdcall -version=0x600+ PoUnregisterPowerSettingCallback(ptr)
@@ -1126,6 +1133,7 @@
 @ stdcall RtlCaptureContext(ptr)
 @ stdcall RtlCaptureStackBackTrace(long long ptr ptr)
 @ stdcall RtlCharToInteger(str long ptr)
+@ stdcall -stub -version=0x600+ RtlCheckPortableOperatingSystem()
 @ stdcall RtlCheckRegistryKey(long wstr)
 @ stdcall RtlClearAllBits(ptr)
 @ stdcall RtlClearBit(ptr long)
@@ -1315,6 +1323,7 @@
 @ stdcall RtlQueryAtomInAtomTable(ptr ptr ptr ptr ptr ptr)
 @ stdcall -version=0x600+ RtlQueryElevationFlags(long)
 @ stdcall RtlQueryRegistryValues(long wstr ptr ptr ptr)
+@ stdcall -version=0x600+ RtlQueryRegistryValuesEx(long wstr ptr ptr ptr ptr)
 @ stdcall RtlQueryTimeZoneInformation(ptr)
 @ stdcall RtlRaiseException(ptr)
 @ stdcall RtlRandom(ptr)
@@ -1334,6 +1343,7 @@
 @ stdcall RtlSetDaclSecurityDescriptor(ptr long ptr long)
 @ stdcall RtlSetGroupSecurityDescriptor(ptr ptr long)
 @ stdcall RtlSetOwnerSecurityDescriptor(ptr ptr long)
+@ stdcall -stub -version=0x600+ RtlSetPortableOperatingSystem()
 @ stdcall RtlSetSaclSecurityDescriptor(ptr long ptr long)
 @ stdcall RtlSetTimeZoneInformation(ptr)
 @ stdcall RtlSizeHeap(ptr long ptr)
@@ -1480,6 +1490,7 @@
 @ stdcall ZwAllocateVirtualMemory(ptr ptr long ptr long long)
 @ stdcall -version=0x600+ ZwAlpcCancelMessage(ptr long ptr) NtAlpcCancelMessage
 @ stdcall -version=0x600+ ZwAlpcConnectPort(ptr wstr ptr ptr long ptr ptr long ptr ptr ptr) NtAlpcConnectPort
+@ stdcall -version=0x600+ ZwAlpcConnectPortEx(ptr wstr ptr ptr long ptr ptr long ptr ptr ptr) NtAlpcConnectPort
 @ stdcall -version=0x600+ ZwAlpcCreatePortSection(ptr long ptr long ptr long) NtAlpcCreatePortSection
 @ stdcall -version=0x600+ ZwAlpcCreateResourceReserve(ptr long long ptr) NtAlpcCreateResourceReserve
 @ stdcall -version=0x600+ ZwAlpcCreateSectionView(ptr long ptr) NtAlpcCreateSectionView
@@ -1574,6 +1585,7 @@
 @ stdcall ZwQuerySymbolicLinkObject(ptr ptr ptr)
 @ stdcall ZwQuerySystemInformation(long ptr long ptr)
 @ stdcall ZwQueryValueKey(ptr ptr long ptr long ptr)
+@ stdcall -version=0x600+ ZwQueryVirtualMemory(long ptr long ptr long ptr)
 @ stdcall ZwQueryVolumeInformationFile(ptr ptr ptr long long)
 @ stdcall ZwReadFile(ptr ptr ptr ptr ptr ptr long ptr ptr)
 @ stdcall -version=0x600+ ZwRemoveIoCompletionEx(ptr ptr long ptr ptr long) NtRemoveIoCompletionEx
@@ -1651,6 +1663,7 @@
 @ cdecl _strset()
 @ cdecl _strupr()
 @ cdecl _vsnprintf()
+@ cdecl -version=0x600+ _vsnprintf_s(ptr wstr ptr)
 @ cdecl _vsnwprintf()
 ;@ cdecl -stub -version=0x600+ _vswprintf(ptr wstr ptr)
 @ cdecl _wcsicmp()
@@ -1671,7 +1684,8 @@
 @ cdecl mbstowcs()
 @ cdecl mbtowc()
 @ cdecl memchr()
-@ cdecl -arch=x86_64 memcmp()
+;@ cdecl -arch=x86_64 memcmp()
+@ cdecl -version=0x600+ memcmp()
 @ cdecl memcpy()
 @ cdecl memmove()
 @ cdecl memset()
@@ -1683,10 +1697,12 @@
 @ cdecl strchr()
 @ cdecl strcmp()
 @ cdecl strcpy()
+@ cdecl -version=0x600+ strcpy_s(ptr long str)
 @ cdecl strlen()
 @ cdecl strncat()
 @ cdecl strncmp()
 @ cdecl strncpy()
+@ cdecl -version=0x600+ strncpy_s(ptr long str long)
 @ cdecl strrchr()
 @ cdecl strspn()
 @ cdecl strstr()
@@ -1700,7 +1716,7 @@
 @ stdcall vDbgPrintExWithPrefix(str long long str ptr)
 @ cdecl vsprintf(ptr str ptr)
 ;@ stub -version=0x601+ vsprintf_s
-;@ stub -version=0x600+ vswprintf_s
+;@ cdecl -version=0x600+ vswprintf_s
 @ cdecl wcscat()
 @ cdecl -version=0x601+ wcscat_s(wstr long wstr)
 @ cdecl wcschr()
