@@ -714,80 +714,57 @@ DXGKDDI_QUERY_CHILD_STATUS(
     IN_BOOLEAN                  NonDestructiveOnly
     );
 
-
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_INTERRUPT_ROUTINE)
-_IRQL_requires_DXGK_(HIGH_LEVEL) // HIGH_LEVEL is best approximation of DIRQL
+NTAPI
 BOOLEAN
-DXGKDDI_INTERRUPT_ROUTINE(
-    IN_CONST_PVOID  MiniportDeviceContext,
-    IN_ULONG        MessageNumber
-    );
+DXGKDDI_INTERRUPT_ROUTINE(_In_ PVOID MiniportDeviceContext,
+                          _In_ ULONG MessageNumber);
 
 typedef
-_Function_class_DXGK_(DXGKDDI_DPC_ROUTINE)
-_IRQL_requires_DXGK_(DISPATCH_LEVEL)
+NTAPI
 VOID
-DXGKDDI_DPC_ROUTINE(
-    IN_CONST_PVOID  MiniportDeviceContext
-    );
+DXGKDDI_DPC_ROUTINE(_In_ PVOID  MiniportDeviceContext);
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_QUERY_DEVICE_DESCRIPTOR)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
+NTAPI
 NTSTATUS
-DXGKDDI_QUERY_DEVICE_DESCRIPTOR(
-    IN_CONST_PVOID                  MiniportDeviceContext,
-    IN_ULONG                        ChildUid,
-    INOUT_PDXGK_DEVICE_DESCRIPTOR   DeviceDescriptor
-    );
+DXGKDDI_QUERY_DEVICE_DESCRIPTOR(_In_ PVOID                        MiniportDeviceContext,
+                                _In_ ULONG                        ChildUid,
+                                _Inout_ PDXGK_DEVICE_DESCRIPTOR   DeviceDescriptor);
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_SET_POWER_STATE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
+NTAPI
 NTSTATUS
-DXGKDDI_SET_POWER_STATE(
-    IN_CONST_PVOID          MiniportDeviceContext,
-    IN_ULONG                DeviceUid,
-    IN_DEVICE_POWER_STATE   DevicePowerState,
-    IN_POWER_ACTION         ActionType
-    );
+DXGKDDI_SET_POWER_STATE(_In_ PVOID MiniportDeviceContext,
+                        _In_ ULONG                DeviceUid,
+                        _In_ DEVICE_POWER_STATE   DevicePowerState,
+                        _In_ POWER_ACTION         ActionType);
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_NOTIFY_ACPI_EVENT)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
+NTAPI
 NTSTATUS
-DXGKDDI_NOTIFY_ACPI_EVENT(
-    IN_CONST_PVOID      MiniportDeviceContext,
-    IN_DXGK_EVENT_TYPE  EventType,
-    IN_ULONG            Event,
-    IN_PVOID            Argument,
-    OUT_PULONG          AcpiFlags
-    );
+DXGKDDI_NOTIFY_ACPI_EVENT(_In_ PVOID            MiniportDeviceContext,
+                          _In_ DXGK_EVENT_TYPE  EventType,
+                          _In_ ULONG            Event,
+                          _In_ PVOID            Argument,
+                          _Out_ PULONG          AcpiFlags);
 
 typedef
-_Function_class_DXGK_(DXGKDDI_RESET_DEVICE)
+NTAPI
 VOID
 DXGKDDI_RESET_DEVICE(
     IN_CONST_PVOID  MiniportDeviceContext
     );
 
 typedef
-_Function_class_DXGK_(DXGKDDI_UNLOAD)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
+NTAPI
 VOID
 DXGKDDI_UNLOAD(
     VOID
     );
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_QUERY_INTERFACE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
+NTAPI
 NTSTATUS
 DXGKDDI_QUERY_INTERFACE(
     IN_CONST_PVOID          MiniportDeviceContext,
@@ -795,8 +772,7 @@ DXGKDDI_QUERY_INTERFACE(
     );
 
 typedef
-_Function_class_DXGK_(DXGKDDI_CONTROL_ETW_LOGGING)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
+NTAPI
 VOID
 DXGKDDI_CONTROL_ETW_LOGGING(
     IN_BOOLEAN  Enable,
@@ -805,10 +781,8 @@ DXGKDDI_CONTROL_ETW_LOGGING(
     );
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_LINK_DEVICE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_LINK_DEVICE(
     IN_CONST_PDEVICE_OBJECT   PhysicalDeviceObject,
     IN_CONST_PVOID            MiniportDeviceContext,
@@ -844,7 +818,7 @@ typedef DXGKDDI_CONTROLDIAGNOSTICREPORTING      *PDXGKDDI_CONTROLDIAGNOSTICREPOR
 #if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_5)
 typedef DXGKDDI_SETTARGETADJUSTEDCOLORIMETRY2   *PDXGKDDI_SETTARGETADJUSTEDCOLORIMETRY2;
 #endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_5)
-#if 1
+
 typedef struct _DRIVER_INITIALIZATION_DATA {
     ULONG                                   Version;
     PDXGKDDI_ADD_DEVICE                     DxgkDdiAddDevice;
@@ -1181,5 +1155,3 @@ DxgkInitialize(
   _In_ PUNICODE_STRING             RegistryPath,
   _In_ PDRIVER_INITIALIZATION_DATA DriverInitializationData
 );
-
-#endif

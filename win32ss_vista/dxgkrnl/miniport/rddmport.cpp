@@ -160,6 +160,10 @@ RDDM_MiniportAddDevice(_In_     DRIVER_OBJECT *DriverObject,
         DPRINT1("RDDM_MiniportAddDevice: IoAttachDeviceToDeviceStack has failed\n");
     }
    #endif
+
+
+    /* - Reeeeeeeeee - check failure? */
+
     return STATUS_SUCCESS;
 }
 
