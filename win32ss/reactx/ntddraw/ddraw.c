@@ -9,6 +9,7 @@
  */
 
 #include <win32k.h>
+#include "../../../win32ss_vista/dxgkrnl/include/win32kinterface.h"
 #include <debug.h>
 
 PGD_DXDDSTARTUPDXGRAPHICS gpfnStartupDxGraphics = NULL;
@@ -24,6 +25,9 @@ DRVFN gpDxFuncs[DXG_INDEX_DxDdIoctl + 1];
 HANDLE ghDxGraphics = NULL;
 ULONG gdwDirectDrawContext = 0;
 
+extern PFILE_OBJECT RDDM_FileObject;
+extern PDEVICE_OBJECT RDDM_DeviceObject;
+static DXGKWIN32K_INTERFACE DxgkrnlWin32kInterface;
 #define DXDBG 1
 
 /************************************************************************/
@@ -41,6 +45,9 @@ DxDdStartupDxGraphics(  ULONG ulc1,
     DRVENABLEDATA DxEngDrv;
     DRVENABLEDATA DxgDrv;
 
+    PIRP Irp;
+    KEVENT Event;
+    IO_STATUS_BLOCK IoStatusBlock;
     NTSTATUS Status = STATUS_PROCEDURE_NOT_FOUND;
 
     /* FIXME: Setup of gaEngFuncs driver export list
@@ -52,8 +59,30 @@ DxDdStartupDxGraphics(  ULONG ulc1,
     /* FIXME: ReactOS does not loading the dxapi.sys or import functions from it yet */
     // DxApiGetVersion()
 
-    /* Loading the kernel interface of DirectX for win32k */
+    /* load the DxgKrnl interface for win32k .. deja vu*/
+    if (!RDDM_FileObject && !RDDM_DeviceObject)
+    {
+        DPRINT1("Setting up DxgKrnl Failed\n");
+        goto BypassDxgkrnl;
+    }
 
+    DPRINT1("DxDdStartupDxGraphics: Building IOCTRL with DxgKrnl\n");
+    KeInitializeEvent(&Event, SynchronizationEvent, FALSE);
+    Irp = IoBuildDeviceIoControlRequest(0x23E057, //TODO: Fuck you vista
+                                          RDDM_DeviceObject,
+                                          &DxgkrnlWin32kInterface,
+                                          sizeof(DXGKWIN32K_INTERFACE),
+                                          &DxgkrnlWin32kInterface,
+                                          sizeof(DXGKWIN32K_INTERFACE),
+                                          TRUE,
+                                          &Event,
+                                          &IoStatusBlock);
+    if ( !Irp )
+      Status = IofCallDriver(RDDM_DeviceObject, Irp);
+
+    DPRINT1("Win32k has grabbed dxgkrnl interface with status %d\n", Status);
+    /* Loading the kernel interface of DirectX for win32k */
+BypassDxgkrnl:
     DPRINT1("Warning: trying loading xp/2003/windows7/reactos dxg.sys\n");
     ghDxGraphics = EngLoadImage(L"\\SystemRoot\\System32\\drivers\\dxg.sys");
     if ( ghDxGraphics == NULL)

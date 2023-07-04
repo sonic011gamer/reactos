@@ -156,7 +156,7 @@ DxgkInternalDeviceIoctl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
     ULONG IoControlCode = IrpStack->Parameters.Read.ByteOffset.LowPart;
     Irp->IoStatus.Status = STATUS_SUCCESS;
 
-    switch (IoControlCode)
+    switch (IoControlCode) 
     {
         case IOCTL_VIDEO_DDI_FUNC_REGISTER:
             OutputBuffer = (PVOID*)Irp->UserBuffer;
@@ -164,6 +164,10 @@ DxgkInternalDeviceIoctl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
             Irp->IoStatus.Status = STATUS_SUCCESS;
             *OutputBuffer = RDDM_InitializeMiniport;
             DPRINT1("IOCTL_VIDEO_DDI_FUNC_REGISTER - Queued RDDM_InitializeMiniport up\n");
+            break;
+        case IOCTL_VIDEO_I_AM_REACTOS:
+            DPRINT1("This Dxgkrnl is from reactos\n");
+            Irp->IoStatus.Status = STATUS_SUCCESS;
             break;
         case 0x23E057: //TODO: maybe name this - but im lazy
             /* Convert to le function pointer list */

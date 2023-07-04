@@ -8,7 +8,7 @@
 
 #include <win32k.h>
 DBG_DEFAULT_CHANNEL(UserMisc);
-
+#include <debug.h>
 USHORT gusLanguageID;
 
 BOOL NTAPI GDI_CleanupForProcess(struct _EPROCESS *Process);
@@ -75,10 +75,26 @@ GdiThreadDestroy(PETHREAD Thread)
     return STATUS_SUCCESS;
 }
 
+NTSTATUS
+NTAPI
+DrvNotifySessionStateChange(UINT32 State);
+
+BOOL
+TryHackedDxgkrnlAdapterStart();
 
 BOOL
 InitializeGreCSRSS(VOID)
 {
+    /* FIXME: Eventually we will have to use Watchdog.sus for this */
+    if (!TryHackedDxgkrnlAdapterStart())
+    {
+        DPRINT1("You're running with Vista DXGKRNL, I hope you have watchdog\n");
+        DPRINT1("Starting DxgKrnl using the vista method:\n");
+
+        /* Now start the adapter using watchdog by notify the state change */
+        DrvNotifySessionStateChange(1);
+    }
+
     /* Initialize DirectX graphics driver */
     if (DxDdStartupDxGraphics(0, NULL, 0, NULL, NULL, gpepCSRSS) != STATUS_SUCCESS)
     {

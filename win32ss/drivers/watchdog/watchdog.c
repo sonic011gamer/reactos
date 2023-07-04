@@ -228,9 +228,23 @@ WdMadeAnyProgress(
     return FALSE;
 }
 
+NTSTATUS
+NTAPI
+SMgrNotifySessionChange(UINT32 State)
+{
+    DPRINT1("SMgrNotifySessionChange: Entering with State %d", State);
+    DPRINT1("If you called me you did something stupid, fix it\n");
+    return 1;
+}
 
-
-
+NTSTATUS
+NTAPI
+SMgrRegisterGdiCallout(PVOID Ptr)
+{
+    DPRINT1("SMgrRegisterGdiCallout: Entering with Ptr %X", Ptr);
+    DPRINT1("There's a time in a place for everything.  You shouldnt be here!\n");
+    return 1;
+}
 
 
 
