@@ -192,8 +192,8 @@ typedef struct _EDD_DIRECTDRAW_GLOBAL
 /* 0x5BC */    EDD_SURFACE *peSurfaceCurrent;
 /* 0x5C0 */    EDD_SURFACE *peSurfacePrimary;
 /* 0x5C4 */    BOOL bSuspended;                            // 0x5C4 <-- verified to match Windows XP, tells dxg to use driver's own api or return error code instead
-/* 0x5C8 */    ULONG unk_5c8;                              // Appears to be some kind of count between global and local handles
-/* 0x5CC */    ULONG gSurfaceLocks;                        // Global Surface locks?
+/* 0x5C8 */    ULONG unk_5c8;
+/* 0x5CC */    ULONG gSurfaceLocks;                        // Count of global surface locks
 /* 0x5D0 */    HANDLE hDxLoseObj;                          // DXOBJ list
 /* 0x5D4 */    HANDLE hDirectDraw;                         // DirectDraw Handle
 /* 0x5D8 */    ULONG dxApiCallbacks[5];                    // dxapi Function Pointers
