@@ -162,8 +162,8 @@ DxgkInternalDeviceIoctl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
             OutputBuffer = (PVOID*)Irp->UserBuffer;
             Irp->IoStatus.Information = 0;
             Irp->IoStatus.Status = STATUS_SUCCESS;
-            *OutputBuffer = DpiInitialize;
-            DPRINT1("IOCTL_VIDEO_DDI_FUNC_REGISTER - Queued DpiInitialize up\n");
+            *OutputBuffer = RDDM_InitializeMiniport;
+            DPRINT1("IOCTL_VIDEO_DDI_FUNC_REGISTER - Queued RDDM_InitializeMiniport up\n");
             break;
         case 0x23E057: //TODO: maybe name this - but im lazy
             /* Convert to le function pointer list */

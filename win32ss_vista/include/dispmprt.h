@@ -662,13 +662,13 @@ typedef _In_    PVIDEO_REQUEST_PACKET    IN_PVIDEO_REQUEST_PACKET;
 typedef
 NTSTATUS
 DXGKDDI_ADD_DEVICE(_In_  PDEVICE_OBJECT     PhysicalDeviceObject,
-                   _Out_ PPVOID             MiniportDeviceContext);
+                   _Out_ PVOID*             MiniportDeviceContext);
 
 typedef
 NTSTATUS
 DXGKDDI_START_DEVICE(_In_ PVOID                MiniportDeviceContext,
-                     _IN_ PDXGK_START_INFO     DxgkStartInfo,
-                     _IN_ PDXGKRNL_INTERFACE   DxgkInterface,
+                     _In_ PDXGK_START_INFO     DxgkStartInfo,
+                     _In_ PDXGKRNL_INTERFACE   DxgkInterface,
                      _Out_ PULONG              NumberOfVideoPresentSources,
                      _Out_ PULONG              NumberOfChildren);
 
