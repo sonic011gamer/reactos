@@ -1131,6 +1131,7 @@
 @ stdcall RtlCopyLuid(ptr ptr)
 @ stdcall -arch=x86_64 RtlCopyMemory(ptr ptr int64) memmove
 @ stdcall -arch=x86_64 RtlCopyMemoryNonTemporal(ptr ptr int64) memmove
+@ stdcall -stub -version=0x600+ RtlCmDecodeMemIoResource(ptr ptr)
 @ stdcall RtlCopyRangeList(ptr ptr)
 @ stdcall RtlCopySid(long ptr ptr)
 @ stdcall RtlCopyString(ptr ptr)
@@ -1648,7 +1649,7 @@
 @ cdecl _strupr()
 @ cdecl _vsnprintf()
 @ cdecl _vsnwprintf()
-;@ cdecl -stub -version=0x600+ _vswprintf(ptr wstr ptr)
+@ stub -version=0x600+ _vswprintf
 @ cdecl _wcsicmp()
 @ cdecl _wcslwr()
 @ cdecl _wcsnicmp()
