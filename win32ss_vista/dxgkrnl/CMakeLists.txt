@@ -12,6 +12,7 @@ list(APPEND SOURCE
     miniport/vista/interface_vista.cpp
     miniport/vista/undocumented.cpp
     miniport/rddmport.cpp
+    miniport/vista/win32k_interface.cpp
     )
 
 add_library(dxgkrnl MODULE

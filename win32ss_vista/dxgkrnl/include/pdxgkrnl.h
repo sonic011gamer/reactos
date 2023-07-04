@@ -10,3 +10,4 @@ RDDM_SetupDxgkrnl(
 
 #include "miniport_dispatch.h"
 #include "dxgkrnl_interface.h"
+#include "win32kinterface.h"

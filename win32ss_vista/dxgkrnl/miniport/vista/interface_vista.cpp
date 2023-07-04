@@ -42,8 +42,20 @@ APIENTRY
 RDDM_DxgkCbGetDeviceInformation(_In_ HANDLE DeviceHandle,
                                 _Out_ PDXGK_DEVICE_INFO DeviceInfo)
 {
+    PDXGKRNL_PRIVATE_EXTENSION Extension = NULL;
     //TODO: Implement meh
     UNIMPLEMENTED;
+       /* Grab the DXGKRNL internal extension */
+    PDRIVER_OBJECT DxgknrlObject = (PDRIVER_OBJECT)DeviceHandle;
+    Extension = (PDXGKRNL_PRIVATE_EXTENSION)IoGetDriverObjectExtension(DxgknrlObject, DxgknrlObject);
+    if (!Extension)
+    {
+        DPRINT1("Could not gather DXGKRNL Extension\n");
+    }
+    DeviceInfo->MiniportDeviceContext = Extension->MiniportFdo;
+    DeviceInfo->MiniportDeviceContext = Extension->MiniportPdo;
+   // DeviceInfo->TranslatedResourceList =
+    __debugbreak();
     return STATUS_UNSUCCESSFUL;
 }
 

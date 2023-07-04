@@ -138,12 +138,16 @@ DpiInitialize(PDRIVER_OBJECT DriverObject, PCUNICODE_STRING SourceString, DRIVER
     return STATUS_SUCCESS;
 }
 
+VOID
+RDDM_CreateWin32kInterface(PDXGKWIN32K_INTERFACE Interface, ULONG *Size);
 
 NTSTATUS
 NTAPI   //TODO: Implement me
 DxgkInternalDeviceIoctl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
 {
+    ULONG Size = 0;
     PVOID *OutputBuffer;
+    PDXGKWIN32K_INTERFACE Interface;
     IO_STACK_LOCATION *IrpStack = Irp->Tail.Overlay.CurrentStackLocation;
     ULONG IoControlCode = IrpStack->Parameters.Read.ByteOffset.LowPart;
     switch (IoControlCode)
@@ -156,7 +160,13 @@ DxgkInternalDeviceIoctl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
             DPRINT1("IOCTL_VIDEO_DDI_FUNC_REGISTER - Queued DpiInitialize up\n");
             break;
         case 0x23E057:
-            DPRINT1("IOCTL_VIDEO_REQUEST_WIN32K_INTERFACE\n");
+            /* Convert to le function pointer list */
+            Interface = (PDXGKWIN32K_INTERFACE)Irp->UserBuffer;
+            /* gather le list */
+            RDDM_CreateWin32kInterface(Interface, &Size);
+            /* Le wants size for some reason */
+            Irp->IoStatus.Information = Size;
+            DPRINT1("IOCTL_VIDEO_REGISTER_WIN32K_INTERFACE\n");
             break;
         default:
             DPRINT1("unknown IOCTRL Code: %X\n", IoControlCode);

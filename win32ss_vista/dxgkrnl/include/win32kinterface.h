@@ -1,0 +1,72 @@
+#pragma once 
+
+typedef
+NTSTATUS /* I literally haven't seen this called in runtime ever except for profiling lol */
+(APIENTRY *DXGKGET_RUNTIME_DATA)();
+
+ typedef struct _DXGKWIN32K_INTERFACE {
+	DWORD	    Magic;
+	DWORD	    Null;
+    ULONG_PTR   DxgkCddInterfaceReference;
+    ULONG_PTR   DxgkCddInterfaceReferenceTwo;
+    ULONG_PTR   DxgkProcessCallout;
+    ULONG_PTR   DxgkOpenAdapter;
+    ULONG_PTR   DxgkCloseAdapter;
+    ULONG_PTR   DxgkCreateAllocation;
+    ULONG_PTR   DxgkQueryResourceInfo;
+    ULONG_PTR   DxgkOpenResource;
+    ULONG_PTR   DxgkDestroyAllocation;
+    ULONG_PTR   DxgkSetAllocationPriority;
+    ULONG_PTR   DxgkQueryAllocationResidency;
+    ULONG_PTR   DxgkCreateDevice;
+    ULONG_PTR   DxgkDestroyDevice;
+    ULONG_PTR   DxgkCreateContext;
+    ULONG_PTR   DxgkDestroyContext;
+    ULONG_PTR   DxgkCreateSynchronizationObject;
+    ULONG_PTR   DxgkDestroySynchronizationObject;
+    ULONG_PTR   DxgkWaitForSynchronizationObject;
+    ULONG_PTR   DxgkSignalSynchronizationObject;
+    ULONG_PTR   DxgkLock;
+    ULONG_PTR   DxgkUnlock;
+    ULONG_PTR   DxgkRender;
+    ULONG_PTR   DxgkGetRuntimeData;
+    ULONG_PTR   DxgkQueryAdapterInfo;
+    ULONG_PTR   DxgkEscape;
+    ULONG_PTR   DxgkQueryStatistics;
+    ULONG_PTR   DxgkGetDisplayModeList;
+    ULONG_PTR   DxgkSetDisplayMode;
+    ULONG_PTR   DxgkGetMultisampleMethodList;
+    ULONG_PTR   DxgkPresent;
+    ULONG_PTR   DxgkGetSharedPrimaryHandle;
+    ULONG_PTR   DxgkCreateOverlay;
+    ULONG_PTR   DxgkUpdateOverlay;
+    ULONG_PTR   DxgkFlipOverlay;
+    ULONG_PTR   DxgkDestroyOverlay;
+    ULONG_PTR   DxgkWaitForVerticalBlankEvent;
+    ULONG_PTR   DxgkGetPresentHistory;
+    ULONG_PTR   DxgkSetGammaRamp;
+    ULONG_PTR   DxgkSetVidPnSourceOwner;
+    ULONG_PTR   DxgkGetDeviceState;
+    ULONG_PTR   DxgkSetContextSchedulingPriority;
+    ULONG_PTR   DxgkGetContextSchedulingPriority;
+    ULONG_PTR   DxgkSetProcessSchedulingPriorityClass;
+    ULONG_PTR   DxgkGetProcessSchedulingPriorityClass;
+    ULONG_PTR   DxgkReleaseProcessVidPnSourceOwners;
+    ULONG_PTR   DxgkGetScanLine;
+    ULONG_PTR   DxgkSetQueuedLimit;
+    ULONG_PTR   DxgkPollDisplayChildren;
+    ULONG_PTR   DxgkInvalidateActiveVidPn;
+    ULONG_PTR   DxgkCheckOcclusion;
+    ULONG_PTR   DxgkWaitForIdle;
+    ULONG_PTR   DxgkCheckMonitorPowerState;
+    ULONG_PTR   DxgkCheckExclusiveOwnership;
+    ULONG_PTR   DxgkSetDisplayPrivateDriverFormat;
+    DWORD	    MagicOne;
+    DWORD	    MagicTwo;
+    DWORD	    MagicThree;
+    DWORD	    MagicFour;
+    DWORD	    MagicFive;
+    DWORD	    MagicSix;
+    DWORD	    MagicSeven;
+    WORD        test;
+} DXGKWIN32K_INTERFACE, *PDXGKWIN32K_INTERFACE;

@@ -95,7 +95,7 @@ internalCallObject(PDXGKRNL_PRIVATE_EXTENSION Extension, DEVICE_OBJECT *Physical
     }
 
 
-    DPRINT1("DxgkDdiAddDevice: Returned with Status: %d", Status);
+    DPRINT1("DxgkDdiAddDevice: Returned with Status: %d\n", Status);
     __debugbreak();
 }
 /**
@@ -115,11 +115,15 @@ NTAPI
 RDDM_MiniportAddDevice(_In_     DRIVER_OBJECT *DriverObject,
                        _Inout_  DEVICE_OBJECT *PhysicalDeviceObject)
 {
+
+	PDEVICE_OBJECT Fdo;
+    IO_STATUS_BLOCK IoStatusBlock;
+    NTSTATUS Status ;
     ULONG_PTR Context = 0;
     PDXGKRNL_PRIVATE_EXTENSION Extension = NULL;
    //PhysicalDeviceObject->DeviceExtension
     /* MS does a whole bunch of bullcrap here so we will try to track it */
-      PAGED_CODE();
+     PAGED_CODE();
     if (!DriverObject || !PhysicalDeviceObject)
     {
         DPRINT1("Somethign has seriously fucked up\n");
@@ -133,6 +137,7 @@ RDDM_MiniportAddDevice(_In_     DRIVER_OBJECT *DriverObject,
      *
      * 1) First lets get the device extension for DXGKRNL
      * 2) nextlet's call a private API to handle calling Add Device.
+     * 3) After that we will call IoCreateDevice to create the device
      */
 
     /* Grab the DXGKRNL internal extension */
@@ -144,6 +149,38 @@ RDDM_MiniportAddDevice(_In_     DRIVER_OBJECT *DriverObject,
 
     internalCallObject(Extension,PhysicalDeviceObject,(VOID*)Context);
 
+    IoStatusBlock.Information = 1024;
+    Status = IoCreateDevice(DriverObject,
+                            IoStatusBlock.Information,
+                            FALSE,
+                            FILE_DEVICE_VIDEO,
+                            FILE_DEVICE_SECURE_OPEN,
+                            FALSE,
+                            &Fdo);
+
+    /*
+     * Attach our FDO to the device stack.
+     * The return value of IoAttachDeviceToDeviceStack is the top of the
+     * attachment chain.  This is where all the IRPs should be routed.
+     */
+    PDEVICE_OBJECT NextLowerobject = IoAttachDeviceToDeviceStack (
+                                    Fdo,
+                                    PhysicalDeviceObject);
+    /* Doesnt really make any sense to me why though? */
+    if (!NextLowerobject)
+    {
+        DPRINT1("RDDM_MiniportAddDevice: IoAttachDeviceToDeviceStack has failed\n");
+    }
+    ULONG NumberOfViews;
+    ULONG NumberOfChildren;
+    DXGK_START_INFO DxgkStartInfo = {0};
+    Extension->MiniportFdo = Fdo;
+       Extension->MiniportPdo = PhysicalDeviceObject;
+    Extension->DxgkDdiStartDevice((PVOID)Context,
+                                  &DxgkStartInfo,
+                                   &DxgkrnlInterface,
+                                  &NumberOfViews,
+                                  &NumberOfChildren);
     __debugbreak();
     return STATUS_SUCCESS;
 }

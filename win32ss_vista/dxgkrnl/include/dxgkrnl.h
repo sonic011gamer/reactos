@@ -20,6 +20,9 @@
 #define IOCTL_VIDEO_DDI_FUNC_REGISTER \
 	CTL_CODE( FILE_DEVICE_VIDEO, 0xF, METHOD_NEITHER, FILE_ANY_ACCESS  )
 
+#define IOCTL_VIDEO_DDI_FUNC_WIN8_REGISTER \
+	CTL_CODE( FILE_DEVICE_VIDEO, 0xA, METHOD_NEITHER, FILE_ANY_ACCESS  )
+
 /* FIXME: This needs some real investigation - this is this stupid  */
 typedef struct _DXGKRNL_PRIVATE_EXTENSION
 {
@@ -86,4 +89,6 @@ typedef struct _DXGKRNL_PRIVATE_EXTENSION
     PDXGKDDI_DESTROYCONTEXT                   DxgkDdiDestroyContext;
     PDXGKDDI_LINK_DEVICE                      DxgkDdiLinkDevice;
     PDXGKDDI_SETDISPLAYPRIVATEDRIVERFORMAT    DxgkDdiSetDisplayPrivateDriverFormat;
+    	PDEVICE_OBJECT MiniportFdo;
+        	PDEVICE_OBJECT MiniportPdo;
 } DXGKRNL_PRIVATE_EXTENSION, *PDXGKRNL_PRIVATE_EXTENSION;
