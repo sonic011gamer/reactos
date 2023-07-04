@@ -162,36 +162,7 @@ RDDM_MiniportAddDevice(_In_     DRIVER_OBJECT *DriverObject,
    #endif
     return STATUS_SUCCESS;
 }
-#if 0
-NTSTATUS
-NTAPI
-RDDM_MiniportAddDevice(PDRIVER_OBJECT DriverObject, PDEVICE_OBJECT TargetDevice)
-{
-    PAGED_CODE();
 
-    PDXGKDDI_ADD_DEVICE                       LocDxgkDdiAddDevice;
-
-    PDXGKRNL_PRIVATE_EXTENSION Extension = NULL;
-    PVOID MiniportDeviceContext = NULL;
-    NTSTATUS Status = 0;
-    DPRINT1("PVOID RDDM_MiniportAddDevice: Entry\n");
-
-    /* Grab the DXGKRNL internal extension */
-    Extension = (PDXGKRNL_PRIVATE_EXTENSION)IoGetDriverObjectExtension(DriverObject, DriverObject);
-    if (!Extension)
-    {
-        DPRINT1("Could not gather DXGKRNL Extension\n");
-    }
-
-    LocDxgkDdiAddDevice = Extension->DxgkDdiAddDevice;
-    __debugbreak();
-    /* Call the actual miniport routine */
-    Status = (NTSTATUS)(LocDxgkDdiAddDevice(TargetDevice, &MiniportDeviceContext));
-    DPRINT1("DxgkDdiAddDevice Status 0x%X\n", Status);
-    __debugbreak();
-    return Status;
-}
-#endif
 NTSTATUS
 NTAPI
 RDDM_MiniportDriverUnload(PDRIVER_OBJECT DriverObject)

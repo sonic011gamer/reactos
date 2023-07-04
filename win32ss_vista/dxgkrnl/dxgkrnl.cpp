@@ -199,11 +199,12 @@ NTSTATUS
 NTAPI /* This doesn't do anything? */
 DxgkCreateClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
 {
+    PAGED_CODE();
     DPRINT1("DxgkCreateClose: Entry Point\n");
     Irp->IoStatus.Information = 0;
     Irp->IoStatus.Status = STATUS_SUCCESS;
     IofCompleteRequest(Irp, 0);
-    return 0;
+    return STATUS_SUCCESS;
 }
 
 NTSTATUS
