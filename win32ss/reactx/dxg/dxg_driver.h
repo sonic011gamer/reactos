@@ -1691,13 +1691,13 @@ DxDdSetAccelLevel(HDEV hDev, DWORD dwLevel, BYTE bFlags)
 {
     TRACE();
 
-    PEDD_DIRECTDRAW_GLOBAL pGlobal = NULL;
-    (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_eddg);
+    PEDD_DIRECTDRAW_GLOBAL peDdGl = NULL;
+    peDdGl = (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_eddg);
 
     if(dwLevel >= 3 || bFlags & 2)
     {
-        pGlobal->llAssertModeTimeout.HighPart = 0;
-        pGlobal->llAssertModeTimeout.LowPart = 0;
+        peDdGl->llAssertModeTimeout.HighPart = 0;
+        peDdGl->llAssertModeTimeout.LowPart = 0;
     }
 }
 
