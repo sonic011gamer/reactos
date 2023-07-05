@@ -62,7 +62,13 @@ TryHackedDxgkrnlAdapterStart()
                                           &Event,
                                           &IoStatusBlock);
     if ( !Irp )
-      Status = IofCallDriver(RDDM_DeviceObject, Irp);
+    {
+        Status = STATUS_INSUFFICIENT_RESOURCES;
+    }
+    else
+    {
+        Status = IofCallDriver(RDDM_DeviceObject, Irp);
+    }
     DPRINT1("TryHackedDxgkrnlAdapterStart: Status %d\n", IoStatusBlock.Status);
     if (IoStatusBlock.Status != STATUS_SUCCESS)
     {

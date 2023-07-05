@@ -142,6 +142,10 @@ VOID
 RDDM_CreateWin32kInterface(PDXGKWIN32K_INTERFACE Interface, ULONG *Size);
 
 NTSTATUS
+NTAPI
+RDDM_StartMiniport(DEVICE_OBJECT *DeviceObject);
+
+NTSTATUS
 NTAPI   //TODO: Implement me
 DxgkInternalDeviceIoctl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
 {
@@ -168,6 +172,8 @@ DxgkInternalDeviceIoctl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
         case IOCTL_VIDEO_I_AM_REACTOS:
             DPRINT1("This Dxgkrnl is from reactos\n");
             Irp->IoStatus.Status = STATUS_SUCCESS;
+            RDDM_StartMiniport(DeviceObject);
+            __debugbreak();
             break;
         case 0x23E057: //TODO: maybe name this - but im lazy
             /* Convert to le function pointer list */

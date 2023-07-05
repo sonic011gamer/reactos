@@ -11,7 +11,7 @@
 #include <debug.h>
 
 extern DXGKRNL_INTERFACE DxgkrnlInterface;
-
+PDXGKRNL_PRIVATE_EXTENSION Extension;
 NTSTATUS
 NTAPI
 RDDM_MiniportDispatchCreate(PDEVICE_OBJECT DeviceObject, PIRP Irp)
@@ -98,7 +98,7 @@ RDDM_MiniportAddDevice(_In_     DRIVER_OBJECT *DriverObject,
     IO_STATUS_BLOCK IoStatusBlock;
     NTSTATUS Status ;
     ULONG_PTR Context = 0;
-    PDXGKRNL_PRIVATE_EXTENSION Extension = NULL;
+    Extension = NULL;
 
     PAGED_CODE();
 
@@ -136,6 +136,7 @@ RDDM_MiniportAddDevice(_In_     DRIVER_OBJECT *DriverObject,
         DPRINT1("RDDM_MiniportAddDevice: AddDevice Miniport call has continued with success\n");
     }
 
+    Extension->MiniportContext = (PVOID)Context;
     IoStatusBlock.Information = 1024;
     Status = IoCreateDevice(DriverObject,
                             IoStatusBlock.Information,
@@ -144,6 +145,9 @@ RDDM_MiniportAddDevice(_In_     DRIVER_OBJECT *DriverObject,
                             FILE_DEVICE_SECURE_OPEN,
                             FALSE,
                             &Fdo);
+
+    Extension->MiniportFdo = Fdo;
+    Extension->MiniportPdo = PhysicalDeviceObject;
 
     /*
      * Attach our FDO to the device stack.

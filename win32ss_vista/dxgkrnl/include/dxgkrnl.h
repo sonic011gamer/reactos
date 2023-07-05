@@ -92,6 +92,7 @@ typedef struct _DXGKRNL_PRIVATE_EXTENSION
     PDXGKDDI_DESTROYCONTEXT                   DxgkDdiDestroyContext;
     PDXGKDDI_LINK_DEVICE                      DxgkDdiLinkDevice;
     PDXGKDDI_SETDISPLAYPRIVATEDRIVERFORMAT    DxgkDdiSetDisplayPrivateDriverFormat;
-    	PDEVICE_OBJECT MiniportFdo;
-        	PDEVICE_OBJECT MiniportPdo;
+    PDEVICE_OBJECT MiniportFdo;
+    PDEVICE_OBJECT MiniportPdo;
+    PVOID MiniportContext;
 } DXGKRNL_PRIVATE_EXTENSION, *PDXGKRNL_PRIVATE_EXTENSION;

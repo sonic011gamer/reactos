@@ -667,6 +667,7 @@ DXGKDDI_ADD_DEVICE(_In_  PDEVICE_OBJECT     PhysicalDeviceObject,
 
 typedef
 NTSTATUS
+NTAPI
 DXGKDDI_START_DEVICE(_In_ PVOID                MiniportDeviceContext,
                      _In_ PDXGK_START_INFO     DxgkStartInfo,
                      _In_ PDXGKRNL_INTERFACE   DxgkInterface,
