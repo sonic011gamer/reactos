@@ -227,7 +227,7 @@ IoDisconnectInterruptEx(
   _In_ PIO_DISCONNECT_INTERRUPT_PARAMETERS Parameters)
 {
     DPRINT1("Calling IoDsiconnectInterruptEx\n");
-    IoDisconnectInterrupt(Parameters->ConnectionContext.InterruptObject);
+   // IoDisconnectInterrupt(Parameters->ConnectionContext.InterruptObject);
 }
 
 /* EOF */
