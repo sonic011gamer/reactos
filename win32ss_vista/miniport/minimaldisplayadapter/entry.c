@@ -2,6 +2,7 @@
 #include <debug.h>
 
 NTSTATUS
+NTAPI
 DriverEntry(
     _In_  DRIVER_OBJECT*  pDriverObject,
     _In_  UNICODE_STRING* pRegistryPath)
@@ -10,11 +11,12 @@ DriverEntry(
     DRIVER_INITIALIZATION_DATA DriverInitializationData;
 
     DriverInitializationData.Version = DXGKDDI_INTERFACE_VERSION_VISTA;
-    DriverInitializationData.DxgkDdiAddDevice = OpenWDDM_AddDevice;
-    DriverInitializationData.DxgkDdiStartDevice = OpenWDDM_StartDevice;
-    DriverInitializationData.DxgkDdiStopDevice = OpenWDDM_StopDevice;
-    DriverInitializationData.DxgkDdiRemoveDevice = OpenWDDM_RemoveDevice;
-     DriverInitializationData.DxgkDdiDispatchIoRequest = OpenWDDM_Dispatch_IoRequest;
+    DriverInitializationData.DxgkDdiAddDevice =          (PDXGKDDI_ADD_DEVICE         )  OpenWDDM_AddDevice;
+    DriverInitializationData.DxgkDdiStartDevice =        (PDXGKDDI_START_DEVICE       )        OpenWDDM_StartDevice;
+    DriverInitializationData.DxgkDdiStopDevice =         (PDXGKDDI_STOP_DEVICE        )    OpenWDDM_StopDevice;
+    DriverInitializationData.DxgkDdiRemoveDevice =       (PDXGKDDI_REMOVE_DEVICE      )   OpenWDDM_RemoveDevice;
+     DriverInitializationData.DxgkDdiDispatchIoRequest = (PDXGKDDI_DISPATCH_IO_REQUEST)      OpenWDDM_Dispatch_IoRequest;
+
     #if 0
     PDXGKDDI_INTERRUPT_ROUTINE              DxgkDdiInterruptRoutine;
     PDXGKDDI_DPC_ROUTINE                    DxgkDdiDpcRoutine;

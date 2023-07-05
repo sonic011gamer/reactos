@@ -1,7 +1,7 @@
 
 
 remove_definitions(-D_WIN32_WINNT=0x502)
-add_definitions(-D_WIN32_WINNT=0x601)
+add_definitions(-D_WIN32_WINNT=0x600)
 
 list(APPEND SOURCE
      entry.c
@@ -19,6 +19,5 @@ endif()
 
 set_module_type(openwddm kernelmodedriver ENTRYPOINT DriverEntry)
 target_link_libraries(openwddm displib)
-add_importlibs(openwddm ntoskrnl dxgkrnl)
-add_driver_inf(openwddm openwddm.inf)
+add_importlibs(openwddm ntoskrnl dxgkrnl videoprt)
 add_cd_file(TARGET openwddm DESTINATION reactos/system32/drivers NO_CAB FOR all)

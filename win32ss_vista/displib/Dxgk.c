@@ -24,6 +24,7 @@ static DXGKRNL_INTERFACE                       PublicDxgkrnlInterface;
  * interface and break into the debugger before going into a WDDM Miniport.
  */
 NTSTATUS
+NTAPI
 RDDM_StartDevice(
     _In_  const PVOID          MiniportDeviceContext,
     _In_  PDXGK_START_INFO     DxgkStartInfo,

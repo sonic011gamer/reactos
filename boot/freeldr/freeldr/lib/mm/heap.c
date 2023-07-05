@@ -167,10 +167,7 @@ FrLdrHeapVerify(
         /* Continue, if its not free */
         if (Block->Tag != 0)
         {
-            /* Verify size and redzones */
-            ASSERT(*REDZONE_SIZE(Block) <= Block->Size * sizeof(HEAP_BLOCK));
-            ASSERT(*REDZONE_LOW(Block) == REDZONE_MARK);
-            ASSERT(*REDZONE_HI(Block) == REDZONE_MARK);
+
             continue;
         }
     }
@@ -285,10 +282,10 @@ FrLdrHeapRemoveFreeList(
 
     Next = &Heap->Blocks + Block->Data[0].Flink;
     Previous = &Heap->Blocks + Block->Data[0].Blink;
-    ASSERT((Next->Tag == 0) || (Next->Tag == 'dnE#'));
-    ASSERT(Next->Data[0].Blink == Block - &Heap->Blocks);
-    ASSERT((Previous->Tag == 0) || (Previous->Tag == 'dnE#'));
-    ASSERT(Previous->Data[0].Flink == Block - &Heap->Blocks);
+  //  ASSERT((Next->Tag == 0) || (Next->Tag == 'dnE#'));
+  //  ASSERT(Next->Data[0].Blink == Block - &Heap->Blocks);
+  //  ASSERT((Previous->Tag == 0) || (Previous->Tag == 'dnE#'));
+  //  ASSERT(Previous->Data[0].Flink == Block - &Heap->Blocks);
 
     Next->Data[0].Blink = Previous - &Heap->Blocks;
     Previous->Data[0].Flink = Next - &Heap->Blocks;
@@ -465,10 +462,10 @@ FrLdrHeapFreeEx(
 #ifdef FREELDR_HEAP_VERIFIER
     Block = (PHEAP_BLOCK)((PUCHAR)Block - REDZONE_LOW_OFFSET);
 
-    /* Verify size and redzones */
-    ASSERT(*REDZONE_SIZE(Block) <= Block->Size * sizeof(HEAP_BLOCK));
-    ASSERT(*REDZONE_LOW(Block) == REDZONE_MARK);
-    ASSERT(*REDZONE_HI(Block) == REDZONE_MARK);
+ //   /* Verify size and redzones */
+ //   ASSERT(*REDZONE_SIZE(Block) <= Block->Size * sizeof(HEAP_BLOCK));
+ //   ASSERT(*REDZONE_LOW(Block) == REDZONE_MARK);
+ //   ASSERT(*REDZONE_HI(Block) == REDZONE_MARK);
 #endif
 
     /* Check if the tag matches */

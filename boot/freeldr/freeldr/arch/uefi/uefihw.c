@@ -122,6 +122,55 @@ DetectAcpiBios(PCONFIGURATION_COMPONENT_DATA SystemKey, ULONG *BusNumber)
     }
 }
 
+
+
+static
+VOID
+DetectIsaBios(PCONFIGURATION_COMPONENT_DATA SystemKey, ULONG *BusNumber)
+{
+    PCM_PARTIAL_RESOURCE_LIST PartialResourceList;
+    PCONFIGURATION_COMPONENT_DATA BusKey;
+    ULONG Size;
+
+    /* Set 'Configuration Data' value */
+    Size = sizeof(CM_PARTIAL_RESOURCE_LIST) -
+           sizeof(CM_PARTIAL_RESOURCE_DESCRIPTOR);
+    PartialResourceList = FrLdrHeapAlloc(Size, TAG_HW_RESOURCE_LIST);
+    if (PartialResourceList == NULL)
+    {
+        ERR("Failed to allocate resource descriptor\n");
+        return;
+    }
+
+    /* Initialize resource descriptor */
+    RtlZeroMemory(PartialResourceList, Size);
+    PartialResourceList->Version = 1;
+    PartialResourceList->Revision = 1;
+    PartialResourceList->Count = 0;
+
+    /* Create new bus key */
+    FldrCreateComponentKey(SystemKey,
+                           AdapterClass,
+                           MultiFunctionAdapter,
+                           0,
+                           0,
+                           0xFFFFFFFF,
+                           "ISA",
+                           PartialResourceList,
+                           Size,
+                           &BusKey);
+
+    /* Increment bus number */
+    (*BusNumber)++;
+
+    /* Detect ISA/BIOS devices */
+   // DetectBiosDisks(SystemKey, BusKey);
+   // DetectSerialPorts(BusKey, XboxGetSerialPort, MAX_XBOX_COM_PORTS);
+   // DetectDisplayController(BusKey);
+
+    /* FIXME: Detect more ISA devices */
+}
+
 PCONFIGURATION_COMPONENT_DATA
 UefiHwDetect(VOID)
 {
@@ -131,9 +180,9 @@ UefiHwDetect(VOID)
     TRACE("DetectHardware()\n");
 
     /* Create the 'System' key */
-    FldrCreateSystemKey(&SystemKey);
+    FldrCreateSystemKey(&SystemKey, "AT/AT COMPATIBLE");
 #if defined(_M_IX86) || defined(_M_AMD64) /* Taken from Windows 11 */
-    FldrSetIdentifier(SystemKey, "AT/AT COMPATIBLE");
+   // FldrSetIdentifier(SystemKey, "AT/AT COMPATIBLE");
 #elif defined(_M_IA64) /* Taken from Windows XP 64-bit*/
     FldrSetIdentifier(SystemKey, "Intel Itanium processor family");
 #elif defined(_M_ARM) || defined(_M_ARM64) /* Taken from Windows RT/11 */
@@ -144,7 +193,7 @@ UefiHwDetect(VOID)
 
     /* Detect ACPI */
     DetectAcpiBios(SystemKey, &BusNumber);
-
+    DetectIsaBios(SystemKey, &BusNumber);
     TRACE("DetectHardware() Done\n");
     return SystemKey;
 }

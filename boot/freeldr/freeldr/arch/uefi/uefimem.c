@@ -182,7 +182,8 @@ UefiConvertToFreeldrDesc(EFI_MEMORY_TYPE EfiMemoryType)
     }
     return LoaderReserve;
 }
-
+VOID
+UefiPrintFramebufferData(VOID);
 PFREELDR_MEMORY_DESCRIPTOR
 UefiMemGetMemoryMap(ULONG *MemoryMapSize)
 {
@@ -214,7 +215,7 @@ UefiMemGetMemoryMap(ULONG *MemoryMapSize)
     OsLoaderSize = LoadedImage->ImageSize;
     PublicBootHandle = LoadedImage->DeviceHandle;
     EfiMemoryMap = NULL;
-
+    UefiPrintFramebufferData();
     TRACE("UefiMemGetMemoryMap: Gather memory map\n");
     PUEFI_LoadMemoryMap(&MapKey,
                         &MapSize,
@@ -255,6 +256,13 @@ UefiMemGetMemoryMap(ULONG *MemoryMapSize)
                 /* We failed to reserve the page, so change its type */
                 MemoryType = LoaderFirmwareTemporary;
             }
+            else{
+                        UefiSetMemory(FreeldrMem,
+                      MapEntry->PhysicalStart,
+                      MapEntry->NumberOfPages,
+                      MemoryType);
+            }
+
         }
 
         /* Sometimes our loader can be loaded into higher memory than we ever allocate */
@@ -265,12 +273,13 @@ UefiMemGetMemoryMap(ULONG *MemoryMapSize)
                 /* This value needs to be adjusted if this occurs */
                 LoaderPagesSpanned = (MapEntry->PhysicalStart / EFI_PAGE_SIZE);
             }
-        }
 
-        UefiSetMemory(FreeldrMem,
+                    UefiSetMemory(FreeldrMem,
                       MapEntry->PhysicalStart,
                       MapEntry->NumberOfPages,
                       MemoryType);
+        }
+
 
         MapEntry = NEXT_MEMORY_DESCRIPTOR(MapEntry, DescriptorSize);
     }
