@@ -41,6 +41,7 @@ typedef struct EDD_VIDEOPORT
     /* 0x10 */ DD_VIDEOPORT_LOCAL ddvVideoportLocal;
     /* 0xB8 */ ULONG unk_0b8;
     /* 0xBC */ struct _EDD_DIRECTDRAW_GLOBAL* peDirectDrawGlobal;
+    /* 0xB8 */ struct EDD_VIDEOPORT* SomeVideoPort; 
 
     /* 0xEC */ ULONG unk_DxObj;
     /* 0xEC */ HANDLE hVideoPort;
@@ -200,7 +201,7 @@ typedef struct _EDD_DIRECTDRAW_GLOBAL
     /* 0x5D0 */    HANDLE hDxLoseObj;                          // DXOBJ list
     /* 0x5D4 */    HANDLE hDirectDraw;                         // DirectDraw Handle
     /* 0x5D8 */    ULONG dxApiCallbacks[5];                    // dxapi Function Pointers
-    /* 0x5EC */    HANDLE hDxApi;                              // dxapi.sys Image?
+    /* 0x5EC */    HANDLE hDxApi;                              // dxapi.sys Image
     /* 0x5F0 */    DWORD dwApiReferences;                      // How many times LoadDxApi has been called
     /* 0x5F4 */    ULONG unk_5f4;
     /* 0x5F8 */    RECTL rcbounds;

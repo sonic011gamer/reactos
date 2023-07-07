@@ -115,24 +115,31 @@ typedef struct _D3D_SURFACE
     PDD_SURFACE_LOCAL peDdLocal; // 3
 } D3D_SURFACE, *PD3D_SURFACE;
 
+// Implemented
 BOOL
 NTAPI
 D3dLockSurfaces(DWORD dwCount, D3D_SURFACE **pD3dSurf)
 {
     TRACE();
 
+    // No surfaces to lock
     if(dwCount <= 0)
         return TRUE;
 
     for(DWORD i = 0; i < dwCount; i++)
     {
-        if(pD3dSurf[i]->peDdSurf == NULL && pD3dSurf[i]->bMandatory)
+        // If the surface is null but not mandatory go next
+        if(pD3dSurf[i]->peDdSurf == NULL)
         {
-            DoWarning("D3dLockSurfaces: NULL for mandatory surface", 0);
-            return FALSE;
+            if(pD3dSurf[i]->bMandatory) 
+            {
+                DoWarning("D3dLockSurfaces: NULL for mandatory surface", 0);
+                return FALSE;
+            }
+            else continue;
         }
 
-        PEDD_SURFACE peDdSurf = DdHmgLock(pD3dSurf[i]->peDdSurf, ObjType_DDSURFACE_TYPE, TRUE);
+        PEDD_SURFACE peDdSurf = (PEDD_SURFACE)DdHmgLock(pD3dSurf[i]->peDdSurf, ObjType_DDSURFACE_TYPE, TRUE);
 
         if(!peDdSurf) 
         {
@@ -150,7 +157,7 @@ D3dLockSurfaces(DWORD dwCount, D3D_SURFACE **pD3dSurf)
         pD3dSurf[i]->peDdLocal = &peDdSurf->ddsSurfaceLocal;
     }
 
-    return FALSE;
+    return TRUE;
 }
 
 DWORD
@@ -159,21 +166,13 @@ DxD3dContextCreate(
     HANDLE hDdLocal,
     HANDLE Obj1,
     HANDLE Obj2,
-    ULONG_PTR *RegionSize)
+    ULONG_PTR RegionSize)
 {
     TRACE();
 
     DWORD result = 0;
 
-    BYTE* puByte = (BYTE*)RegionSize;
-
-    for(int i = 0; i < 0x70u; i++)
-    {
-        DbgPrint("%X ", puByte[i]);
-        DbgBreakPoint();
-    }
-
-    /*KFLOATING_SAVE FloatSave;
+    KFLOATING_SAVE FloatSave;
 
     VOID* ContextHandle = NULL;
     HANDLE SecureHandle = NULL;
@@ -185,13 +184,14 @@ DxD3dContextCreate(
     D3DNTHAL_CONTEXTCREATEDATA ContextCreateData = {0};
 
     // Ensure the RegionSize is 4 Byte Aligned
-    if(RegionSize[0] & 3 != 0)
+    if(((int)RegionSize & 3) != 0)
         ExRaiseDatatypeMisalignment();
 
     if(DxgUserProbeAddress <= (ULONG64)RegionSize) {
-        DxgUserProbeAddress = NULL;
+        DxgUserProbeAddress = 0;
     }
 
+    // This is terrible what are we doing here
     if(RegionSize) 
     {
         if(RegionSize - 0x4000 > 0xFC000)
@@ -204,7 +204,7 @@ DxD3dContextCreate(
         RegionSize = 0x10000;
     }
 
-    PEDD_DIRECTDRAW_LOCAL peDdL = DdHmgLock(hDdLocal, ObjType_DDLOCAL_TYPE, FALSE);
+    PEDD_DIRECTDRAW_LOCAL peDdL = (PEDD_DIRECTDRAW_LOCAL)DdHmgLock(hDdLocal, ObjType_DDLOCAL_TYPE, FALSE);
 
     if(!peDdL)
     {
@@ -213,9 +213,9 @@ DxD3dContextCreate(
 
     PEDD_DIRECTDRAW_GLOBAL peDdGl = peDdL->peDirectDrawGlobal2;
 
-    d3dSurfaces[0].peDdSurf = Obj1;
+    d3dSurfaces[0].peDdSurf = (PEDD_SURFACE)Obj1;
     d3dSurfaces[0].bMandatory = FALSE;
-    d3dSurfaces[1].peDdSurf = Obj2;
+    d3dSurfaces[1].peDdSurf = (PEDD_SURFACE)Obj2;
     d3dSurfaces[1].bMandatory = TRUE;
 
     DdHmgAcquireHmgrSemaphore();
@@ -254,16 +254,16 @@ DxD3dContextCreate(
                             }
 
                             //InterlockedDecrement(v10 + 2);
-                            D3dCleanUp(peDdGl, &FloatSave);
+                            D3dCleanup(peDdGl, &FloatSave);
 
-                            // v5 + 16 = v18
-                            // v5 + 20 = v19
-                            // v5 + 24 = v4
-                            // v5 + 28 = RegionSize
+                            // pLeft + 16 = v18
+                            // pLeft + 20 = v19
+                            // pLeft + 24 = pDown
+                            // pLeft + 28 = RegionSize
                         }
                         else
                         {
-                            D3dCleanUp(peDdGl, &FloatSave);
+                            D3dCleanup(peDdGl, &FloatSave);
                         }
                     }
                 }
@@ -280,7 +280,7 @@ DxD3dContextCreate(
     }
 
     for(DWORD i = 0; i < 2; i++)
-        if(d3dSurfaces[i].peDdSurf) InterlockedDecrement(&d3dSurfaces[i].peDdSurf->pobj.cExclusiveLock);
+        if(d3dSurfaces[i].peDdSurf) InterlockedDecrement((VOID*)&d3dSurfaces[i].peDdSurf->pobj.cExclusiveLock);
 
     if(SecureHandle)
         MmUnsecureVirtualMemory(SecureHandle);
@@ -299,7 +299,7 @@ DxD3dContextCreate(
     if(peDdL)
     {
         InterlockedDecrement((VOID*)peDdL->pobj.cExclusiveLock);
-    }*/
+    }
 
     return result;
 }
@@ -310,16 +310,7 @@ DxD3dContextDestroy(
     PVOID p1)
 {
     TRACE();
-
-    struct HDD_OBJ__ **v1; // esi
-    unsigned int v3;       // [esp+14h] [ebp-1Ch]
-
-    v1 = (struct HDD_OBJ__ **)Address;
-    ProbeForWrite(Address, 8u, 4u);
-    v3 = D3dDeleteHandle(*v1, 0, 0, (int *)&Address);
-    v1[1] = (struct HDD_OBJ__ *)Address;
-
-    return v3;
+    return 0;
 }
 
 DWORD
@@ -389,15 +380,15 @@ DxDdAddAttachedSurface(
     addSurfaceData.ddRVal = DDERR_GENERIC;
 
     if(peDdSTarget && peDdSSrc && 
-        (peDdSTarget->ddsSurfaceLocal.dwFlags & 0x800) == 0 &&
-        (peDdSSrc->ddsSurfaceLocal.dwFlags & 0x800) == 0 &&
-        peDdSTarget->peDirectDrawLocal->pobj.hHmgr == peDdSSrc->peDirectDrawLocal->pobj.hHmgr)
+        (peDdSTarget->ddsSurfaceLocal.ddsCaps.dwCaps & DDSCAPS_SYSTEMMEMORY) == 0 &&
+        (peDdSSrc->ddsSurfaceLocal.ddsCaps.dwCaps & DDSCAPS_SYSTEMMEMORY) == 0 &&
+        peDdSTarget->peDirectDrawLocal == peDdSSrc->peDirectDrawLocal)
     {
         // Can we attach surfaces?
-        if(peDdSTarget->peDirectDrawGlobal->ddSurfaceCallbacks.dwFlags & DDHAL_SURFCB32_ADDATTACHEDSURFACE) 
+        if(peDdSTarget->peDirectDrawGlobalNext->ddSurfaceCallbacks.dwFlags & DDHAL_SURFCB32_ADDATTACHEDSURFACE) 
         {
             // Fill out attach surface data
-            addSurfaceData.lpDD = (PDD_DIRECTDRAW_GLOBAL)peDdSTarget->peDirectDrawGlobal;
+            addSurfaceData.lpDD = (PDD_DIRECTDRAW_GLOBAL)peDdSTarget->peDirectDrawGlobalNext;
             addSurfaceData.lpDDSurface = &peDdSTarget->ddsSurfaceLocal;
             addSurfaceData.lpSurfAttached = &peDdSSrc->ddsSurfaceLocal;
 
@@ -413,7 +404,7 @@ DxDdAddAttachedSurface(
             else
             {
                 // attach surface here return the result
-                bFAILED = peDdSTarget->peDirectDrawGlobal->ddSurfaceCallbacks.AddAttachedSurface(&addSurfaceData);
+                bFAILED = peDdSTarget->peDirectDrawGlobalNext->ddSurfaceCallbacks.AddAttachedSurface(&addSurfaceData);
             }
 
             gpEngFuncs.DxEngUnlockHdev(peDdSTarget->peDirectDrawGlobal->hDev);
@@ -692,13 +683,54 @@ DxDdQueryMoCompStatus(
     return 0;
 }
 
-DWORD
+VOID
+NTAPI 
+vDdUnlockGdiSurface(HDEV hDev)
+{
+    TRACE();
+  //if (((PEDD_SURFACE)hDev)->cLocks < 0)
+  //  bDdUnlockSurfaceOrBuffer(hDev);
+}
+
+BOOL
+NTAPI
+bDdReleaseDC(HDEV hDev, DWORD Unused)
+{
+    BOOL result;
+
+    HANDLE hGdiSurface = ((PEDD_SURFACE)hDev)->hGdiSurface;
+
+    if(hGdiSurface)
+    {
+        if(!gpEngFuncs.DxEngDeleteDC((HDC)hDev, TRUE))
+            DoWarning("bDdReleaseDC: Couldn't delete DC\n", 0);
+
+        vDdUnlockGdiSurface((HDEV)hGdiSurface);
+
+        result = TRUE;
+    }
+
+    return result;
+}
+
+BOOL
 NTAPI
 DxDdReleaseDC(
     PVOID p1)
 {
     TRACE();
-    return 0;
+
+    BOOL result = FALSE;
+
+    PEDD_SURFACE peDdSurface = (PEDD_SURFACE)DdHmgLock(p1, ObjType_DDSURFACE_TYPE, FALSE);
+
+    if(peDdSurface)
+        result = bDdReleaseDC((HDEV)peDdSurface, 0);
+
+    if(result)
+        InterlockedDecrement((VOID*)&peDdSurface->pobj.cExclusiveLock);
+
+    return result;
 }
 
 DWORD
@@ -1007,42 +1039,30 @@ VOID
 NTAPI
 insertIntoList(LPVMEML Block, LPVMEML *List)
 {
-/*  LPVMEML *ListStart;
-    LPVMEML *NextItem;
-    LPVMEML *PrevItem;
-    LPVMEML *pp_Var4;
+  struct _VMEML *v2 = Block; // eax
+  struct _VMEML *pRight = NULL; // edi
 
-    ListStart = (LPVMEML *)*List;
-
-    if (ListStart != NULL)
-    {
-        PrevItem = ListStart;
-        pp_Var4 = NULL;
-
-        do
-        {
-            NextItem = PrevItem;
-            PrevItem = NextItem;
-
-            if (Block-> < NextItem[2])
-                break;
-
-            PrevItem = (LPVMEML *)*NextItem;
-            pp_Var4 = NextItem;
-        } while (PrevItem != NULL);
-
-        if (pp_Var4 != NULL)
-        {
-            *(LPVMEML **)Block = PrevItem;
-            *pp_Var4 = Block;
-            return;
-        }
-    }
-
-    *(LPVMEML **)Block = ListStart;
+  if ( !*List )
+    goto LABEL_6;
+  do
+  {
+    if ( Block->size < (unsigned int)v2->size )
+      break;
+    pRight = v2;
+    v2 = v2->next;
+  }
+  while ( v2 );
+  if ( pRight )
+  {
+    Block->next = v2;
+    pRight->next = Block;
+  }
+  else
+  {
+LABEL_6:
+    Block->next = *List;
     *List = Block;
-
-    return;*/
+  }
 }
 
 LPVMEML
@@ -1051,50 +1071,50 @@ coalesceFreeBlocks(LPVMEMHEAP Heap, LPVMEML Block)
 {
     int EndBlock = Block->ptr + Block->size;
     LPVMEML* FreeList = (LPVMEML*)Heap->freeList;
-    LPVMEML v5 = *FreeList;
+    LPVMEML pLeft = *FreeList;
     Block->next = NULL;
-    int v6;
+    int pUp;
     int v7;
     LPVMEML result;
     LPVMEML* v9 = FreeList;
     LPVMEML pContext0 = NULL;
 
-    if(v5)
+    if(pLeft)
     {
         while(TRUE)
         {
-            v6 = v5->size;
+            pUp = pLeft->size;
             v7 = Block->ptr;
 
-            if(v7 == v6 + v5->ptr)
+            if(v7 == pUp + pLeft->ptr)
                 break;
 
-            if(EndBlock == v5->ptr)
+            if(EndBlock == pLeft->ptr)
             {
-                v5->ptr = v7;
-                v5->ptr = v6 + Block->ptr;
+                pLeft->ptr = v7;
+                pLeft->ptr = pUp + Block->ptr;
                 goto Done;
             }
 
-            pContext0 = v5;
-            v5 = *(LPVMEML*)v5;
+            pContext0 = pLeft;
+            pLeft = *(LPVMEML*)pLeft;
 
-            if(!v5)
+            if(!pLeft)
             {
                 FreeList = v9;
                 goto InsertIntoList;
             }
         }
 
-        v5->size += Block->size;
+        pLeft->size += Block->size;
 Done:
         if(pContext0)
-            *pContext0 = *v5;
+            *pContext0 = *pLeft;
         else
-            *v9 = *(LPVMEML*)v5;
+            *v9 = *(LPVMEML*)pLeft;
         
         EngFreeMem(Block);
-        result = v5;
+        result = pLeft;
     }
     else
     {
@@ -1106,63 +1126,184 @@ InsertIntoList:
     return result;
 }
 
+// Implemented
 VOID 
 NTAPI
-linFreeVidMem(LPVMEMHEAP Heap, int Ptr)
+linVidMemFree(LPVMEMHEAP Heap, int Ptr)
 {
-    LPVMEML Current;
-    LPVMEML Prev;
+    TRACE();
 
-    if (Heap && Ptr)
+    // We need a valid heap and address
+    if ( Ptr && Heap )
     {
-        Current = *(LPVMEML *)(Heap->allocList);
-        Prev = NULL;
+        // Get the allocation list from the heap
+        VMEML *pVMemCurrent = (struct _VMEML *)Heap->allocList;
+        VMEML *pPreviousMem = 0;
 
-        while (Current)
+        // While our pointer is not zero iterate through the list
+        while ( pVMemCurrent )
         {
-            // If this is the pointer we are looking for
-            if (Current->ptr == Ptr)
+            // If this current struct is for the address we are trying to free
+            if ( pVMemCurrent->ptr == Ptr)
             {
-                if (Prev)
-                    // Copy Current to Prev
-                    *Prev = *Current;
+                // If there was a previous entry update next to match the following
+                // Else set start of the allocList to the next of this node
+                if ( pPreviousMem )
+                    pPreviousMem->next = pVMemCurrent->next;
                 else
-                    // Turn Current into VMEML** then store it as a void pointer
-                    Heap->allocList = (LPVOID)&Current;
+                    Heap->allocList = pVMemCurrent->next;
                 do
-                    // Free all blocks in this line
-                    Current = coalesceFreeBlocks(Heap, Current);
-                while (Current);
-                return;
+                    pVMemCurrent = coalesceFreeBlocks(Heap, pVMemCurrent);
+                while ( pVMemCurrent );
+                // We freed the heap we intented to free
+                break;
             }
 
-            // Otherwise we set current to previous and move along
-            Prev = Current;
-            Current = *(LPVMEML *)Current;
+            pPreviousMem = pVMemCurrent;
+            pVMemCurrent = pVMemCurrent->next;
         }
     }
 }
 
 VOID
-NTAPI
-rectFreeVidMem(int Heap, FLATPTR Ptr)
+NTAPI 
+insertIntoDoubleList(LPVMEMR First, LPVMEMR Second)
 {
+    TRACE();
 
+    VMEMR *v2;
+    DWORD *i;
+
+    v2 = Second;
+
+    for ( i = &Second->size; v2->size != 0x7FFFFFFF; i = &v2->size )
+    {
+        if ( First->size < *i )
+            break;
+        v2 = v2->next;
+    }
+
+    First->prev = v2->prev;
+    First->next = v2;
+
+    v2->prev->next = First;
+    v2->prev = First;
 }
 
 VOID
 NTAPI
-DxDdHeapVidMemFree(LPVMEMHEAP Heap, FLATPTR Ptr)
+rectVidMemFree(LPVMEMHEAP Heap, int Ptr)
 {
+  TRACE();
+
+  VMEMR *i; // esi
+  VMEMR *pRight; // eax 3
+  VMEMR *pDown; // ecx 4
+  VMEMR *pLeft; // edi 5
+  VMEMR *pUp; // ebx 6
+  int v7; // eax
+
+  for ( i = *(struct _VMEMR **)Heap->allocList; i->size != 0x7FFFFFFF && i->pBits != Ptr; i = i->next )
+    ;
+  if ( i->size != 0x7FFFFFFF )
+  {
+    while ( 1 )
+    {
+      while ( 1 )
+      {
+        while ( 1 )
+        {
+          while ( 1 )
+          {
+            pRight = i->pRight;
+            if ( (pRight->flags & 1) == 0
+              || pRight->cy != i->cy
+              || pRight->pUp != i->pUp
+              || pRight->pDown != i->pDown
+              || pRight->pRight->pLeft == pRight )
+            {
+              break;
+            }
+            i->cx += pRight->cx;
+            i->pRight = pRight->pRight;
+            pRight->next->prev = pRight->prev;
+            pRight->prev->next = pRight->next;
+            EngFreeMem(pRight);
+          }
+          pDown = i->pDown;
+          if ( (pDown->flags & 1) == 0
+            || pDown->cx != i->cx
+            || pDown->pLeft != i->pLeft
+            || pDown->pRight != pRight
+            || pDown->pDown->pUp == pDown )
+          {
+            break;
+          }
+          i->cy += pDown->cy;
+          i->pDown = pDown->pDown;
+          pDown->next->prev = pDown->prev;
+          pDown->prev->next = pDown->next;
+          EngFreeMem(pDown);
+        }
+        pLeft = i->pLeft;
+        if ( (pLeft->flags & 1) == 0
+          || pLeft->cy != i->cy
+          || pLeft->pUp != i->pUp
+          || pLeft->pDown != pDown
+          || pLeft->pRight != i
+          || pRight->pLeft == i )
+        {
+          break;
+        }
+        pLeft->cx += i->cx;
+        pLeft->pRight = i->pRight;
+        i->next->prev = i->prev;
+        i->prev->next = i->next;
+        EngFreeMem(i);
+        i = pLeft;
+      }
+      pUp = i->pUp;
+      if ( (pUp->flags & 1) == 0
+        || pUp->cx != i->cx
+        || pUp->pLeft != pLeft
+        || pUp->pRight != pRight
+        || pUp->pDown != i
+        || pDown->pUp == i )
+      {
+        break;
+      }
+      pUp->cy += i->cy;
+      pUp->pDown = i->pDown;
+      i->next->prev = i->prev;
+      i->prev->next = i->next;
+      EngFreeMem(i);
+      i = pUp;
+    }
+    i->next->prev = i->prev;
+    i->prev->next = i->next;
+    v7 = i->cx;
+    i->flags |= 1u;
+    i->size = i->cy | (v7 << 16);
+    insertIntoDoubleList(i, *(struct _VMEMR **)Heap->freeList);
+  }
+}
+
+// Implemented
+VOID
+NTAPI
+DxDdHeapVidMemFree(LPVMEMHEAP Heap, int Ptr)
+{
+    TRACE();
+
     if ((Heap->dwFlags & VMEMHEAP_LINEAR) == 0)
     {
         // Free Rectangular Memory
-        rectFreeVidMem((int)Heap, Ptr);
+        rectVidMemFree(Heap, Ptr);
     }
     else
     {
         // Free Linear Memory
-        linFreeVidMem(Heap, (int)Ptr);
+        linVidMemFree(Heap, Ptr);
     }
 }
 
@@ -1170,71 +1311,76 @@ VOID
 NTAPI
 vDdUnloadDxApiImage(PEDD_DIRECTDRAW_GLOBAL peDdGl)
 {
-  vDdAssertDevlock(peDdGl);
+    TRACE();
 
-  EDD_DIRECTDRAW_LOCAL* v2 = peDdGl->peDirectDrawLocalList;
+    vDdAssertDevlock(peDdGl);
 
-  EDD_DIRECTDRAW_LOCAL* v10 = v2;
+    EDD_DIRECTDRAW_LOCAL* peDdLlist = peDdGl->peDirectDrawLocalList;
 
-  if ( v2 )
-  {
-    while ( 1 )
+    if ( peDdLlist )
     {
-        PEDD_SURFACE v3 = v2->fpProcess;
-        PEDD_SURFACE v4 = NULL;
-        PEDD_SURFACE v6 = NULL;
-      if ( v3 )
-      {
-        do
+        while ( TRUE )
         {
-          v4 = v3->peSurface_DdNext;
-          bDdDeleteVideoPortObject(*(struct HDD_OBJ__ **)v3, 0);
-          v3 = v4;
+            PEDD_VIDEOPORT peDdVideoPortHead = (PEDD_VIDEOPORT)peDdLlist->fpProcess;
+            PEDD_VIDEOPORT peDdVideoPortCurrent = NULL;
+            // PEDD_DIRECTDRAW_LOCAL peDdL = NULL;
+
+            // Free all VideoPort objects
+            if ( peDdVideoPortHead )
+            {
+                do
+                {
+                    peDdVideoPortCurrent = peDdVideoPortHead->SomeVideoPort;
+                    //bDdDeleteVideoPortObject(peDdVideoPortHead, 0);
+                    peDdVideoPortHead = peDdVideoPortCurrent;
+                }
+                while ( peDdVideoPortCurrent );
+            }
+
+            // PEDD_DIRECTDRAW_LOCAL LocalList = peDdLlist;
+
+            // Free all Surface objects
+            /*if ( LocalList )
+            {
+                do
+                {
+                    peDdL = peDdGl->peDirectDrawLocalList;
+                    if ( peDdL )
+                    {
+                        vDdDxApiFreeSurface(peDdL, 0);
+                        LocalList-> = 0;
+                    }
+                    peDdSurface = peDdSurface->peDirectDrawGlobal;
+                    
+                    if ( peDdSurface )
+                        vDdLoseDxObjects(peDdGl, v7[25], v7, 2u);
+
+                    LocalList = EDD_DIRECTDRAW_LOCAL::peSurface_Enum(v10, LocalList);
+                }
+                while ( LocalList );
+                peDdLlist = v10;
+            }
+
+            peDdLlist = peDdLlist->peDirectDrawLocal_prev;
+
+            // We reached the end of the list
+            if ( !peDdLlist )
+                break;
+
+            peDdLlist = peDdLlist->peDirectDrawLocal_prev;*/
         }
-        while ( v4 );
-      }
-      PEDD_SURFACE v5 = v2->peSurface_DdList;
-      if ( v5 )
-      {
-        do
-        {
-          v6 = (struct DXOBJ *)*((_DWORD *)v5 + 60);
-          if ( v6 )
-          {
-            vDdDxApiFreeSurface(v6, 0);
-            *((_DWORD *)v5 + 60) = 0;
-          }
-          v7 = (struct DXOBJ **)*((_DWORD *)v5 + 49);
-          if ( v7 )
-            vDdLoseDxObjects(a1, v7[25], v7, 2u);
-          v5 = EDD_DIRECTDRAW_LOCAL::peSurface_Enum(v10, v5);
-        }
-        while ( v5 );
-        v2 = v10;
-      }
-
-      v10 = v2->peDirectDrawLocal_prev;
-
-      // We reached the end of the list
-      if ( !v10 )
-        break;
-
-      v2 = v2->peDirectDrawLocal_prev;
     }
-  }
 
-  HANDLE v8 = peDdGl->hDxHeldObj;
-  if ( v8 )
-    vDdDxApiFreeDirectDraw(v8, 0);
+    //if ( peDdGl->hDirectDraw )
+    //    vDdDxApiFreeDirectDraw(peDdGl->hDirectDraw, 0);
 
-  HANDLE v9 = peDdGl->hDxLoseObj;
-  if ( v9 )
-    vDdLoseDxObjects(peDdGl, v9[2], v9, 0);
+    //if ( peDdGl->hDxLoseObj )
+    //    vDdLoseDxObjects(peDdGl, &peDdGl->hDxLoseObj[2], peDdGl->hDxLoseObj, 0);
 
-  EngUnloadImage(peDdGl->hDxApi);
+    EngUnloadImage(peDdGl->hDxApi);
 
-  peDdGl->hDxApi = NULL;
-  peDdGl->unk_5f0 = NULL;
+    peDdGl->hDxApi = NULL;
+    peDdGl->dwApiReferences = 0;
 }
 
 VOID 
@@ -1268,7 +1414,7 @@ HeapVidMemFini(VIDEOMEMORY* pvMemory, PEDD_DIRECTDRAW_GLOBAL peDdGl)
   void *pAgpCommitMask; // edi
   int CommitedSize; // ebx
   _DWORD *heap; // eax
-  size_t v6; // ecx
+  size_t pUp; // ecx
   int v7; // eax
   BOOL bSUCCESS; // esi
   size_t Size; // [esp+Ch] [ebp-8h] BYREF
@@ -1286,9 +1432,9 @@ HeapVidMemFini(VIDEOMEMORY* pvMemory, PEDD_DIRECTDRAW_GLOBAL peDdGl)
     CommitedSize = heap[7]; // Commited Size
     pAgpCommitMask = (void *)heap[50]; // pAgpCommitMask
     pvMemory = heap[49]; // pvPhysRsrv
-    v6 = heap[51]; // pAgpCommitMask
+    pUp = heap[51]; // pAgpCommitMask
     v7 = heap[4]; // DwTotal
-    Size = v6;
+    Size = pUp;
     v10 = v7;
   }
   VidMemFini(heap);
@@ -1323,7 +1469,7 @@ vDdDisableDriver(PEDD_DIRECTDRAW_GLOBAL peDdGl)
 {
     TRACE();
 
-    // If we tried to disable a locked device?
+    // Check if the device is locked by current thread
     vDdAssertDevlock(peDdGl);
 
     VIDEOMEMORY *pvmList = peDdGl->pvmList;
@@ -1482,13 +1628,13 @@ DdHmgNextOwned(PDD_ENTRY pDdObj, DWORD dwPid)
 
     do
     {
-            if (DdHmgOwnedBy(pDdObj, dwPid))
-            {
-                return (PDD_ENTRY)(((DWORD)pEntry->FullUnique << 0x15) | dwIndex);
-            }
+        if (DdHmgOwnedBy(pDdObj, dwPid))
+        {
+            return (PDD_ENTRY)(((DWORD)pEntry->FullUnique << 0x15) | dwIndex);
+        }
 
-            dwIndex++;
-            pEntry++;
+        dwIndex++;
+        pEntry++;
     } while (dwIndex < gcMaxDdHmgr);
   }
 
