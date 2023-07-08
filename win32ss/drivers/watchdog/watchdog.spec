@@ -23,3 +23,7 @@
 @ stdcall WdStopDeferredWatch(ptr)
 @ stdcall WdStopWatch(ptr long)
 @ stdcall WdSuspendWatch(ptr)
+
+;ReactOS Specific / Vista
+@ stdcall SMgrNotifySessionChange(long)
+@ stdcall SMgrRegisterGdiCallout(ptr)
