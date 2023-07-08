@@ -9,17 +9,74 @@
 //#define NDEBUG
 #include <debug.h>
 
-/*
- * @ UNIMPLEMENTED
+/**
+ * @brief The first real transaction between WDDM Miniport and Dxgkrnl, this internal routine
+ * gets called by Displib and passes the callback list into a internal struct
+ *
+ * @param DriverObject DriverObject of the miniport driver itself
+ *
+ * @param SourceString The registry path provided by Displib
+ *
+ * @param DriverInitData The callback list provided by a WDDM miniport driver via displib
+ *
+ * @return NTSTATUS
  */
 NTSTATUS
 NTAPI /* In Windows this is called DpiInitialize, But i don't care. */
 RdPort_InitializeMiniport(PDRIVER_OBJECT DriverObject, PUNICODE_STRING SourceString, DRIVER_INITIALIZATION_DATA *DriverInitData)
 {
+    /*
+     *  @ IMPLEMENTED
+     *  However this may need some adjustments still as we learn more about the
+     *  internal DXGKRNL_EXTENSION.
+     */
+    NTSTATUS Status;
+    PDRIVER_EXTENSION DriverExtend;
+    PDXGKRNL_PRIVATE_EXTENSION DriverObjectExtension;
+
+    /* A new WDDM Miniport has been added to the system, let's see it! */
     PAGED_CODE();
     DPRINT("RdPort_InitializeMiniport: Entry point\n");
-    __debugbreak();
-    return STATUS_FAILED_DRIVER_ENTRY;
+    DPRINT("RdPort_InitializeMiniport: WDDM Miniport driver Reports version: 0x%X\n", DriverInitData->Version);
+    if (!DriverObject || !SourceString)
+    {
+        return STATUS_INVALID_PARAMETER;
+    }
+
+    /* Setup Global state for Miniport handling */
+    Status = RdPort_SetupGlobalState();
+    if (Status != STATUS_SUCCESS)
+    {
+        DPRINT1("RdPort_InitializeMiniport: Couldn't setup global state status: 0x%X", Status);
+        return Status;
+    }
+
+    /* let's make sure we can allocate the private extension */
+    Status = IoAllocateDriverObjectExtension(DriverObject, DriverObject, sizeof(DXGKRNL_PRIVATE_EXTENSION), (PVOID*)&DriverObjectExtension);
+    if (Status != STATUS_SUCCESS)
+    {
+        DPRINT1("RdPort_InitializeMiniport: Couldn't allocate object extension status: 0x%X", Status);
+        return STATUS_INSUFFICIENT_RESOURCES;
+    }
+
+    /* Fill out the internal structure - WIP */
+    DriverObjectExtension->DriverInitData = *DriverInitData;
+    DriverObjectExtension->DriverObject = DriverObject;
+
+    /* Fill out the public dispatch routines */
+    DriverExtend = DriverObject->DriverExtension;
+    DriverObject->MajorFunction[IRP_MJ_CREATE] = (PDRIVER_DISPATCH)RdPort_DispatchCreateDevice;
+    DriverObject->MajorFunction[IRP_MJ_PNP] = (PDRIVER_DISPATCH)RdPort_DispatchPnp;
+    DriverObject->MajorFunction[IRP_MJ_POWER] = (PDRIVER_DISPATCH)RdPort_DispatchPower;
+    DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = (PDRIVER_DISPATCH)RdPort_DispatchIoctl;
+    DriverObject->MajorFunction[IRP_MJ_INTERNAL_DEVICE_CONTROL] = (PDRIVER_DISPATCH)RdPort_DispatchInternalIoctl;
+    DriverObject->MajorFunction[IRP_MJ_SYSTEM_CONTROL] = (PDRIVER_DISPATCH)RdPort_DispatchSystemControl;
+    DriverObject->MajorFunction[IRP_MJ_CLOSE] = (PDRIVER_DISPATCH)RdPort_DispatchCloseDevice;
+
+    DriverExtend->AddDevice = RdPort_AddDevice;
+    DriverObject->DriverUnload = (PDRIVER_UNLOAD)RdPort_DriverUnload;
+    DPRINT("RdPort_InitializeMiniport: Finished\n");
+    return STATUS_SUCCESS;
 }
 
 /*
