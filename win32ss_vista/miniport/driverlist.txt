@@ -1,1 +1,0 @@
-KMDOD is the MS sample WDDM miniport driver
