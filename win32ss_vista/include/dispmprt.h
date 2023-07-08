@@ -660,51 +660,37 @@ typedef _In_    PQUERY_INTERFACE         IN_PQUERY_INTERFACE;
 typedef _In_    PVIDEO_REQUEST_PACKET    IN_PVIDEO_REQUEST_PACKET;
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_ADD_DEVICE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
-DXGKDDI_ADD_DEVICE(
-    IN_CONST_PDEVICE_OBJECT     PhysicalDeviceObject,
-    OUT_PPVOID                  MiniportDeviceContext
-    );
+NTAPI
+DXGKDDI_ADD_DEVICE(_In_  PDEVICE_OBJECT     PhysicalDeviceObject,
+                   _Out_ PVOID*             MiniportDeviceContext);
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_START_DEVICE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
-DXGKDDI_START_DEVICE(
-    IN_CONST_PVOID          MiniportDeviceContext,
-    IN_PDXGK_START_INFO     DxgkStartInfo,
-    IN_PDXGKRNL_INTERFACE   DxgkInterface,
-    OUT_PULONG              NumberOfVideoPresentSources,
-    OUT_PULONG              NumberOfChildren
-    );
+NTAPI
+DXGKDDI_START_DEVICE(_In_ PVOID                MiniportDeviceContext,
+                     _In_ PDXGK_START_INFO     DxgkStartInfo,
+                     _In_ PDXGKRNL_INTERFACE   DxgkInterface,
+                     _Out_ PULONG              NumberOfVideoPresentSources,
+                     _Out_ PULONG              NumberOfChildren);
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_STOP_DEVICE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_STOP_DEVICE(
     IN_CONST_PVOID  MiniportDeviceContext
     );
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_REMOVE_DEVICE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_REMOVE_DEVICE(
     IN_CONST_PVOID  MiniportDeviceContext
     );
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_DISPATCH_IO_REQUEST)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_DISPATCH_IO_REQUEST(
     IN_CONST_PVOID              MiniportDeviceContext,
     IN_ULONG                    VidPnSourceId,
@@ -712,10 +698,8 @@ DXGKDDI_DISPATCH_IO_REQUEST(
     );
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_QUERY_CHILD_RELATIONS)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_QUERY_CHILD_RELATIONS(
     IN_CONST_PVOID                                                    MiniportDeviceContext,
     _Inout_updates_bytes_(ChildRelationsSize) PDXGK_CHILD_DESCRIPTOR  ChildRelations,
@@ -723,116 +707,86 @@ DXGKDDI_QUERY_CHILD_RELATIONS(
     );
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_QUERY_CHILD_STATUS)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_QUERY_CHILD_STATUS(
     IN_CONST_PVOID              MiniportDeviceContext,
     INOUT_PDXGK_CHILD_STATUS    ChildStatus,
     IN_BOOLEAN                  NonDestructiveOnly
     );
 
-
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_INTERRUPT_ROUTINE)
-_IRQL_requires_DXGK_(HIGH_LEVEL) // HIGH_LEVEL is best approximation of DIRQL
 BOOLEAN
-DXGKDDI_INTERRUPT_ROUTINE(
-    IN_CONST_PVOID  MiniportDeviceContext,
-    IN_ULONG        MessageNumber
-    );
+NTAPI
+DXGKDDI_INTERRUPT_ROUTINE(_In_ PVOID MiniportDeviceContext,
+                          _In_ ULONG MessageNumber);
 
 typedef
-_Function_class_DXGK_(DXGKDDI_DPC_ROUTINE)
-_IRQL_requires_DXGK_(DISPATCH_LEVEL)
 VOID
-DXGKDDI_DPC_ROUTINE(
-    IN_CONST_PVOID  MiniportDeviceContext
-    );
+NTAPI
+DXGKDDI_DPC_ROUTINE(_In_ PVOID  MiniportDeviceContext);
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_QUERY_DEVICE_DESCRIPTOR)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
-DXGKDDI_QUERY_DEVICE_DESCRIPTOR(
-    IN_CONST_PVOID                  MiniportDeviceContext,
-    IN_ULONG                        ChildUid,
-    INOUT_PDXGK_DEVICE_DESCRIPTOR   DeviceDescriptor
-    );
+NTAPI
+DXGKDDI_QUERY_DEVICE_DESCRIPTOR(_In_ PVOID                        MiniportDeviceContext,
+                                _In_ ULONG                        ChildUid,
+                                _Inout_ PDXGK_DEVICE_DESCRIPTOR   DeviceDescriptor);
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_SET_POWER_STATE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
-DXGKDDI_SET_POWER_STATE(
-    IN_CONST_PVOID          MiniportDeviceContext,
-    IN_ULONG                DeviceUid,
-    IN_DEVICE_POWER_STATE   DevicePowerState,
-    IN_POWER_ACTION         ActionType
-    );
+NTAPI
+DXGKDDI_SET_POWER_STATE(_In_ PVOID MiniportDeviceContext,
+                        _In_ ULONG                DeviceUid,
+                        _In_ DEVICE_POWER_STATE   DevicePowerState,
+                        _In_ POWER_ACTION         ActionType);
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_NOTIFY_ACPI_EVENT)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
-DXGKDDI_NOTIFY_ACPI_EVENT(
-    IN_CONST_PVOID      MiniportDeviceContext,
-    IN_DXGK_EVENT_TYPE  EventType,
-    IN_ULONG            Event,
-    IN_PVOID            Argument,
-    OUT_PULONG          AcpiFlags
-    );
+NTAPI
+DXGKDDI_NOTIFY_ACPI_EVENT(_In_ PVOID            MiniportDeviceContext,
+                          _In_ DXGK_EVENT_TYPE  EventType,
+                          _In_ ULONG            Event,
+                          _In_ PVOID            Argument,
+                          _Out_ PULONG          AcpiFlags);
 
 typedef
-_Function_class_DXGK_(DXGKDDI_RESET_DEVICE)
 VOID
+NTAPI
 DXGKDDI_RESET_DEVICE(
     IN_CONST_PVOID  MiniportDeviceContext
     );
 
 typedef
-_Function_class_DXGK_(DXGKDDI_UNLOAD)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 VOID
+NTAPI
 DXGKDDI_UNLOAD(
     VOID
     );
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_QUERY_INTERFACE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_QUERY_INTERFACE(
     IN_CONST_PVOID          MiniportDeviceContext,
     IN_PQUERY_INTERFACE     QueryInterface
     );
 
 typedef
-_Function_class_DXGK_(DXGKDDI_CONTROL_ETW_LOGGING)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 VOID
+NTAPI
 DXGKDDI_CONTROL_ETW_LOGGING(
     IN_BOOLEAN  Enable,
     IN_ULONG    Flags,
-    IN_UCHAR    Level
-    );
+    IN_UCHAR    Level);
 
 typedef
-    _Check_return_
-_Function_class_DXGK_(DXGKDDI_LINK_DEVICE)
-_IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_LINK_DEVICE(
     IN_CONST_PDEVICE_OBJECT   PhysicalDeviceObject,
     IN_CONST_PVOID            MiniportDeviceContext,
-    INOUT_PLINKED_DEVICE      LinkedDevice
-    );
+    INOUT_PLINKED_DEVICE      LinkedDevice);
 
 
 typedef DXGKDDI_ADD_DEVICE                      *PDXGKDDI_ADD_DEVICE;
@@ -863,7 +817,7 @@ typedef DXGKDDI_CONTROLDIAGNOSTICREPORTING      *PDXGKDDI_CONTROLDIAGNOSTICREPOR
 #if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_5)
 typedef DXGKDDI_SETTARGETADJUSTEDCOLORIMETRY2   *PDXGKDDI_SETTARGETADJUSTEDCOLORIMETRY2;
 #endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_5)
-#if 1
+
 typedef struct _DRIVER_INITIALIZATION_DATA {
     ULONG                                   Version;
     PDXGKDDI_ADD_DEVICE                     DxgkDdiAddDevice;
@@ -1200,5 +1154,3 @@ DxgkInitialize(
   _In_ PUNICODE_STRING             RegistryPath,
   _In_ PDRIVER_INITIALIZATION_DATA DriverInitializationData
 );
-
-#endif
