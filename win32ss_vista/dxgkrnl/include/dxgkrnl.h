@@ -22,3 +22,15 @@
 #define IOCTL_VIDEO_I_AM_REACTOS \
 	CTL_CODE( FILE_DEVICE_VIDEO, 0xB, METHOD_NEITHER, FILE_ANY_ACCESS  )
 
+
+/* FIXME: This needs some real investigation - this is this stupid  */
+typedef struct _DXGKRNL_PRIVATE_EXTENSION
+{
+	DRIVER_INITIALIZATION_DATA DriverInitData;
+	PDRIVER_OBJECT DriverObject;
+    PDEVICE_OBJECT MiniportFdo;
+    PDEVICE_OBJECT MiniportPdo;
+    PVOID MiniportContext;
+} DXGKRNL_PRIVATE_EXTENSION, *PDXGKRNL_PRIVATE_EXTENSION;
+
+#include "rdport.h"
