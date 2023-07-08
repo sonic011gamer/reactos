@@ -228,7 +228,6 @@ WdMadeAnyProgress(
     return FALSE;
 }
 
-
 NTSTATUS
 NTAPI
 SMgrNotifySessionChange(UINT32 State)
