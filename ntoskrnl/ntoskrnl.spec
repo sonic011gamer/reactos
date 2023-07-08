@@ -1641,7 +1641,7 @@
 @ cdecl _strupr()
 @ cdecl _vsnprintf()
 @ cdecl _vsnwprintf()
-;@ cdecl -stub -version=0x600+ _vswprintf(ptr wstr ptr)
+@ stub -version=0x600+ _vswprintf ;TODO: Probably need to fix this
 @ cdecl _wcsicmp()
 @ cdecl _wcslwr()
 @ cdecl _wcsnicmp()
