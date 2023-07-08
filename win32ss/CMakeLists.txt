@@ -105,6 +105,7 @@ list(APPEND SOURCE
     reactx/ntddraw/mocomp.c
     reactx/ntddraw/eng.c
     reactx/ntddraw/dxeng.c
+    reactx/vista/dxgkrnl_hacks.c
     user/ntuser/accelerator.c
     user/ntuser/callback.c
     user/ntuser/callproc.c
