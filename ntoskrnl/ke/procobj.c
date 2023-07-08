@@ -967,4 +967,23 @@ KeRemoveSystemServiceTable(IN ULONG Index)
     /* Return success */
     return TRUE;
 }
+
+/* UNIMPLEMENTED */
+ULONG
+NTAPI
+KeQueryActiveProcessorCount(_In_ PKAFFINITY ActiveProcessors)
+{
+    //HACK: Return one to make drivers happy
+    return 1;
+}
+
+/* UNIMPLEMENTED */
+ULONG
+NTAPI
+KeQueryActiveProcessorCountEx(_In_ USHORT GroupNumber)
+{
+    //HACK: Return one to make drivers happy
+    return 1;
+}
+
 /* EOF */
