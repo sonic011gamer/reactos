@@ -1,3 +1,0 @@
-
-DxgkInitialize: 
-https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/dispmprt/nf-dispmprt-dxgkinitialize
