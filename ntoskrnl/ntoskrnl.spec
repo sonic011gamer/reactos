@@ -703,6 +703,7 @@
 @ stdcall -arch=x86_64 KeSaveFloatingPointState(ptr) KxSaveFloatingPointState
 @ cdecl KeSaveStateForHibernate(ptr)
 @ extern KeServiceDescriptorTable
+@ stdcall -version=0x600+ -stub KeSetActualBasePriorityThread(ptr long) ;ehhh wrong!!!
 @ stdcall KeSetAffinityThread(ptr long)
 @ stdcall KeSetBasePriorityThread(ptr long)
 @ stdcall KeSetDmaIoCoherency(long)
@@ -834,6 +835,7 @@
 @ stdcall MmQuerySystemSize()
 @ stdcall MmRemovePhysicalMemory(ptr ptr)
 @ stdcall MmResetDriverPaging(ptr)
+@ stdcall -version=0x600+ -stub MmRotatePhysicalView(ptr ptr ptr long long ptr)
 @ extern MmSectionObjectType
 @ stdcall MmSecureVirtualMemory(ptr long long)
 @ stdcall MmSetAddressRangeModified(ptr long)
@@ -1468,6 +1470,7 @@
 @ stdcall ZwAdjustPrivilegesToken(ptr long ptr long ptr ptr)
 @ stdcall ZwAlertThread(ptr)
 @ stdcall ZwAllocateVirtualMemory(ptr ptr long ptr long long)
+@ stdcall -version=0x600+ ZwAllocateLocallyUniqueId(ptr)
 @ stdcall -version=0x600+ ZwAlpcCancelMessage(ptr long ptr) NtAlpcCancelMessage
 @ stdcall -version=0x600+ ZwAlpcConnectPort(ptr wstr ptr ptr long ptr ptr long ptr ptr ptr) NtAlpcConnectPort
 @ stdcall -version=0x600+ ZwAlpcCreatePortSection(ptr long ptr long ptr long) NtAlpcCreatePortSection
@@ -1605,6 +1608,7 @@
 @ cdecl -arch=x86_64,arm __C_specific_handler(ptr long ptr ptr)
 @ cdecl -arch=arm __jump_unwind()
 @ cdecl -arch=x86_64 __chkstk()
+@ cdecl -version=0x600+ -arch=i386 _chkstk() ;i dont think this is the case at all...
 ;@ cdecl -arch=x86_64 __misaligned_access()
 @ cdecl -arch=i386 _CIcos()
 @ cdecl -arch=i386 _CIsin()
