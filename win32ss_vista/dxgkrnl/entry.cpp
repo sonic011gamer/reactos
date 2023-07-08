@@ -54,6 +54,10 @@ DxgkInternalDeviceControl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
             *OutputBuffer = (PVOID)RdPort_InitializeMiniport;
             DPRINT("IOCTL_VIDEO_DDI_FUNC_REGISTER - Queued RDDM_InitializeMiniport up\n");
             break;
+        case IOCTL_VIDEO_I_AM_REACTOS:
+            DPRINT1("This Dxgkrnl is from reactos\n");
+            Irp->IoStatus.Status = STATUS_SUCCESS;
+            break;
         default:
             DPRINT("RdPort_InternalIoctl: unknown IOCTRL Code: %X\n", IoControlCode);
             break;

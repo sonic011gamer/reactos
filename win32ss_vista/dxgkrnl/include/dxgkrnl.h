@@ -17,3 +17,8 @@
 /* Create an IO request to fill out the function pointer list */
 #define IOCTL_VIDEO_DDI_FUNC_REGISTER \
 	CTL_CODE( FILE_DEVICE_VIDEO, 0xF, METHOD_NEITHER, FILE_ANY_ACCESS  )
+
+//FIXME: ReactOS Specific
+#define IOCTL_VIDEO_I_AM_REACTOS \
+	CTL_CODE( FILE_DEVICE_VIDEO, 0xB, METHOD_NEITHER, FILE_ANY_ACCESS  )
+
