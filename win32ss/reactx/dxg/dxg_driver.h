@@ -1,7 +1,10 @@
 #include <dxg_int.h>
 
+#define DBG
+#include <debug.h>
+
 #define TRACE() \
-    DbgPrint("DXG: %s\n", __FUNCTION__)
+    DPRINT1("DXG: %s\n", __FUNCTION__)
 
 DWORD gWarningLevel = 0;
 
@@ -11,9 +14,9 @@ DoDxgAssert(PCSTR Format)
 {
     if(gWarningLevel >= 0)
     {
-        DbgPrint("DXG Assertion: ");
-        DbgPrint(Format);
-        DbgPrint("\n");
+        DPRINT1("DXG Assertion: ");
+        DPRINT1(Format);
+        DPRINT1("\n");
         DbgBreakPoint();
     }
 }
@@ -24,9 +27,9 @@ DoWarning(PCSTR Format, DWORD dwLevel)
 {
   if (dwLevel <= gWarningLevel )
   {
-    DbgPrint("DXG: ");
-    DbgPrint(Format);
-    DbgPrint("\n");
+    DPRINT1("DXG: ");
+    DPRINT1(Format);
+    DPRINT1("\n");
   }
 }
 
@@ -485,6 +488,7 @@ DxDdCreateMoComp(
     PVOID p1,
     PVOID p2)
 {
+    TRACE();
     return 0;
 }
 
@@ -493,6 +497,7 @@ NTAPI
 DxDdDeleteDirectDrawObject(
     PVOID p1)
 {
+    TRACE();
     return 0;
 }
 
@@ -511,6 +516,8 @@ DxDdDestroyMoComp(
     PVOID p1,
     PVOID p2)
 {
+    TRACE();
+
     return 0;
 }
 
@@ -529,6 +536,7 @@ NTAPI
 DxDdDestroyD3DBuffer(
     PVOID p1)
 {
+    TRACE();
     return 0;
 }
 
@@ -551,6 +559,7 @@ DxDdFlip(
     PVOID p4,
     PVOID p5)
 {
+    TRACE();
     return 0;
 }
 
@@ -1570,20 +1579,97 @@ DxDdDisableDirectDraw(HDEV hDev, BOOL bDisableVDd)
     }
 }
 
-DWORD
+VOID
 NTAPI
-DxDdSuspendDirectDraw(PVOID p1, PVOID p2)
+DxDdSuspendDirectDraw(HDEV hDev, DWORD dwSuspendFlags)
 {
     TRACE();
-    return 0;
+
+    BOOL bLockedShare = FALSE;
+    HDEV metaDevice = NULL;
+    HDEV pHdevCurrent = NULL;
+
+    // No idea why
+    gpEngFuncs.DxEngIncDispUniq();
+
+    if((dwSuspendFlags & 1) != 0)
+    {
+        // Check if we have a valid hDev
+        if(!hDev || !gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_display))
+        {
+            DoDxgAssert("Invalid HDEV");
+        }
+
+        // Get the meta device
+        metaDevice = gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_metadev);
+
+        if(metaDevice)
+        {
+            // Why do we enumerate if we have a meta device?
+            pHdevCurrent = gpEngFuncs.DxEngEnumerateHdev(NULL);
+        }
+        else
+        {
+            // Use the passed device 
+            pHdevCurrent = hDev;
+        }
+    }
+    else 
+    {
+        pHdevCurrent = hDev;
+    }
+
+    // Recursively Suspend Child Devices
+    while(pHdevCurrent)
+    {
+        if(!metaDevice || gpEngFuncs.DxEngGetHdevData(pHdevCurrent, DxEGShDevData_Parent) == hDev)
+        {
+            bLockedShare = FALSE;
+
+            PEDD_DIRECTDRAW_GLOBAL peDdGl = gpEngFuncs.DxEngGetHdevData(pHdevCurrent, DxEGShDevData_eddg);
+
+            if((dwSuspendFlags & 2) != 0)
+            {
+                vDdAssertDevlock(peDdGl);
+            }
+            else
+            {
+                gpEngFuncs.DxEngLockShareSem();
+                bLockedShare = TRUE;
+            }
+
+            gpEngFuncs.DxEngLockHdev(peDdGl->hDev);
+
+            if(!peDdGl->hDev)
+                DoDxgAssert("Can't suspend DirectDraw on an HDEV that was never DDraw enabled!");
+            
+            if(!gpEngFuncs.DxEngGetHdevData(pHdevCurrent, DxEGShDevData_dd_locks))
+            {
+                vDdNotifyEvent(peDdGl);
+                vDdDisableAllDirectDrawObjects(peDdGl);
+            }
+
+            HDEV locks = gpEngFuncs.DxEngGetHdevData(pHdevCurrent, DxEGShDevData_dd_locks);
+
+            gpEngFuncs.DxEngSetHdevData(locks, DxEGShDevData_dd_locks, dwSuspendFlags);
+
+            gpEngFuncs.DxEngUnlockHdev(pHdevCurrent);
+            if(bLockedShare)
+                gpEngFuncs.DxEngUnlockShareSem();
+        }
+
+        if(!metaDevice)
+            break;
+
+        pHdevCurrent = gpEngFuncs.DxEngEnumerateHdev(pHdevCurrent);
+    }
 }
 
-DWORD
+VOID
 NTAPI
-DxDdResumeDirectDraw(HDEV hDev, PVOID p2)
+DxDdResumeDirectDraw(HDEV hDev, DWORD dwResumeFlags)
 {
     TRACE();
-    return 0;
 }
 
 DWORD
@@ -1683,7 +1769,7 @@ DdHmgCloseProcess(DWORD dwPid)
 
         if (!bSUCCESS)
         {
-            // DbgPrint("DDRAW ERROR: DdHmgCloseProcess couldn\'t delete obj = %p, type j=%lx\n", pDdObj, dwObjectType);
+            // DPRINT1("DDRAW ERROR: DdHmgCloseProcess couldn\'t delete obj = %p, type j=%lx\n", pDdObj, dwObjectType);
         }
 
         DdHmgAcquireHmgrSemaphore();

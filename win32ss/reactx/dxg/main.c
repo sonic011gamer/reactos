@@ -29,6 +29,8 @@ NTAPI
 DriverEntry(IN PDRIVER_OBJECT DriverObject,
             IN PUNICODE_STRING RegistryPath)
 {
+    __debugbreak();
+
     return 0;
 }
 
@@ -41,6 +43,7 @@ DxDdStartupDxGraphics (ULONG SizeEngDrv,
                        PULONG DirectDrawContext,
                        PEPROCESS Proc )
 {
+    __debugbreak();
 
     PDRVFN drv_func;
     PFN *peng_funcs;
