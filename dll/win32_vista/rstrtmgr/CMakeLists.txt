@@ -16,6 +16,6 @@ add_library(RstrtMgr MODULE
 
 target_link_libraries(RstrtMgr)
 set_module_type(RstrtMgr win32dll ENTRYPOINT DllMain)
-add_importlibs(RstrtMgr ntdll ntdll_vista kernel32_vista advapi32 kernel32)
+add_importlibs(RstrtMgr ntdll advapi32 kernel32)
 add_dependencies(RstrtMgr psdk)
 add_cd_file(TARGET RstrtMgr DESTINATION reactos/system32 FOR all)

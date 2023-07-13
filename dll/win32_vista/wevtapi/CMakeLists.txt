@@ -16,6 +16,6 @@ add_library(wevtapi MODULE
 
 target_link_libraries(wevtapi)
 set_module_type(wevtapi win32dll ENTRYPOINT DllMain)
-add_importlibs(wevtapi ntdll ntdll_vista kernel32_vista advapi32 kernel32)
+add_importlibs(wevtapi ntdll advapi32 kernel32)
 add_dependencies(wevtapi psdk)
 add_cd_file(TARGET wevtapi DESTINATION reactos/system32 FOR all)

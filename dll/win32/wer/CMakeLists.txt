@@ -16,6 +16,6 @@ add_library(wer MODULE
 
 target_link_libraries(wer)
 set_module_type(wer win32dll ENTRYPOINT DllMain)
-add_importlibs(wer ntdll ntdll_vista kernel32_vista advapi32 kernel32)
+add_importlibs(wer ntdll advapi32 kernel32)
 add_dependencies(wer psdk)
 add_cd_file(TARGET wer DESTINATION reactos/system32 FOR all)

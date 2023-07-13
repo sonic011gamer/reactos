@@ -607,8 +607,8 @@
 @ stdcall RtlAcquirePrivilege(ptr long long ptr)
 @ stdcall RtlAcquireResourceExclusive(ptr long)
 @ stdcall RtlAcquireResourceShared(ptr long)
-@ stdcall -version=0x600+ RtlAcquireSRWLockExclusive(ptr) ntdll_vista.RtlAcquireSRWLockExclusive
-@ stdcall -version=0x600+ RtlAcquireSRWLockShared(ptr) ntdll_vista.RtlAcquireSRWLockShared
+@ stdcall -version=0x600+ RtlAcquireSRWLockExclusive(ptr)
+@ stdcall -version=0x600+ RtlAcquireSRWLockShared(ptr)
 @ stdcall RtlActivateActivationContext(long ptr ptr)
 @ stdcall RtlActivateActivationContextEx(long ptr ptr ptr)
 @ stdcall -arch=x86_64,arm RtlActivateActivationContextUnsafeFast(ptr ptr)
@@ -937,7 +937,7 @@
 @ stdcall RtlInitUnicodeStringEx(ptr wstr)
 @ stdcall -stub RtlInitializeAtomPackage(ptr)
 @ stdcall RtlInitializeBitMap(ptr long long)
-@ stdcall -stub -version=0x600+ RtlInitializeConditionVariable(ptr)
+@ stdcall -version=0x600+ RtlInitializeConditionVariable(ptr)
 @ stdcall RtlInitializeContext(ptr ptr ptr ptr ptr)
 @ stdcall RtlInitializeCriticalSection(ptr)
 @ stdcall RtlInitializeCriticalSectionAndSpinCount(ptr long)
@@ -950,7 +950,7 @@
 @ stdcall RtlInitializeRXact(ptr long ptr)
 @ stdcall RtlInitializeResource(ptr)
 @ stdcall RtlInitializeSListHead(ptr)
-@ stdcall -version=0x600+ RtlInitializeSRWLock(ptr) ntdll_vista.RtlInitializeSRWLock
+@ stdcall -version=0x600+ RtlInitializeSRWLock(ptr)
 @ stdcall RtlInitializeSid(ptr ptr long)
 @ stdcall RtlInsertElementGenericTable(ptr ptr long ptr)
 @ stdcall RtlInsertElementGenericTableAvl(ptr ptr long ptr)
@@ -1109,8 +1109,8 @@
 @ stdcall RtlReleasePrivilege(ptr)
 @ stdcall RtlReleaseRelativeName(ptr)
 @ stdcall RtlReleaseResource(ptr)
-@ stdcall -version=0x600+ RtlReleaseSRWLockExclusive(ptr) ntdll_vista.RtlReleaseSRWLockExclusive
-@ stdcall -version=0x600+ RtlReleaseSRWLockShared(ptr) ntdll_vista.RtlReleaseSRWLockShared
+@ stdcall -version=0x600+ RtlReleaseSRWLockExclusive(ptr)
+@ stdcall -version=0x600+ RtlReleaseSRWLockShared(ptr)
 @ stdcall RtlRemoteCall(ptr ptr ptr long ptr long long)
 @ stdcall -version=0x600+ RtlRemovePrivileges(ptr ptr long)
 @ stdcall RtlRemoveVectoredContinueHandler(ptr)
@@ -1125,10 +1125,10 @@
 @ stdcall RtlRevertMemoryStream(ptr)
 @ stdcall RtlRunDecodeUnicodeString(long ptr)
 @ stdcall RtlRunEncodeUnicodeString(long ptr)
-@ stdcall -version=0x600+ RtlRunOnceBeginInitialize(ptr long ptr) vista.RtlRunOnceBeginInitialize
-@ stdcall -version=0x600+ RtlRunOnceComplete(ptr long ptr) vista.RtlRunOnceComplete
-@ stdcall -version=0x600+ RtlRunOnceExecuteOnce(ptr ptr ptr ptr) vista.RtlRunOnceExecuteOnce
-@ stdcall -version=0x600+ RtlRunOnceInitialize(ptr) vista.RtlRunOnceInitialize
+@ stdcall -version=0x600+ RtlRunOnceBeginInitialize(ptr long ptr) ;vistaRtlRunOnceBeginInitialize
+@ stdcall -version=0x600+ RtlRunOnceComplete(ptr long ptr) ;vistaRtlRunOnceComplete
+@ stdcall -version=0x600+ RtlRunOnceExecuteOnce(ptr ptr ptr ptr) ;vistaRtlRunOnceExecuteOnce
+@ stdcall -version=0x600+ RtlRunOnceInitialize(ptr) ;vistaRtlRunOnceInitialize
 @ stdcall RtlSecondsSince1970ToTime(long ptr)
 @ stdcall RtlSecondsSince1980ToTime(long ptr)
 @ stdcall RtlSeekMemoryStream(ptr int64 long ptr)
@@ -1178,8 +1178,8 @@
 @ stdcall -stub -version=0x600+ RtlSidHashLookup(long ptr)
 @ stdcall -stub -version=0x600+ RtlSidIsHigherLevel(long long ptr)
 @ stdcall RtlSizeHeap(long long ptr)
-@ stdcall -version=0x600+ RtlSleepConditionVariableCS(ptr ptr ptr) ntdll_vista.RtlSleepConditionVariableCS
-@ stdcall -version=0x600+ RtlSleepConditionVariableSRW(ptr ptr ptr long) ntdll_vista.RtlSleepConditionVariableSRW
+@ stdcall -version=0x600+ RtlSleepConditionVariableCS(ptr ptr ptr)
+@ stdcall -version=0x600+ RtlSleepConditionVariableSRW(ptr ptr ptr long)
 @ stdcall RtlSplay(ptr)
 @ stdcall RtlStartRXact(ptr)
 @ stdcall RtlStatMemoryStream(ptr ptr long)
@@ -1204,8 +1204,8 @@
 @ stdcall RtlTraceDatabaseUnlock(ptr)
 @ stdcall RtlTraceDatabaseValidate(ptr)
 @ stdcall -stub -version=0x600+ RtlTryAcquirePebLock()
-@ stdcall -version=0x600+ RtlTryAcquireSRWLockExclusive(ptr) ntdll_vista.RtlTryAcquireSRWLockExclusive
-@ stdcall -version=0x600+ RtlTryAcquireSRWLockShared(ptr) ntdll_vista.RtlTryAcquireSRWLockShared
+@ stdcall -version=0x600+ RtlTryAcquireSRWLockExclusive(ptr)
+@ stdcall -version=0x600+ RtlTryAcquireSRWLockShared(ptr)
 @ stdcall RtlTryEnterCriticalSection(ptr)
 @ stdcall RtlUnhandledExceptionFilter2(ptr long)
 @ stdcall RtlUnhandledExceptionFilter(ptr)
@@ -1253,8 +1253,8 @@
 @ stdcall RtlValidateUnicodeString(long ptr)
 @ stdcall RtlVerifyVersionInfo(ptr long double)
 @ stdcall -arch=x86_64 RtlVirtualUnwind(long long long ptr ptr ptr ptr ptr)
-@ stdcall -version=0x600+ RtlWakeAllConditionVariable(ptr) ntdll_vista.RtlWakeAllConditionVariable
-@ stdcall -version=0x600+ RtlWakeConditionVariable(ptr) ntdll_vista.RtlWakeConditionVariable
+@ stdcall -version=0x600+ RtlWakeAllConditionVariable(ptr)
+@ stdcall -version=0x600+ RtlWakeConditionVariable(ptr)
 @ stdcall RtlWalkFrameChain(ptr long long)
 @ stdcall RtlWalkHeap(long ptr)
 @ stdcall -stub -version=0x600+ RtlWerpReportException(long long ptr long long ptr)

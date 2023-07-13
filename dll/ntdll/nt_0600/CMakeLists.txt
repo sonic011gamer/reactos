@@ -1,3 +1,5 @@
+remove_definitions(-D_WIN32_WINNT=0x502)
+add_definitions(-D_WIN32_WINNT=0x601)
 
 spec2def(ntdll_vista.dll ntdll_vista.spec ADD_IMPORTLIB)
 
@@ -14,8 +16,7 @@ list(APPEND SOURCE
     DllMain.c
     ${CMAKE_CURRENT_BINARY_DIR}/ntdll_vista.def)
 
-add_library(ntdll_vista MODULE ${SOURCE})
-set_module_type(ntdll_vista win32dll ENTRYPOINT DllMain 12)
+add_library(ntdll_vista ${SOURCE})
 target_link_libraries(ntdll_vista smlib rtl_vista)
 if(ARCH STREQUAL "arm")
     target_link_libraries(ntdll_vista chkstk)

@@ -58,7 +58,7 @@ set_module_type(ntdll win32dll ENTRYPOINT 0)
 set_subsystem(ntdll console)
 ################# END  HACK #################
 
-target_link_libraries(ntdll csrlib rtl rtl_vista ntdllsys ntoskrnl_vista libcntpr uuid ${PSEH_LIB})
+target_link_libraries(ntdll ntdll_vista csrlib rtl rtl_vista ntdllsys ntoskrnl_vista libcntpr uuid ${PSEH_LIB})
 
 if (STACK_PROTECTOR)
     target_sources(ntdll PRIVATE $<TARGET_OBJECTS:gcc_ssp_nt>)

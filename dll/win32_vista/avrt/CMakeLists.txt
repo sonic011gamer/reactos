@@ -16,6 +16,6 @@ add_library(avrt MODULE
 
 target_link_libraries(avrt)
 set_module_type(avrt win32dll ENTRYPOINT DllMain)
-add_importlibs(avrt ntdll ntdll_vista kernel32_vista advapi32 kernel32)
+add_importlibs(avrt ntdll advapi32 kernel32)
 add_dependencies(avrt psdk)
 add_cd_file(TARGET avrt DESTINATION reactos/system32 FOR all)
