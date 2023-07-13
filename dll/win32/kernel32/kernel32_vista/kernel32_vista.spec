@@ -71,6 +71,8 @@
 @ stdcall    QueryUnbiasedInterruptTime(ptr)
 
 @ stdcall GetProcessPreferredUILanguages(long ptr ptr ptr)
+@ stdcall -version=0x600+ UpdateProcThreadAttribute(ptr long ptr ptr long ptr ptr)
+
 ;@ stdcall GetActiveProcessorCount(long)
 ;@ stdcall GetActiveProcessorGroupCount()
 ;@ stdcall GetLogicalProcessorInformationEx(ptr ptr ptr)

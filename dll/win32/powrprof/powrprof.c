@@ -1337,3 +1337,10 @@ PowerDeterminePlatformRoleEx(ULONG Version)
 {
     return PlatformRoleDesktop;
 }
+
+POWER_PLATFORM_ROLE
+WINAPI
+PowerDeterminePlatformRole()
+{
+    return PlatformRoleDesktop;
+}
