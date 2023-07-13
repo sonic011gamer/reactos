@@ -175,3 +175,120 @@ WINAPI QueryUnbiasedInterruptTime(ULONGLONG* time)
     *time = GetTickCount64();
     return TRUE;
 }
+
+#define ProcThreadAttributeValue(Number, Thread, Input, Additive) \
+    (((Number) & PROC_THREAD_ATTRIBUTE_NUMBER) | \
+     ((Thread != FALSE) ? PROC_THREAD_ATTRIBUTE_THREAD : 0) | \
+     ((Input != FALSE) ? PROC_THREAD_ATTRIBUTE_INPUT : 0) | \
+     ((Additive != FALSE) ? PROC_THREAD_ATTRIBUTE_ADDITIVE : 0))
+
+#define PROC_THREAD_ATTRIBUTE_JOB_LIST \
+    ProcThreadAttributeValue (ProcThreadAttributeJobList, FALSE, TRUE, FALSE)
+typedef VOID* HPCON;
+//
+// Define Attribute to disable creation of child process
+//
+
+#define PROCESS_CREATION_CHILD_PROCESS_RESTRICTED                                         0x01
+#define PROCESS_CREATION_CHILD_PROCESS_OVERRIDE                                           0x02
+#define PROCESS_CREATION_CHILD_PROCESS_RESTRICTED_UNLESS_SECURE                           0x04
+
+#define PROC_THREAD_ATTRIBUTE_CHILD_PROCESS_POLICY \
+    ProcThreadAttributeValue (ProcThreadAttributeChildProcessPolicy, FALSE, TRUE, FALSE)
+#define PROC_THREAD_ATTRIBUTE_PSEUDOCONSOLE \
+    ProcThreadAttributeValue (22, FALSE, TRUE, FALSE)
+//
+// Define Attribute to opt out of matching All Application Packages
+//
+
+#define PROCESS_CREATION_ALL_APPLICATION_PACKAGES_OPT_OUT                                 0x01
+
+#define PROC_THREAD_ATTRIBUTE_ALL_APPLICATION_PACKAGES_POLICY \
+    ProcThreadAttributeValue (ProcThreadAttributeAllApplicationPackagesPolicy, FALSE, TRUE, FALSE)
+
+#define PROC_THREAD_ATTRIBUTE_WIN32K_FILTER \
+    ProcThreadAttributeValue (ProcThreadAttributeWin32kFilter, FALSE, TRUE, FALSE)
+#define PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY \
+    ProcThreadAttributeValue (ProcThreadAttributeMitigationPolicy, FALSE, TRUE, FALSE)
+BOOL WINAPI DECLSPEC_HOTPATCH UpdateProcThreadAttribute( struct _PROC_THREAD_ATTRIBUTE_LIST *list,
+                                                         DWORD flags, DWORD_PTR attr, void *value,
+                                                         SIZE_T size, void *prev_ret, SIZE_T *size_ret )
+{
+    DWORD mask;
+    struct proc_thread_attr *entry;
+    //TRACE( "(%p %lx %08Ix %p %Id %p %p)\n", list, flags, attr, value, size, prev_ret, size_ret );
+    if (list->count >= list->size)
+    {
+        SetLastError( ERROR_GEN_FAILURE );
+        return FALSE;
+    }
+    switch (attr)
+    {
+    case PROC_THREAD_ATTRIBUTE_PARENT_PROCESS:
+        if (size != sizeof(HANDLE))
+        {
+            SetLastError( ERROR_BAD_LENGTH );
+            return FALSE;
+        }
+        break;
+    case PROC_THREAD_ATTRIBUTE_HANDLE_LIST:
+        if ((size / sizeof(HANDLE)) * sizeof(HANDLE) != size)
+        {
+            SetLastError( ERROR_BAD_LENGTH );
+            return FALSE;
+        }
+        break;
+    case PROC_THREAD_ATTRIBUTE_IDEAL_PROCESSOR:
+        if (size != sizeof(PROCESSOR_NUMBER))
+        {
+            SetLastError( ERROR_BAD_LENGTH );
+            return FALSE;
+        }
+        break;
+    case PROC_THREAD_ATTRIBUTE_CHILD_PROCESS_POLICY:
+       if (size != sizeof(DWORD) && size != sizeof(DWORD64))
+       {
+           SetLastError( ERROR_BAD_LENGTH );
+           return FALSE;
+       }
+       break;
+    case PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY:
+        if (size != sizeof(DWORD) && size != sizeof(DWORD64) && size != sizeof(DWORD64) * 2)
+        {
+            SetLastError( ERROR_BAD_LENGTH );
+            return FALSE;
+        }
+        break;
+    case PROC_THREAD_ATTRIBUTE_PSEUDOCONSOLE:
+       if (size != sizeof(HPCON))
+       {
+           SetLastError( ERROR_BAD_LENGTH );
+           return FALSE;
+       }
+       break;
+    case PROC_THREAD_ATTRIBUTE_JOB_LIST:
+        if ((size / sizeof(HANDLE)) * sizeof(HANDLE) != size)
+        {
+            SetLastError( ERROR_BAD_LENGTH );
+            return FALSE;
+        }
+        break;
+    default:
+        SetLastError( ERROR_NOT_SUPPORTED );
+      //  FIXME( "Unhandled attribute %Iu\n", attr & PROC_THREAD_ATTRIBUTE_NUMBER );
+        return FALSE;
+    }
+    mask = 1 << (attr & PROC_THREAD_ATTRIBUTE_NUMBER);
+    if (list->mask & mask)
+    {
+        SetLastError( ERROR_OBJECT_NAME_EXISTS );
+        return FALSE;
+    }
+    list->mask |= mask;
+    entry = list->attrs + list->count;
+    entry->attr = attr;
+    entry->size = size;
+    entry->value = value;
+    list->count++;
+    return TRUE;
+}
