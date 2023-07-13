@@ -201,8 +201,7 @@
 @ stdcall -stub -version=0x600+ DeleteFileTransactedA(str ptr)
 @ stdcall -stub -version=0x600+ DeleteFileTransactedW(wstr ptr)
 @ stdcall DeleteFileW(wstr)
-@ stdcall -stub -version=0x600+ DeleteProcThreadAttributeList(ptr)
-@ stdcall DeleteTimerQueue(long)
+@ stdcall -version=0x600+ DeleteProcThreadAttributeList(ptr) kernel32_vista.DeleteProcThreadAttributeList
 @ stdcall DeleteTimerQueueEx(long long)
 @ stdcall DeleteTimerQueueTimer(long long long)
 @ stdcall DeleteVolumeMountPointA(str) ;check
