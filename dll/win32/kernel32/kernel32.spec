@@ -632,7 +632,7 @@
 @ stdcall GetThreadPriorityBoost(long ptr)
 @ stdcall GetThreadSelectorEntry(long long ptr)
 @ stdcall GetThreadTimes(long ptr ptr ptr ptr)
-@ stdcall -version=0x600+ GetThreadUILanguage(long ptr wstr ptr) ;kernel32_vista.GetThreadUILanguage
+@ stdcall GetThreadUILanguage()
 @ stdcall GetTickCount()
 @ stdcall -version=0x600+ GetTickCount64() ;kernel32_vista.GetTickCount64
 @ stdcall GetTimeFormatA(long long ptr str ptr long)
@@ -1297,8 +1297,8 @@
 @ stdcall -version=0x600+ PowerCreateRequest(ptr) ;kernel32_vista.PowerCreateRequest
 @ stdcall -version=0x600+ PowerSetRequest(long long) ;kernel32_vista.PowerSetRequest
 @ stdcall -version=0x600+ K32GetPerformanceInfo(ptr long) ;kernel32_vista.K32GetPerformanceInfo
-@ stdcall -version=0x600+ K32QueryWorkingSet(ptr ptr long) ;kernel32_vista.K32QueryWorkingSet
-@ stdcall -version=0x600+ K32QueryWorkingSetEx(ptr ptr long) ;kernel32_vista.K32QueryWorkingSetEx
+@ stdcall  -stub -version=0x600+ K32QueryWorkingSet(ptr ptr long)
+@ stdcall  -stub -version=0x600+ K32QueryWorkingSetEx(ptr ptr long)
 @ stdcall -version=0x600+ SetProcessPreferredUILanguages(long ptr ptr) ;kernel32_vista.SetProcessPreferredUILanguages
 @ stdcall -version=0x600+ K32GetMappedFileNameW(ptr ptr ptr long) ;kernel32_vista.K32GetMappedFileNameW
 
