@@ -1,6 +1,5 @@
 #include <dxg_int.h>
 
-#define DBG
 #include <debug.h>
 
 #define TRACE() \
@@ -15,7 +14,7 @@ DoDxgAssert(PCSTR Format)
     if(gWarningLevel >= 0)
     {
         DPRINT1("DXG Assertion: ");
-        DPRINT1(Format);
+        DPRINT1("%s", Format);
         DPRINT1("\n");
         DbgBreakPoint();
     }
@@ -28,7 +27,7 @@ DoWarning(PCSTR Format, DWORD dwLevel)
   if (dwLevel <= gWarningLevel )
   {
     DPRINT1("DXG: ");
-    DPRINT1(Format);
+    DPRINT1("%s", Format);
     DPRINT1("\n");
   }
 }
@@ -55,22 +54,26 @@ vDdIncrementReferenceCount(PEDD_DIRECTDRAW_GLOBAL peDdGl)
 
 VOID
 NTAPI
-ProbeAndReadBuffer(void *Dst, void *Src, size_t MaxCount)
+ProbeAndReadBuffer(PVOID Dst, PVOID Src, SIZE_T MaxCount)
 {
-  if ( (char *)Src + MaxCount < (char *)Src || (unsigned int)Src + MaxCount > DxgUserProbeAddress )
-    *(BYTE *)Dst = *(BYTE*)DxgUserProbeAddress;
+    ULONG64 EndAddress = (ULONG64)Src + MaxCount;
 
-  memcpy(Dst, Src, MaxCount);
+    if (EndAddress < (ULONG64)Src || EndAddress > DxgUserProbeAddress)
+        *(BYTE *)Dst = *(BYTE *)DxgUserProbeAddress;
+
+    memcpy(Dst, Src, MaxCount);
 }
 
 VOID
 NTAPI
-ProbeAndWriteBuffer(void *Dst, void *Src, size_t MaxCount)
+ProbeAndWriteBuffer(PVOID Dst, PVOID Src, SIZE_T MaxCount)
 {
-  if ( (char *)Dst + MaxCount < (char *)Dst || (unsigned int)Dst + MaxCount > DxgUserProbeAddress )
-      DxgUserProbeAddress = 0;
+    ULONG64 EndAddress = (ULONG64)Dst + MaxCount;
 
-  memcpy(Dst, Src, MaxCount);
+    if (EndAddress < (ULONG64)Dst || EndAddress > DxgUserProbeAddress)
+        DxgUserProbeAddress = 0;
+
+    memcpy(Dst, Src, MaxCount);
 }
 
 // Implemented
@@ -1579,6 +1582,8 @@ DxDdDisableDirectDraw(HDEV hDev, BOOL bDisableVDd)
     }
 }
 
+// This is extremely bad!
+// We must look at issues in level of indirection
 VOID
 NTAPI
 DxDdSuspendDirectDraw(HDEV hDev, DWORD dwSuspendFlags)
@@ -1601,12 +1606,12 @@ DxDdSuspendDirectDraw(HDEV hDev, DWORD dwSuspendFlags)
         }
 
         // Get the meta device
-        metaDevice = gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_metadev);
+        metaDevice = (HDEV)gpEngFuncs.DxEngGetHdevData(hDev, DxEGShDevData_metadev);
 
         if(metaDevice)
         {
             // Why do we enumerate if we have a meta device?
-            pHdevCurrent = gpEngFuncs.DxEngEnumerateHdev(NULL);
+            pHdevCurrent = *gpEngFuncs.DxEngEnumerateHdev(NULL);
         }
         else
         {
@@ -1622,11 +1627,11 @@ DxDdSuspendDirectDraw(HDEV hDev, DWORD dwSuspendFlags)
     // Recursively Suspend Child Devices
     while(pHdevCurrent)
     {
-        if(!metaDevice || gpEngFuncs.DxEngGetHdevData(pHdevCurrent, DxEGShDevData_Parent) == hDev)
+        if(!metaDevice || (HDEV)gpEngFuncs.DxEngGetHdevData(pHdevCurrent, DxEGShDevData_Parent) == hDev)
         {
             bLockedShare = FALSE;
 
-            PEDD_DIRECTDRAW_GLOBAL peDdGl = gpEngFuncs.DxEngGetHdevData(pHdevCurrent, DxEGShDevData_eddg);
+            PEDD_DIRECTDRAW_GLOBAL peDdGl = (PEDD_DIRECTDRAW_GLOBAL)gpEngFuncs.DxEngGetHdevData(pHdevCurrent, DxEGShDevData_eddg);
 
             if((dwSuspendFlags & 2) != 0)
             {
@@ -1645,11 +1650,11 @@ DxDdSuspendDirectDraw(HDEV hDev, DWORD dwSuspendFlags)
             
             if(!gpEngFuncs.DxEngGetHdevData(pHdevCurrent, DxEGShDevData_dd_locks))
             {
-                vDdNotifyEvent(peDdGl);
-                vDdDisableAllDirectDrawObjects(peDdGl);
+                //vDdNotifyEvent(peDdGl);
+                //vDdDisableAllDirectDrawObjects(peDdGl);
             }
 
-            HDEV locks = gpEngFuncs.DxEngGetHdevData(pHdevCurrent, DxEGShDevData_dd_locks);
+            HDEV locks = (HDEV)gpEngFuncs.DxEngGetHdevData(pHdevCurrent, DxEGShDevData_dd_locks);
 
             gpEngFuncs.DxEngSetHdevData(locks, DxEGShDevData_dd_locks, dwSuspendFlags);
 
@@ -1661,7 +1666,7 @@ DxDdSuspendDirectDraw(HDEV hDev, DWORD dwSuspendFlags)
         if(!metaDevice)
             break;
 
-        pHdevCurrent = gpEngFuncs.DxEngEnumerateHdev(pHdevCurrent);
+        pHdevCurrent = *gpEngFuncs.DxEngEnumerateHdev(&pHdevCurrent);
     }
 }
 
