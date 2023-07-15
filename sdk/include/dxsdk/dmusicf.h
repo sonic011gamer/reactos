@@ -21,9 +21,7 @@
 #ifndef __WINE_DMUSIC_FILEFORMATS_H
 #define __WINE_DMUSIC_FILEFORMATS_H
 
-#ifndef __WINESRC__
 #include <windows.h>
-#endif /* __WINESRC__ */
 
 #define COM_NO_WINDOWS_H
 #include <objbase.h>
@@ -278,7 +276,7 @@ extern "C" {
 #define DMUS_SONG_NOSEG     0xFFFFFFFF
 #define DMUS_SONG_NOFROMSEG 0x80000001
 
-#define DMUS_SIGNPOSTF_A        0x0001
+#define DMUS_SIGNPOSTF_A        0x0001      
 #define DMUS_SIGNPOSTF_B        0x0002
 #define DMUS_SIGNPOSTF_C        0x0004
 #define DMUS_SIGNPOSTF_D        0x0008
@@ -322,11 +320,6 @@ extern "C" {
 /*****************************************************************************
  * Enumerations
  */
-/* typedef definitions */
-typedef enum enumDMUS_VARIATIONT_TYPES DMUS_VARIATIONT_TYPES;
-typedef enum enumDMUS_EMBELLISHT_TYPES DMUS_EMBELLISHT_TYPES;
-typedef enum enumDMUS_PATTERNT_TYPES   DMUS_PATTERNT_TYPES;
-
 /* actual enumerations */
 enum enumDMUS_VARIATIONT_TYPES {
 	DMUS_VARIATIONT_SEQUENTIAL   = 0x0,
@@ -354,6 +347,10 @@ enum enumDMUS_PATTERNT_TYPES {
 	DMUS_PATTERNT_NO_REPEAT    = 0x4,
 	DMUS_PATTERNT_RANDOM_ROW   = 0x5
 };
+
+typedef enum enumDMUS_VARIATIONT_TYPES DMUS_VARIATIONT_TYPES;
+typedef enum enumDMUS_EMBELLISHT_TYPES DMUS_EMBELLISHT_TYPES;
+typedef enum enumDMUS_PATTERNT_TYPES   DMUS_PATTERNT_TYPES;
 
 
 /*****************************************************************************
@@ -397,7 +394,7 @@ typedef struct _DMUS_IO_WAVE_PART_HEADER               DMUS_IO_WAVE_PART_HEADER,
 typedef struct _DMUS_IO_WAVE_ITEM_HEADER               DMUS_IO_WAVE_ITEM_HEADER,               *LPDMUS_IO_WAVE_ITEM_HEADER;
 typedef struct _DMUS_IO_CONTAINER_HEADER               DMUS_IO_CONTAINER_HEADER,               *LPDMUS_IO_CONTAINER_HEADER;
 typedef struct _DMUS_IO_CONTAINED_OBJECT_HEADER        DMUS_IO_CONTAINED_OBJECT_HEADER,        *LPDMUS_IO_CONTAINED_OBJECT_HEADER;
-typedef struct _DMUS_IO_SEGMENT_HEADER                 DMUS_IO_SEGMENT_HEADER,                 *LPDMUS_IO_SEGMENT_HEADER;
+typedef struct _DMUS_IO_SEGMENT_HEADER                 DMUS_IO_SEGMENT_HEADER,                 *LPDMUS_IO_SEGMENT_HEADER;	
 typedef struct _DMUS_IO_TRACK_HEADER                   DMUS_IO_TRACK_HEADER,                   *LPDMUS_IO_TRACK_HEADER;
 typedef struct _DMUS_IO_TRACK_EXTRAS_HEADER            DMUS_IO_TRACK_EXTRAS_HEADER,            *LPDMUS_IO_TRACK_EXTRAS_HEADER;
 typedef struct _DMUS_IO_REFERENCE                      DMUS_IO_REFERENCE,                      *LPDMUS_IO_REFERENCE;
@@ -432,7 +429,7 @@ struct _DMUS_IO_SEQ_ITEM {
 	MUSIC_TIME mtTime;
 	MUSIC_TIME mtDuration;
 	DWORD      dwPChannel;
-	short      nOffset;
+	short      nOffset; 
 	BYTE       bStatus;
 	BYTE       bByte1;
 	BYTE       bByte2;
@@ -480,7 +477,7 @@ struct _DMUS_TEMPO_PARAM {
 struct _DMUS_MUTE_PARAM {
 	DWORD dwPChannel;
 	DWORD dwPChannelMap;
-	BOOL  fMute;
+	WINBOOL  fMute;
 };
 
 #pragma pack(2)
@@ -492,7 +489,7 @@ struct _DMUS_IO_TIMESIG {
 
 struct _DMUS_IO_STYLE {
 	DMUS_IO_TIMESIG timeSig;
-	double          dblTempo;
+	double          dblTempo;   
 };
 
 struct _DMUS_IO_VERSION {
@@ -654,7 +651,7 @@ struct _DMUS_IO_BUFFER_ATTRIBUTES_HEADER {
 };
 
 struct _DMUS_IO_BAND_TRACK_HEADER {
-	BOOL bAutoDownload;
+	WINBOOL bAutoDownload;
 };
 
 struct _DMUS_IO_BAND_ITEM_HEADER {

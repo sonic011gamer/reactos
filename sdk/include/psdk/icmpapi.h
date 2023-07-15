@@ -1,103 +1,34 @@
-/*
- * Interface to the ICMP functions.
- *
- * Copyright (C) 1999 Francois Gouget
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
-#ifndef __WINE_ICMPAPI_H
-#define __WINE_ICMPAPI_H
+#ifndef _ICMP_INCLUDED_
+#define _ICMP_INCLUDED_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-HANDLE WINAPI  IcmpCreateFile(
-    VOID
-    );
+  HANDLE WINAPI IcmpCreateFile(VOID);
+  HANDLE WINAPI Icmp6CreateFile(VOID);
+  WINBOOL WINAPI IcmpCloseHandle(HANDLE IcmpHandle);
+  DWORD WINAPI IcmpSendEcho(HANDLE IcmpHandle,IPAddr DestinationAddress,LPVOID RequestData,WORD RequestSize,PIP_OPTION_INFORMATION RequestOptions,LPVOID ReplyBuffer,DWORD ReplySize,DWORD Timeout);
 
-HANDLE WINAPI  Icmp6CreateFile(
-    VOID
-    );
+#ifdef PIO_APC_ROUTINE_DEFINED
+  DWORD WINAPI IcmpSendEcho2(HANDLE IcmpHandle,HANDLE Event,PIO_APC_ROUTINE ApcRoutine,PVOID ApcContext,IPAddr DestinationAddress,LPVOID RequestData,WORD RequestSize,PIP_OPTION_INFORMATION RequestOptions,LPVOID ReplyBuffer,DWORD ReplySize,DWORD Timeout);
+  DWORD WINAPI IcmpSendEcho2Ex(HANDLE IcmpHandle,HANDLE Event,PIO_APC_ROUTINE ApcRoutine,PVOID ApcContext,IPAddr SourceAddress,IPAddr DestinationAddress,LPVOID RequestData,WORD RequestSize,PIP_OPTION_INFORMATION RequestOptions,LPVOID ReplyBuffer,DWORD ReplySize,DWORD Timeout);
+  DWORD WINAPI Icmp6SendEcho2(HANDLE IcmpHandle,HANDLE Event,PIO_APC_ROUTINE ApcRoutine,PVOID ApcContext,struct sockaddr_in6 *SourceAddress,struct sockaddr_in6 *DestinationAddress,LPVOID RequestData,WORD RequestSize,PIP_OPTION_INFORMATION RequestOptions,LPVOID ReplyBuffer,DWORD ReplySize,DWORD Timeout);
+#else
+  DWORD WINAPI IcmpSendEcho2(HANDLE IcmpHandle,HANDLE Event,FARPROC ApcRoutine,PVOID ApcContext,IPAddr DestinationAddress,LPVOID RequestData,WORD RequestSize,PIP_OPTION_INFORMATION RequestOptions,LPVOID ReplyBuffer,DWORD ReplySize,DWORD Timeout);
+  DWORD WINAPI IcmpSendEcho2Ex(HANDLE IcmpHandle,HANDLE Event,FARPROC ApcRoutine,PVOID ApcContext,IPAddr SourceAddress,IPAddr DestinationAddress,LPVOID RequestData,WORD RequestSize,PIP_OPTION_INFORMATION RequestOptions,LPVOID ReplyBuffer,DWORD ReplySize,DWORD Timeout);
+  DWORD WINAPI Icmp6SendEcho2(HANDLE IcmpHandle,HANDLE Event,FARPROC ApcRoutine,PVOID ApcContext,struct sockaddr_in6 *SourceAddress,struct sockaddr_in6 *DestinationAddress,LPVOID RequestData,WORD RequestSize,PIP_OPTION_INFORMATION RequestOptions,LPVOID ReplyBuffer,DWORD ReplySize,DWORD Timeout);
+#endif
 
-BOOL WINAPI  IcmpCloseHandle(
-    HANDLE  IcmpHandle
-    );
-
-DWORD WINAPI  IcmpSendEcho(
-    HANDLE                 IcmpHandle,
-    IPAddr                 DestinationAddress,
-    LPVOID                 RequestData,
-    WORD                   RequestSize,
-    PIP_OPTION_INFORMATION RequestOptions,
-    LPVOID                 ReplyBuffer,
-    DWORD                  ReplySize,
-    DWORD                  Timeout
-    );
-
-DWORD
-WINAPI
-IcmpSendEcho2(
-    HANDLE                   IcmpHandle,
-    HANDLE                   Event,
-    FARPROC                  ApcRoutine,
-    PVOID                    ApcContext,
-    IPAddr                   DestinationAddress,
-    LPVOID                   RequestData,
-    WORD                     RequestSize,
-    PIP_OPTION_INFORMATION   RequestOptions,
-    LPVOID                   ReplyBuffer,
-    DWORD                    ReplySize,
-    DWORD                    Timeout
-    );
-
-DWORD
-WINAPI
-Icmp6SendEcho2(
-    HANDLE                   IcmpHandle,
-    HANDLE                   Event,
-    FARPROC                  ApcRoutine,
-    PVOID                    ApcContext,
-    struct sockaddr_in6     *SourceAddress,
-    struct sockaddr_in6     *DestinationAddress,
-    LPVOID                   RequestData,
-    WORD                     RequestSize,
-    PIP_OPTION_INFORMATION   RequestOptions,
-    LPVOID                   ReplyBuffer,
-    DWORD                    ReplySize,
-    DWORD                    Timeout
-    );
-
-DWORD
-WINAPI
-IcmpParseReplies(
-    LPVOID                   ReplyBuffer,
-    DWORD                    ReplySize
-    );
-
-DWORD
-WINAPI
-Icmp6ParseReplies(
-    LPVOID                   ReplyBuffer,
-    DWORD                    ReplySize
-    );
+  DWORD WINAPI IcmpParseReplies(LPVOID ReplyBuffer,DWORD ReplySize);
+  DWORD WINAPI Icmp6ParseReplies(LPVOID ReplyBuffer,DWORD ReplySize);
 
 #ifdef __cplusplus
 }
 #endif
-
-
-#endif /* __WINE_ICMPAPI_H */
+#endif

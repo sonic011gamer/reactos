@@ -1,73 +1,70 @@
-/*
- * PROJECT:         ReactOS Screen Saver Library
- * LICENSE:         GPL v2 or any later version
- * FILE:            include/psdk/scrnsave.h
- * PURPOSE:         Header file for the library
- * PROGRAMMERS:     Anders Norlander <anorland@hem2.passagen.se>
- *                  Colin Finck <mail@colinfinck.de>
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
+#ifndef _INC_SCRNSAVE
+#define _INC_SCRNSAVE
 
-#ifndef _SCRNSAVE_H
-#define _SCRNSAVE_H
+#include <pshpack1.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define idsIsPassword           1000
-#define idsIniFile              1001
-#define idsScreenSaver          1002
-#define idsPassword             1003
-#define idsDifferentPW          1004
-#define idsChangePW             1005
-#define idsBadOldPW             1006
-#define idsAppName              1007
-#define idsNoHelpMemory         1008
-#define idsHelpFile             1009
-#define idsDefKeyword           1010
+#define IDS_DESCRIPTION 1
 
-// If you add a configuration dialog for your screen saver, it must have this dialog ID.
-#define DLG_SCRNSAVECONFIGURE   2003
+#define ID_APP 100
+#define DLG_SCRNSAVECONFIGURE 2003
 
-#define IDS_DESCRIPTION         1
-#define ID_APP                  100
+#define idsIsPassword 1000
+#define idsIniFile 1001
+#define idsScreenSaver 1002
+#define idsPassword 1003
+#define idsDifferentPW 1004
+#define idsChangePW 1005
+#define idsBadOldPW 1006
+#define idsAppName 1007
+#define idsNoHelpMemory 1008
+#define idsHelpFile 1009
+#define idsDefKeyword 1010
 
-#define WS_GT                   (WS_GROUP | WS_TABSTOP)
-#define MAXFILELEN              13
-#define TITLEBARNAMELEN         40
-#define APPNAMEBUFFERLEN        40
-#define BUFFLEN                 255
+#if defined(UNICODE)
+  LRESULT WINAPI ScreenSaverProcW(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam);
+#define ScreenSaverProc ScreenSaverProcW
+#else
+  LRESULT WINAPI ScreenSaverProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam);
+#endif
 
-// The dialog procedure of the screen saver configure dialog (if any)
-// If you don't have a configuration dialog, just implement a procedure that always returns FALSE.
-BOOL WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+  LRESULT WINAPI DefScreenSaverProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
+  WINBOOL WINAPI ScreenSaverConfigureDialog(HWND hDlg,UINT message,WPARAM wParam,LPARAM lParam);
+  WINBOOL WINAPI RegisterDialogClasses(HANDLE hInst);
 
-// Use this function if you want to register special classes before opening the configuration dialog.
-// Return TRUE here if the classes were registered successfully and the configuration dialog shall be opened.
-// If you return FALSE, no configuration dialog will be opened.
-BOOL WINAPI RegisterDialogClasses(HANDLE hInst);
+#define WS_GT (WS_GROUP | WS_TABSTOP)
 
-// The screen saver window procedure
-LRESULT WINAPI ScreenSaverProc(HWND, UINT uMsg, WPARAM wParam, LPARAM lParam);
+#define MAXFILELEN 13
+#define TITLEBARNAMELEN 40
+#define APPNAMEBUFFERLEN 40
+#define BUFFLEN 255
 
-// The window procedure, which handles default tasks for screen savers.
-// Use this instead of DefWindowProc.
-LRESULT WINAPI DefScreenSaverProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+  extern HINSTANCE hMainInstance;
+  extern HWND hMainWindow;
+  extern WINBOOL fChildPreview;
+  extern TCHAR szName[TITLEBARNAMELEN];
+  extern TCHAR szAppName[APPNAMEBUFFERLEN];
+  extern TCHAR szIniFile[MAXFILELEN];
+  extern TCHAR szScreenSaver[22];
+  extern TCHAR szHelpFile[MAXFILELEN];
+  extern TCHAR szNoHelpMemory[BUFFLEN];
+  extern UINT MyHelpMessage;
 
-// These globals are defined in the screen saver library.
-extern HINSTANCE    hMainInstance;
-extern HWND         hMainWindow;
-extern BOOL         fChildPreview;
-extern TCHAR        szName[];
-extern TCHAR        szAppName[];
-extern TCHAR        szIniFile[];
-extern TCHAR        szScreenSaver[];
-extern TCHAR        szHelpFile[];
-extern TCHAR        szNoHelpMemory[];
-extern UINT         MyHelpMessage;
+#define SCRM_VERIFYPW WM_APP
+
+  void WINAPI ScreenSaverChangePassword(HWND hParent);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _SCRNSAVE_H */
+#include <poppack.h>
+#endif

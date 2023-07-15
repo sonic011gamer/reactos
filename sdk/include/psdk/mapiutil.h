@@ -1,277 +1,235 @@
-/*
- * Copyright 2004 Jon Griffiths
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
-#ifndef MAPIUTIL_H_
-#define MAPIUTIL_H_
-
-#include <mapix.h>
+#ifndef _MAPIUTIL_H_
+#define _MAPIUTIL_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define TAD_ALL_ROWS 1 /* Delete all rows */
+#include <mapix.h>
 
-LPMALLOC WINAPI MAPIGetDefaultMalloc(void);
-
-#define SOF_UNIQUEFILENAME 0x80000000U /* Create a unique (temporary) filename */
-
-#if defined (UNICODE) || defined (__WINESRC__)
-typedef HRESULT (WINAPI * LPOPENSTREAMONFILE)(LPALLOCATEBUFFER,LPFREEBUFFER,
-                                              ULONG,LPWSTR,LPWSTR,LPSTREAM*);
-HRESULT WINAPI OpenStreamOnFile(LPALLOCATEBUFFER,LPFREEBUFFER,
-                                ULONG,LPWSTR,LPWSTR,LPSTREAM*);
-#else
-typedef HRESULT (WINAPI * LPOPENSTREAMONFILE)(LPALLOCATEBUFFER,LPFREEBUFFER,
-                                              ULONG,LPSTR,LPSTR,LPSTREAM*);
-HRESULT WINAPI OpenStreamOnFile(LPALLOCATEBUFFER,LPFREEBUFFER,
-                                ULONG,LPSTR,LPSTR,LPSTREAM*);
+#ifndef BEGIN_INTERFACE
+#define BEGIN_INTERFACE
 #endif
+
+  DECLARE_MAPI_INTERFACE_PTR(ITableData,LPTABLEDATA);
+
+  typedef void (WINAPI CALLERRELEASE)(ULONG ulCallerData,LPTABLEDATA lpTblData,LPMAPITABLE lpVue);
+
+#define MAPI_ITABLEDATA_METHODS(IPURE) MAPIMETHOD(HrGetView) (THIS_ LPSSortOrderSet lpSSortOrderSet,CALLERRELEASE *lpfCallerRelease,ULONG ulCallerData,LPMAPITABLE *lppMAPITable) IPURE; MAPIMETHOD(HrModifyRow) (THIS_ LPSRow) IPURE; MAPIMETHOD(HrDeleteRow) (THIS_ LPSPropValue lpSPropValue) IPURE; MAPIMETHOD(HrQueryRow) (THIS_ LPSPropValue lpsPropValue,LPSRow *lppSRow,ULONG *lpuliRow) IPURE; MAPIMETHOD(HrEnumRow) (THIS_ ULONG ulRowNumber,LPSRow *lppSRow) IPURE; MAPIMETHOD(HrNotify) (THIS_ ULONG ulFlags,ULONG cValues,LPSPropValue lpSPropValue) IPURE; MAPIMETHOD(HrInsertRow) (THIS_ ULONG uliRow,LPSRow lpSRow) IPURE; MAPIMETHOD(HrModifyRows) (THIS_ ULONG ulFlags,LPSRowSet lpSRowSet) IPURE; MAPIMETHOD(HrDeleteRows) (THIS_ ULONG ulFlags,LPSRowSet lprowsetToDelete,ULONG *cRowsDeleted) IPURE;
+#undef INTERFACE
+#define INTERFACE ITableData
+  DECLARE_MAPI_INTERFACE_(ITableData,IUnknown) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_ITABLEDATA_METHODS(PURE)
+  };
+
+  STDAPI_(SCODE) CreateTable(LPCIID lpInterface,ALLOCATEBUFFER *lpAllocateBuffer,ALLOCATEMORE *lpAllocateMore,FREEBUFFER *lpFreeBuffer,LPVOID lpvReserved,ULONG ulTableType,ULONG ulPropTagIndexColumn,LPSPropTagArray lpSPropTagArrayColumns,LPTABLEDATA *lppTableData);
+
+#define TAD_ALL_ROWS 1
+
+#define MAPI_IPROPDATA_METHODS(IPURE) MAPIMETHOD(HrSetObjAccess) (THIS_ ULONG ulAccess) IPURE; MAPIMETHOD(HrSetPropAccess) (THIS_ LPSPropTagArray lpPropTagArray,ULONG *rgulAccess) IPURE; MAPIMETHOD(HrGetPropAccess) (THIS_ LPSPropTagArray *lppPropTagArray,ULONG **lprgulAccess) IPURE; MAPIMETHOD(HrAddObjProps) (THIS_ LPSPropTagArray lppPropTagArray,LPSPropProblemArray *lprgulAccess) IPURE;
+
+#undef INTERFACE
+#define INTERFACE IPropData
+  DECLARE_MAPI_INTERFACE_(IPropData,IMAPIProp) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROP_METHODS(PURE)
+      MAPI_IPROPDATA_METHODS(PURE)
+  };
+
+  DECLARE_MAPI_INTERFACE_PTR(IPropData,LPPROPDATA);
+
+  STDAPI_(SCODE) CreateIProp(LPCIID lpInterface,ALLOCATEBUFFER *lpAllocateBuffer,ALLOCATEMORE *lpAllocateMore,FREEBUFFER *lpFreeBuffer,LPVOID lpvReserved,LPPROPDATA *lppPropData);
+
+#define IPROP_READONLY ((ULONG) 0x00000001)
+#define IPROP_READWRITE ((ULONG) 0x00000002)
+#define IPROP_CLEAN ((ULONG) 0x00010000)
+#define IPROP_DIRTY ((ULONG) 0x00020000)
+
+#ifndef NOIDLEENGINE
+
+#define PRILOWEST -32768
+#define PRIHIGHEST 32767
+#define PRIUSER 0
+
+#define IRONULL ((USHORT) 0x0000)
+#define FIROWAIT ((USHORT) 0x0001)
+#define FIROINTERVAL ((USHORT) 0x0002)
+#define FIROPERBLOCK ((USHORT) 0x0004)
+#define FIRODISABLED ((USHORT) 0x0020)
+#define FIROONCEONLY ((USHORT) 0x0040)
+
+#define IRCNULL ((USHORT) 0x0000)
+#define FIRCPFN ((USHORT) 0x0001)
+#define FIRCPV ((USHORT) 0x0002)
+#define FIRCPRI ((USHORT) 0x0004)
+#define FIRCCSEC ((USHORT) 0x0008)
+#define FIRCIRO ((USHORT) 0x0010)
+
+  typedef WINBOOL (WINAPI FNIDLE) (LPVOID);
+  typedef FNIDLE *PFNIDLE;
+  typedef void *FTG;
+  typedef FTG *PFTG;
+#define FTGNULL ((FTG) NULL)
+
+  STDAPI_(LONG) MAPIInitIdle (LPVOID lpvReserved);
+  STDAPI_(VOID) MAPIDeinitIdle (VOID);
+  STDAPI_(FTG) FtgRegisterIdleRoutine (PFNIDLE lpfnIdle,LPVOID lpvIdleParam,short priIdle,ULONG csecIdle,USHORT iroIdle);
+  STDAPI_(void) DeregisterIdleRoutine (FTG ftg);
+  STDAPI_(void) EnableIdleRoutine (FTG ftg,WINBOOL fEnable);
+  STDAPI_(void) ChangeIdleRoutine (FTG ftg,PFNIDLE lpfnIdle,LPVOID lpvIdleParam,short priIdle,ULONG csecIdle,USHORT iroIdle,USHORT ircIdle);
+#endif
+
+  STDAPI_(LPMALLOC) MAPIGetDefaultMalloc(VOID);
+
+#define SOF_UNIQUEFILENAME ((ULONG) 0x80000000)
+
+  STDMETHODIMP OpenStreamOnFile(LPALLOCATEBUFFER lpAllocateBuffer,LPFREEBUFFER lpFreeBuffer,ULONG ulFlags,LPTSTR lpszFileName,LPTSTR lpszPrefix,LPSTREAM *lppStream);
+
+  typedef HRESULT (WINAPI *LPOPENSTREAMONFILE) (LPALLOCATEBUFFER lpAllocateBuffer,LPFREEBUFFER lpFreeBuffer,ULONG ulFlags,LPTSTR lpszFileName,LPTSTR lpszPrefix,LPSTREAM *lppStream);
+
 #define OPENSTREAMONFILE "OpenStreamOnFile"
 
-BOOL WINAPI FEqualNames(LPMAPINAMEID,LPMAPINAMEID);
+  STDAPI_(SCODE) PropCopyMore(LPSPropValue lpSPropValueDest,LPSPropValue lpSPropValueSrc,ALLOCATEMORE *lpfAllocMore,LPVOID lpvObject);
+  STDAPI_(ULONG) UlPropSize(LPSPropValue lpSPropValue);
+  STDAPI_(WINBOOL) FEqualNames(LPMAPINAMEID lpName1,LPMAPINAMEID lpName2);
 
-typedef struct IPropData *LPPROPDATA;
-
-#define IPROP_READONLY  0x00001U
-#define IPROP_READWRITE 0x00002U
-#define IPROP_CLEAN     0x10000U
-#define IPROP_DIRTY     0x20000U
-
-SCODE WINAPI CreateIProp(LPCIID,ALLOCATEBUFFER*,ALLOCATEMORE*,FREEBUFFER*,
-                         LPVOID,LPPROPDATA*);
-SCODE WINAPI PropCopyMore(LPSPropValue,LPSPropValue,ALLOCATEMORE*,LPVOID);
-ULONG WINAPI UlPropSize(LPSPropValue);
-VOID  WINAPI GetInstance(LPSPropValue,LPSPropValue,ULONG);
-BOOL  WINAPI FPropContainsProp(LPSPropValue,LPSPropValue,ULONG);
-BOOL  WINAPI FPropCompareProp(LPSPropValue,ULONG,LPSPropValue);
-LONG  WINAPI LPropCompareProp(LPSPropValue,LPSPropValue);
-
-HRESULT WINAPI HrAddColumns(LPMAPITABLE,LPSPropTagArray,LPALLOCATEBUFFER,LPFREEBUFFER);
-HRESULT WINAPI HrAddColumnsEx(LPMAPITABLE,LPSPropTagArray,LPALLOCATEBUFFER,
-                              LPFREEBUFFER,void (*)(LPSPropTagArray));
-HRESULT WINAPI HrAllocAdviseSink(LPNOTIFCALLBACK,LPVOID,LPMAPIADVISESINK*);
-HRESULT WINAPI HrThisThreadAdviseSink(LPMAPIADVISESINK,LPMAPIADVISESINK*);
-HRESULT WINAPI HrDispatchNotifications (ULONG);
-
-ULONG WINAPI UlAddRef(void*);
-ULONG WINAPI UlRelease(void*);
-
-HRESULT WINAPI HrGetOneProp(LPMAPIPROP,ULONG,LPSPropValue*);
-HRESULT WINAPI HrSetOneProp(LPMAPIPROP,LPSPropValue);
-BOOL    WINAPI FPropExists(LPMAPIPROP,ULONG);
-void    WINAPI FreePadrlist(LPADRLIST);
-void    WINAPI FreeProws(LPSRowSet);
-HRESULT WINAPI HrQueryAllRows(LPMAPITABLE,LPSPropTagArray,LPSRestriction,
-                              LPSSortOrderSet,LONG,LPSRowSet*);
-LPSPropValue WINAPI PpropFindProp(LPSPropValue,ULONG,ULONG);
-
-#if defined (UNICODE) || defined (__WINESRC__)
-BOOL   WINAPI FBinFromHex(LPWSTR,LPBYTE);
-SCODE  WINAPI ScBinFromHexBounded(LPWSTR,LPBYTE,ULONG);
-void   WINAPI HexFromBin(LPBYTE,int,LPWSTR);
-ULONG  WINAPI UlFromSzHex(LPCWSTR);
-LPWSTR WINAPI SzFindCh(LPCWSTR,USHORT);
-LPWSTR WINAPI SzFindLastCh(LPCWSTR,USHORT);
-LPWSTR WINAPI SzFindSz(LPCWSTR,LPCWSTR);
-UINT   WINAPI UFromSz(LPCSTR);
-#else
-BOOL  WINAPI FBinFromHex(LPSTR,LPBYTE);
-SCODE WINAPI ScBinFromHexBounded(LPSTR,LPBYTE,ULONG);
-void  WINAPI HexFromBin(LPBYTE,int,LPSTR);
-ULONG WINAPI UlFromSzHex(LPCSTR);
-LPSTR WINAPI SzFindCh(LPCSTR,USHORT);
-LPSTR WINAPI SzFindLastCh(LPCSTR,USHORT);
-LPSTR WINAPI SzFindSz(LPCSTR,LPCSTR);
-UINT  WINAPI UFromSz(LPCSTR);
+#if !defined(_WINNT) && !defined(_WIN95)
+#define _WINNT
 #endif
 
-SCODE WINAPI ScInitMapiUtil(ULONG);
-void  WINAPI DeinitMapiUtil(void);
+  STDAPI_(void) GetInstance(LPSPropValue lpPropMv,LPSPropValue lpPropSv,ULONG uliInst);
 
+  extern char rgchCsds[];
+  extern char rgchCids[];
+  extern char rgchCsdi[];
+  extern char rgchCidi[];
+
+  STDAPI_(WINBOOL) FPropContainsProp(LPSPropValue lpSPropValueDst,LPSPropValue lpSPropValueSrc,ULONG ulFuzzyLevel);
+  STDAPI_(WINBOOL) FPropCompareProp(LPSPropValue lpSPropValue1,ULONG ulRelOp,LPSPropValue lpSPropValue2);
+  STDAPI_(LONG) LPropCompareProp(LPSPropValue lpSPropValueA,LPSPropValue lpSPropValueB);
+  STDAPI_(HRESULT) HrAddColumns(LPMAPITABLE lptbl,LPSPropTagArray lpproptagColumnsNew,LPALLOCATEBUFFER lpAllocateBuffer,LPFREEBUFFER lpFreeBuffer);
+  STDAPI_(HRESULT) HrAddColumnsEx(LPMAPITABLE lptbl,LPSPropTagArray lpproptagColumnsNew,LPALLOCATEBUFFER lpAllocateBuffer,LPFREEBUFFER lpFreeBuffer,void (*lpfnFilterColumns)(LPSPropTagArray ptaga));
+  STDAPI HrAllocAdviseSink(LPNOTIFCALLBACK lpfnCallback,LPVOID lpvContext,LPMAPIADVISESINK *lppAdviseSink);
+  STDAPI HrThisThreadAdviseSink(LPMAPIADVISESINK lpAdviseSink,LPMAPIADVISESINK *lppAdviseSink);
+  STDAPI HrDispatchNotifications(ULONG ulFlags);
+
+  typedef struct {
+    ULONG ulCtlType;
+    ULONG ulCtlFlags;
+    LPBYTE lpbNotif;
+    ULONG cbNotif;
+    LPTSTR lpszFilter;
+    ULONG ulItemID;
+    union {
+      LPVOID lpv;
+      LPDTBLLABEL lplabel;
+      LPDTBLEDIT lpedit;
+      LPDTBLLBX lplbx;
+      LPDTBLCOMBOBOX lpcombobox;
+      LPDTBLDDLBX lpddlbx;
+      LPDTBLCHECKBOX lpcheckbox;
+      LPDTBLGROUPBOX lpgroupbox;
+      LPDTBLBUTTON lpbutton;
+      LPDTBLRADIOBUTTON lpradiobutton;
+      LPDTBLMVLISTBOX lpmvlbx;
+      LPDTBLMVDDLBX lpmvddlbx;
+      LPDTBLPAGE lppage;
+    } ctl;
+  } DTCTL,*LPDTCTL;
+
+  typedef struct {
+    ULONG cctl;
+    LPTSTR lpszResourceName;
+    __C89_NAMELESS union {
+      LPTSTR lpszComponent;
+      ULONG ulItemID;
+    };
+    LPDTCTL lpctl;
+  } DTPAGE,*LPDTPAGE;
+
+  STDAPI BuildDisplayTable(LPALLOCATEBUFFER lpAllocateBuffer,LPALLOCATEMORE lpAllocateMore,LPFREEBUFFER lpFreeBuffer,LPMALLOC lpMalloc,HINSTANCE hInstance,UINT cPages,LPDTPAGE lpPage,ULONG ulFlags,LPMAPITABLE *lppTable,LPTABLEDATA *lppTblData);
+  STDAPI_(SCODE) ScCountNotifications(int cNotifications,LPNOTIFICATION lpNotifications,ULONG *lpcb);
+  STDAPI_(SCODE) ScCopyNotifications(int cNotification,LPNOTIFICATION lpNotifications,LPVOID lpvDst,ULONG *lpcb);
+  STDAPI_(SCODE) ScRelocNotifications(int cNotification,LPNOTIFICATION lpNotifications,LPVOID lpvBaseOld,LPVOID lpvBaseNew,ULONG *lpcb);
+  STDAPI_(SCODE) ScCountProps(int cValues,LPSPropValue lpPropArray,ULONG *lpcb);
+  STDAPI_(LPSPropValue) LpValFindProp(ULONG ulPropTag,ULONG cValues,LPSPropValue lpPropArray);
+  STDAPI_(SCODE) ScCopyProps(int cValues,LPSPropValue lpPropArray,LPVOID lpvDst,ULONG *lpcb);
+  STDAPI_(SCODE) ScRelocProps(int cValues,LPSPropValue lpPropArray,LPVOID lpvBaseOld,LPVOID lpvBaseNew,ULONG *lpcb);
+  STDAPI_(SCODE) ScDupPropset(int cValues,LPSPropValue lpPropArray,LPALLOCATEBUFFER lpAllocateBuffer,LPSPropValue *lppPropArray);
+  STDAPI_(ULONG) UlAddRef(LPVOID lpunk);
+  STDAPI_(ULONG) UlRelease(LPVOID lpunk);
+  STDAPI HrGetOneProp(LPMAPIPROP lpMapiProp,ULONG ulPropTag,LPSPropValue *lppProp);
+  STDAPI HrSetOneProp(LPMAPIPROP lpMapiProp,LPSPropValue lpProp);
+  STDAPI_(WINBOOL) FPropExists(LPMAPIPROP lpMapiProp,ULONG ulPropTag);
+  STDAPI_(LPSPropValue) PpropFindProp(LPSPropValue lpPropArray,ULONG cValues,ULONG ulPropTag);
+  STDAPI_(void) FreePadrlist(LPADRLIST lpAdrlist);
+  STDAPI_(void) FreeProws(LPSRowSet lpRows);
+  STDAPI HrQueryAllRows(LPMAPITABLE lpTable,LPSPropTagArray lpPropTags,LPSRestriction lpRestriction,LPSSortOrderSet lpSortOrderSet,LONG crowsMax,LPSRowSet *lppRows);
+
+#define MAPI_FORCE_CREATE 1
+#define MAPI_FULL_IPM_TREE 2
+
+  STDAPI HrValidateIPMSubtree(LPMDB lpMDB,ULONG ulFlags,ULONG *lpcValues,LPSPropValue *lppValues,LPMAPIERROR *lpperr);
+  STDAPI_(WINBOOL) FBinFromHex(LPTSTR lpsz,LPBYTE lpb);
+  STDAPI_(SCODE) ScBinFromHexBounded(LPTSTR lpsz,LPBYTE lpb,ULONG cb);
+  STDAPI_(void) HexFromBin(LPBYTE lpb,int cb,LPTSTR lpsz);
+  STDAPI_(ULONG) UlFromSzHex(LPCTSTR lpsz);
+  STDAPI HrEntryIDFromSz(LPTSTR lpsz,ULONG *lpcb,LPENTRYID *lppEntryID);
+  STDAPI HrSzFromEntryID(ULONG cb,LPENTRYID lpEntryID,LPTSTR *lpsz);
+  STDAPI HrComposeEID(LPMAPISESSION lpSession,ULONG cbStoreRecordKey,LPBYTE lpStoreRecordKey,ULONG cbMsgEntryID,LPENTRYID lpMsgEntryID,ULONG *lpcbEID,LPENTRYID *lppEntryID);
+  STDAPI HrDecomposeEID(LPMAPISESSION lpSession,ULONG cbEntryID,LPENTRYID lpEntryID,ULONG *lpcbStoreEntryID,LPENTRYID *lppStoreEntryID,ULONG *lpcbMsgEntryID,LPENTRYID *lppMsgEntryID);
+  STDAPI HrComposeMsgID(LPMAPISESSION lpSession,ULONG cbStoreSearchKey,LPBYTE pStoreSearchKey,ULONG cbMsgEntryID,LPENTRYID lpMsgEntryID,LPTSTR *lpszMsgID);
+  STDAPI HrDecomposeMsgID(LPMAPISESSION lpSession,LPTSTR lpszMsgID,ULONG *lpcbStoreEntryID,LPENTRYID *lppStoreEntryID,ULONG *lppcbMsgEntryID,LPENTRYID *lppMsgEntryID);
+  STDAPI_(LPTSTR) SzFindCh(LPCTSTR lpsz,USHORT ch);
+  STDAPI_(LPTSTR) SzFindLastCh(LPCTSTR lpsz,USHORT ch);
+  STDAPI_(LPTSTR) SzFindSz(LPCTSTR lpsz,LPCTSTR lpszKey);
+  STDAPI_(unsigned int) UFromSz(LPCTSTR lpsz);
+  STDAPI_(SCODE) ScUNCFromLocalPath(LPSTR lpszLocal,LPSTR lpszUNC,UINT cchUNC);
+  STDAPI_(SCODE) ScLocalPathFromUNC(LPSTR lpszUNC,LPSTR lpszLocal,UINT cchLocal);
+  STDAPI_(FILETIME) FtAddFt(FILETIME ftAddend1,FILETIME ftAddend2);
+  STDAPI_(FILETIME) FtMulDwDw(DWORD ftMultiplicand,DWORD ftMultiplier);
+  STDAPI_(FILETIME) FtMulDw(DWORD ftMultiplier,FILETIME ftMultiplicand);
+  STDAPI_(FILETIME) FtSubFt(FILETIME ftMinuend,FILETIME ftSubtrahend);
+  STDAPI_(FILETIME) FtNegFt(FILETIME ft);
+  STDAPI_(SCODE) ScCreateConversationIndex(ULONG cbParent,LPBYTE lpbParent,ULONG *lpcbConvIndex,LPBYTE *lppbConvIndex);
+  STDAPI WrapStoreEntryID(ULONG ulFlags,LPTSTR lpszDLLName,ULONG cbOrigEntry,LPENTRYID lpOrigEntry,ULONG *lpcbWrappedEntry,LPENTRYID *lppWrappedEntry);
+
+#define RTF_SYNC_RTF_CHANGED ((ULONG) 0x00000001)
+#define RTF_SYNC_BODY_CHANGED ((ULONG) 0x00000002)
+
+  STDAPI_(HRESULT) RTFSync(LPMESSAGE lpMessage,ULONG ulFlags,WINBOOL *lpfMessageUpdated);
+  STDAPI_(HRESULT) WrapCompressedRTFStream(LPSTREAM lpCompressedRTFStream,ULONG ulFlags,LPSTREAM *lpUncompressedRTFStream);
+  STDAPI_(HRESULT) HrIStorageFromStream(LPUNKNOWN lpUnkIn,LPCIID lpInterface,ULONG ulFlags,LPSTORAGE *lppStorageOut);
+  STDAPI_(SCODE) ScInitMapiUtil(ULONG ulFlags);
+  STDAPI_(VOID) DeinitMapiUtil(VOID);
+
+#ifdef _X86_
 #define szHrDispatchNotifications "_HrDispatchNotifications@4"
+#elif defined(_IA64_)
+#define szHrDispatchNotifications "HrDispatchNotifications"
+#endif
+
+  typedef HRESULT (WINAPI DISPATCHNOTIFICATIONS)(ULONG ulFlags);
+  typedef DISPATCHNOTIFICATIONS *LPDISPATCHNOTIFICATIONS;
+
+#ifdef _X86_
 #define szScCreateConversationIndex "_ScCreateConversationIndex@16"
-
-typedef HRESULT (WINAPI DISPATCHNOTIFICATIONS)(ULONG);
-typedef DISPATCHNOTIFICATIONS *LPDISPATCHNOTIFICATIONS;
-typedef SCODE (WINAPI CREATECONVERSATIONINDEX)(ULONG,LPBYTE,ULONG*,LPBYTE*);
-typedef CREATECONVERSATIONINDEX *LPCREATECONVERSATIONINDEX;
-
-typedef struct ITableData *LPTABLEDATA;
-
-typedef void (WINAPI CALLERRELEASE)(ULONG,LPTABLEDATA,LPMAPITABLE);
-
-/*****************************************************************************
- * ITableData interface
- *
- * The underlying table data structure for IMAPITable.
- */
-#define INTERFACE ITableData
-DECLARE_INTERFACE_(ITableData,IUnknown)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-    /*** ITableData methods ***/
-    STDMETHOD(HrGetView)(THIS_ LPSSortOrderSet lpSort, CALLERRELEASE *lpRel,
-                         ULONG ulData, LPMAPITABLE *lppTable) PURE;
-    STDMETHOD(HrModifyRow)(THIS_ LPSRow lpRow) PURE;
-    STDMETHOD(HrDeleteRow)(THIS_ LPSPropValue lpKey) PURE;
-    STDMETHOD(HrQueryRow)(THIS_ LPSPropValue lpKey, LPSRow *lppRow, ULONG *lpRowNum) PURE;
-    STDMETHOD(HrEnumRow)(THIS_ ULONG ulRowNum, LPSRow *lppRow) PURE;
-    STDMETHOD(HrNotify)(THIS_ ULONG ulFlags, ULONG cValues, LPSPropValue lpValues) PURE;
-    STDMETHOD(HrInsertRow)(THIS_ ULONG ulRow, LPSRow lpRow) PURE;
-    STDMETHOD(HrModifyRows)(THIS_ ULONG ulFlags, LPSRowSet lpRows) PURE;
-    STDMETHOD(HrDeleteRows)(THIS_ ULONG ulFlags, LPSRowSet lpRows, ULONG *lpCount) PURE;
-};
-#undef INTERFACE
-
-#if !defined(__cplusplus) || defined(CINTERFACE)
-        /*** IUnknown methods ***/
-#define ITableData_QueryInterface(p,a,b) (p)->lpVtbl->QueryInterface(p,a,b)
-#define ITableData_AddRef(p)             (p)->lpVtbl->AddRef(p)
-#define ITableData_Release(p)            (p)->lpVtbl->Release(p)
-        /*** ITableData methods ***/
-#define ITableData_HrGetView(p,a,b,c,d)  (p)->lpVtbl->HrGetView(p,a,b,c,d)
-#define ITableData_HrModifyRow(p,a)      (p)->lpVtbl->HrModifyRow(p,a)
-#define ITableData_HrDeleteRow(p,a)      (p)->lpVtbl->HrDeleteRow(p,a)
-#define ITableData_HrQueryRow(p,a,b,c)   (p)->lpVtbl->HrQueryRow(p,a,b,c)
-#define ITableData_HrEnumRow(p,a,b)      (p)->lpVtbl->HrEnumRow(p,a,b)
-#define ITableData_HrNotify(p,a,b,c)     (p)->lpVtbl->HrNotify(p,a,b,c)
-#define ITableData_HrInsertRow(p,a,b)    (p)->lpVtbl->HrInsertRow(p,a,b)
-#define ITableData_HrModifyRows(p,a,b)   (p)->lpVtbl->HrModifyRows(p,a,b)
-#define ITableData_HrDeleteRows(p,a,b,c) (p)->lpVtbl->HrDeleteRows(p,a,b,c)
+#elif defined(_IA64_)
+#define szScCreateConversationIndex "ScCreateConversationIndex"
 #endif
 
-SCODE WINAPI CreateTable(LPCIID,ALLOCATEBUFFER*,ALLOCATEMORE*,FREEBUFFER*,
-                         LPVOID,ULONG,ULONG,LPSPropTagArray,LPTABLEDATA*);
-
-SCODE WINAPI ScCountNotifications(int,LPNOTIFICATION,ULONG*);
-SCODE WINAPI ScCountProps(int,LPSPropValue,ULONG*);
-SCODE WINAPI ScCopyNotifications(int,LPNOTIFICATION,LPVOID,ULONG*);
-SCODE WINAPI ScCopyProps(int,LPSPropValue,LPVOID,ULONG*);
-SCODE WINAPI ScDupPropset(int,LPSPropValue,LPALLOCATEBUFFER,LPSPropValue*);
-SCODE WINAPI ScRelocNotifications(int,LPNOTIFICATION,LPVOID,LPVOID,ULONG*);
-SCODE WINAPI ScRelocProps(int,LPSPropValue,LPVOID,LPVOID,ULONG*);
-
-LPSPropValue WINAPI LpValFindProp(ULONG,ULONG,LPSPropValue);
-
-static inline FILETIME FtAddFt(FILETIME ftLeft, FILETIME ftRight)
-{
-    LONG64 *pl = (LONG64*)&ftLeft, *pr = (LONG64*)&ftRight;
-    union { FILETIME ft; LONG64 ll; } ftmap;
-    ftmap.ll = *pl + *pr;
-    return ftmap.ft;
-}
-
-static inline FILETIME FtSubFt(FILETIME ftLeft, FILETIME ftRight)
-{
-    LONG64 *pl = (LONG64*)&ftLeft, *pr = (LONG64*)&ftRight;
-    union { FILETIME ft; LONG64 ll; } ftmap;
-    ftmap.ll = *pl - *pr;
-    return ftmap.ft;
-}
-
-static inline FILETIME FtNegFt(FILETIME ftLeft)
-{
-    LONG64 *p = (LONG64*)&ftLeft;
-    union { FILETIME ft; LONG64 ll; } ftmap;
-    ftmap.ll = -*p;
-    return ftmap.ft;
-}
-
-static inline FILETIME FtMulDw(DWORD dwLeft, FILETIME ftRight)
-{
-    LONG64 l = (LONG64)dwLeft, *pr = (LONG64*)&ftRight;
-    union { FILETIME ft; LONG64 ll; } ftmap;
-    ftmap.ll = l * (*pr);
-    return ftmap.ft;
-}
-
-static inline FILETIME FtMulDwDw(DWORD dwLeft, DWORD dwRight)
-{
-    LONG64 l = (LONG64)dwLeft, r = (LONG64)dwRight;
-    union { FILETIME ft; LONG64 ll; } ftmap;
-    ftmap.ll = l * r;
-    return ftmap.ft;
-}
-
-/*****************************************************************************
- * IPropData interface
- *
- */
-#define INTERFACE IPropData
-DECLARE_INTERFACE_(IPropData,IMAPIProp)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-    /*** IMAPIProp methods ***/
-    STDMETHOD(GetLastError)(THIS_ HRESULT hRes, ULONG ulFlags, LPMAPIERROR *lppErr) PURE;
-    STDMETHOD(SaveChanges)(THIS_ ULONG ulFlags) PURE;
-    STDMETHOD(GetProps)(THIS_ LPSPropTagArray lpPropTags, ULONG ulFlags, ULONG *lpValues, LPSPropValue *lppProps) PURE;
-    STDMETHOD(GetPropList)(THIS_ ULONG  ulFlags, LPSPropTagArray *lppPropTagArray) PURE;
-    STDMETHOD(OpenProperty)(THIS_ ULONG ulPropTag, LPCIID lpIid, ULONG ulOpts, ULONG ulFlags, LPUNKNOWN *lppUnk) PURE;
-    STDMETHOD(SetProps)(THIS_ ULONG cValues, LPSPropValue lpProps, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(DeleteProps)(THIS_ LPSPropTagArray lpPropTags, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyTo)(THIS_ ULONG ciidExclude, LPCIID lpIid, LPSPropTagArray lpProps, ULONG ulParam,
-                      LPMAPIPROGRESS lpProgress, LPCIID lpIface,LPVOID lpDest, ULONG ulFlags,
-                      LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyProps)(THIS_ LPSPropTagArray lpIncludeProps, ULONG ulParam, LPMAPIPROGRESS lpProgress,
-                         LPCIID lpIid, LPVOID lpDestObj, ULONG ulFlags, LPSPropProblemArray *lppProblems) PURE;
-    STDMETHOD(GetNamesFromIDs)(THIS_ LPSPropTagArray *lppPropTags, LPGUID lpIid, ULONG ulFlags, ULONG *lpCount,
-                               LPMAPINAMEID **lpppNames) PURE;
-    STDMETHOD(GetIDsFromNames)(THIS_ ULONG cPropNames, LPMAPINAMEID *lppNames, ULONG ulFlags, LPSPropTagArray *lppPropTags) PURE;
-    /*** IPropData methods ***/
-    STDMETHOD(HrSetObjAccess)(THIS_ ULONG ulAccess) PURE;
-    STDMETHOD(HrSetPropAccess)(THIS_ LPSPropTagArray lpPropTags, ULONG *lpAccess) PURE;
-    STDMETHOD(HrGetPropAccess)(THIS_ LPSPropTagArray *lppPropTags, ULONG **lppAccess) PURE;
-    STDMETHOD(HrAddObjProps)(THIS_ LPSPropTagArray lppPropTags, LPSPropProblemArray *lppProbs) PURE;
-};
-#undef INTERFACE
-
-#if !defined(__cplusplus) || defined(CINTERFACE)
-        /*** IUnknown methods ***/
-#define IPropData_QueryInterface(p,a,b)        (p)->lpVtbl->QueryInterface(p,a,b)
-#define IPropData_AddRef(p)                    (p)->lpVtbl->AddRef(p)
-#define IPropData_Release(p)                   (p)->lpVtbl->Release(p)
-        /*** IMAPIProp methods ***/
-#define IPropData_GetLastError(p,a,b,c)        (p)->lpVtbl->GetLastError(p,a,b,c)
-#define IPropData_SaveChanges(p,a)             (p)->lpVtbl->SaveChanges(p,a)
-#define IPropData_GetProps(p,a,b,c,d)          (p)->lpVtbl->GetProps(p,a,b,c,d)
-#define IPropData_GetPropList(p,a,b)           (p)->lpVtbl->GetPropList(p,a,b)
-#define IPropData_OpenProperty(p,a,b,c,d,e)    (p)->lpVtbl->OpenProperty(p,a,b,c,d,e)
-#define IPropData_SetProps(p,a,b,c)            (p)->lpVtbl->SetProps(p,a,b,c)
-#define IPropData_DeleteProps(p,a,b)           (p)->lpVtbl->DeleteProps(p,a,b)
-#define IPropData_CopyTo(p,a,b,c,d,e,f,g,h,i)  (p)->lpVtbl->CopyTo(p,a,b,c,d,e,f,g,h,i)
-#define IPropData_CopyProps(p,a,b,c,d,e,f,g)   (p)->lpVtbl->CopyProps(p,a,b,c,d,e,f,g)
-#define IPropData_GetNamesFromIDs(p,a,b,c,d,e) (p)->lpVtbl->GetNamesFromIDs(p,a,b,c,d,e)
-#define IPropData_GetIDsFromNames(p,a,b,c,d)   (p)->lpVtbl->GetIDsFromNames(p,a,b,c,d)
-#define IPropData_HrSetObjAccess(p,a)          (p)->lpVtbl->HrSetObjAccess(p,a)
-#define IPropData_HrSetPropAccess(p,a,b)       (p)->lpVtbl->HrSetPropAccess(p,a,b)
-#define IPropData_HrGetPropAccess(p,a,b)       (p)->lpVtbl->HrGetPropAccess(p,a,b)
-#define IPropData_HrAddObjProps(p,a,b)         (p)->lpVtbl->HrAddObjProps(p,a,b)
-#endif
+  typedef SCODE (WINAPI CREATECONVERSATIONINDEX)(ULONG cbParent,LPBYTE lpbParent,ULONG *lpcbConvIndex,LPBYTE *lppbConvIndex);
+  typedef CREATECONVERSATIONINDEX *LPCREATECONVERSATIONINDEX;
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* MAPIUTIL_H_ */
+#endif

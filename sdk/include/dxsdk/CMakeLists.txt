@@ -5,8 +5,8 @@ list(APPEND SOURCE
     amstream.idl
     amvideo.idl
     austream.idl
-    #axcore.idl
-    #axextend.idl
+    axcore.idl
+    axextend.idl
     bdatif.idl
     ddstream.idl
     devenum.idl

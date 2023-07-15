@@ -1,11 +1,15 @@
 /**
  * This file has no copyright assigned and is placed in the Public Domain.
  * This file is part of the mingw-w64 runtime package.
- * No warranty is given.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 
 import "oaidl.idl";
 import "ocidl.idl";
+
+cpp_quote("#include <winapifamily.h>")
+
+cpp_quote("#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)")
 
 typedef enum {
     IS_DEFAULT                       = 0,
@@ -64,6 +68,19 @@ typedef enum {
     IS_CHINESE_HALFWIDTH             = 53,
     IS_CHINESE_FULLWIDTH             = 54,
     IS_NATIVE_SCRIPT                 = 55,
+    IS_YOMI                          = 56,
+    IS_TEXT                          = 57,
+    IS_CHAT                          = 58,
+    IS_NAME_OR_PHONENUMBER           = 59,
+    IS_EMAILNAME_OR_ADDRESS          = 60,
+    IS_PRIVATE                       = 61,
+    IS_MAPS                          = 62,
+    IS_NUMERIC_PASSWORD              = 63,
+    IS_NUMERIC_PIN                   = 64,
+    IS_ALPHANUMERIC_PIN              = 65,
+    IS_ALPHANUMERIC_PIN_SET          = 66,
+    IS_FORMULA_NUMBER                = 67,
+    IS_CHAT_WITHOUT_EMOJI            = 68,
 
     IS_PHRASELIST        = -1,
     IS_REGULAREXPRESSION = -2,
@@ -72,9 +89,18 @@ typedef enum {
     IS_ENUMSTRING        = -5
 } InputScope;
 
+cpp_quote("#endif /* WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP) */")
+
+cpp_quote("#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)")
+
 cpp_quote("HRESULT WINAPI SetInputScope(HWND hwnd,InputScope inputscope);")
 cpp_quote("HRESULT WINAPI SetInputScopes(HWND hwnd,const InputScope *pInputScopes,UINT cInputScopes,WCHAR **ppszPhraseList,UINT cPhrases,WCHAR *pszRegExp,WCHAR *pszSRGS);")
+cpp_quote("HRESULT WINAPI SetInputScopes2(HWND hwnd,const InputScope *pInputScopes,UINT cInputScopes,IEnumString *pEnumString,PWSTR pszRegExp,PWSTR pszSRGS);")
 cpp_quote("HRESULT WINAPI SetInputScopeXML(HWND hwnd,WCHAR *pszXML);")
+
+cpp_quote("#endif /* WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) */")
+
+cpp_quote("#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)")
 
 cpp_quote("DEFINE_GUID(GUID_PROP_INPUTSCOPE,0x1713dd5a,0x68e7,0x4a5b,0x9a,0xf6,0x59,0x2a,0x59,0x5c,0x77,0x8d);")
 
@@ -91,3 +117,15 @@ interface ITfInputScope : IUnknown
     HRESULT GetSRGS([out] BSTR *pbstrSRGS);
     HRESULT GetXML([out] BSTR *pbstrXML);
 }
+
+[
+    object,
+    uuid(5731eaa0-6bc2-4681-a532-92fbb74d7c41),
+    pointer_default(unique)
+]
+interface ITfInputScope2 : ITfInputScope
+{
+    HRESULT EnumWordList([out] IEnumString **ppEnumString);
+};
+
+cpp_quote("#endif /* WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP) */")

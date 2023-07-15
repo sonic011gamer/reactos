@@ -1,9 +1,12 @@
 /*
- * GdiPlusEffects.h
+ * gdipluseffects.h
  *
- * Windows GDI+
+ * GDI+ filters and effects
  *
  * This file is part of the w32api package.
+ *
+ * Contributors:
+ *   Created by Markus Koenig <markus@stber-koenig.de>
  *
  * THIS SOFTWARE IS NOT COPYRIGHTED
  *
@@ -14,326 +17,100 @@
  * WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
  * DISCLAIMED. This includes but is not limited to warranties of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
  */
 
-#ifndef _GDIPLUSEFFECTS_H
-#define _GDIPLUSEFFECTS_H
+#ifndef __GDIPLUS_EFFECTS_H
+#define __GDIPLUS_EFFECTS_H
+#if __GNUC__ >=3
+#pragma GCC system_header
+#endif
 
-typedef enum CurveAdjustments
-{
-    AdjustExposure = 0,
-    AdjustDensity = 1,
-    AdjustContrast = 2,
-    AdjustHighlight = 3,
-    AdjustShadow = 4,
-    AdjustMidtone = 5,
-    AdjustWhiteSaturation = 6,
-    AdjustBlackSaturation = 7
+typedef enum CurveAdjustments {
+	AdjustExposure = 0,
+	AdjustDensity = 1,
+	AdjustContrast = 2,
+	AdjustHighlight = 3,
+	AdjustShadow = 4,
+	AdjustMidtone = 5,
+	AdjustWhiteSaturation = 6,
+	AdjustBlackSaturation = 7
 } CurveAdjustments;
 
-typedef enum CurveChannel
-{
-    CurveChannelAll = 0,
-    CurveChannelRed = 1,
-    CurveChannelGreen = 2,
-    CurveChannelBlue = 3
+typedef enum CurveChannel {
+	CurveChannelAll = 0,
+	CurveChannelRed = 1,
+	CurveChannelGreen = 2,
+	CurveChannelBlue = 3
 } CurveChannel;
 
-typedef struct BlurParams
-{
-    REAL radius;
-    BOOL expandEdge;
+typedef struct BlurParams {
+	REAL radius;
+	BOOL expandEdge;
 } BlurParams;
 
-typedef struct BrightnessContrastParams
-{
-    INT brightnessLevel;
-    INT contrastLevel;
+typedef struct BrightnessContrastParams {
+	INT brightnessLevel;
+	INT contrastLevel;
 } BrightnessContrastParams;
 
-typedef struct ColorBalanceParams
-{
-    INT cyanRed;
-    INT magentaGreen;
-    INT yellowBlue;
+typedef struct ColorBalanceParams {
+	INT cyanRed;
+	INT magentaGreen;
+	INT yellowBlue;
 } ColorBalanceParams;
 
-typedef struct ColorCurveParams
-{
-    CurveAdjustments adjustment;
-    CurveChannel channel;
-    INT adjustValue;
+typedef struct ColorCurveParams {
+	CurveAdjustments adjustment;
+	CurveChannel channel;
+	INT adjustValue;
 } ColorCurveParams;
 
-typedef struct ColorLUTParams
-{
-    ColorChannelLUT lutB;
-    ColorChannelLUT lutG;
-    ColorChannelLUT lutR;
-    ColorChannelLUT lutA;
+typedef struct ColorLUTParams {
+	ColorChannelLUT lutB;
+	ColorChannelLUT lutG;
+	ColorChannelLUT lutR;
+	ColorChannelLUT lutA;
 } ColorLUTParams;
 
-typedef struct HueSaturationLightnessParams
-{
-    INT hueLevel;
-    INT saturationLevel;
-    INT lightnessLevel;
+typedef struct HueSaturationLightnessParams {
+	INT hueLevel;
+	INT saturationLevel;
+	INT lightnessLevel;
 } HueSaturationLightnessParams;
 
-typedef struct LevelsParams
-{
-    INT highlight;
-    INT midtone;
-    INT shadow;
+typedef struct LevelsParams {
+	INT highlight;
+	INT midtone;
+	INT shadow;
 } LevelsParams;
 
-typedef struct RedEyeCorrectionParams
-{
-    UINT numberOfAreas;
-    RECT *areas;
+typedef struct RedEyeCorrectionParams {
+	UINT numberOfAreas;
+	RECT *areas;
 } RedEyeCorrectionParams;
 
-typedef struct SharpenParams
-{
-    REAL radius;
-    REAL amount;
+typedef struct SharpenParams {
+	REAL radius;
+	REAL amount;
 } SharpenParams;
 
-typedef struct TintParams
-{
-    INT hue;
-    INT amount;
+typedef struct TintParams {
+	INT hue;
+	INT amount;
 } TintParams;
 
-class Effect
-{
-  public:
-    Effect()
-    {
-    }
+extern const GUID BlurEffectGuid;                    /* ? */
+extern const GUID BrightnessContrastEffectGuid;      /* ? */
+extern const GUID ColorBalanceEffectGuid;            /* ? */
+extern const GUID ColorCurveEffectGuid;              /* ? */
+extern const GUID ColorLUTEffectGuid;                /* ? */
+extern const GUID ColorMatrixEffectGuid;             /* ? */
+extern const GUID HueSaturationLightnessEffectGuid;  /* ? */
+extern const GUID LevelsEffectGuid;                  /* ? */
+extern const GUID RedEyeCorrectionEffectGuid;        /* ? */
+extern const GUID SharpenEffectGuid;                 /* ? */
+extern const GUID TintEffectGuid;                    /* ? */
 
-    VOID *
-    GetAuxData() const
-    {
-        return NULL;
-    }
 
-    INT
-    GetAuxDataSize()
-    {
-        return 0;
-    }
-
-    Status
-    GetParameterSize(UINT *size)
-    {
-        return NotImplemented;
-    }
-
-    VOID
-    UseAuxData(const BOOL useAuxDataFlag)
-    {
-    }
-};
-
-class Blur : public Effect
-{
-  public:
-    Blur()
-    {
-    }
-
-    Status
-    GetParameters(UINT *size, BlurParams *parameters)
-    {
-        return NotImplemented;
-    }
-
-    Status
-    SetParameters(const BlurParams *parameters)
-    {
-        return NotImplemented;
-    }
-};
-
-class BrightnessContrast : public Effect
-{
-  public:
-    BrightnessContrast()
-    {
-    }
-
-    Status
-    GetParameters(UINT *size, BrightnessContrastParams *parameters)
-    {
-        return NotImplemented;
-    }
-
-    Status
-    SetParameters(const BrightnessContrastParams *parameters)
-    {
-        return NotImplemented;
-    }
-};
-
-class ColorBalance : public Effect
-{
-  public:
-    ColorBalance()
-    {
-    }
-
-    Status
-    GetParameters(UINT *size, ColorBalanceParams *parameters)
-    {
-        return NotImplemented;
-    }
-
-    Status
-    SetParameters(ColorBalanceParams *parameters)
-    {
-        return NotImplemented;
-    }
-};
-
-class ColorCurve : public Effect
-{
-  public:
-    ColorCurve()
-    {
-    }
-
-    Status
-    GetParameters(UINT *size, ColorCurveParams *parameters)
-    {
-        return NotImplemented;
-    }
-
-    Status
-    SetParameters(const ColorCurveParams *parameters)
-    {
-        return NotImplemented;
-    }
-};
-
-class ColorMatrixEffect : public Effect
-{
-  public:
-    ColorMatrixEffect()
-    {
-    }
-
-    Status
-    GetParameters(UINT *size, ColorMatrix *matrix)
-    {
-        return NotImplemented;
-    }
-
-    Status
-    SetParameters(const ColorMatrix *matrix)
-    {
-        return NotImplemented;
-    }
-};
-
-class HueSaturationLightness : public Effect
-{
-  public:
-    HueSaturationLightness()
-    {
-    }
-
-    Status
-    GetParameters(UINT *size, HueSaturationLightnessParams *parameters)
-    {
-        return NotImplemented;
-    }
-
-    Status
-    SetParameters(const HueSaturationLightnessParams *parameters)
-    {
-        return NotImplemented;
-    }
-};
-
-class Levels : public Effect
-{
-  public:
-    Levels()
-    {
-    }
-
-    Status
-    GetParameters(UINT *size, LevelsParams *parameters)
-    {
-        return NotImplemented;
-    }
-
-    Status
-    SetParameters(const LevelsParams *parameters)
-    {
-        return NotImplemented;
-    }
-};
-
-class RedEyeCorrection : public Effect
-{
-  public:
-    RedEyeCorrection()
-    {
-    }
-
-    Status
-    GetParameters(UINT *size, RedEyeCorrectionParams *parameters)
-    {
-        return NotImplemented;
-    }
-
-    Status
-    SetParameters(const RedEyeCorrectionParams *parameters)
-    {
-        return NotImplemented;
-    }
-};
-
-class Sharpen
-{
-  public:
-    Sharpen()
-    {
-    }
-
-    Status
-    GetParameters(UINT *size, SharpenParams *parameters)
-    {
-        return NotImplemented;
-    }
-
-    Status
-    SetParameters(const SharpenParams *parameters)
-    {
-        return NotImplemented;
-    }
-};
-
-class Tint : Effect
-{
-  public:
-    Tint()
-    {
-    }
-
-    Status
-    GetParameters(UINT *size, TintParams *parameters)
-    {
-        return NotImplemented;
-    }
-
-    Status
-    SetParameters(const TintParams *parameters)
-    {
-        return NotImplemented;
-    }
-};
-
-#endif /* _GDIPLUSEFFECTS_H */
+#endif /* __GDIPLUS_EFFECTS_H */

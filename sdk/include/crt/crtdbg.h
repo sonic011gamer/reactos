@@ -1,7 +1,7 @@
 /**
  * This file has no copyright assigned and is placed in the Public Domain.
- * This file is part of the w64 mingw-runtime package.
- * No warranty is given; refer to the file DISCLAIMER within this package.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 #include <crtdefs.h>
 
@@ -9,6 +9,18 @@
 #define _INC_CRTDBG
 
 #pragma pack(push,_CRT_PACKING)
+
+#ifndef NULL
+#ifdef __cplusplus
+#ifndef _WIN64
+#define NULL 0
+#else
+#define NULL 0LL
+#endif  /* W64 */
+#else
+#define NULL ((void *)0)
+#endif
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -81,133 +93,71 @@ extern "C" {
     size_t lTotalCount;
   } _CrtMemState;
 
-// Debug reporting functions
-
-#ifdef _DEBUG
-
-    int __cdecl _CrtDbgReport(int reportType, const char *filename, int linenumber, const char *moduleName, const char *format, ...);
-    int __cdecl _CrtDbgReportW(int reportType, const wchar_t *filename, int linenumber, const wchar_t *moduleName, const wchar_t *format, ...);
-
+#ifndef _STATIC_ASSERT
+#if defined(_MSC_VER)
+#define _STATIC_ASSERT(expr) typedef char __static_assert_t[(expr)]
+#else
+#define _STATIC_ASSERT(expr) extern void __static_assert_t(int [(expr)?1:-1])
+#endif
 #endif
 
-
-
-
-// Assertion and error reporting
-
-#ifndef _DEBUG
-
-    #define _CrtDbgBreak() ((void)0)
-
-    #ifndef _ASSERT_EXPR
-        #define _ASSERT_EXPR(expr,expr_str) ((void)0)
-    #endif
-
-    #ifndef _ASSERT
-        #define _ASSERT(expr) ((void)0)
-    #endif
-
-    #ifndef _ASSERTE
-        #define _ASSERTE(expr) ((void)0)
-    #endif
-
-
-    #define _RPT0(rptno,msg)
-    #define _RPTN(rptno,msg,...)
-
-    #define _RPTW0(rptno,msg)
-    #define _RPTWN(rptno,msg,...)
-
-    #define _RPTF0(rptno,msg)
-    #define _RPTFN(rptno,msg,...)
-
-    #define _RPTFW0(rptno,msg)
-    #define _RPTFWN(rptno,msg,...)
-
-
-#else // _DEBUG
-
-    #define _CrtDbgBreak() __debugbreak()
-
-    #ifndef _ASSERT_EXPR
-        #define _ASSERT_EXPR(expr,expr_str) \
-            (void)((!!(expr)) || (_CrtDbgReportW(_CRT_ASSERT, _CRT_WIDE(__FILE__), __LINE__, NULL, L"%ls", expr_str) != 1) || (_CrtDbgBreak(), 0))
-    #endif
-
-    #ifndef _ASSERT
-        #define _ASSERT(expr) _ASSERT_EXPR((expr), NULL)
-    #endif
-
-    #ifndef _ASSERTE
-        #define _ASSERTE(expr) _ASSERT_EXPR((expr), _CRT_WIDE(#expr))
-    #endif
-
-    #define _RPT_BASE(...) \
-        (void)((_CrtDbgReport(__VA_ARGS__) != 1) || (_CrtDbgBreak(), 0))
-
-    #define _RPT_BASEW(...) \
-        (void)((_CrtDbgReportW(__VA_ARGS__) != 1) || (_CrtDbgBreak(), 0))
-
-
-    #define _RPT0(rptno,msg)        _RPT_BASE(rptno, NULL, 0, NULL, "%s", msg)
-    #define _RPTN(rptno,msg,...)    _RPT_BASE(rptno, NULL, 0, NULL, msg, __VA_ARGS__)
-
-    #define _RPTW0(rptno,msg)       _RPT_BASEW(rptno, NULL, 0, NULL, L"%s", msg)
-    #define _RPTWN(rptno,msg,...)   _RPT_BASEW(rptno, NULL, 0, NULL, msg, __VA_ARGS__)
-
-    #define _RPTF0(rptno,msg)       _RPT_BASE(rptno, __FILE__, __LINE__, NULL, "%s", msg)
-    #define _RPTFN(rptno,msg,...)   _RPT_BASE(rptno, __FILE__, __LINE__, NULL, msg, __VA_ARGS__)
-
-    #define _RPTFW0(rptno,msg)      _RPT_BASEW(rptno, _CRT_WIDE(__FILE__), __LINE__, NULL, L"%s", msg)
-    #define _RPTFWN(rptno,msg,...)  _RPT_BASEW(rptno, _CRT_WIDE(__FILE__), __LINE__, NULL, msg, __VA_ARGS__)
-
+#ifndef _ASSERT
+#define _ASSERT(expr) ((void)0)
 #endif
 
+#ifndef _ASSERTE
+#define _ASSERTE(expr) ((void)0)
+#endif
 
-#define _RPT1 _RPTN
-#define _RPT2 _RPTN
-#define _RPT3 _RPTN
-#define _RPT4 _RPTN
-#define _RPT5 _RPTN
+#ifndef _ASSERT_EXPR
+#define _ASSERT_EXPR(expr,expr_str) ((void)0)
+#endif
 
+#ifndef _ASSERT_BASE
+#define _ASSERT_BASE _ASSERT_EXPR
+#endif
 
-#define _RPTW1 _RPTWN
-#define _RPTW2 _RPTWN
-#define _RPTW3 _RPTWN
-#define _RPTW4 _RPTWN
-#define _RPTW5 _RPTWN
+#define _RPT0(rptno,msg)
+#define _RPTW0(rptno,msg)
 
-
-#define _RPTF1 _RPTFN
-#define _RPTF2 _RPTFN
-#define _RPTF3 _RPTFN
-#define _RPTF4 _RPTFN
-#define _RPTF5 _RPTFN
-
-
-#define _RPTFW1 _RPTFWN
-#define _RPTFW2 _RPTFWN
-#define _RPTFW3 _RPTFWN
-#define _RPTFW4 _RPTFWN
-#define _RPTFW5 _RPTFWN
-
-
+#define _RPT1(rptno,msg,arg1)
+#define _RPTW1(rptno,msg,arg1)
+#define _RPT2(rptno,msg,arg1,arg2)
+#define _RPTW2(rptno,msg,arg1,arg2)
+#define _RPT3(rptno,msg,arg1,arg2,arg3)
+#define _RPTW3(rptno,msg,arg1,arg2,arg3)
+#define _RPT4(rptno,msg,arg1,arg2,arg3,arg4)
+#define _RPTW4(rptno,msg,arg1,arg2,arg3,arg4)
+#define _RPTF0(rptno,msg)
+#define _RPTFW0(rptno,msg)
+#define _RPTF1(rptno,msg,arg1)
+#define _RPTFW1(rptno,msg,arg1)
+#define _RPTF2(rptno,msg,arg1,arg2)
+#define _RPTFW2(rptno,msg,arg1,arg2)
+#define _RPTF3(rptno,msg,arg1,arg2,arg3)
+#define _RPTFW3(rptno,msg,arg1,arg2,arg3)
+#define _RPTF4(rptno,msg,arg1,arg2,arg3,arg4)
+#define _RPTFW4(rptno,msg,arg1,arg2,arg3,arg4)
 
 #define _malloc_dbg(s,t,f,l) malloc(s)
 #define _calloc_dbg(c,s,t,f,l) calloc(c,s)
 #define _realloc_dbg(p,s,t,f,l) realloc(p,s)
-#define _recalloc_dbg(p,c,s,t,f,l) _recalloc(p,c,s)
 #define _expand_dbg(p,s,t,f,l) _expand(p,s)
 #define _free_dbg(p,t) free(p)
 #define _msize_dbg(p,t) _msize(p)
 
 #define _aligned_malloc_dbg(s,a,f,l) _aligned_malloc(s,a)
 #define _aligned_realloc_dbg(p,s,a,f,l) _aligned_realloc(p,s,a)
-#define _aligned_recalloc_dbg(p,c,s,a,f,l) _aligned_realloc(p,c,s,a)
 #define _aligned_free_dbg(p) _aligned_free(p)
 #define _aligned_offset_malloc_dbg(s,a,o,f,l) _aligned_offset_malloc(s,a,o)
 #define _aligned_offset_realloc_dbg(p,s,a,o,f,l) _aligned_offset_realloc(p,s,a,o)
+
+#if __MSVCRT_VERSION__ >= 0x900
+#define _recalloc_dbg(p,c,s,t,f,l) _recalloc(p,c,s)
+#define _aligned_recalloc_dbg(p,c,s,a,f,l) _aligned_realloc(p,c,s,a)
 #define _aligned_offset_recalloc_dbg(p,c,s,a,o,f,l) _aligned_offset_recalloc(p,c,s,a,o)
+#define _aligned_msize_dbg(p,a,o) _aligned_msize(p,a,o)
+#endif
 
 #define _malloca_dbg(s,t,f,l) _malloca(s)
 #define _freea_dbg(p,t) _freea(p)
@@ -223,8 +173,10 @@ extern "C" {
 #define _wgetcwd_dbg(s,le,t,f,l) _wgetcwd(s,le)
 #define _getdcwd_dbg(d,s,le,t,f,l) _getdcwd(d,s,le)
 #define _wgetdcwd_dbg(d,s,le,t,f,l) _wgetdcwd(d,s,le)
+#if __MSVCRT_VERSION__ >= 0x800
 #define _getdcwd_lk_dbg(d,s,le,t,f,l) _getdcwd_nolock(d,s,le)
 #define _wgetdcwd_lk_dbg(d,s,le,t,f,l) _wgetdcwd_nolock(d,s,le)
+#endif
 
 #define _CrtSetReportHook(f) ((_CRT_REPORT_HOOK)0)
 #define _CrtGetReportHook() ((_CRT_REPORT_HOOK)0)
@@ -232,6 +184,8 @@ extern "C" {
 #define _CrtSetReportHookW2(t,f) ((int)0)
 #define _CrtSetReportMode(t,f) ((int)0)
 #define _CrtSetReportFile(t,f) ((_HFILE)0)
+
+#define _CrtDbgBreak() ((void)0)
 
 #define _CrtSetBreakAlloc(a) ((long)0)
 #define _CrtSetAllocHook(f) ((_CRT_ALLOC_HOOK)0)
@@ -256,13 +210,14 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-
+/*
   void *__cdecl operator new[](size_t _Size);
   inline void *__cdecl operator new(size_t _Size,int,const char *,int) { return ::operator new(_Size); }
   inline void *__cdecl operator new[](size_t _Size,int,const char *,int) { return ::operator new[](_Size); }
-  void __cdecl operator delete[](void *) throw();
-  inline void __cdecl operator delete(void *_P,int,const char *,int) throw() { ::operator delete(_P); }
-  inline void __cdecl operator delete[](void *_P,int,const char *,int) throw() { ::operator delete[](_P); }
+  void __cdecl operator delete[](void *);
+  inline void __cdecl operator delete(void *_P,int,const char *,int) { ::operator delete(_P); }
+  inline void __cdecl operator delete[](void *_P,int,const char *,int) { ::operator delete[](_P); }
+ */
 #endif
 
 #pragma pack(pop)

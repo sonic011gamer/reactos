@@ -44,4 +44,5 @@ extern "C" {
 }
 #endif
 
-#endif
+#endif /* _NTDDTDI_ */
+

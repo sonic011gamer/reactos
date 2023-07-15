@@ -1,70 +1,70 @@
+/**
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER within this package.
+ */
+
 #ifndef _WINNLS32_
 #define _WINNLS32_
+
+#include <_mingw_unicode.h>
+#include <winapifamily.h>
+
+#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct _tagDATETIME
-{
+  typedef struct _tagDATETIME {
     WORD year;
     WORD month;
     WORD day;
     WORD hour;
     WORD min;
     WORD sec;
-} DATETIME;
+  } DATETIME;
 
-typedef struct _tagIMEPROA
-{
+  typedef struct _tagIMEPROA {
     HWND hWnd;
     DATETIME InstDate;
     UINT wVersion;
     BYTE szDescription[50];
     BYTE szName[80];
     BYTE szOptions[30];
-} IMEPROA,*PIMEPROA,NEAR *NPIMEPROA,FAR *LPIMEPROA;
+  } IMEPROA,*PIMEPROA,*NPIMEPROA,*LPIMEPROA;
 
-typedef struct _tagIMEPROW
-{
+  typedef struct _tagIMEPROW {
     HWND hWnd;
     DATETIME InstDate;
     UINT wVersion;
     WCHAR szDescription[50];
     WCHAR szName[80];
     WCHAR szOptions[30];
-} IMEPROW,*PIMEPROW,NEAR *NPIMEPROW,FAR *LPIMEPROW;
+  } IMEPROW,*PIMEPROW,*NPIMEPROW,*LPIMEPROW;
 
-#ifdef UNICODE
-typedef IMEPROW IMEPRO;
-typedef PIMEPROW PIMEPRO;
-typedef NPIMEPROW NPIMEPRO;
-typedef LPIMEPROW LPIMEPRO;
-#define IMPGetIME IMPGetIMEW
-#define IMPQueryIME IMPQueryIMEW
-#define IMPSetIME IMPSetIMEW
-#else
-typedef IMEPROA IMEPRO;
-typedef PIMEPROA PIMEPRO;
-typedef NPIMEPROA NPIMEPRO;
-typedef LPIMEPROA LPIMEPRO;
-#define IMPGetIME IMPGetIMEA
-#define IMPQueryIME IMPQueryIMEA
-#define IMPSetIME IMPSetIMEA
-#endif
+  __MINGW_TYPEDEF_AW(IMEPRO)
+  __MINGW_TYPEDEF_AW(PIMEPRO)
+  __MINGW_TYPEDEF_AW(NPIMEPRO)
+  __MINGW_TYPEDEF_AW(LPIMEPRO)
 
-BOOL WINAPI IMPGetIMEA(HWND, LPIMEPROA);
-BOOL WINAPI IMPGetIMEW(HWND, LPIMEPROW);
-BOOL WINAPI IMPQueryIMEA(LPIMEPROA);
-BOOL WINAPI IMPQueryIMEW(LPIMEPROW);
-BOOL WINAPI IMPSetIMEA(HWND, LPIMEPROA);
-BOOL WINAPI IMPSetIMEW(HWND, LPIMEPROW);
-UINT WINAPI WINNLSGetIMEHotkey(HWND);
-BOOL WINAPI WINNLSEnableIME(HWND, BOOL);
-BOOL WINAPI WINNLSGetEnableStatus(HWND);
+  WINBOOL WINAPI IMPGetIMEA (HWND, LPIMEPROA);
+  WINBOOL WINAPI IMPGetIMEW (HWND, LPIMEPROW);
+  WINBOOL WINAPI IMPQueryIMEA (LPIMEPROA);
+  WINBOOL WINAPI IMPQueryIMEW (LPIMEPROW);
+  WINBOOL WINAPI IMPSetIMEA (HWND, LPIMEPROA);
+  WINBOOL WINAPI IMPSetIMEW (HWND, LPIMEPROW);
+  UINT WINAPI WINNLSGetIMEHotkey (HWND);
+  WINBOOL WINAPI WINNLSEnableIME (HWND, WINBOOL);
+  WINBOOL WINAPI WINNLSGetEnableStatus (HWND);
+
+#define IMPGetIME __MINGW_NAME_AW(IMPGetIME)
+#define IMPQueryIME __MINGW_NAME_AW(IMPQueryIME)
+#define IMPSetIME __MINGW_NAME_AW(IMPSetIME)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* _USERENV_H */
+#endif
+
+#endif

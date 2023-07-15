@@ -13,7 +13,6 @@
 
 #include <intrin.h>
 #include <assert.h>
-#include <dvec.h>
 #include <crtdefs.h>
 
 #pragma pack(push,_CRT_PACKING)
@@ -51,5 +50,8 @@ public:
 
 #endif /* ifdef __SSE__ */
 
+#include <dvec.h>
+
 #endif
 #endif
+

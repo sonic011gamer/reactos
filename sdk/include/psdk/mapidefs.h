@@ -1,1326 +1,1412 @@
-/*
- * Copyright (C) 1998 Justin Bradford
- * Copyright (c) 2009 Owen Rudge for CodeWeavers
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
 #ifndef MAPIDEFS_H
 #define MAPIDEFS_H
 
-#ifndef __WINESRC__
-# include <windows.h>
+#ifndef _WINDOWS_
+#define INC_OLE2
+#define INC_RPC
+#define _OLE_H_
+#include <windows.h>
 #endif
 
+#ifndef _OLEERROR_H_
 #include <winerror.h>
+#endif
 #include <objbase.h>
 #include <stddef.h>
 
-/* Some types from other headers */
+#ifndef MAPI_DIM
+#define MAPI_DIM 1
+#endif
+
+#ifndef STDMAPIINITCALLTYPE
+#define STDMAPIINITCALLTYPE __cdecl
+#define STDINITMETHODIMP HRESULT __cdecl
+#define STDINITMETHODIMP_(type) type __cdecl
+#endif
+
+#define MAPI_NT_SERVICE ((ULONG) 0x00010000)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifndef __WCHAR_DEFINED
+#define __WCHAR_DEFINED
+  typedef wchar_t WCHAR;
+#endif
+
+#if defined(UNICODE)
+  typedef WCHAR TCHAR;
+#else
+  typedef char TCHAR;
+#endif
+
+  typedef WCHAR *LPWSTR;
+  typedef const WCHAR *LPCWSTR;
+  typedef TCHAR *LPTSTR;
+  typedef const TCHAR *LPCTSTR;
+  typedef BYTE *LPBYTE;
+  typedef ULONG *LPULONG;
+
 #ifndef __LHANDLE
 #define __LHANDLE
-typedef ULONG_PTR LHANDLE, *LPLHANDLE;
+  typedef ULONG_PTR LHANDLE,*LPLHANDLE;
 #endif
+
+#if !defined(_WINBASE_) && !defined(_FILETIME_)
+#define _FILETIME_
+  typedef struct _FILETIME {
+    DWORD dwLowDateTime;
+    DWORD dwHighDateTime;
+  } FILETIME,*LPFILETIME;
+#endif
+
+#ifndef BEGIN_INTERFACE
+#define BEGIN_INTERFACE
+#endif
+
+#define MAPI_MODIFY ((ULONG) 0x00000001)
+
+#define MAPI_ACCESS_MODIFY ((ULONG) 0x00000001)
+#define MAPI_ACCESS_READ ((ULONG) 0x00000002)
+#define MAPI_ACCESS_DELETE ((ULONG) 0x00000004)
+#define MAPI_ACCESS_CREATE_HIERARCHY ((ULONG) 0x00000008)
+#define MAPI_ACCESS_CREATE_CONTENTS ((ULONG) 0x00000010)
+#define MAPI_ACCESS_CREATE_ASSOCIATED ((ULONG) 0x00000020)
+
+#define MAPI_UNICODE ((ULONG) 0x80000000)
+
+#if defined(UNICODE)
+#define fMapiUnicode MAPI_UNICODE
+#else
+#define fMapiUnicode 0
+#endif
+
+#define hrSuccess 0
+
+#ifndef MAPI_ORIG
+#define MAPI_ORIG 0
+#define MAPI_TO 1
+#define MAPI_CC 2
+#define MAPI_BCC 3
+#define MAPI_P1 0x10000000
+#define MAPI_SUBMITTED 0x80000000
+#endif
+
+#define MAPI_SHORTTERM 0x80
+#define MAPI_NOTRECIP 0x40
+#define MAPI_THISSESSION 0x20
+#define MAPI_NOW 0x10
+#define MAPI_NOTRESERVED 0x08
+
+#define MAPI_COMPOUND 0x80
+
+  typedef struct {
+    BYTE abFlags[4];
+    BYTE ab[MAPI_DIM];
+  } ENTRYID,*LPENTRYID;
+
+#define CbNewENTRYID(_cb) (offsetof(ENTRYID,ab) + (_cb))
+#define CbENTRYID(_cb) (offsetof(ENTRYID,ab) + (_cb))
+#define SizedENTRYID(_cb,_name) struct _ENTRYID_ ## _name { BYTE abFlags[4]; BYTE ab[_cb]; } _name
+
+  typedef struct _MAPIUID {
+    BYTE ab[16];
+  } MAPIUID,*LPMAPIUID;
+
+#define IsEqualMAPIUID(lpuid1,lpuid2) (!memcmp(lpuid1,lpuid2,sizeof(MAPIUID)))
+
+#define MAPI_ONE_OFF_UID { 0x81,0x2b,0x1f,0xa4,0xbe,0xa3,0x10,0x19,0x9d,0x6e,0x00,0xdd,0x01,0x0f,0x54,0x02 }
+#define MAPI_ONE_OFF_UNICODE 0x8000
+#define MAPI_ONE_OFF_NO_RICH_INFO 0x0001
+
+#define MAPI_STORE ((ULONG) 0x00000001)
+#define MAPI_ADDRBOOK ((ULONG) 0x00000002)
+#define MAPI_FOLDER ((ULONG) 0x00000003)
+#define MAPI_ABCONT ((ULONG) 0x00000004)
+#define MAPI_MESSAGE ((ULONG) 0x00000005)
+#define MAPI_MAILUSER ((ULONG) 0x00000006)
+#define MAPI_ATTACH ((ULONG) 0x00000007)
+#define MAPI_DISTLIST ((ULONG) 0x00000008)
+#define MAPI_PROFSECT ((ULONG) 0x00000009)
+#define MAPI_STATUS ((ULONG) 0x0000000A)
+#define MAPI_SESSION ((ULONG) 0x0000000B)
+#define MAPI_FORMINFO ((ULONG) 0x0000000C)
+
+#ifndef cchProfileNameMax
+#define cchProfileNameMax 64
+#define cchProfilePassMax 64
+#endif
+
+#define MV_FLAG 0x1000
+
+#define PT_UNSPECIFIED ((ULONG) 0)
+#define PT_NULL ((ULONG) 1)
+#define PT_I2 ((ULONG) 2)
+#define PT_LONG ((ULONG) 3)
+#define PT_R4 ((ULONG) 4)
+#define PT_DOUBLE ((ULONG) 5)
+#define PT_CURRENCY ((ULONG) 6)
+#define PT_APPTIME ((ULONG) 7)
+#define PT_ERROR ((ULONG) 10)
+#define PT_BOOLEAN ((ULONG) 11)
+#define PT_OBJECT ((ULONG) 13)
+#define PT_I8 ((ULONG) 20)
+#define PT_STRING8 ((ULONG) 30)
+#define PT_UNICODE ((ULONG) 31)
+#define PT_SYSTIME ((ULONG) 64)
+#define PT_CLSID ((ULONG) 72)
+#define PT_BINARY ((ULONG) 258)
+
+#define PT_SHORT PT_I2
+#define PT_I4 PT_LONG
+#define PT_FLOAT PT_R4
+#define PT_R8 PT_DOUBLE
+#define PT_LONGLONG PT_I8
+
+#if defined(UNICODE)
+#define PT_TSTRING PT_UNICODE
+#define PT_MV_TSTRING (MV_FLAG|PT_UNICODE)
+#define LPSZ lpszW
+#define LPPSZ lppszW
+#define MVSZ MVszW
+#else
+#define PT_TSTRING PT_STRING8
+#define PT_MV_TSTRING (MV_FLAG|PT_STRING8)
+#define LPSZ lpszA
+#define LPPSZ lppszA
+#define MVSZ MVszA
+#endif
+
+#define PROP_TYPE_MASK ((ULONG)0x0000FFFF)
+#define PROP_TYPE(ulPropTag) (((ULONG)(ulPropTag))&PROP_TYPE_MASK)
+#define PROP_ID(ulPropTag) (((ULONG)(ulPropTag))>>16)
+#define PROP_TAG(ulPropType,ulPropID) ((((ULONG)(ulPropID))<<16)|((ULONG)(ulPropType)))
+#define PROP_ID_NULL 0
+#define PROP_ID_INVALID 0xFFFF
+#define PR_NULL PROP_TAG(PT_NULL,PROP_ID_NULL)
+#define CHANGE_PROP_TYPE(ulPropTag,ulPropType) (((ULONG)0xFFFF0000 & ulPropTag) | ulPropType)
+
+#define PT_MV_I2 (MV_FLAG|PT_I2)
+#define PT_MV_LONG (MV_FLAG|PT_LONG)
+#define PT_MV_R4 (MV_FLAG|PT_R4)
+#define PT_MV_DOUBLE (MV_FLAG|PT_DOUBLE)
+#define PT_MV_CURRENCY (MV_FLAG|PT_CURRENCY)
+#define PT_MV_APPTIME (MV_FLAG|PT_APPTIME)
+#define PT_MV_SYSTIME (MV_FLAG|PT_SYSTIME)
+#define PT_MV_STRING8 (MV_FLAG|PT_STRING8)
+#define PT_MV_BINARY (MV_FLAG|PT_BINARY)
+#define PT_MV_UNICODE (MV_FLAG|PT_UNICODE)
+#define PT_MV_CLSID (MV_FLAG|PT_CLSID)
+#define PT_MV_I8 (MV_FLAG|PT_I8)
+
+#define PT_MV_SHORT PT_MV_I2
+#define PT_MV_I4 PT_MV_LONG
+#define PT_MV_FLOAT PT_MV_R4
+#define PT_MV_R8 PT_MV_DOUBLE
+#define PT_MV_LONGLONG PT_MV_I8
+
+#define MV_INSTANCE 0x2000
+#define MVI_FLAG (MV_FLAG | MV_INSTANCE)
+#define MVI_PROP(tag) ((tag) | MVI_FLAG)
+
+  typedef struct _SPropTagArray {
+    ULONG cValues;
+    ULONG aulPropTag[MAPI_DIM];
+  } SPropTagArray,*LPSPropTagArray;
+
+#define CbNewSPropTagArray(_ctag) (offsetof(SPropTagArray,aulPropTag) + (_ctag)*sizeof(ULONG))
+#define CbSPropTagArray(_lparray) (offsetof(SPropTagArray,aulPropTag) + (UINT)((_lparray)->cValues)*sizeof(ULONG))
+#define SizedSPropTagArray(_ctag,_name) struct _SPropTagArray_ ## _name { ULONG cValues; ULONG aulPropTag[_ctag]; } _name
+
+  typedef struct _SPropValue SPropValue;
 
 #ifndef _tagCY_DEFINED
 #define _tagCY_DEFINED
-typedef union tagCY
-{
-    struct
-    {
-#ifdef WORDS_BIGENDIAN
-        LONG  Hi;
-        ULONG Lo;
-#else
-        ULONG Lo;
-        LONG  Hi;
-#endif
-    } DUMMYSTRUCTNAME;
+#define _CY_DEFINED
+  typedef union tagCY {
+    struct {
+      unsigned __LONG32 Lo;
+      __LONG32 Hi;
+    };
     LONGLONG int64;
-} CY;
-typedef CY CURRENCY;
-#endif /* _tagCY_DEFINED */
-
-
-#ifndef _FILETIME_
-#define _FILETIME_
-typedef struct _FILETIME
-{
-#ifdef WORDS_BIGENDIAN
-    DWORD dwHighDateTime;
-    DWORD dwLowDateTime;
-#else
-    DWORD dwLowDateTime;
-    DWORD dwHighDateTime;
-#endif
-} FILETIME, *PFILETIME, *LPFILETIME;
+  } CY;
 #endif
 
-/* Memory allocation routines */
-typedef SCODE (WINAPI ALLOCATEBUFFER)(ULONG,LPVOID*);
-typedef SCODE (WINAPI ALLOCATEMORE)(ULONG,LPVOID,LPVOID*);
-typedef ULONG (WINAPI FREEBUFFER)(LPVOID);
+  typedef CY CURRENCY;
 
-typedef ALLOCATEBUFFER *LPALLOCATEBUFFER;
-typedef ALLOCATEMORE *LPALLOCATEMORE;
-typedef FREEBUFFER *LPFREEBUFFER;
+  typedef struct _SBinary {
+    ULONG cb;
+    LPBYTE lpb;
+  } SBinary,*LPSBinary;
 
-/* MAPI exposed interfaces */
-typedef const IID *LPCIID;
+  typedef struct _SShortArray {
+    ULONG cValues;
+    short int *lpi;
+  } SShortArray;
 
-typedef struct IAddrBook IAddrBook;
-typedef IAddrBook *LPADRBOOK;
-typedef struct IABContainer IABContainer;
-typedef IABContainer *LPABCONT;
-typedef struct IAttach *LPATTACH;
-typedef struct IDistList IDistList;
-typedef IDistList *LPDISTLIST;
-typedef struct IMailUser IMailUser;
-typedef IMailUser *LPMAILUSER;
-typedef struct IMAPIAdviseSink *LPMAPIADVISESINK;
-typedef struct IMAPIContainer *LPMAPICONTAINER;
-typedef struct IMAPIFolder *LPMAPIFOLDER;
-typedef struct IMAPIProgress IMAPIProgress;
-typedef IMAPIProgress *LPMAPIPROGRESS;
-typedef struct IMAPIStatus IMAPIStatus;
-typedef IMAPIStatus *LPMAPISTATUS;
-typedef struct IMessage *LPMESSAGE;
-typedef struct IProfSect IProfSect;
-typedef IProfSect *LPPROFSECT;
-typedef struct IProviderAdmin IProviderAdmin;
-typedef IProviderAdmin *LPPROVIDERADMIN;
+  typedef struct _SGuidArray {
+    ULONG cValues;
+    GUID *lpguid;
+  } SGuidArray;
 
-#ifndef MAPI_DIM
-# define MAPI_DIM 1 /* Default to one dimension for variable length arrays */
-#endif
+  typedef struct _SRealArray {
+    ULONG cValues;
+    float *lpflt;
+  } SRealArray;
 
-/* Flags for abFlags[0] */
-#define MAPI_NOTRESERVED 0x08
-#define MAPI_NOW         0x10
-#define MAPI_THISSESSION 0x20
-#define MAPI_NOTRECIP    0x40
-#define MAPI_SHORTTERM   0x80
+  typedef struct _SLongArray {
+    ULONG cValues;
+    LONG *lpl;
+  } SLongArray;
 
-/* Flags for abFlags[1]  */
-#define MAPI_COMPOUND    0x80
+  typedef struct _SLargeIntegerArray {
+    ULONG cValues;
+    LARGE_INTEGER *lpli;
+  } SLargeIntegerArray;
 
-typedef struct _ENTRYID
-{
-    BYTE abFlags[4];
-    BYTE ab[MAPI_DIM];
-} ENTRYID, *LPENTRYID;
+  typedef struct _SDateTimeArray {
+    ULONG cValues;
+    FILETIME *lpft;
+  } SDateTimeArray;
 
-/* MAPI GUID's */
-typedef struct _MAPIUID
-{
-    BYTE ab[sizeof(GUID)];
-} MAPIUID, *LPMAPIUID;
+  typedef struct _SAppTimeArray {
+    ULONG cValues;
+    double *lpat;
+  } SAppTimeArray;
 
-#define IsEqualMAPIUID(pl,pr) (!memcmp((pl),(pr),sizeof(MAPIUID)))
+  typedef struct _SCurrencyArray {
+    ULONG cValues;
+    CURRENCY *lpcur;
+  } SCurrencyArray;
 
-#define MAPI_ONE_OFF_UID { 0x81,0x2b,0x1f,0xa4,0xbe,0xa3,0x10,0x19,0x9d,0x6e, \
-                           0x00,0xdd,0x01,0x0f,0x54,0x02 }
-#define MAPI_ONE_OFF_UNICODE      0x8000
-#define MAPI_ONE_OFF_NO_RICH_INFO 0x0001
+  typedef struct _SBinaryArray {
+    ULONG cValues;
+    SBinary *lpbin;
+  } SBinaryArray;
 
-/* Object types */
-#define MAPI_STORE    1U
-#define MAPI_ADDRBOOK 2U
-#define MAPI_FOLDER   3U
-#define MAPI_ABCONT   4U
-#define MAPI_MESSAGE  5U
-#define MAPI_MAILUSER 6U
-#define MAPI_ATTACH   7U
-#define MAPI_DISTLIST 8U
-#define MAPI_PROFSECT 9U
-#define MAPI_STATUS   10U
-#define MAPI_SESSION  11U
-#define MAPI_FORMINFO 12U
+  typedef struct _SDoubleArray {
+    ULONG cValues;
+    double *lpdbl;
+  } SDoubleArray;
 
-/* Flags for various calls */
-#define MAPI_MODIFY                   0x00000001U /* Object can be modified */
-#define MAPI_CREATE                   0x00000002U /* Object can be created */
-#define MAPI_ACCESS_MODIFY            MAPI_MODIFY /* Want write access */
-#define MAPI_ACCESS_READ              0x00000002U /* Want read access */
-#define MAPI_ACCESS_DELETE            0x00000004U /* Want delete access */
-#define MAPI_ACCESS_CREATE_HIERARCHY  0x00000008U
-#define MAPI_ACCESS_CREATE_CONTENTS   0x00000010U
-#define MAPI_ACCESS_CREATE_ASSOCIATED 0x00000020U
-#define MAPI_USE_DEFAULT              0x00000040U
-#define MAPI_UNICODE                  0x80000000U /* Strings in this call are Unicode */
+  typedef struct _SWStringArray {
+    ULONG cValues;
+    LPWSTR *lppszW;
+  } SWStringArray;
 
-#if defined (UNICODE) || defined (__WINESRC__)
-#define fMapiUnicode MAPI_UNICODE
-#else
-#define fMapiUnicode 0U
-#endif
+  typedef struct _SLPSTRArray {
+    ULONG cValues;
+    LPSTR *lppszA;
+  } SLPSTRArray;
 
-/* IMAPISession::OpenMessageStore() flags */
-#define MDB_NO_DIALOG           0x00000001
-
-/* Types of message receivers */
-#ifndef MAPI_ORIG
-#define MAPI_ORIG      0          /* The original author */
-#define MAPI_TO        1          /* The primary message receiver */
-#define MAPI_CC        2          /* A carbon copy receiver */
-#define MAPI_BCC       3          /* A blind carbon copy receiver */
-#define MAPI_P1        0x10000000 /* A message resend */
-#define MAPI_SUBMITTED 0x80000000 /* This message has already been sent */
-#endif
-
-#ifndef cchProfileNameMax
-#define cchProfileNameMax 64 /* Maximum length of a profile name */
-#define cchProfilePassMax 64 /* Maximum length of a profile password */
-#endif
-
-/* Properties: The are the contents of cells in MAPI tables, as well as the
- * values returned when object properties are queried.
- */
-
-/* Property types */
-#define PT_UNSPECIFIED 0U
-#define PT_NULL        1U
-#define PT_I2          2U
-#define PT_SHORT       PT_I2
-#define PT_LONG        3U
-#define PT_I4          PT_LONG
-#define PT_R4          4U
-#define PT_FLOAT       PT_R4
-#define PT_DOUBLE      5U
-#define PT_R8          PT_DOUBLE
-#define PT_CURRENCY    6U
-#define PT_APPTIME     7U
-#define PT_ERROR       10U
-#define PT_BOOLEAN     11U
-#define PT_OBJECT      13U
-#define PT_I8          20U
-#define PT_LONGLONG    PT_I8
-#define PT_STRING8     30U
-#define PT_UNICODE     31U
-#define PT_SYSTIME     64U
-#define PT_CLSID       72U
-#define PT_BINARY      258U
-
-#define MV_FLAG     0x1000 /* This property type is multi-valued (an array) */
-#define MV_INSTANCE 0x2000
-#define MVI_FLAG    (MV_FLAG|MV_INSTANCE)
-#define MVI_PROP(t) ((t)|MVI_FLAG)
-
-#ifndef WINE_NO_UNICODE_MACROS
-# ifdef UNICODE
-# define PT_TSTRING      PT_UNICODE
-# define PT_MV_TSTRING   (MV_FLAG|PT_UNICODE)
-# define LPSZ            lpszW
-# define LPPSZ           lppszW
-# define MVSZ            MVszW
-# else
-# define PT_TSTRING      PT_STRING8
-# define PT_MV_TSTRING   (MV_FLAG|PT_STRING8)
-# define LPSZ            lpszA
-# define LPPSZ           lppszA
-# define MVSZ            MVszA
-# endif
-#endif
-
-#define PROP_TYPE_MASK  0xFFFFU
-#define PROP_TYPE(t)    ((t) & PROP_TYPE_MASK)
-#define PROP_ID(t)      ((t) >> 16)
-#define PROP_TAG(t,id)  (((id) << 16) | t)
-#define PROP_ID_NULL    0
-#define PROP_ID_INVALID 0xFFFF
-#define PR_NULL         PROP_TAG(PT_NULL, PROP_ID_NULL)
-
-#define CHANGE_PROP_TYPE(t,typ) ((0xFFFF0000 & t) | typ)
-
-/* Multi-valued property types */
-#define PT_MV_I2       (MV_FLAG|PT_I2)
-#define PT_MV_SHORT    PT_MV_I2
-#define PT_MV_LONG     (MV_FLAG|PT_LONG)
-#define PT_MV_I4       PT_MV_LONG
-#define PT_MV_R4       (MV_FLAG|PT_R4)
-#define PT_MV_FLOAT    PT_MV_R4
-#define PT_MV_DOUBLE   (MV_FLAG|PT_DOUBLE)
-#define PT_MV_R8       PT_MV_DOUBLE
-#define PT_MV_CURRENCY (MV_FLAG|PT_CURRENCY)
-#define PT_MV_APPTIME  (MV_FLAG|PT_APPTIME)
-#define PT_MV_SYSTIME  (MV_FLAG|PT_SYSTIME)
-#define PT_MV_STRING8  (MV_FLAG|PT_STRING8)
-#define PT_MV_BINARY   (MV_FLAG|PT_BINARY)
-#define PT_MV_UNICODE  (MV_FLAG|PT_UNICODE)
-#define PT_MV_CLSID    (MV_FLAG|PT_CLSID)
-#define PT_MV_I8       (MV_FLAG|PT_I8)
-#define PT_MV_LONGLONG PT_MV_I8
-
-
-/* The property tag structure. This describes a list of columns */
-typedef struct _SPropTagArray
-{
-    ULONG cValues;              /* Number of elements in aulPropTag */
-    ULONG aulPropTag[MAPI_DIM]; /* Property tags */
-} SPropTagArray, *LPSPropTagArray;
-
-#define CbNewSPropTagArray(c) (offsetof(SPropTagArray,aulPropTag)+(c)*sizeof(ULONG))
-#define CbSPropTagArray(p)    CbNewSPropTagArray((p)->cValues)
-#define SizedSPropTagArray(n,id) \
-    struct _SPropTagArray_##id { ULONG cValues; ULONG aulPropTag[n]; } id
-
-/* Multi-valued PT_APPTIME property value */
-typedef struct _SAppTimeArray
-{
-    ULONG   cValues; /* Number of doubles in lpat */
-    double *lpat;    /* Pointer to double array of length cValues */
-} SAppTimeArray;
-
-/* PT_BINARY property value */
-typedef struct _SBinary
-{
-    ULONG  cb;  /* Number of bytes in lpb */
-    LPBYTE lpb; /* Pointer to byte array of length cb */
-} SBinary, *LPSBinary;
-
-/* Multi-valued PT_BINARY property value */
-typedef struct _SBinaryArray
-{
-    ULONG    cValues; /* Number of SBinarys in lpbin */
-    SBinary *lpbin;   /* Pointer to SBinary array of length cValues */
-} SBinaryArray;
-
-typedef SBinaryArray ENTRYLIST, *LPENTRYLIST;
-
-/* Multi-valued PT_CY property value */
-typedef struct _SCurrencyArray
-{
-    ULONG  cValues; /* Number of CYs in lpcu */
-    CY    *lpcur;   /* Pointer to CY array of length cValues */
-} SCurrencyArray;
-
-/* Multi-valued PT_SYSTIME property value */
-typedef struct _SDateTimeArray
-{
-    ULONG     cValues; /* Number of FILETIMEs in lpft */
-    FILETIME *lpft;    /* Pointer to FILETIME array of length cValues */
-} SDateTimeArray;
-
-/* Multi-valued PT_DOUBLE property value */
-typedef struct _SDoubleArray
-{
-    ULONG   cValues; /* Number of doubles in lpdbl */
-    double *lpdbl;   /* Pointer to double array of length cValues */
-} SDoubleArray;
-
-/* Multi-valued PT_CLSID property value */
-typedef struct _SGuidArray
-{
-    ULONG cValues; /* Number of GUIDs in lpguid */
-    GUID *lpguid;  /* Pointer to GUID array of length cValues */
-} SGuidArray;
-
-/* Multi-valued PT_LONGLONG property value */
-typedef struct _SLargeIntegerArray
-{
-    ULONG          cValues; /* Number of long64s in lpli */
-    LARGE_INTEGER *lpli;    /* Pointer to long64 array of length cValues */
-} SLargeIntegerArray;
-
-/* Multi-valued PT_LONG property value */
-typedef struct _SLongArray
-{
-    ULONG  cValues; /* Number of longs in lpl */
-    LONG  *lpl;     /* Pointer to long array of length cValues */
-} SLongArray;
-
-/* Multi-valued PT_STRING8 property value */
-typedef struct _SLPSTRArray
-{
-    ULONG  cValues; /* Number of Ascii strings in lppszA */
-    LPSTR *lppszA;  /* Pointer to Ascii string array of length cValues */
-} SLPSTRArray;
-
-/* Multi-valued PT_FLOAT property value */
-typedef struct _SRealArray
-{
-    ULONG cValues; /* Number of floats in lpflt */
-    float *lpflt;  /* Pointer to float array of length cValues */
-} SRealArray;
-
-/* Multi-valued PT_SHORT property value */
-typedef struct _SShortArray
-{
-    ULONG      cValues; /* Number of shorts in lpb */
-    short int *lpi;     /* Pointer to short array of length cValues */
-} SShortArray;
-
-/* Multi-valued PT_UNICODE property value */
-typedef struct _SWStringArray
-{
-    ULONG   cValues; /* Number of Unicode strings in lppszW */
-    LPWSTR *lppszW;  /* Pointer to Unicode string array of length cValues */
-} SWStringArray;
-
-/* A property value */
-typedef union _PV
-{
-    short int          i;
-    LONG               l;
-    ULONG              ul;
-    float              flt;
-    double             dbl;
-    unsigned short     b;
-    CY                 cur;
-    double             at;
-    FILETIME           ft;
-    LPSTR              lpszA;
-    SBinary            bin;
-    LPWSTR             lpszW;
-    LPGUID             lpguid;
-    LARGE_INTEGER      li;
-    SShortArray        MVi;
-    SLongArray         MVl;
-    SRealArray         MVflt;
-    SDoubleArray       MVdbl;
-    SCurrencyArray     MVcur;
-    SAppTimeArray      MVat;
-    SDateTimeArray     MVft;
-    SBinaryArray       MVbin;
-    SLPSTRArray        MVszA;
-    SWStringArray      MVszW;
-    SGuidArray         MVguid;
+  typedef union _PV {
+    short int i;
+    LONG l;
+    ULONG ul;
+    float flt;
+    double dbl;
+    unsigned short int b;
+    CURRENCY cur;
+    double at;
+    FILETIME ft;
+    LPSTR lpszA;
+    SBinary bin;
+    LPWSTR lpszW;
+    LPGUID lpguid;
+    LARGE_INTEGER li;
+    SShortArray MVi;
+    SLongArray MVl;
+    SRealArray MVflt;
+    SDoubleArray MVdbl;
+    SCurrencyArray MVcur;
+    SAppTimeArray MVat;
+    SDateTimeArray MVft;
+    SBinaryArray MVbin;
+    SLPSTRArray MVszA;
+    SWStringArray MVszW;
+    SGuidArray MVguid;
     SLargeIntegerArray MVli;
-    SCODE              err;
-    LONG               x;
-} __UPV;
+    SCODE err;
+    LONG x;
+  } __UPV;
 
-/* Property value structure. This is essentially a mini-Variant */
-typedef struct _SPropValue
-{
-    ULONG     ulPropTag;  /* The property type */
-    ULONG     dwAlignPad; /* Alignment, treat as reserved */
-    union _PV Value;      /* The property value */
-} SPropValue, *LPSPropValue;
+  typedef struct _SPropValue {
+    ULONG ulPropTag;
+    ULONG dwAlignPad;
+    union _PV Value;
+  } SPropValue,*LPSPropValue;
 
-/* Structure describing a table row (a collection of property values) */
-typedef struct _SRow
-{
-    ULONG        ulAdrEntryPad; /* Padding, treat as reserved */
-    ULONG        cValues;       /* Count of property values in lpProbs */
-    LPSPropValue lpProps;       /* Pointer to an array of property values of length cValues */
-} SRow, *LPSRow;
+  typedef struct _SPropProblem {
+    ULONG ulIndex;
+    ULONG ulPropTag;
+    SCODE scode;
+  } SPropProblem,*LPSPropProblem;
 
-/* Structure describing a set of table rows */
-typedef struct _SRowSet
-{
-    ULONG cRows;          /* Count of rows in aRow */
-    SRow  aRow[MAPI_DIM]; /* Array of rows of length cRows */
-} SRowSet, *LPSRowSet;
+  typedef struct _SPropProblemArray {
+    ULONG cProblem;
+    SPropProblem aProblem[MAPI_DIM];
+  } SPropProblemArray,*LPSPropProblemArray;
 
-#define CbNewSRowSet(c) (offsetof(SRowSet,aRow)+(c)*sizeof(SRow))
-#define CbSRowSet(p)    CbNewSRowSet((p)->cRows)
-#define SizedSRowSet(n,id) \
-    struct _SRowSet_##id { ULONG cRows; SRow aRow[n]; } id
+#define CbNewSPropProblemArray(_cprob) (offsetof(SPropProblemArray,aProblem) + (_cprob)*sizeof(SPropProblem))
+#define CbSPropProblemArray(_lparray) (offsetof(SPropProblemArray,aProblem) + (UINT) ((_lparray)->cProblem*sizeof(SPropProblem)))
+#define SizedSPropProblemArray(_cprob,_name) struct _SPropProblemArray_ ## _name { ULONG cProblem; SPropProblem aProblem[_cprob]; } _name
 
-/* Structure describing a problem with a property */
-typedef struct _SPropProblem
-{
-    ULONG ulIndex;   /* Index of the property */
-    ULONG ulPropTag; /* Property tag of the property */
-    SCODE scode;     /* Error code of the problem */
-} SPropProblem, *LPSPropProblem;
+  typedef SBinaryArray ENTRYLIST,*LPENTRYLIST;
+  typedef struct {
+    ULONG cb;
+    BYTE abEntry[MAPI_DIM];
+  } FLATENTRY,*LPFLATENTRY;
 
-/* A collection of property problems */
-typedef struct _SPropProblemArray
-{
-    ULONG        cProblem;           /* Number of problems in aProblem */
-    SPropProblem aProblem[MAPI_DIM]; /* Array of problems of length cProblem */
-} SPropProblemArray, *LPSPropProblemArray;
+  typedef struct {
+    ULONG cEntries;
+    ULONG cbEntries;
+    BYTE abEntries[MAPI_DIM];
+  } FLATENTRYLIST,*LPFLATENTRYLIST;
 
-/* FPropContainsProp flags */
-#define FL_FULLSTRING     ((ULONG)0x00000) /* Exact string match */
-#define FL_SUBSTRING      ((ULONG)0x00001) /* Substring match */
-#define FL_PREFIX         ((ULONG)0x00002) /* Prefix match */
-#define FL_IGNORECASE     ((ULONG)0x10000) /* Case insensitive */
-#define FL_IGNORENONSPACE ((ULONG)0x20000) /* Ignore non spacing characters */
-#define FL_LOOSE          ((ULONG)0x40000) /* Try very hard to match */
+  typedef struct {
+    ULONG cb;
+    BYTE ab[MAPI_DIM];
+  } MTSID,*LPMTSID;
 
+  typedef struct {
+    ULONG cMTSIDs;
+    ULONG cbMTSIDs;
+    BYTE abMTSIDs[MAPI_DIM];
+  } FLATMTSIDLIST,*LPFLATMTSIDLIST;
 
-/* Table types returned by IMAPITable_GetStatus() */
-#define TBLTYPE_SNAPSHOT 0U /* Table is fixed at creation time and contents do not change */
-#define TBLTYPE_KEYSET   1U /* Table has a fixed number of rows, but row values may change */
-#define TBLTYPE_DYNAMIC  2U /* Table values and the number of rows may change */
+#define CbNewFLATENTRY(_cb) (offsetof(FLATENTRY,abEntry) + (_cb))
+#define CbFLATENTRY(_lpentry) (offsetof(FLATENTRY,abEntry) + (_lpentry)->cb)
+#define CbNewFLATENTRYLIST(_cb) (offsetof(FLATENTRYLIST,abEntries) + (_cb))
+#define CbFLATENTRYLIST(_lplist) (offsetof(FLATENTRYLIST,abEntries) + (_lplist)->cbEntries)
+#define CbNewMTSID(_cb) (offsetof(MTSID,ab) + (_cb))
+#define CbMTSID(_lpentry) (offsetof(MTSID,ab) + (_lpentry)->cb)
+#define CbNewFLATMTSIDLIST(_cb) (offsetof(FLATMTSIDLIST,abMTSIDs) + (_cb))
+#define CbFLATMTSIDLIST(_lplist) (offsetof(FLATMTSIDLIST,abMTSIDs) + (_lplist)->cbMTSIDs)
 
-/* Table status returned by IMAPITable_GetStatus() */
-#define TBLSTAT_COMPLETE       0U  /* All operations have completed (normal status) */
-#define TBLSTAT_QCHANGED       7U  /* Table data has changed as expected */
-#define TBLSTAT_SORTING        9U  /* Table is being asynchronously sorted */
-#define TBLSTAT_SORT_ERROR     10U /* An error occurred while sorting the table */
-#define TBLSTAT_SETTING_COLS   11U /* Table columns are being asynchronously changed */
-#define TBLSTAT_SETCOL_ERROR   13U /* An error occurred during column changing */
-#define TBLSTAT_RESTRICTING    14U /* Table rows are being asynchronously restricted */
-#define TBLSTAT_RESTRICT_ERROR 15U /* An error occurred during row restriction */
+  typedef struct _ADRENTRY {
+    ULONG ulReserved1;
+    ULONG cValues;
+    LPSPropValue rgPropVals;
+  } ADRENTRY,*LPADRENTRY;
 
-/* Flags for IMAPITable operations that can be asynchronous */
-#define TBL_NOWAIT 1U         /* Perform the operation asynchronously */
-#define TBL_BATCH  2U         /* Perform the operation when the results are needed */
-#define TBL_ASYNC  TBL_NOWAIT /* Synonym for TBL_NOWAIT */
+  typedef struct _ADRLIST {
+    ULONG cEntries;
+    ADRENTRY aEntries[MAPI_DIM];
+  } ADRLIST,*LPADRLIST;
 
-/* Flags for IMAPITable_FindRow() */
-#define DIR_BACKWARD 1U /* Read rows backwards from the start bookmark */
+#define CbNewADRLIST(_centries) (offsetof(ADRLIST,aEntries) + (_centries)*sizeof(ADRENTRY))
+#define CbADRLIST(_lpadrlist) (offsetof(ADRLIST,aEntries) + (UINT)(_lpadrlist)->cEntries*sizeof(ADRENTRY))
+#define SizedADRLIST(_centries,_name) struct _ADRLIST_ ## _name { ULONG cEntries; ADRENTRY aEntries[_centries]; } _name
 
-/* Table bookmarks */
-typedef ULONG BOOKMARK;
+  typedef struct _SRow {
+    ULONG ulAdrEntryPad;
+    ULONG cValues;
+    LPSPropValue lpProps;
+  } SRow,*LPSRow;
 
-#define BOOKMARK_BEGINNING ((BOOKMARK)0) /* The first row */
-#define BOOKMARK_CURRENT   ((BOOKMARK)1) /* The curent table row */
-#define BOOKMARK_END       ((BOOKMARK)2) /* The last row */
+  typedef struct _SRowSet {
+    ULONG cRows;
+    SRow aRow[MAPI_DIM];
+  } SRowSet,*LPSRowSet;
 
-/* Row restrictions */
-typedef struct _SRestriction* LPSRestriction;
+#define CbNewSRowSet(_crow) (offsetof(SRowSet,aRow) + (_crow)*sizeof(SRow))
+#define CbSRowSet(_lprowset) (offsetof(SRowSet,aRow) + (UINT)((_lprowset)->cRows*sizeof(SRow)))
+#define SizedSRowSet(_crow,_name) struct _SRowSet_ ## _name { ULONG cRows; SRow aRow[_crow]; } _name
 
-typedef struct _SAndRestriction
-{
-    ULONG          cRes;
+  typedef SCODE (WINAPI ALLOCATEBUFFER)(ULONG cbSize,LPVOID *lppBuffer);
+  typedef SCODE (WINAPI ALLOCATEMORE)(ULONG cbSize,LPVOID lpObject,LPVOID *lppBuffer);
+  typedef ULONG (WINAPI FREEBUFFER)(LPVOID lpBuffer);
+
+  typedef ALLOCATEBUFFER *LPALLOCATEBUFFER;
+  typedef ALLOCATEMORE *LPALLOCATEMORE;
+  typedef FREEBUFFER *LPFREEBUFFER;
+
+#if defined(MAPI_IF) && (!defined(__cplusplus) || defined(CINTERFACE))
+#define DECLARE_MAPI_INTERFACE(iface) typedef struct iface##Vtbl iface##Vtbl,*iface; struct iface##Vtbl
+#define DECLARE_MAPI_INTERFACE_(iface,baseiface) DECLARE_MAPI_INTERFACE(iface)
+#define DECLARE_MAPI_INTERFACE_PTR(iface,piface) typedef struct iface##Vtbl iface##Vtbl,*iface,**piface;
+#else
+#define DECLARE_MAPI_INTERFACE(iface) DECLARE_INTERFACE(iface)
+#define DECLARE_MAPI_INTERFACE_(iface,baseiface) DECLARE_INTERFACE_(iface,baseiface)
+#ifdef __cplusplus
+#define DECLARE_MAPI_INTERFACE_PTR(iface,piface) struct iface; typedef iface *piface
+#else
+#define DECLARE_MAPI_INTERFACE_PTR(iface,piface) typedef struct iface iface,*piface
+#endif
+#endif
+
+#define MAPIMETHOD(method) MAPIMETHOD_(HRESULT,method)
+#define MAPIMETHOD_(type,method) STDMETHOD_(type,method)
+#define MAPIMETHOD_DECLARE(type,method,prefix) STDMETHODIMP_(type) prefix##method
+#define MAPIMETHOD_TYPEDEF(type,method,prefix) typedef type (WINAPI prefix##method##_METHOD)
+
+#define MAPI_IUNKNOWN_METHODS(IPURE) MAPIMETHOD(QueryInterface) (THIS_ REFIID riid,LPVOID *ppvObj) IPURE; MAPIMETHOD_(ULONG,AddRef) (THIS) IPURE; MAPIMETHOD_(ULONG,Release) (THIS) IPURE;
+#undef IMPL
+#define IMPL
+
+  typedef const IID *LPCIID;
+
+  DECLARE_MAPI_INTERFACE_PTR(IMsgStore,LPMDB);
+  DECLARE_MAPI_INTERFACE_PTR(IMAPIFolder,LPMAPIFOLDER);
+  DECLARE_MAPI_INTERFACE_PTR(IMessage,LPMESSAGE);
+  DECLARE_MAPI_INTERFACE_PTR(IAttach,LPATTACH);
+  DECLARE_MAPI_INTERFACE_PTR(IAddrBook,LPADRBOOK);
+  DECLARE_MAPI_INTERFACE_PTR(IABContainer,LPABCONT);
+  DECLARE_MAPI_INTERFACE_PTR(IMailUser,LPMAILUSER);
+  DECLARE_MAPI_INTERFACE_PTR(IDistList,LPDISTLIST);
+  DECLARE_MAPI_INTERFACE_PTR(IMAPIStatus,LPMAPISTATUS);
+  DECLARE_MAPI_INTERFACE_PTR(IMAPITable,LPMAPITABLE);
+  DECLARE_MAPI_INTERFACE_PTR(IProfSect,LPPROFSECT);
+  DECLARE_MAPI_INTERFACE_PTR(IMAPIProp,LPMAPIPROP);
+  DECLARE_MAPI_INTERFACE_PTR(IMAPIContainer,LPMAPICONTAINER);
+  DECLARE_MAPI_INTERFACE_PTR(IMAPIAdviseSink,LPMAPIADVISESINK);
+  DECLARE_MAPI_INTERFACE_PTR(IMAPIProgress,LPMAPIPROGRESS);
+  DECLARE_MAPI_INTERFACE_PTR(IProviderAdmin,LPPROVIDERADMIN);
+
+  typedef struct _MAPIERROR {
+    ULONG ulVersion;
+    LPTSTR lpszError;
+    LPTSTR lpszComponent;
+    ULONG ulLowLevelError;
+    ULONG ulContext;
+  } MAPIERROR,*LPMAPIERROR;
+
+#define fnevCriticalError ((ULONG) 0x00000001)
+#define fnevNewMail ((ULONG) 0x00000002)
+#define fnevObjectCreated ((ULONG) 0x00000004)
+#define fnevObjectDeleted ((ULONG) 0x00000008)
+#define fnevObjectModified ((ULONG) 0x00000010)
+#define fnevObjectMoved ((ULONG) 0x00000020)
+#define fnevObjectCopied ((ULONG) 0x00000040)
+#define fnevSearchComplete ((ULONG) 0x00000080)
+#define fnevTableModified ((ULONG) 0x00000100)
+#define fnevStatusObjectModified ((ULONG) 0x00000200)
+#define fnevReservedForMapi ((ULONG) 0x40000000)
+#define fnevExtended ((ULONG) 0x80000000)
+
+#define TABLE_CHANGED 1
+#define TABLE_ERROR 2
+#define TABLE_ROW_ADDED 3
+#define TABLE_ROW_DELETED 4
+#define TABLE_ROW_MODIFIED 5
+#define TABLE_SORT_DONE 6
+#define TABLE_RESTRICT_DONE 7
+#define TABLE_SETCOL_DONE 8
+#define TABLE_RELOAD 9
+
+  typedef struct _ERROR_NOTIFICATION {
+    ULONG cbEntryID;
+    LPENTRYID lpEntryID;
+    SCODE scode;
+    ULONG ulFlags;
+    LPMAPIERROR lpMAPIError;
+  } ERROR_NOTIFICATION;
+
+  typedef struct _NEWMAIL_NOTIFICATION {
+    ULONG cbEntryID;
+    LPENTRYID lpEntryID;
+    ULONG cbParentID;
+    LPENTRYID lpParentID;
+    ULONG ulFlags;
+    LPTSTR lpszMessageClass;
+    ULONG ulMessageFlags;
+  } NEWMAIL_NOTIFICATION;
+
+  typedef struct _OBJECT_NOTIFICATION {
+    ULONG cbEntryID;
+    LPENTRYID lpEntryID;
+    ULONG ulObjType;
+    ULONG cbParentID;
+    LPENTRYID lpParentID;
+    ULONG cbOldID;
+    LPENTRYID lpOldID;
+    ULONG cbOldParentID;
+    LPENTRYID lpOldParentID;
+    LPSPropTagArray lpPropTagArray;
+  } OBJECT_NOTIFICATION;
+
+  typedef struct _TABLE_NOTIFICATION {
+    ULONG ulTableEvent;
+    HRESULT hResult;
+    SPropValue propIndex;
+    SPropValue propPrior;
+    SRow row;
+    ULONG ulPad;
+  } TABLE_NOTIFICATION;
+
+  typedef struct _EXTENDED_NOTIFICATION {
+    ULONG ulEvent;
+    ULONG cb;
+    LPBYTE pbEventParameters;
+  } EXTENDED_NOTIFICATION;
+
+  typedef struct {
+    ULONG cbEntryID;
+    LPENTRYID lpEntryID;
+    ULONG cValues;
+    LPSPropValue lpPropVals;
+  } STATUS_OBJECT_NOTIFICATION;
+
+  typedef struct _NOTIFICATION {
+    ULONG ulEventType;
+    ULONG ulAlignPad;
+    union {
+      ERROR_NOTIFICATION err;
+      NEWMAIL_NOTIFICATION newmail;
+      OBJECT_NOTIFICATION obj;
+      TABLE_NOTIFICATION tab;
+      EXTENDED_NOTIFICATION ext;
+      STATUS_OBJECT_NOTIFICATION statobj;
+    } info;
+  } NOTIFICATION,*LPNOTIFICATION;
+
+#define MAPI_IMAPIADVISESINK_METHODS(IPURE) MAPIMETHOD_(ULONG,OnNotify) (THIS_ ULONG cNotif,LPNOTIFICATION lpNotifications) IPURE;
+#undef INTERFACE
+#define INTERFACE IMAPIAdviseSink
+  DECLARE_MAPI_INTERFACE_(IMAPIAdviseSink,IUnknown) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIADVISESINK_METHODS(PURE)
+  };
+
+  typedef __LONG32 (WINAPI NOTIFCALLBACK) (LPVOID lpvContext,ULONG cNotification,LPNOTIFICATION lpNotifications);
+  typedef NOTIFCALLBACK *LPNOTIFCALLBACK;
+
+#define szMAPINotificationMsg "MAPI Notify window message"
+#define MAPI_TOP_LEVEL ((ULONG) 0x00000001)
+#define MAPI_IMAPIPROGRESS_METHODS(IPURE) MAPIMETHOD(Progress) (THIS_ ULONG ulValue,ULONG ulCount,ULONG ulTotal) IPURE; MAPIMETHOD(GetFlags) (THIS_ ULONG *lpulFlags) IPURE; MAPIMETHOD(GetMax) (THIS_ ULONG *lpulMax) IPURE; MAPIMETHOD(GetMin) (THIS_ ULONG *lpulMin) IPURE; MAPIMETHOD(SetLimits) (THIS_ LPULONG lpulMin,LPULONG lpulMax,LPULONG lpulFlags) IPURE;
+#undef INTERFACE
+#define INTERFACE IMAPIProgress
+  DECLARE_MAPI_INTERFACE_(IMAPIProgress,IUnknown) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROGRESS_METHODS(PURE)
+  };
+
+#define MAPI_ERROR_VERSION __MSABI_LONG(0x00000000)
+
+#define KEEP_OPEN_READONLY ((ULONG) 0x00000001)
+#define KEEP_OPEN_READWRITE ((ULONG) 0x00000002)
+#define FORCE_SAVE ((ULONG) 0x00000004)
+
+#define MAPI_CREATE ((ULONG) 0x00000002)
+#define STREAM_APPEND ((ULONG) 0x00000004)
+
+#define MAPI_MOVE ((ULONG) 0x00000001)
+#define MAPI_NOREPLACE ((ULONG) 0x00000002)
+#define MAPI_DECLINE_OK ((ULONG) 0x00000004)
+
+#ifndef MAPI_DIALOG
+#define MAPI_DIALOG ((ULONG) 0x00000008)
+#endif
+
+#ifndef MAPI_USE_DEFAULT
+#define MAPI_USE_DEFAULT 0x00000040
+#endif
+
+#define MAPI_NO_STRINGS ((ULONG) 0x00000001)
+#define MAPI_NO_IDS ((ULONG) 0x00000002)
+
+#define MNID_ID 0
+#define MNID_STRING 1
+  typedef struct _MAPINAMEID {
+    LPGUID lpguid;
+    ULONG ulKind;
+    union {
+      LONG lID;
+      LPWSTR lpwstrName;
+    } Kind;
+  } MAPINAMEID,*LPMAPINAMEID;
+
+#define MAPI_IMAPIPROP_METHODS(IPURE) MAPIMETHOD(GetLastError) (THIS_ HRESULT hResult,ULONG ulFlags,LPMAPIERROR *lppMAPIError) IPURE; MAPIMETHOD(SaveChanges) (THIS_ ULONG ulFlags) IPURE; MAPIMETHOD(GetProps) (THIS_ LPSPropTagArray lpPropTagArray,ULONG ulFlags,ULONG *lpcValues,LPSPropValue *lppPropArray) IPURE; MAPIMETHOD(GetPropList) (THIS_ ULONG ulFlags,LPSPropTagArray *lppPropTagArray) IPURE; MAPIMETHOD(OpenProperty) (THIS_ ULONG ulPropTag,LPCIID lpiid,ULONG ulInterfaceOptions,ULONG ulFlags,LPUNKNOWN *lppUnk) IPURE; MAPIMETHOD(SetProps) (THIS_ ULONG cValues,LPSPropValue lpPropArray,LPSPropProblemArray *lppProblems) IPURE; MAPIMETHOD(DeleteProps) (THIS_ LPSPropTagArray lpPropTagArray,LPSPropProblemArray *lppProblems) IPURE; MAPIMETHOD(CopyTo) (THIS_ ULONG ciidExclude,LPCIID rgiidExclude,LPSPropTagArray lpExcludeProps,ULONG ulUIParam,LPMAPIPROGRESS lpProgress,LPCIID lpInterface,LPVOID lpDestObj,ULONG ulFlags,LPSPropProblemArray *lppProblems) IPURE; MAPIMETHOD(CopyProps) (THIS_ LPSPropTagArray lpIncludeProps,ULONG ulUIParam,LPMAPIPROGRESS lpProgress,LPCIID lpInterface,LPVOID lpDestObj,ULONG ulFlags,LPSPropProblemArray *lppProblems) IPURE; MAPIMETHOD(GetNamesFromIDs) (THIS_ LPSPropTagArray *lppPropTags,LPGUID lpPropSetGuid,ULONG ulFlags,ULONG *lpcPropNames,LPMAPINAMEID **lpppPropNames) IPURE; MAPIMETHOD(GetIDsFromNames) (THIS_ ULONG cPropNames,LPMAPINAMEID *lppPropNames,ULONG ulFlags,LPSPropTagArray *lppPropTags) IPURE;
+#undef INTERFACE
+#define INTERFACE IMAPIProp
+  DECLARE_MAPI_INTERFACE_(IMAPIProp,IUnknown) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROP_METHODS(PURE)
+  };
+
+#define TBLSTAT_COMPLETE ((ULONG) 0)
+#define TBLSTAT_QCHANGED ((ULONG) 7)
+#define TBLSTAT_SORTING ((ULONG) 9)
+#define TBLSTAT_SORT_ERROR ((ULONG) 10)
+#define TBLSTAT_SETTING_COLS ((ULONG) 11)
+#define TBLSTAT_SETCOL_ERROR ((ULONG) 13)
+#define TBLSTAT_RESTRICTING ((ULONG) 14)
+#define TBLSTAT_RESTRICT_ERROR ((ULONG) 15)
+
+#define TBLTYPE_SNAPSHOT ((ULONG) 0)
+#define TBLTYPE_KEYSET ((ULONG) 1)
+#define TBLTYPE_DYNAMIC ((ULONG) 2)
+
+#define TABLE_SORT_ASCEND ((ULONG) 0x00000000)
+#define TABLE_SORT_DESCEND ((ULONG) 0x00000001)
+#define TABLE_SORT_COMBINE ((ULONG) 0x00000002)
+
+  typedef struct _SSortOrder {
+    ULONG ulPropTag;
+    ULONG ulOrder;
+  } SSortOrder,*LPSSortOrder;
+
+  typedef struct _SSortOrderSet {
+    ULONG cSorts;
+    ULONG cCategories;
+    ULONG cExpanded;
+    SSortOrder aSort[MAPI_DIM];
+  } SSortOrderSet,*LPSSortOrderSet;
+
+#define CbNewSSortOrderSet(_csort) (offsetof(SSortOrderSet,aSort) + (_csort)*sizeof(SSortOrder))
+#define CbSSortOrderSet(_lpset) (offsetof(SSortOrderSet,aSort) + (UINT)((_lpset)->cSorts*sizeof(SSortOrder)))
+#define SizedSSortOrderSet(_csort,_name) struct _SSortOrderSet_ ## _name { ULONG cSorts; ULONG cCategories; ULONG cExpanded; SSortOrder aSort[_csort]; } _name
+
+  typedef ULONG BOOKMARK;
+
+#define BOOKMARK_BEGINNING ((BOOKMARK) 0)
+#define BOOKMARK_CURRENT ((BOOKMARK) 1)
+#define BOOKMARK_END ((BOOKMARK) 2)
+
+#define FL_FULLSTRING ((ULONG) 0x00000000)
+#define FL_SUBSTRING ((ULONG) 0x00000001)
+#define FL_PREFIX ((ULONG) 0x00000002)
+
+#define FL_IGNORECASE ((ULONG) 0x00010000)
+#define FL_IGNORENONSPACE ((ULONG) 0x00020000)
+#define FL_LOOSE ((ULONG) 0x00040000)
+
+  typedef struct _SRestriction *LPSRestriction;
+
+#define RES_AND ((ULONG) 0x00000000)
+#define RES_OR ((ULONG) 0x00000001)
+#define RES_NOT ((ULONG) 0x00000002)
+#define RES_CONTENT ((ULONG) 0x00000003)
+#define RES_PROPERTY ((ULONG) 0x00000004)
+#define RES_COMPAREPROPS ((ULONG) 0x00000005)
+#define RES_BITMASK ((ULONG) 0x00000006)
+#define RES_SIZE ((ULONG) 0x00000007)
+#define RES_EXIST ((ULONG) 0x00000008)
+#define RES_SUBRESTRICTION ((ULONG) 0x00000009)
+#define RES_COMMENT ((ULONG) 0x0000000A)
+
+#define RELOP_LT ((ULONG) 0)
+#define RELOP_LE ((ULONG) 1)
+#define RELOP_GT ((ULONG) 2)
+#define RELOP_GE ((ULONG) 3)
+#define RELOP_EQ ((ULONG) 4)
+#define RELOP_NE ((ULONG) 5)
+#define RELOP_RE ((ULONG) 6)
+
+#define BMR_EQZ ((ULONG) 0)
+#define BMR_NEZ ((ULONG) 1)
+
+  typedef struct _SAndRestriction {
+    ULONG cRes;
     LPSRestriction lpRes;
-} SAndRestriction;
+  } SAndRestriction;
 
-typedef struct _SBitMaskRestriction
-{
+  typedef struct _SOrRestriction {
+    ULONG cRes;
+    LPSRestriction lpRes;
+  } SOrRestriction;
+
+  typedef struct _SNotRestriction {
+    ULONG ulReserved;
+    LPSRestriction lpRes;
+  } SNotRestriction;
+
+  typedef struct _SContentRestriction {
+    ULONG ulFuzzyLevel;
+    ULONG ulPropTag;
+    LPSPropValue lpProp;
+  } SContentRestriction;
+
+  typedef struct _SBitMaskRestriction {
     ULONG relBMR;
     ULONG ulPropTag;
     ULONG ulMask;
-} SBitMaskRestriction;
+  } SBitMaskRestriction;
 
-typedef struct _SCommentRestriction
-{
-    ULONG          cValues;
-    LPSRestriction lpRes;
-    LPSPropValue   lpProp;
-} SCommentRestriction;
+  typedef struct _SPropertyRestriction {
+    ULONG relop;
+    ULONG ulPropTag;
+    LPSPropValue lpProp;
+  } SPropertyRestriction;
 
-#define RELOP_LT 0U
-#define RELOP_LE 1U
-#define RELOP_GT 2U
-#define RELOP_GE 3U
-#define RELOP_EQ 4U
-#define RELOP_NE 5U
-#define RELOP_RE 6U
-
-typedef struct _SComparePropsRestriction
-{
+  typedef struct _SComparePropsRestriction {
     ULONG relop;
     ULONG ulPropTag1;
     ULONG ulPropTag2;
-} SComparePropsRestriction;
+  } SComparePropsRestriction;
 
-typedef struct _SContentRestriction
-{
-    ULONG        ulFuzzyLevel;
-    ULONG        ulPropTag;
-    LPSPropValue lpProp;
-} SContentRestriction;
-
-typedef struct _SExistRestriction
-{
-    ULONG ulReserved1;
-    ULONG ulPropTag;
-    ULONG ulReserved2;
-} SExistRestriction;
-
-typedef struct _SNotRestriction
-{
-    ULONG          ulReserved;
-    LPSRestriction lpRes;
-} SNotRestriction;
-
-typedef struct _SOrRestriction
-{
-    ULONG          cRes;
-    LPSRestriction lpRes;
-} SOrRestriction;
-
-typedef struct _SPropertyRestriction
-{
-    ULONG        relop;
-    ULONG        ulPropTag;
-    LPSPropValue lpProp;
-} SPropertyRestriction;
-
-typedef struct _SSizeRestriction
-{
+  typedef struct _SSizeRestriction {
     ULONG relop;
     ULONG ulPropTag;
     ULONG cb;
-} SSizeRestriction;
+  } SSizeRestriction;
 
-typedef struct _SSubRestriction
-{
-    ULONG          ulSubObject;
-    LPSRestriction lpRes;
-} SSubRestriction;
-
-/* Restriction types */
-#define RES_AND            0U
-#define RES_OR             1U
-#define RES_NOT            2U
-#define RES_CONTENT        3U
-#define RES_PROPERTY       4U
-#define RES_COMPAREPROPS   5U
-#define RES_BITMASK        6U
-#define RES_SIZE           7U
-#define RES_EXIST          8U
-#define RES_SUBRESTRICTION 9U
-#define RES_COMMENT        10U
-
-typedef struct _SRestriction
-{
-    ULONG rt;
-    union
-    {
-        SAndRestriction          resAnd;
-        SBitMaskRestriction      resBitMask;
-        SCommentRestriction      resComment;
-        SComparePropsRestriction resCompareProps;
-        SContentRestriction      resContent;
-        SExistRestriction        resExist;
-        SNotRestriction          resNot;
-        SOrRestriction           resOr;
-        SPropertyRestriction     resProperty;
-        SSizeRestriction         resSize;
-        SSubRestriction          resSub;
-    } res;
-} SRestriction;
-
-/* Errors */
-typedef struct _MAPIERROR
-{
-    ULONG  ulVersion;       /* Mapi version */
-#if defined (UNICODE) || defined (__WINESRC__)
-    LPWSTR lpszError;       /* Error and component strings. These are Ascii */
-    LPWSTR lpszComponent;   /* unless the MAPI_UNICODE flag is passed in */
-#else
-    LPSTR  lpszError;
-    LPSTR  lpszComponent;
-#endif
-    ULONG  ulLowLevelError;
-    ULONG  ulContext;
-} MAPIERROR, *LPMAPIERROR;
-
-/* Sorting */
-#define TABLE_SORT_ASCEND  0U
-#define TABLE_SORT_DESCEND 1U
-#define TABLE_SORT_COMBINE 2U
-
-typedef struct _SSortOrder
-{
+  typedef struct _SExistRestriction {
+    ULONG ulReserved1;
     ULONG ulPropTag;
-    ULONG ulOrder;
-} SSortOrder, *LPSSortOrder;
+    ULONG ulReserved2;
+  } SExistRestriction;
 
-typedef struct _SSortOrderSet
-{
-    ULONG      cSorts;
-    ULONG      cCategories;
-    ULONG      cExpanded;
-    SSortOrder aSort[MAPI_DIM];
-} SSortOrderSet, * LPSSortOrderSet;
+  typedef struct _SSubRestriction {
+    ULONG ulSubObject;
+    LPSRestriction lpRes;
+  } SSubRestriction;
 
-#define MNID_ID     0
-#define MNID_STRING 1
+  typedef struct _SCommentRestriction {
+    ULONG cValues;
+    LPSRestriction lpRes;
+    LPSPropValue lpProp;
+  } SCommentRestriction;
 
-typedef struct _MAPINAMEID
-{
-    LPGUID lpguid;
-    ULONG ulKind;
-    union
-    {
-        LONG lID;
-        LPWSTR lpwstrName;
-    } Kind;
-} MAPINAMEID, *LPMAPINAMEID;
+  typedef struct _SRestriction {
+    ULONG rt;
+    union {
+      SComparePropsRestriction resCompareProps;
+      SAndRestriction resAnd;
+      SOrRestriction resOr;
+      SNotRestriction resNot;
+      SContentRestriction resContent;
+      SPropertyRestriction resProperty;
+      SBitMaskRestriction resBitMask;
+      SSizeRestriction resSize;
+      SExistRestriction resExist;
+      SSubRestriction resSub;
+      SCommentRestriction resComment;
+    } res;
+  } SRestriction;
 
-/* Desired notification types (bitflags) */
-#define fnevCriticalError        ((ULONG)0x00000001)
-#define fnevNewMail              ((ULONG)0x00000002)
-#define fnevObjectCreated        ((ULONG)0x00000004)
-#define fnevObjectDeleted        ((ULONG)0x00000008)
-#define fnevObjectModified       ((ULONG)0x00000010)
-#define fnevObjectMoved          ((ULONG)0x00000020)
-#define fnevObjectCopied         ((ULONG)0x00000040)
-#define fnevSearchComplete       ((ULONG)0x00000080)
-#define fnevTableModified        ((ULONG)0x00000100)
-#define fnevStatusObjectModified ((ULONG)0x00000200)
-#define fnevReservedForMapi      ((ULONG)0x40000000)
-#define fnevExtended             ((ULONG)0x80000000)
+#define TBL_ALL_COLUMNS ((ULONG) 0x00000001)
 
-/* Type of notification event */
-#define TABLE_CHANGED       1U
-#define TABLE_ERROR         2U
-#define TABLE_ROW_ADDED     3U
-#define TABLE_ROW_DELETED   4U
-#define TABLE_ROW_MODIFIED  5U
-#define TABLE_SORT_DONE     6U
-#define TABLE_RESTRICT_DONE 7U
-#define TABLE_SETCOL_DONE   8U
-#define TABLE_RELOAD        9U
+#define TBL_LEAF_ROW ((ULONG) 1)
+#define TBL_EMPTY_CATEGORY ((ULONG) 2)
+#define TBL_EXPANDED_CATEGORY ((ULONG) 3)
+#define TBL_COLLAPSED_CATEGORY ((ULONG) 4)
 
-/* fnevCriticalError notification */
-typedef struct _ERROR_NOTIFICATION
-{
-    ULONG       cbEntryID;
-    LPENTRYID   lpEntryID;
-    SCODE       scode;
-    ULONG       ulFlags;
-    LPMAPIERROR lpMAPIError;
-} ERROR_NOTIFICATION;
+#define TBL_NOWAIT ((ULONG) 0x00000001)
 
-/* fnevNewMail notification */
-typedef struct _NEWMAIL_NOTIFICATION
-{
-    ULONG     cbEntryID;
-    LPENTRYID lpEntryID;
-    ULONG     cbParentID;
-    LPENTRYID lpParentID;
-    ULONG     ulFlags;
-#if defined (UNICODE) || defined (__WINESRC__)
-    LPWSTR    lpszMessageClass;
-#else
-    LPSTR     lpszMessageClass;
-#endif
-    ULONG     ulMessageFlags;
-} NEWMAIL_NOTIFICATION;
+#define TBL_ASYNC ((ULONG) 0x00000001)
+#define TBL_BATCH ((ULONG) 0x00000002)
 
-/* fnevObjectCreated/Deleted/Modified/Moved/Copied notification */
-typedef struct _OBJECT_NOTIFICATION
-{
-    ULONG           cbEntryID;
-    LPENTRYID       lpEntryID;
-    ULONG           ulObjType;
-    ULONG           cbParentID;
-    LPENTRYID       lpParentID;
-    ULONG           cbOldID;
-    LPENTRYID       lpOldID;
-    ULONG           cbOldParentID;
-    LPENTRYID       lpOldParentID;
-    LPSPropTagArray lpPropTagArray;
-} OBJECT_NOTIFICATION;
+#define DIR_BACKWARD ((ULONG) 0x00000001)
 
-/* fnevTableModified notification */
-typedef struct _TABLE_NOTIFICATION
-{
-    ULONG      ulTableEvent;
-    HRESULT    hResult;
-    SPropValue propIndex;
-    SPropValue propPrior;
-    SRow       row;
-    ULONG      ulPad;
-} TABLE_NOTIFICATION;
+#define TBL_NOADVANCE ((ULONG) 0x00000001)
 
-/* fnevExtended notification */
-typedef struct _EXTENDED_NOTIFICATION
-{
-    ULONG  ulEvent;
-    ULONG  cb;
-    LPBYTE pbEventParameters;
-} EXTENDED_NOTIFICATION;
-
-/* fnevStatusObjectModified notification */
-typedef struct
-{
-    ULONG        cbEntryID;
-    LPENTRYID    lpEntryID;
-    ULONG        cValues;
-    LPSPropValue lpPropVals;
-} STATUS_OBJECT_NOTIFICATION;
-
-/* The notification structure passed to advise sinks */
-typedef struct _NOTIFICATION
-{
-    ULONG ulEventType;
-    ULONG ulAlignPad;
-    union
-    {
-        ERROR_NOTIFICATION         err;
-        NEWMAIL_NOTIFICATION       newmail;
-        OBJECT_NOTIFICATION        obj;
-        TABLE_NOTIFICATION         tab;
-        EXTENDED_NOTIFICATION      ext;
-        STATUS_OBJECT_NOTIFICATION statobj;
-    } info;
-} NOTIFICATION, *LPNOTIFICATION;
-
-typedef LONG (WINAPI NOTIFCALLBACK)(LPVOID,ULONG,LPNOTIFICATION);
-typedef NOTIFCALLBACK *LPNOTIFCALLBACK;
-
-/* IMAPIContainer::OpenEntry flags */
-#define MAPI_BEST_ACCESS    0x00000010
-
-/*****************************************************************************
- * IMAPITable interface
- *
- * This is the read-only 'view' over an I(MAPI)TableData object.
- */
+#define MAPI_IMAPITABLE_METHODS(IPURE) MAPIMETHOD(GetLastError) (THIS_ HRESULT hResult,ULONG ulFlags,LPMAPIERROR *lppMAPIError) IPURE; MAPIMETHOD(Advise) (THIS_ ULONG ulEventMask,LPMAPIADVISESINK lpAdviseSink,ULONG *lpulConnection) IPURE; MAPIMETHOD(Unadvise) (THIS_ ULONG ulConnection) IPURE; MAPIMETHOD(GetStatus) (THIS_ ULONG *lpulTableStatus,ULONG *lpulTableType) IPURE; MAPIMETHOD(SetColumns) (THIS_ LPSPropTagArray lpPropTagArray,ULONG ulFlags) IPURE; MAPIMETHOD(QueryColumns) (THIS_ ULONG ulFlags,LPSPropTagArray *lpPropTagArray) IPURE; MAPIMETHOD(GetRowCount) (THIS_ ULONG ulFlags,ULONG *lpulCount) IPURE; MAPIMETHOD(SeekRow) (THIS_ BOOKMARK bkOrigin,LONG lRowCount,LONG *lplRowsSought) IPURE; MAPIMETHOD(SeekRowApprox) (THIS_ ULONG ulNumerator,ULONG ulDenominator) IPURE; MAPIMETHOD(QueryPosition) (THIS_ ULONG *lpulRow,ULONG *lpulNumerator,ULONG *lpulDenominator) IPURE; MAPIMETHOD(FindRow) (THIS_ LPSRestriction lpRestriction,BOOKMARK bkOrigin,ULONG ulFlags) IPURE; MAPIMETHOD(Restrict) (THIS_ LPSRestriction lpRestriction,ULONG ulFlags) IPURE; MAPIMETHOD(CreateBookmark) (THIS_ BOOKMARK *lpbkPosition) IPURE; MAPIMETHOD(FreeBookmark) (THIS_ BOOKMARK bkPosition) IPURE; MAPIMETHOD(SortTable) (THIS_ LPSSortOrderSet lpSortCriteria,ULONG ulFlags) IPURE; MAPIMETHOD(QuerySortOrder) (THIS_ LPSSortOrderSet *lppSortCriteria) IPURE; MAPIMETHOD(QueryRows) (THIS_ LONG lRowCount,ULONG ulFlags,LPSRowSet *lppRows) IPURE; MAPIMETHOD(Abort) (THIS) IPURE; MAPIMETHOD(ExpandRow) (THIS_ ULONG cbInstanceKey,LPBYTE pbInstanceKey,ULONG ulRowCount,ULONG ulFlags,LPSRowSet *lppRows,ULONG *lpulMoreRows) IPURE; MAPIMETHOD(CollapseRow) (THIS_ ULONG cbInstanceKey,LPBYTE pbInstanceKey,ULONG ulFlags,ULONG *lpulRowCount) IPURE; MAPIMETHOD(WaitForCompletion) (THIS_ ULONG ulFlags,ULONG ulTimeout,ULONG *lpulTableStatus) IPURE; MAPIMETHOD(GetCollapseState) (THIS_ ULONG ulFlags,ULONG cbInstanceKey,LPBYTE lpbInstanceKey,ULONG *lpcbCollapseState,LPBYTE *lppbCollapseState) IPURE; MAPIMETHOD(SetCollapseState) (THIS_ ULONG ulFlags,ULONG cbCollapseState,LPBYTE pbCollapseState,BOOKMARK *lpbkLocation) IPURE;
+#undef INTERFACE
 #define INTERFACE IMAPITable
-DECLARE_INTERFACE_(IMAPITable,IUnknown)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-    /*** IMAPITable methods ***/
-    STDMETHOD(GetLastError)(THIS_ HRESULT hRes, ULONG ulFlags, LPMAPIERROR *lppError) PURE;
-    STDMETHOD(Advise)(THIS_ ULONG ulMask, LPMAPIADVISESINK lpSink, ULONG *lpCxn) PURE;
-    STDMETHOD(Unadvise)(THIS_ ULONG ulCxn) PURE;
-    STDMETHOD(GetStatus)(THIS_ ULONG *lpStatus, ULONG *lpType) PURE;
-    STDMETHOD(SetColumns)(THIS_ LPSPropTagArray lpProps, ULONG ulFlags) PURE;
-    STDMETHOD(QueryColumns)(THIS_ ULONG ulFlags, LPSPropTagArray *lpCols) PURE;
-    STDMETHOD(GetRowCount)(THIS_ ULONG ulFlags, ULONG *lpCount) PURE;
-    STDMETHOD(SeekRow)(THIS_ BOOKMARK lpStart, LONG lRows, LONG *lpSeeked) PURE;
-    STDMETHOD(SeekRowApprox)(THIS_ ULONG ulNum, ULONG ulDenom) PURE;
-    STDMETHOD(QueryPosition)(THIS_ ULONG *lpRow, ULONG *lpNum, ULONG *lpDenom) PURE;
-    STDMETHOD(FindRow)(THIS_ LPSRestriction lpRestrict, BOOKMARK lpOrigin, ULONG ulFlags) PURE;
-    STDMETHOD(Restrict)(THIS_ LPSRestriction lpRestrict, ULONG ulFlags) PURE;
-    STDMETHOD(CreateBookmark)(THIS_ BOOKMARK *lppPos) PURE;
-    STDMETHOD(FreeBookmark)(THIS_ BOOKMARK lpPos) PURE;
-    STDMETHOD(SortTable)(THIS_ LPSSortOrderSet lpSortOpts, ULONG ulFlags) PURE;
-    STDMETHOD(QuerySortOrder)(THIS_ LPSSortOrderSet *lppSortOpts) PURE;
-    STDMETHOD(QueryRows)(THIS_ LONG lRows, ULONG ulFlags, LPSRowSet *lppRows) PURE;
-    STDMETHOD(Abort) (THIS) PURE;
-    STDMETHOD(ExpandRow)(THIS_ ULONG cbKey, LPBYTE lpKey, ULONG ulRows,
-                         ULONG ulFlags, LPSRowSet *lppRows, ULONG *lpMore) PURE;
-    STDMETHOD(CollapseRow)(THIS_ ULONG cbKey, LPBYTE lpKey, ULONG ulFlags, ULONG *lpRows) PURE;
-    STDMETHOD(WaitForCompletion)(THIS_ ULONG ulFlags, ULONG ulTime, ULONG *lpState) PURE;
-    STDMETHOD(GetCollapseState)(THIS_ ULONG ulFlags, ULONG cbKey, LPBYTE lpKey,
-                                ULONG *lpStateLen, LPBYTE *lpState) PURE;
-    STDMETHOD(SetCollapseState)(THIS_ ULONG ulFlags, ULONG ulLen,
-                                LPBYTE lpStart, BOOKMARK *lppWhere) PURE;
-};
+  DECLARE_MAPI_INTERFACE_(IMAPITable,IUnknown) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPITABLE_METHODS(PURE)
+  };
+
+#define PS_PROFILE_PROPERTIES_INIT { 0x98,0x15,0xAC,0x08,0xAA,0xB0,0x10,0x1A,0x8C,0x93,0x08,0x00,0x2B,0x2A,0x56,0xC2 }
+
+#define MAPI_IPROFSECT_METHODS(IPURE)
+
 #undef INTERFACE
+#define INTERFACE IProfSect
+  DECLARE_MAPI_INTERFACE_(IProfSect,IMAPIProp) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROP_METHODS(PURE)
+      MAPI_IPROFSECT_METHODS(PURE)
+  };
 
-#if !defined(__cplusplus) || defined(CINTERFACE)
-        /*** IUnknown methods ***/
-#define IMAPITable_QueryInterface(p,a,b)         (p)->lpVtbl->QueryInterface(p,a,b)
-#define IMAPITable_AddRef(p)                     (p)->lpVtbl->AddRef(p)
-#define IMAPITable_Release(p)                    (p)->lpVtbl->Release(p)
-        /*** IMAPITable methods ***/
-#define IMAPITable_GetLastError(p,a,b,c)         (p)->lpVtbl->GetLastError(p,a,b,c)
-#define IMAPITable_Advise(p,a,b,c)               (p)->lpVtbl->Advise(p,a,b,c)
-#define IMAPITable_Unadvise(p,a)                 (p)->lpVtbl->Unadvise(p,a)
-#define IMAPITable_GetStatus(p,a,b)              (p)->lpVtbl->GetStatus(p,a,b)
-#define IMAPITable_SetColumns(p,a,b)             (p)->lpVtbl->SetColumns(p,a,b)
-#define IMAPITable_QueryColumns(p,a,b)           (p)->lpVtbl->QueryColumns(p,a,b)
-#define IMAPITable_GetRowCount(p,a,b)            (p)->lpVtbl->GetRowCount(p,a,b)
-#define IMAPITable_SeekRow(p,a,b)                (p)->lpVtbl->SeekRow(p,a,b)
-#define IMAPITable_SeekRowApprox(p,a,b)          (p)->lpVtbl->SeekRowApprox(p,a,b)
-#define IMAPITable_QueryPosition(p,a,b)          (p)->lpVtbl->QueryPosition(p,a,b)
-#define IMAPITable_FindRow(p,a,b,c)              (p)->lpVtbl->FindRow(p,a,b,c)
-#define IMAPITable_Restrict(p,a,b)               (p)->lpVtbl->Recstrict(p,a,b)
-#define IMAPITable_CreateBookmark(p,a)           (p)->lpVtbl->CreateBookmark(p,a)
-#define IMAPITable_FreeBookmark(p,a)             (p)->lpVtbl->FreeBookmark(p,a)
-#define IMAPITable_SortTable(p,a,b)              (p)->lpVtbl->SortTable(p,a,b)
-#define IMAPITable_QuerySortOrder(p,a)           (p)->lpVtbl->QuerySortOrder(p,a)
-#define IMAPITable_QueryRows(p,a,b,c)            (p)->lpVtbl->QueryRows(p,a,b,c)
-#define IMAPITable_Abort(p)                      (p)->lpVtbl->Abort(p)
-#define IMAPITable_ExpandRow(p,a,b,c,d,e,f)      (p)->lpVtbl->ExpandRow(p,a,b,c,d,e,f)
-#define IMAPITable_CollapseRow(p,a,b,c,d)        (p)->lpVtbl->CollapseRow(p,a,b,c,d)
-#define IMAPITable_WaitForCompletion(p,a,b,c)    (p)->lpVtbl->WaitForCompletion(p,a,b,c)
-#define IMAPITable_GetCollapseState(p,a,b,c,d,e) (p)->lpVtbl->GetCollapseState(p,a,b,c,d,e)
-#define IMAPITable_SetCollapseState(p,a,b,c,d)   (p)->lpVtbl->SetCollapseState(p,a,b,c,d)
-#endif
+#define MAPI_STORE_PROVIDER ((ULONG) 33)
+#define MAPI_AB ((ULONG) 34)
+#define MAPI_AB_PROVIDER ((ULONG) 35)
+#define MAPI_TRANSPORT_PROVIDER ((ULONG) 36)
+#define MAPI_SPOOLER ((ULONG) 37)
+#define MAPI_PROFILE_PROVIDER ((ULONG) 38)
+#define MAPI_SUBSYSTEM ((ULONG) 39)
+#define MAPI_HOOK_PROVIDER ((ULONG) 40)
 
-typedef IMAPITable *LPMAPITABLE;
+#define STATUS_VALIDATE_STATE ((ULONG) 0x00000001)
+#define STATUS_SETTINGS_DIALOG ((ULONG) 0x00000002)
+#define STATUS_CHANGE_PASSWORD ((ULONG) 0x00000004)
+#define STATUS_FLUSH_QUEUES ((ULONG) 0x00000008)
 
-/*****************************************************************************
- * IMAPIAdviseSink interface
- */
-#define INTERFACE IMAPIAdviseSink
-DECLARE_INTERFACE_(IMAPIAdviseSink,IUnknown)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-    /*** IMAPIAdviseSink methods ***/
-    STDMETHOD(OnNotify)(THIS_ ULONG NumNotif, LPNOTIFICATION lpNotif) PURE;
-};
+#define STATUS_DEFAULT_OUTBOUND ((ULONG) 0x00000001)
+#define STATUS_DEFAULT_STORE ((ULONG) 0x00000002)
+#define STATUS_PRIMARY_IDENTITY ((ULONG) 0x00000004)
+#define STATUS_SIMPLE_STORE ((ULONG) 0x00000008)
+#define STATUS_XP_PREFER_LAST ((ULONG) 0x00000010)
+#define STATUS_NO_PRIMARY_IDENTITY ((ULONG) 0x00000020)
+#define STATUS_NO_DEFAULT_STORE ((ULONG) 0x00000040)
+#define STATUS_TEMP_SECTION ((ULONG) 0x00000080)
+#define STATUS_OWN_STORE ((ULONG) 0x00000100)
+
+#define STATUS_NEED_IPM_TREE ((ULONG) 0x00000800)
+#define STATUS_PRIMARY_STORE ((ULONG) 0x00001000)
+#define STATUS_SECONDARY_STORE ((ULONG) 0x00002000)
+
+#define STATUS_AVAILABLE ((ULONG) 0x00000001)
+#define STATUS_OFFLINE ((ULONG) 0x00000002)
+#define STATUS_FAILURE ((ULONG) 0x00000004)
+
+#define STATUS_INBOUND_ENABLED ((ULONG) 0x00010000)
+#define STATUS_INBOUND_ACTIVE ((ULONG) 0x00020000)
+#define STATUS_INBOUND_FLUSH ((ULONG) 0x00040000)
+#define STATUS_OUTBOUND_ENABLED ((ULONG) 0x00100000)
+#define STATUS_OUTBOUND_ACTIVE ((ULONG) 0x00200000)
+#define STATUS_OUTBOUND_FLUSH ((ULONG) 0x00400000)
+#define STATUS_REMOTE_ACCESS ((ULONG) 0x00800000)
+
+#define SUPPRESS_UI ((ULONG) 0x00000001)
+#define REFRESH_XP_HEADER_CACHE ((ULONG) 0x00010000)
+#define PROCESS_XP_HEADER_CACHE ((ULONG) 0x00020000)
+#define FORCE_XP_CONNECT ((ULONG) 0x00040000)
+#define FORCE_XP_DISCONNECT ((ULONG) 0x00080000)
+#define CONFIG_CHANGED ((ULONG) 0x00100000)
+#define ABORT_XP_HEADER_OPERATION ((ULONG) 0x00200000)
+#define SHOW_XP_SESSION_UI ((ULONG) 0x00400000)
+
+#define UI_READONLY ((ULONG) 0x00000001)
+
+#define FLUSH_UPLOAD ((ULONG) 0x00000002)
+#define FLUSH_DOWNLOAD ((ULONG) 0x00000004)
+#define FLUSH_FORCE ((ULONG) 0x00000008)
+#define FLUSH_NO_UI ((ULONG) 0x00000010)
+#define FLUSH_ASYNC_OK ((ULONG) 0x00000020)
+
+#define MAPI_IMAPISTATUS_METHODS(IPURE) MAPIMETHOD(ValidateState) (THIS_ ULONG ulUIParam,ULONG ulFlags) IPURE; MAPIMETHOD(SettingsDialog) (THIS_ ULONG ulUIParam,ULONG ulFlags) IPURE; MAPIMETHOD(ChangePassword) (THIS_ LPTSTR lpOldPass,LPTSTR lpNewPass,ULONG ulFlags) IPURE; MAPIMETHOD(FlushQueues) (THIS_ ULONG ulUIParam,ULONG cbTargetTransport,LPENTRYID lpTargetTransport,ULONG ulFlags) IPURE;
 #undef INTERFACE
+#define INTERFACE IMAPIStatus
+  DECLARE_MAPI_INTERFACE_(IMAPIStatus,IMAPIProp) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROP_METHODS(PURE)
+      MAPI_IMAPISTATUS_METHODS(PURE)
+  };
 
-#if !defined(__cplusplus) || defined(CINTERFACE)
-        /*** IUnknown methods ***/
-#define IMAPIAdviseSink_QueryInterface(p,a,b) (p)->lpVtbl->QueryInterface(p,a,b)
-#define IMAPIAdviseSink_AddRef(p)             (p)->lpVtbl->AddRef(p)
-#define IMAPIAdviseSink_Release(p)            (p)->lpVtbl->Release(p)
-        /*** IMAPIAdviseSink methods ***/
-#define IMAPIAdviseSink_OnNotify(p,a,b)       (p)->lpVtbl->OnNotify(p,a,b)
-#endif
+#define MAPI_BEST_ACCESS ((ULONG) 0x00000010)
 
-/*****************************************************************************
- * IMAPIProp interface
- */
-#define INTERFACE IMAPIProp
-DECLARE_INTERFACE_(IMAPIProp,IUnknown)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-    /*** IMAPIProp methods ***/
-    STDMETHOD(GetLastError)(THIS_ HRESULT hRes, ULONG ulFlags, LPMAPIERROR *lppErr) PURE;
-    STDMETHOD(SaveChanges)(THIS_ ULONG ulFlags) PURE;
-    STDMETHOD(GetProps)(THIS_ LPSPropTagArray lpPropTags, ULONG ulFlags, ULONG *lpValues, LPSPropValue *lppProps) PURE;
-    STDMETHOD(GetPropList)(THIS_ ULONG  ulFlags, LPSPropTagArray *lppPropTagArray) PURE;
-    STDMETHOD(OpenProperty)(THIS_ ULONG ulPropTag, LPCIID lpIid, ULONG ulOpts, ULONG ulFlags, LPUNKNOWN *lppUnk) PURE;
-    STDMETHOD(SetProps)(THIS_ ULONG cValues, LPSPropValue lpProps, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(DeleteProps)(THIS_ LPSPropTagArray lpPropTags, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyTo)(THIS_ ULONG ciidExclude, LPCIID lpIid, LPSPropTagArray lpProps, ULONG ulParam,
-                      LPMAPIPROGRESS lpProgress, LPCIID lpIface,LPVOID lpDest, ULONG ulFlags,
-                      LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyProps)(THIS_ LPSPropTagArray lpIncludeProps, ULONG ulParam, LPMAPIPROGRESS lpProgress,
-                         LPCIID lpIid, LPVOID lpDestObj, ULONG ulFlags, LPSPropProblemArray *lppProblems) PURE;
-    STDMETHOD(GetNamesFromIDs)(THIS_ LPSPropTagArray *lppPropTags, LPGUID lpIid, ULONG ulFlags, ULONG *lpCount,
-                               LPMAPINAMEID **lpppNames) PURE;
-    STDMETHOD(GetIDsFromNames)(THIS_ ULONG cPropNames, LPMAPINAMEID *lppNames, ULONG ulFlags, LPSPropTagArray *lppPropTags) PURE;
-};
+#define CONVENIENT_DEPTH ((ULONG) 0x00000001)
+
+#define SEARCH_RUNNING ((ULONG) 0x00000001)
+#define SEARCH_REBUILD ((ULONG) 0x00000002)
+#define SEARCH_RECURSIVE ((ULONG) 0x00000004)
+#define SEARCH_FOREGROUND ((ULONG) 0x00000008)
+
+#define STOP_SEARCH ((ULONG) 0x00000001)
+#define RESTART_SEARCH ((ULONG) 0x00000002)
+#define RECURSIVE_SEARCH ((ULONG) 0x00000004)
+#define SHALLOW_SEARCH ((ULONG) 0x00000008)
+#define FOREGROUND_SEARCH ((ULONG) 0x00000010)
+#define BACKGROUND_SEARCH ((ULONG) 0x00000020)
+
+#define MAPI_IMAPICONTAINER_METHODS(IPURE) MAPIMETHOD(GetContentsTable) (THIS_ ULONG ulFlags,LPMAPITABLE *lppTable) IPURE; MAPIMETHOD(GetHierarchyTable) (THIS_ ULONG ulFlags,LPMAPITABLE *lppTable) IPURE; MAPIMETHOD(OpenEntry) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,LPCIID lpInterface,ULONG ulFlags,ULONG *lpulObjType,LPUNKNOWN *lppUnk) IPURE; MAPIMETHOD(SetSearchCriteria) (THIS_ LPSRestriction lpRestriction,LPENTRYLIST lpContainerList,ULONG ulSearchFlags) IPURE; MAPIMETHOD(GetSearchCriteria) (THIS_ ULONG ulFlags,LPSRestriction *lppRestriction,LPENTRYLIST *lppContainerList,ULONG *lpulSearchState)IPURE;
 #undef INTERFACE
-
-#if !defined(__cplusplus) || defined(CINTERFACE)
-        /*** IUnknown methods ***/
-#define IMAPIProp_QueryInterface(p,a,b)        (p)->lpVtbl->QueryInterface(p,a,b)
-#define IMAPIProp_AddRef(p)                    (p)->lpVtbl->AddRef(p)
-#define IMAPIProp_Release(p)                   (p)->lpVtbl->Release(p)
-        /*** IMAPIProp methods ***/
-#define IMAPIProp_GetLastError(p,a,b,c)        (p)->lpVtbl->GetLastError(p,a,b,c)
-#define IMAPIProp_SaveChanges(p,a)             (p)->lpVtbl->SaveChanges(p,a)
-#define IMAPIProp_GetProps(p,a,b,c,d)          (p)->lpVtbl->GetProps(p,a,b,c,d)
-#define IMAPIProp_GetPropList(p,a,b)           (p)->lpVtbl->GetPropList(p,a,b)
-#define IMAPIProp_OpenProperty(p,a,b,c,d,e)    (p)->lpVtbl->OpenProperty(p,a,b,c,d,e)
-#define IMAPIProp_SetProps(p,a,b,c)            (p)->lpVtbl->SetProps(p,a,b,c)
-#define IMAPIProp_DeleteProps(p,a,b)           (p)->lpVtbl->DeleteProps(p,a,b)
-#define IMAPIProp_CopyTo(p,a,b,c,d,e,f,g,h,i)  (p)->lpVtbl->CopyTo(p,a,b,c,d,e,f,g,h,i)
-#define IMAPIProp_CopyProps(p,a,b,c,d,e,f,g)   (p)->lpVtbl->CopyProps(p,a,b,c,d,e,f,g)
-#define IMAPIProp_GetNamesFromIDs(p,a,b,c,d,e) (p)->lpVtbl->GetNamesFromIDs(p,a,b,c,d,e)
-#define IMAPIProp_GetIDsFromNames(p,a,b,c,d)   (p)->lpVtbl->GetIDsFromNames(p,a,b,c,d)
-#endif
-
-typedef IMAPIProp *LPMAPIPROP;
-
-#define KEEP_OPEN_READONLY      (0x00000001U)
-#define KEEP_OPEN_READWRITE     (0x00000002U)
-#define FORCE_SAVE              (0x00000004U)
-
-/*****************************************************************************
- * IMsgStore interface
- */
-#define INTERFACE IMsgStore
-DECLARE_INTERFACE_(IMsgStore,IMAPIProp)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-    /*** IMAPIProp methods ***/
-    STDMETHOD(GetLastError)(THIS_ HRESULT hRes, ULONG ulFlags, LPMAPIERROR *lppErr) PURE;
-    STDMETHOD(SaveChanges)(THIS_ ULONG ulFlags) PURE;
-    STDMETHOD(GetProps)(THIS_ LPSPropTagArray lpPropTags, ULONG ulFlags, ULONG *lpValues, LPSPropValue *lppProps) PURE;
-    STDMETHOD(GetPropList)(THIS_ ULONG  ulFlags, LPSPropTagArray *lppPropTagArray) PURE;
-    STDMETHOD(OpenProperty)(THIS_ ULONG ulPropTag, LPCIID lpIid, ULONG ulOpts, ULONG ulFlags, LPUNKNOWN *lppUnk) PURE;
-    STDMETHOD(SetProps)(THIS_ ULONG cValues, LPSPropValue lpProps, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(DeleteProps)(THIS_ LPSPropTagArray lpPropTags, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyTo)(THIS_ ULONG ciidExclude, LPCIID lpIid, LPSPropTagArray lpProps, ULONG ulParam,
-                      LPMAPIPROGRESS lpProgress, LPCIID lpIface,LPVOID lpDest, ULONG ulFlags,
-                      LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyProps)(THIS_ LPSPropTagArray lpIncludeProps, ULONG ulParam, LPMAPIPROGRESS lpProgress,
-                         LPCIID lpIid, LPVOID lpDestObj, ULONG ulFlags, LPSPropProblemArray *lppProblems) PURE;
-    STDMETHOD(GetNamesFromIDs)(THIS_ LPSPropTagArray *lppPropTags, LPGUID lpIid, ULONG ulFlags, ULONG *lpCount,
-                               LPMAPINAMEID **lpppNames) PURE;
-    STDMETHOD(GetIDsFromNames)(THIS_ ULONG cPropNames, LPMAPINAMEID *lppNames, ULONG ulFlags, LPSPropTagArray *lppPropTags) PURE;
-    /*** IMsgStore methods ***/
-    STDMETHOD(Advise)(THIS_ ULONG cbEntryID, LPENTRYID lpEntryID, ULONG ulEventMask, LPMAPIADVISESINK lpAdviseSink,
-                      ULONG * lpulConnection) PURE;
-    STDMETHOD(Unadvise)(THIS_ ULONG ulConnection) PURE;
-    STDMETHOD(CompareEntryIDs)(THIS_ ULONG cbEntryID1, LPENTRYID lpEntryID1, ULONG cbEntryID2, LPENTRYID lpEntryID2,
-                ULONG ulFlags, ULONG * lpulResult) PURE;
-    STDMETHOD(OpenEntry)(THIS_ ULONG cbEntryID, LPENTRYID lpEntryID, LPCIID lpInterface, ULONG ulFlags, ULONG *lpulObjType,
-                LPUNKNOWN *lppUnk) PURE;
-    STDMETHOD(SetReceiveFolder)(THIS_ LPSTR lpszMessageClass, ULONG ulFlags, ULONG cbEntryID, LPENTRYID lpEntryID) PURE;
-    STDMETHOD(GetReceiveFolder)(THIS_ LPSTR lpszMessageClass, ULONG ulFlags, ULONG * lpcbEntryID, LPENTRYID *lppEntryID,
-                LPSTR *lppszExplicitClass) PURE;
-    STDMETHOD(GetReceiveFolderTable)(THIS_ ULONG ulFlags, LPMAPITABLE * lppTable) PURE;
-    STDMETHOD(StoreLogoff)(THIS_ ULONG * lpulFlags) PURE;
-    STDMETHOD(AbortSubmit)(THIS_ ULONG cbEntryID, LPENTRYID lpEntryID, ULONG ulFlags) PURE;
-    STDMETHOD(GetOutgoingQueue)(THIS_ ULONG ulFlags, LPMAPITABLE * lppTable) PURE;
-    STDMETHOD(SetLockState)(THIS_ LPMESSAGE lpMessage, ULONG ulLockState) PURE;
-    STDMETHOD(FinishedMsg)(THIS_ ULONG ulFlags, ULONG cbEntryID, LPENTRYID lpEntryID) PURE;
-    STDMETHOD(NotifyNewMail)(THIS_ LPNOTIFICATION lpNotification) PURE;
-};
-#undef INTERFACE
-
-#if !defined(__cplusplus) || defined(CINTERFACE)
-        /*** IUnknown methods ***/
-#define IMsgStore_QueryInterface(p,a,b)        (p)->lpVtbl->QueryInterface(p,a,b)
-#define IMsgStore_AddRef(p)                    (p)->lpVtbl->AddRef(p)
-#define IMsgStore_Release(p)                   (p)->lpVtbl->Release(p)
-        /*** IMAPIProp methods ***/
-#define IMsgStore_GetLastError(p,a,b,c)        (p)->lpVtbl->GetLastError(p,a,b,c)
-#define IMsgStore_SaveChanges(p,a)             (p)->lpVtbl->SaveChanges(p,a)
-#define IMsgStore_GetProps(p,a,b,c,d)          (p)->lpVtbl->GetProps(p,a,b,c,d)
-#define IMsgStore_GetPropList(p,a,b)           (p)->lpVtbl->GetPropList(p,a,b)
-#define IMsgStore_OpenProperty(p,a,b,c,d,e)    (p)->lpVtbl->OpenProperty(p,a,b,c,d,e)
-#define IMsgStore_SetProps(p,a,b,c)            (p)->lpVtbl->SetProps(p,a,b,c)
-#define IMsgStore_DeleteProps(p,a,b)           (p)->lpVtbl->DeleteProps(p,a,b)
-#define IMsgStore_CopyTo(p,a,b,c,d,e,f,g,h,i)  (p)->lpVtbl->CopyTo(p,a,b,c,d,e,f,g,h,i)
-#define IMsgStore_CopyProps(p,a,b,c,d,e,f,g)   (p)->lpVtbl->CopyProps(p,a,b,c,d,e,f,g)
-#define IMsgStore_GetNamesFromIDs(p,a,b,c,d,e) (p)->lpVtbl->GetNamesFromIDs(p,a,b,c,d,e)
-#define IMsgStore_GetIDsFromNames(p,a,b,c,d)   (p)->lpVtbl->GetIDsFromNames(p,a,b,c,d)
-        /*** IMsgStore methods ***/
-#define IMsgStore_Advise(p,a,b,c,d,e)            (p)->lpVtbl->Advise(p,a,b,c,d,e)
-#define IMsgStore_Unadvise(p,a)                  (p)->lpVtbl->Unadvise(p,a)
-#define IMsgStore_CompareEntryIDs(p,a,b,c,d,e,f) (p)->lpVtbl->CompareEntryIDs(p,a,b,c,d,e,f)
-#define IMsgStore_OpenEntry(p,a,b,c,d,e,f)       (p)->lpVtbl->OpenEntry(p,a,b,c,d,e,f)
-#define IMsgStore_SetReceiveFolder(p,a,b,c,d)    (p)->lpVtbl->SetReceiveFolder(p,a,b,c,d)
-#define IMsgStore_GetReceiveFolder(p,a,b,c,d,e)  (p)->lpVtbl->GetReceiveFolder(p,a,b,c,d,e)
-#define IMsgStore_GetReceiveFolderTable(p,a,b)   (p)->lpVtbl->GetReceiveFolderTable(p,a,b)
-#define IMsgStore_StoreLogoff(p,a)               (p)->lpVtbl->StoreLogoff(p,a)
-#define IMsgStore_AbortSubmit(p,a,b,c)           (p)->lpVtbl->AbortSubmit(p,a,b,c)
-#define IMsgStore_GetOutgoingQueue(p,a,b)        (p)->lpVtbl->GetOutgoingQueue(p,a,b)
-#define IMsgStore_SetLockState(p,a,b)            (p)->lpVtbl->SetLockState(p,a,b)
-#define IMsgStore_FinishedMsg(p,a,b,c)           (p)->lpVtbl->FinishedMsg(p,a,b,c)
-#define IMsgStore_NotifyNewMail(p,a)             (p)->lpVtbl->NotifyNewMail(p,a)
-
-#endif
-
-typedef IMsgStore *LPMDB;
-
-/*****************************************************************************
- * IMAPIContainer interface
- */
 #define INTERFACE IMAPIContainer
-DECLARE_INTERFACE_(IMAPIContainer,IMAPIProp)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-    /*** IMAPIProp methods ***/
-    STDMETHOD(GetLastError)(THIS_ HRESULT hRes, ULONG ulFlags, LPMAPIERROR *lppErr) PURE;
-    STDMETHOD(SaveChanges)(THIS_ ULONG ulFlags) PURE;
-    STDMETHOD(GetProps)(THIS_ LPSPropTagArray lpPropTags, ULONG ulFlags, ULONG *lpValues, LPSPropValue *lppProps) PURE;
-    STDMETHOD(GetPropList)(THIS_ ULONG  ulFlags, LPSPropTagArray *lppPropTagArray) PURE;
-    STDMETHOD(OpenProperty)(THIS_ ULONG ulPropTag, LPCIID lpIid, ULONG ulOpts, ULONG ulFlags, LPUNKNOWN *lppUnk) PURE;
-    STDMETHOD(SetProps)(THIS_ ULONG cValues, LPSPropValue lpProps, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(DeleteProps)(THIS_ LPSPropTagArray lpPropTags, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyTo)(THIS_ ULONG ciidExclude, LPCIID lpIid, LPSPropTagArray lpProps, ULONG ulParam,
-                      LPMAPIPROGRESS lpProgress, LPCIID lpIface,LPVOID lpDest, ULONG ulFlags,
-                      LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyProps)(THIS_ LPSPropTagArray lpIncludeProps, ULONG ulParam, LPMAPIPROGRESS lpProgress,
-                         LPCIID lpIid, LPVOID lpDestObj, ULONG ulFlags, LPSPropProblemArray *lppProblems) PURE;
-    STDMETHOD(GetNamesFromIDs)(THIS_ LPSPropTagArray *lppPropTags, LPGUID lpIid, ULONG ulFlags, ULONG *lpCount,
-                               LPMAPINAMEID **lpppNames) PURE;
-    STDMETHOD(GetIDsFromNames)(THIS_ ULONG cPropNames, LPMAPINAMEID *lppNames, ULONG ulFlags, LPSPropTagArray *lppPropTags) PURE;
-    /*** IMAPIContainer methods ***/
-    STDMETHOD(GetContentsTable)(THIS_ ULONG ulFlags, LPMAPITABLE * lppTable) PURE;
-    STDMETHOD(GetHierarchyTable)(THIS_ ULONG ulFlags, LPMAPITABLE * lppTable) PURE;
-    STDMETHOD(OpenEntry)(THIS_ ULONG cbEntryID, LPENTRYID lpEntryID, LPCIID lpInterface, ULONG ulFlags,
-                         ULONG * lpulObjType, LPUNKNOWN * lppUnk) PURE;
-    STDMETHOD(SetSearchCriteria)(THIS_ LPSRestriction lpRestriction, LPENTRYLIST lpContainerList, ULONG ulSearchFlags) PURE;
-    STDMETHOD(GetSearchCriteria)(THIS_ ULONG ulFlags, LPSRestriction * lppRestriction, LPENTRYLIST * lppContainerList,
-                                 ULONG * lpulSearchState) PURE;
-};
+  DECLARE_MAPI_INTERFACE_(IMAPIContainer,IMAPIProp) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROP_METHODS(PURE)
+      MAPI_IMAPICONTAINER_METHODS(PURE)
+  };
+
+  typedef struct _flaglist {
+    ULONG cFlags;
+    ULONG ulFlag[MAPI_DIM];
+  } FlagList,*LPFlagList;
+
+#define AB_RECIPIENTS ((ULONG) 0x00000001)
+#define AB_SUBCONTAINERS ((ULONG) 0x00000002)
+#define AB_MODIFIABLE ((ULONG) 0x00000004)
+#define AB_UNMODIFIABLE ((ULONG) 0x00000008)
+#define AB_FIND_ON_OPEN ((ULONG) 0x00000010)
+#define AB_NOT_DEFAULT ((ULONG) 0x00000020)
+
+#define CREATE_CHECK_DUP_STRICT ((ULONG) 0x00000001)
+#define CREATE_CHECK_DUP_LOOSE ((ULONG) 0x00000002)
+#define CREATE_REPLACE ((ULONG) 0x00000004)
+
+#define MAPI_UNRESOLVED ((ULONG) 0x00000000)
+#define MAPI_AMBIGUOUS ((ULONG) 0x00000001)
+#define MAPI_RESOLVED ((ULONG) 0x00000002)
+
+#define MAPI_IABCONTAINER_METHODS(IPURE) MAPIMETHOD(CreateEntry) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,ULONG ulCreateFlags,LPMAPIPROP *lppMAPIPropEntry) IPURE; MAPIMETHOD(CopyEntries) (THIS_ LPENTRYLIST lpEntries,ULONG ulUIParam,LPMAPIPROGRESS lpProgress,ULONG ulFlags) IPURE; MAPIMETHOD(DeleteEntries) (THIS_ LPENTRYLIST lpEntries,ULONG ulFlags) IPURE; MAPIMETHOD(ResolveNames) (THIS_ LPSPropTagArray lpPropTagArray,ULONG ulFlags,LPADRLIST lpAdrList,LPFlagList lpFlagList) IPURE;
 #undef INTERFACE
+#define INTERFACE IABContainer
+  DECLARE_MAPI_INTERFACE_(IABContainer,IMAPIContainer) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROP_METHODS(PURE)
+      MAPI_IMAPICONTAINER_METHODS(PURE)
+      MAPI_IABCONTAINER_METHODS(PURE)
+  };
 
-#if !defined(__cplusplus) || defined(CINTERFACE)
-        /*** IUnknown methods ***/
-#define IMAPIContainer_QueryInterface(p,a,b)        (p)->lpVtbl->QueryInterface(p,a,b)
-#define IMAPIContainer_AddRef(p)                    (p)->lpVtbl->AddRef(p)
-#define IMAPIContainer_Release(p)                   (p)->lpVtbl->Release(p)
-        /*** IMAPIProp methods ***/
-#define IMAPIContainer_GetLastError(p,a,b,c)        (p)->lpVtbl->GetLastError(p,a,b,c)
-#define IMAPIContainer_SaveChanges(p,a)             (p)->lpVtbl->SaveChanges(p,a)
-#define IMAPIContainer_GetProps(p,a,b,c,d)          (p)->lpVtbl->GetProps(p,a,b,c,d)
-#define IMAPIContainer_GetPropList(p,a,b)           (p)->lpVtbl->GetPropList(p,a,b)
-#define IMAPIContainer_OpenProperty(p,a,b,c,d,e)    (p)->lpVtbl->OpenProperty(p,a,b,c,d,e)
-#define IMAPIContainer_SetProps(p,a,b,c)            (p)->lpVtbl->SetProps(p,a,b,c)
-#define IMAPIContainer_DeleteProps(p,a,b)           (p)->lpVtbl->DeleteProps(p,a,b)
-#define IMAPIContainer_CopyTo(p,a,b,c,d,e,f,g,h,i)  (p)->lpVtbl->CopyTo(p,a,b,c,d,e,f,g,h,i)
-#define IMAPIContainer_CopyProps(p,a,b,c,d,e,f,g)   (p)->lpVtbl->CopyProps(p,a,b,c,d,e,f,g)
-#define IMAPIContainer_GetNamesFromIDs(p,a,b,c,d,e) (p)->lpVtbl->GetNamesFromIDs(p,a,b,c,d,e)
-#define IMAPIContainer_GetIDsFromNames(p,a,b,c,d)   (p)->lpVtbl->GetIDsFromNames(p,a,b,c,d)
-        /*** IMAPIContainer methods ***/
-#define IMAPIContainer_GetContentsTable(p,a,b)      (p)->lpVtbl->GetContentsTable(p,a,b)
-#define IMAPIContainer_GetHierarchyTable(p,a,b)     (p)->lpVtbl->GetHierarchyTable(p,a,b)
-#define IMAPIContainer_OpenEntry(p,a,b,c,d,e,f)     (p)->lpVtbl->OpenEntry(p,a,b,c,d,e,f)
-#define IMAPIContainer_SetSearchCriteria(p,a,b,c)   (p)->lpVtbl->SetSearchCriteria(p,a,b,c)
-#define IMAPIContainer_GetSearchCriteria(p,a,b,c,d) (p)->lpVtbl->GetSearchCriteria(p,a,b,c,d)
+#define MAPI_SEND_NO_RICH_INFO ((ULONG) 0x00010000)
 
-#endif
+#define MAPI_DIAG(_code) ((LONG) _code)
 
-/*****************************************************************************
- * IMAPIFolder interface
- */
+#define MAPI_DIAG_NO_DIAGNOSTIC MAPI_DIAG(-1)
+#define MAPI_DIAG_OR_NAME_UNRECOGNIZED MAPI_DIAG(0)
+#define MAPI_DIAG_OR_NAME_AMBIGUOUS MAPI_DIAG(1)
+#define MAPI_DIAG_MTS_CONGESTED MAPI_DIAG(2)
+#define MAPI_DIAG_LOOP_DETECTED MAPI_DIAG(3)
+#define MAPI_DIAG_RECIPIENT_UNAVAILABLE MAPI_DIAG(4)
+#define MAPI_DIAG_MAXIMUM_TIME_EXPIRED MAPI_DIAG(5)
+#define MAPI_DIAG_EITS_UNSUPPORTED MAPI_DIAG(6)
+#define MAPI_DIAG_CONTENT_TOO_LONG MAPI_DIAG(7)
+#define MAPI_DIAG_IMPRACTICAL_TO_CONVERT MAPI_DIAG(8)
+#define MAPI_DIAG_PROHIBITED_TO_CONVERT MAPI_DIAG(9)
+#define MAPI_DIAG_CONVERSION_UNSUBSCRIBED MAPI_DIAG(10)
+#define MAPI_DIAG_PARAMETERS_INVALID MAPI_DIAG(11)
+#define MAPI_DIAG_CONTENT_SYNTAX_IN_ERROR MAPI_DIAG(12)
+#define MAPI_DIAG_LENGTH_CONSTRAINT_VIOLATD MAPI_DIAG(13)
+#define MAPI_DIAG_NUMBER_CONSTRAINT_VIOLATD MAPI_DIAG(14)
+#define MAPI_DIAG_CONTENT_TYPE_UNSUPPORTED MAPI_DIAG(15)
+#define MAPI_DIAG_TOO_MANY_RECIPIENTS MAPI_DIAG(16)
+#define MAPI_DIAG_NO_BILATERAL_AGREEMENT MAPI_DIAG(17)
+#define MAPI_DIAG_CRITICAL_FUNC_UNSUPPORTED MAPI_DIAG(18)
+#define MAPI_DIAG_CONVERSION_LOSS_PROHIB MAPI_DIAG(19)
+#define MAPI_DIAG_LINE_TOO_LONG MAPI_DIAG(20)
+#define MAPI_DIAG_PAGE_TOO_LONG MAPI_DIAG(21)
+#define MAPI_DIAG_PICTORIAL_SYMBOL_LOST MAPI_DIAG(22)
+#define MAPI_DIAG_PUNCTUATION_SYMBOL_LOST MAPI_DIAG(23)
+#define MAPI_DIAG_ALPHABETIC_CHARACTER_LOST MAPI_DIAG(24)
+#define MAPI_DIAG_MULTIPLE_INFO_LOSSES MAPI_DIAG(25)
+#define MAPI_DIAG_REASSIGNMENT_PROHIBITED MAPI_DIAG(26)
+#define MAPI_DIAG_REDIRECTION_LOOP_DETECTED MAPI_DIAG(27)
+#define MAPI_DIAG_EXPANSION_PROHIBITED MAPI_DIAG(28)
+#define MAPI_DIAG_SUBMISSION_PROHIBITED MAPI_DIAG(29)
+#define MAPI_DIAG_EXPANSION_FAILED MAPI_DIAG(30)
+#define MAPI_DIAG_RENDITION_UNSUPPORTED MAPI_DIAG(31)
+#define MAPI_DIAG_MAIL_ADDRESS_INCORRECT MAPI_DIAG(32)
+#define MAPI_DIAG_MAIL_OFFICE_INCOR_OR_INVD MAPI_DIAG(33)
+#define MAPI_DIAG_MAIL_ADDRESS_INCOMPLETE MAPI_DIAG(34)
+#define MAPI_DIAG_MAIL_RECIPIENT_UNKNOWN MAPI_DIAG(35)
+#define MAPI_DIAG_MAIL_RECIPIENT_DECEASED MAPI_DIAG(36)
+#define MAPI_DIAG_MAIL_ORGANIZATION_EXPIRED MAPI_DIAG(37)
+#define MAPI_DIAG_MAIL_REFUSED MAPI_DIAG(38)
+#define MAPI_DIAG_MAIL_UNCLAIMED MAPI_DIAG(39)
+#define MAPI_DIAG_MAIL_RECIPIENT_MOVED MAPI_DIAG(40)
+#define MAPI_DIAG_MAIL_RECIPIENT_TRAVELLING MAPI_DIAG(41)
+#define MAPI_DIAG_MAIL_RECIPIENT_DEPARTED MAPI_DIAG(42)
+#define MAPI_DIAG_MAIL_NEW_ADDRESS_UNKNOWN MAPI_DIAG(43)
+#define MAPI_DIAG_MAIL_FORWARDING_UNWANTED MAPI_DIAG(44)
+#define MAPI_DIAG_MAIL_FORWARDING_PROHIB MAPI_DIAG(45)
+#define MAPI_DIAG_SECURE_MESSAGING_ERROR MAPI_DIAG(46)
+#define MAPI_DIAG_DOWNGRADING_IMPOSSIBLE MAPI_DIAG(47)
+
+#define MAPI_MH_DP_PUBLIC_UA ((ULONG) 0)
+#define MAPI_MH_DP_PRIVATE_UA ((ULONG) 1)
+#define MAPI_MH_DP_MS ((ULONG) 2)
+#define MAPI_MH_DP_ML ((ULONG) 3)
+#define MAPI_MH_DP_PDAU ((ULONG) 4)
+#define MAPI_MH_DP_PDS_PATRON ((ULONG) 5)
+#define MAPI_MH_DP_OTHER_AU ((ULONG) 6)
+
+#define MAPI_IMAILUSER_METHODS(IPURE)
+
+#undef INTERFACE
+#define INTERFACE IMailUser
+  DECLARE_MAPI_INTERFACE_(IMailUser,IMAPIProp) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROP_METHODS(PURE)
+      MAPI_IMAILUSER_METHODS(PURE)
+  };
+
+#define MAPI_IDISTLIST_METHODS(IPURE) MAPIMETHOD(CreateEntry) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,ULONG ulCreateFlags,LPMAPIPROP *lppMAPIPropEntry) IPURE; MAPIMETHOD(CopyEntries) (THIS_ LPENTRYLIST lpEntries,ULONG ulUIParam,LPMAPIPROGRESS lpProgress,ULONG ulFlags) IPURE; MAPIMETHOD(DeleteEntries) (THIS_ LPENTRYLIST lpEntries,ULONG ulFlags) IPURE; MAPIMETHOD(ResolveNames) (THIS_ LPSPropTagArray lpPropTagArray,ULONG ulFlags,LPADRLIST lpAdrList,LPFlagList lpFlagList) IPURE;
+#undef INTERFACE
+#define INTERFACE IDistList
+  DECLARE_MAPI_INTERFACE_(IDistList,IMAPIContainer) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROP_METHODS(PURE)
+      MAPI_IMAPICONTAINER_METHODS(PURE)
+      MAPI_IDISTLIST_METHODS(PURE)
+  };
+
+#define FOLDER_ROOT ((ULONG) 0x00000000)
+#define FOLDER_GENERIC ((ULONG) 0x00000001)
+#define FOLDER_SEARCH ((ULONG) 0x00000002)
+
+#define MESSAGE_MOVE ((ULONG) 0x00000001)
+#define MESSAGE_DIALOG ((ULONG) 0x00000002)
+
+#define OPEN_IF_EXISTS ((ULONG) 0x00000001)
+
+#define DEL_MESSAGES ((ULONG) 0x00000001)
+#define FOLDER_DIALOG ((ULONG) 0x00000002)
+#define DEL_FOLDERS ((ULONG) 0x00000004)
+
+#define DEL_ASSOCIATED ((ULONG) 0x00000008)
+
+#define FOLDER_MOVE ((ULONG) 0x00000001)
+
+#define COPY_SUBFOLDERS ((ULONG) 0x00000010)
+
+#define MSGSTATUS_HIGHLIGHTED ((ULONG) 0x00000001)
+#define MSGSTATUS_TAGGED ((ULONG) 0x00000002)
+#define MSGSTATUS_HIDDEN ((ULONG) 0x00000004)
+#define MSGSTATUS_DELMARKED ((ULONG) 0x00000008)
+
+#define MSGSTATUS_REMOTE_DOWNLOAD ((ULONG) 0x00001000)
+#define MSGSTATUS_REMOTE_DELETE ((ULONG) 0x00002000)
+
+#define RECURSIVE_SORT ((ULONG) 0x00000002)
+
+#define FLDSTATUS_HIGHLIGHTED ((ULONG) 0x00000001)
+#define FLDSTATUS_TAGGED ((ULONG) 0x00000002)
+#define FLDSTATUS_HIDDEN ((ULONG) 0x00000004)
+#define FLDSTATUS_DELMARKED ((ULONG) 0x00000008)
+
+#define MAPI_IMAPIFOLDER_METHODS(IPURE) MAPIMETHOD(CreateMessage) (THIS_ LPCIID lpInterface,ULONG ulFlags,LPMESSAGE *lppMessage) IPURE; MAPIMETHOD(CopyMessages) (THIS_ LPENTRYLIST lpMsgList,LPCIID lpInterface,LPVOID lpDestFolder,ULONG ulUIParam,LPMAPIPROGRESS lpProgress,ULONG ulFlags) IPURE; MAPIMETHOD(DeleteMessages) (THIS_ LPENTRYLIST lpMsgList,ULONG ulUIParam,LPMAPIPROGRESS lpProgress,ULONG ulFlags) IPURE; MAPIMETHOD(CreateFolder) (THIS_ ULONG ulFolderType,LPTSTR lpszFolderName,LPTSTR lpszFolderComment,LPCIID lpInterface,ULONG ulFlags,LPMAPIFOLDER *lppFolder) IPURE; MAPIMETHOD(CopyFolder) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,LPCIID lpInterface,LPVOID lpDestFolder,LPTSTR lpszNewFolderName,ULONG ulUIParam,LPMAPIPROGRESS lpProgress,ULONG ulFlags) IPURE; MAPIMETHOD(DeleteFolder) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,ULONG ulUIParam,LPMAPIPROGRESS lpProgress,ULONG ulFlags) IPURE; MAPIMETHOD(SetReadFlags) (THIS_ LPENTRYLIST lpMsgList,ULONG ulUIParam,LPMAPIPROGRESS lpProgress,ULONG ulFlags) IPURE; MAPIMETHOD(GetMessageStatus) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,ULONG ulFlags,ULONG *lpulMessageStatus) IPURE; MAPIMETHOD(SetMessageStatus) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,ULONG ulNewStatus,ULONG ulNewStatusMask,ULONG *lpulOldStatus) IPURE; MAPIMETHOD(SaveContentsSort) (THIS_ LPSSortOrderSet lpSortCriteria,ULONG ulFlags) IPURE; MAPIMETHOD(EmptyFolder) (THIS_ ULONG ulUIParam,LPMAPIPROGRESS lpProgress,ULONG ulFlags) IPURE;
+#undef INTERFACE
 #define INTERFACE IMAPIFolder
-DECLARE_INTERFACE_(IMAPIFolder,IMAPIContainer)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-    /*** IMAPIProp methods ***/
-    STDMETHOD(GetLastError)(THIS_ HRESULT hRes, ULONG ulFlags, LPMAPIERROR *lppErr) PURE;
-    STDMETHOD(SaveChanges)(THIS_ ULONG ulFlags) PURE;
-    STDMETHOD(GetProps)(THIS_ LPSPropTagArray lpPropTags, ULONG ulFlags, ULONG *lpValues, LPSPropValue *lppProps) PURE;
-    STDMETHOD(GetPropList)(THIS_ ULONG  ulFlags, LPSPropTagArray *lppPropTagArray) PURE;
-    STDMETHOD(OpenProperty)(THIS_ ULONG ulPropTag, LPCIID lpIid, ULONG ulOpts, ULONG ulFlags, LPUNKNOWN *lppUnk) PURE;
-    STDMETHOD(SetProps)(THIS_ ULONG cValues, LPSPropValue lpProps, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(DeleteProps)(THIS_ LPSPropTagArray lpPropTags, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyTo)(THIS_ ULONG ciidExclude, LPCIID lpIid, LPSPropTagArray lpProps, ULONG ulParam,
-                      LPMAPIPROGRESS lpProgress, LPCIID lpIface,LPVOID lpDest, ULONG ulFlags,
-                      LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyProps)(THIS_ LPSPropTagArray lpIncludeProps, ULONG ulParam, LPMAPIPROGRESS lpProgress,
-                         LPCIID lpIid, LPVOID lpDestObj, ULONG ulFlags, LPSPropProblemArray *lppProblems) PURE;
-    STDMETHOD(GetNamesFromIDs)(THIS_ LPSPropTagArray *lppPropTags, LPGUID lpIid, ULONG ulFlags, ULONG *lpCount,
-                               LPMAPINAMEID **lpppNames) PURE;
-    STDMETHOD(GetIDsFromNames)(THIS_ ULONG cPropNames, LPMAPINAMEID *lppNames, ULONG ulFlags, LPSPropTagArray *lppPropTags) PURE;
-    /*** IMAPIContainer methods ***/
-    STDMETHOD(GetContentsTable)(THIS_ ULONG ulFlags, LPMAPITABLE * lppTable) PURE;
-    STDMETHOD(GetHierarchyTable)(THIS_ ULONG ulFlags, LPMAPITABLE * lppTable) PURE;
-    STDMETHOD(OpenEntry)(THIS_ ULONG cbEntryID, LPENTRYID lpEntryID, LPCIID lpInterface, ULONG ulFlags,
-                         ULONG * lpulObjType, LPUNKNOWN * lppUnk) PURE;
-    STDMETHOD(SetSearchCriteria)(THIS_ LPSRestriction lpRestriction, LPENTRYLIST lpContainerList, ULONG ulSearchFlags) PURE;
-    STDMETHOD(GetSearchCriteria)(THIS_ ULONG ulFlags, LPSRestriction * lppRestriction, LPENTRYLIST * lppContainerList,
-                                 ULONG * lpulSearchState) PURE;
-    /*** IMAPIFolder methods ***/
-    STDMETHOD(CreateMessage)(THIS_ LPCIID lpInterface, ULONG ulFlags, LPMESSAGE *lppMessage) PURE;
-    STDMETHOD(CopyMessages)(THIS_ LPENTRYLIST lpMsgList, LPCIID lpInterface, LPVOID lpDestFolder, ULONG ulUIParam,
-                            LPMAPIPROGRESS lpProgress, ULONG ulFlags) PURE;
-    STDMETHOD(DeleteMessages)(THIS_ LPENTRYLIST lpMsgList, ULONG ulUIParam, LPMAPIPROGRESS lpProgress, ULONG ulFlags) PURE;
-    STDMETHOD(CreateFolder)(THIS_ ULONG ulFolderType, LPSTR lpszFolderName, LPSTR lpszFolderComment, LPCIID lpInterface,
-                            ULONG ulFlags, LPMAPIFOLDER lppFolder) PURE;
-    STDMETHOD(CopyFolder)(THIS_ ULONG cbEntryID, LPENTRYID lpEntryID, LPCIID lpInterface, LPVOID lpDestFolder,
-                          LPSTR lpszNewFolderName, ULONG ulUIParam, LPMAPIPROGRESS lpProgress, ULONG ulFlags) PURE;
-    STDMETHOD(DeleteFolder)(THIS_ ULONG cbEntryID, LPENTRYID lpEntryID, ULONG ulUIParam, LPMAPIPROGRESS lpProgress,
-                            ULONG ulFlags) PURE;
-    STDMETHOD(SetReadFlags)(THIS_ LPENTRYLIST lpMsgList, ULONG ulUIParam, LPMAPIPROGRESS lpProgress, ULONG ulFlags) PURE;
-    STDMETHOD(GetMessageStatus)(THIS_ ULONG cbEntryID, LPENTRYID lpEntryID, ULONG ulFlags, ULONG * lpulMessageStatus) PURE;
-    STDMETHOD(SetMessageStatus)(THIS_ ULONG cbEntryID, LPENTRYID lpEntryID, ULONG ulNewStatus,
-                                ULONG ulNewStatusMask, ULONG * lpulOldStatus) PURE;
-    STDMETHOD(SaveContentsSort)(THIS_ LPSSortOrderSet lpSortCriteria, ULONG ulFlags) PURE;
-    STDMETHOD(EmptyFolder) (THIS_ ULONG ulUIParam, LPMAPIPROGRESS lpProgress, ULONG ulFlags) PURE;
-};
+  DECLARE_MAPI_INTERFACE_(IMAPIFolder,IMAPIContainer) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROP_METHODS(PURE)
+      MAPI_IMAPICONTAINER_METHODS(PURE)
+      MAPI_IMAPIFOLDER_METHODS(PURE)
+  };
+
+#define STORE_ENTRYID_UNIQUE ((ULONG) 0x00000001)
+#define STORE_READONLY ((ULONG) 0x00000002)
+#define STORE_SEARCH_OK ((ULONG) 0x00000004)
+#define STORE_MODIFY_OK ((ULONG) 0x00000008)
+#define STORE_CREATE_OK ((ULONG) 0x00000010)
+#define STORE_ATTACH_OK ((ULONG) 0x00000020)
+#define STORE_OLE_OK ((ULONG) 0x00000040)
+#define STORE_SUBMIT_OK ((ULONG) 0x00000080)
+#define STORE_NOTIFY_OK ((ULONG) 0x00000100)
+#define STORE_MV_PROPS_OK ((ULONG) 0x00000200)
+#define STORE_CATEGORIZE_OK ((ULONG) 0x00000400)
+#define STORE_RTF_OK ((ULONG) 0x00000800)
+#define STORE_RESTRICTION_OK ((ULONG) 0x00001000)
+#define STORE_SORT_OK ((ULONG) 0x00002000)
+#define STORE_PUBLIC_FOLDERS ((ULONG) 0x00004000)
+#define STORE_UNCOMPRESSED_RTF ((ULONG) 0x00008000)
+
+#define STORE_HAS_SEARCHES ((ULONG) 0x01000000)
+
+#define LOGOFF_NO_WAIT ((ULONG) 0x00000001)
+#define LOGOFF_ORDERLY ((ULONG) 0x00000002)
+#define LOGOFF_PURGE ((ULONG) 0x00000004)
+#define LOGOFF_ABORT ((ULONG) 0x00000008)
+#define LOGOFF_QUIET ((ULONG) 0x00000010)
+
+#define LOGOFF_COMPLETE ((ULONG) 0x00010000)
+#define LOGOFF_INBOUND ((ULONG) 0x00020000)
+#define LOGOFF_OUTBOUND ((ULONG) 0x00040000)
+#define LOGOFF_OUTBOUND_QUEUE ((ULONG) 0x00080000)
+
+#define MSG_LOCKED ((ULONG) 0x00000001)
+#define MSG_UNLOCKED ((ULONG) 0x00000000)
+
+#define FOLDER_IPM_SUBTREE_VALID ((ULONG) 0x00000001)
+#define FOLDER_IPM_INBOX_VALID ((ULONG) 0x00000002)
+#define FOLDER_IPM_OUTBOX_VALID ((ULONG) 0x00000004)
+#define FOLDER_IPM_WASTEBASKET_VALID ((ULONG) 0x00000008)
+#define FOLDER_IPM_SENTMAIL_VALID ((ULONG) 0x00000010)
+#define FOLDER_VIEWS_VALID ((ULONG) 0x00000020)
+#define FOLDER_COMMON_VIEWS_VALID ((ULONG) 0x00000040)
+#define FOLDER_FINDER_VALID ((ULONG) 0x00000080)
+
+#define MAPI_IMSGSTORE_METHODS(IPURE) MAPIMETHOD(Advise) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,ULONG ulEventMask,LPMAPIADVISESINK lpAdviseSink,ULONG *lpulConnection) IPURE; MAPIMETHOD(Unadvise) (THIS_ ULONG ulConnection) IPURE; MAPIMETHOD(CompareEntryIDs) (THIS_ ULONG cbEntryID1,LPENTRYID lpEntryID1,ULONG cbEntryID2,LPENTRYID lpEntryID2,ULONG ulFlags,ULONG *lpulResult) IPURE; MAPIMETHOD(OpenEntry) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,LPCIID lpInterface,ULONG ulFlags,ULONG *lpulObjType,LPUNKNOWN *lppUnk) IPURE; MAPIMETHOD(SetReceiveFolder) (THIS_ LPTSTR lpszMessageClass,ULONG ulFlags,ULONG cbEntryID,LPENTRYID lpEntryID) IPURE; MAPIMETHOD(GetReceiveFolder) (THIS_ LPTSTR lpszMessageClass,ULONG ulFlags,ULONG *lpcbEntryID,LPENTRYID *lppEntryID,LPTSTR *lppszExplicitClass) IPURE; MAPIMETHOD(GetReceiveFolderTable) (THIS_ ULONG ulFlags,LPMAPITABLE *lppTable) IPURE; MAPIMETHOD(StoreLogoff) (THIS_ ULONG *lpulFlags) IPURE; MAPIMETHOD(AbortSubmit) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,ULONG ulFlags) IPURE; MAPIMETHOD(GetOutgoingQueue) (THIS_ ULONG ulFlags,LPMAPITABLE *lppTable) IPURE; MAPIMETHOD(SetLockState) (THIS_ LPMESSAGE lpMessage,ULONG ulLockState) IPURE; MAPIMETHOD(FinishedMsg) (THIS_ ULONG ulFlags,ULONG cbEntryID,LPENTRYID lpEntryID) IPURE; MAPIMETHOD(NotifyNewMail) (THIS_ LPNOTIFICATION lpNotification) IPURE;
 #undef INTERFACE
+#define INTERFACE IMsgStore
+  DECLARE_MAPI_INTERFACE_(IMsgStore,IMAPIProp) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROP_METHODS(PURE)
+      MAPI_IMSGSTORE_METHODS(PURE)
+  };
 
-#if !defined(__cplusplus) || defined(CINTERFACE)
-        /*** IUnknown methods ***/
-#define IMAPIFolder_QueryInterface(p,a,b)        (p)->lpVtbl->QueryInterface(p,a,b)
-#define IMAPIFolder_AddRef(p)                    (p)->lpVtbl->AddRef(p)
-#define IMAPIFolder_Release(p)                   (p)->lpVtbl->Release(p)
-        /*** IMAPIProp methods ***/
-#define IMAPIFolder_GetLastError(p,a,b,c)        (p)->lpVtbl->GetLastError(p,a,b,c)
-#define IMAPIFolder_SaveChanges(p,a)             (p)->lpVtbl->SaveChanges(p,a)
-#define IMAPIFolder_GetProps(p,a,b,c,d)          (p)->lpVtbl->GetProps(p,a,b,c,d)
-#define IMAPIFolder_GetPropList(p,a,b)           (p)->lpVtbl->GetPropList(p,a,b)
-#define IMAPIFolder_OpenProperty(p,a,b,c,d,e)    (p)->lpVtbl->OpenProperty(p,a,b,c,d,e)
-#define IMAPIFolder_SetProps(p,a,b,c)            (p)->lpVtbl->SetProps(p,a,b,c)
-#define IMAPIFolder_DeleteProps(p,a,b)           (p)->lpVtbl->DeleteProps(p,a,b)
-#define IMAPIFolder_CopyTo(p,a,b,c,d,e,f,g,h,i)  (p)->lpVtbl->CopyTo(p,a,b,c,d,e,f,g,h,i)
-#define IMAPIFolder_CopyProps(p,a,b,c,d,e,f,g)   (p)->lpVtbl->CopyProps(p,a,b,c,d,e,f,g)
-#define IMAPIFolder_GetNamesFromIDs(p,a,b,c,d,e) (p)->lpVtbl->GetNamesFromIDs(p,a,b,c,d,e)
-#define IMAPIFolder_GetIDsFromNames(p,a,b,c,d)   (p)->lpVtbl->GetIDsFromNames(p,a,b,c,d)
-        /*** IMAPIContainer methods ***/
-#define IMAPIFolder_GetContentsTable(p,a,b)      (p)->lpVtbl->GetContentsTable(p,a,b)
-#define IMAPIFolder_GetHierarchyTable(p,a,b)     (p)->lpVtbl->GetHierarchyTable(p,a,b)
-#define IMAPIFolder_OpenEntry(p,a,b,c,d,e,f)     (p)->lpVtbl->OpenEntry(p,a,b,c,d,e,f)
-#define IMAPIFolder_SetSearchCriteria(p,a,b,c)   (p)->lpVtbl->SetSearchCriteria(p,a,b,c)
-#define IMAPIFolder_GetSearchCriteria(p,a,b,c,d) (p)->lpVtbl->GetSearchCriteria(p,a,b,c,d)
-        /*** IMAPIFolder methods ***/
-#define IMAPIFolder_CreateMessage(p,a,b,c)        (p)->lpVtbl->CreateMessage(p,a,b,c)
-#define IMAPIFolder_CopyMessages(p,a,b,c,d,e,f)   (p)->lpVtbl->CopyMessages(p,a,b,c,d,e,f)
-#define IMAPIFolder_DeleteMessages(p,a,b,c,d)     (p)->lpVtbl->DeleteMessages(p,a,b,c,d)
-#define IMAPIFolder_CreateFolder(p,a,b,c,d,e,f)   (p)->lpVtbl->CreateFolder(p,a,b,c,d,e,f)
-#define IMAPIFolder_CopyFolder(p,a,b,c,d,e,f,g,h) (p)->lpVtbl->CopyFolder(p,a,b,c,d,e,f,g,h)
-#define IMAPIFolder_DeleteFolder(p,a,b,c,d,e)     (p)->lpVtbl->CreateFolder(p,a,b,c,d,e)
-#define IMAPIFolder_SetReadFlags(p,a,b,c,d)       (p)->lpVtbl->SetReadFlags(p,a,b,c,d)
-#define IMAPIFolder_GetMessageStatus(p,a,b,c,d)   (p)->lpVtbl->GetMessageStatus(p,a,b,c,d)
-#define IMAPIFolder_SetMessageStatus(p,a,b,c,d,e) (p)->lpVtbl->SetMessageStatus(p,a,b,c,d,e)
-#define IMAPIFolder_SaveContentsSort(p,a,b)       (p)->lpVtbl->SaveContentsSort(p,a,b)
-#define IMAPIFolder_EmptyFolder(p,a,b,c)          (p)->lpVtbl->EmptyFolder(p,a,b,c)
+#define FORCE_SUBMIT ((ULONG) 0x00000001)
 
-#endif
+#define MSGFLAG_READ ((ULONG) 0x00000001)
+#define MSGFLAG_UNMODIFIED ((ULONG) 0x00000002)
+#define MSGFLAG_SUBMIT ((ULONG) 0x00000004)
+#define MSGFLAG_UNSENT ((ULONG) 0x00000008)
+#define MSGFLAG_HASATTACH ((ULONG) 0x00000010)
+#define MSGFLAG_FROMME ((ULONG) 0x00000020)
+#define MSGFLAG_ASSOCIATED ((ULONG) 0x00000040)
+#define MSGFLAG_RESEND ((ULONG) 0x00000080)
+#define MSGFLAG_RN_PENDING ((ULONG) 0x00000100)
+#define MSGFLAG_NRN_PENDING ((ULONG) 0x00000200)
 
-typedef struct
-{
-    ULONG cb;
-    BYTE  abEntry[MAPI_DIM];
-} FLATENTRY, *LPFLATENTRY;
+#define SUBMITFLAG_LOCKED ((ULONG) 0x00000001)
+#define SUBMITFLAG_PREPROCESS ((ULONG) 0x00000002)
 
-typedef struct
-{
-    ULONG cEntries;
-    ULONG cbEntries;
-    BYTE  abEntries[MAPI_DIM];
-} FLATENTRYLIST, *LPFLATENTRYLIST;
+#define MODRECIP_ADD ((ULONG) 0x00000002)
+#define MODRECIP_MODIFY ((ULONG) 0x00000004)
+#define MODRECIP_REMOVE ((ULONG) 0x00000008)
 
-typedef struct
-{
-    ULONG cb;
-    BYTE  ab[MAPI_DIM];
-} MTSID, *LPMTSID;
+#define SUPPRESS_RECEIPT ((ULONG) 0x00000001)
+#define CLEAR_READ_FLAG ((ULONG) 0x00000004)
 
-typedef struct
-{
-    ULONG cMTSIDs;
-    ULONG cbMTSIDs;
-    BYTE  abMTSIDs[MAPI_DIM];
-} FLATMTSIDLIST, *LPFLATMTSIDLIST;
+#define GENERATE_RECEIPT_ONLY ((ULONG) 0x00000010)
+#define CLEAR_RN_PENDING ((ULONG) 0x00000020)
+#define CLEAR_NRN_PENDING ((ULONG) 0x00000040)
 
-typedef struct _ADRENTRY
-{
-    ULONG        ulReserved1;
-    ULONG        cValues;
-    LPSPropValue rgPropVals;
-} ADRENTRY, *LPADRENTRY;
+#define ATTACH_DIALOG ((ULONG) 0x00000001)
 
-typedef struct _ADRLIST
-{
-    ULONG    cEntries;
-    ADRENTRY aEntries[MAPI_DIM];
-} ADRLIST, *LPADRLIST;
+#define SECURITY_SIGNED ((ULONG) 0x00000001)
+#define SECURITY_ENCRYPTED ((ULONG) 0x00000002)
 
-/*****************************************************************************
- * IMessage interface
- */
+#define PRIO_URGENT ((__LONG32) 1)
+#define PRIO_NORMAL ((__LONG32) 0)
+#define PRIO_NONURGENT ((__LONG32) -1)
+
+#define SENSITIVITY_NONE ((ULONG) 0x00000000)
+#define SENSITIVITY_PERSONAL ((ULONG) 0x00000001)
+#define SENSITIVITY_PRIVATE ((ULONG) 0x00000002)
+#define SENSITIVITY_COMPANY_CONFIDENTIAL ((ULONG) 0x00000003)
+
+#define IMPORTANCE_LOW ((__LONG32) 0)
+#define IMPORTANCE_NORMAL ((__LONG32) 1)
+#define IMPORTANCE_HIGH ((__LONG32) 2)
+
+#define MAPI_IMESSAGE_METHODS(IPURE) MAPIMETHOD(GetAttachmentTable) (THIS_ ULONG ulFlags,LPMAPITABLE *lppTable) IPURE; MAPIMETHOD(OpenAttach) (THIS_ ULONG ulAttachmentNum,LPCIID lpInterface,ULONG ulFlags,LPATTACH *lppAttach) IPURE; MAPIMETHOD(CreateAttach) (THIS_ LPCIID lpInterface,ULONG ulFlags,ULONG *lpulAttachmentNum,LPATTACH *lppAttach) IPURE; MAPIMETHOD(DeleteAttach) (THIS_ ULONG ulAttachmentNum,ULONG ulUIParam,LPMAPIPROGRESS lpProgress,ULONG ulFlags) IPURE; MAPIMETHOD(GetRecipientTable) (THIS_ ULONG ulFlags,LPMAPITABLE *lppTable) IPURE; MAPIMETHOD(ModifyRecipients) (THIS_ ULONG ulFlags,LPADRLIST lpMods) IPURE; MAPIMETHOD(SubmitMessage) (THIS_ ULONG ulFlags) IPURE; MAPIMETHOD(SetReadFlag) (THIS_ ULONG ulFlags) IPURE;
+#undef INTERFACE
 #define INTERFACE IMessage
-DECLARE_INTERFACE_(IMessage,IMAPIProp)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-    /*** IMAPIProp methods ***/
-    STDMETHOD(GetLastError)(THIS_ HRESULT hRes, ULONG ulFlags, LPMAPIERROR *lppErr) PURE;
-    STDMETHOD(SaveChanges)(THIS_ ULONG ulFlags) PURE;
-    STDMETHOD(GetProps)(THIS_ LPSPropTagArray lpPropTags, ULONG ulFlags, ULONG *lpValues, LPSPropValue *lppProps) PURE;
-    STDMETHOD(GetPropList)(THIS_ ULONG  ulFlags, LPSPropTagArray *lppPropTagArray) PURE;
-    STDMETHOD(OpenProperty)(THIS_ ULONG ulPropTag, LPCIID lpIid, ULONG ulOpts, ULONG ulFlags, LPUNKNOWN *lppUnk) PURE;
-    STDMETHOD(SetProps)(THIS_ ULONG cValues, LPSPropValue lpProps, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(DeleteProps)(THIS_ LPSPropTagArray lpPropTags, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyTo)(THIS_ ULONG ciidExclude, LPCIID lpIid, LPSPropTagArray lpProps, ULONG ulParam,
-                      LPMAPIPROGRESS lpProgress, LPCIID lpIface,LPVOID lpDest, ULONG ulFlags,
-                      LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyProps)(THIS_ LPSPropTagArray lpIncludeProps, ULONG ulParam, LPMAPIPROGRESS lpProgress,
-                         LPCIID lpIid, LPVOID lpDestObj, ULONG ulFlags, LPSPropProblemArray *lppProblems) PURE;
-    STDMETHOD(GetNamesFromIDs)(THIS_ LPSPropTagArray *lppPropTags, LPGUID lpIid, ULONG ulFlags, ULONG *lpCount,
-                               LPMAPINAMEID **lpppNames) PURE;
-    STDMETHOD(GetIDsFromNames)(THIS_ ULONG cPropNames, LPMAPINAMEID *lppNames, ULONG ulFlags, LPSPropTagArray *lppPropTags) PURE;
-    /*** IMessage methods ***/
-    STDMETHOD(GetAttachmentTable)(THIS_ ULONG ulFlags, LPMAPITABLE *lppTable) PURE;
-    STDMETHOD(OpenAttach)(THIS_ ULONG ulAttachmentNum, LPCIID lpInterface, ULONG ulFlags, LPATTACH *lppAttach) PURE;
-    STDMETHOD(CreateAttach)(THIS_ LPCIID lpInterface, ULONG ulFlags, ULONG *lpulAttachmentNum, LPATTACH *lppAttach) PURE;
-    STDMETHOD(DeleteAttach)(THIS_ ULONG ulAttachmentNum, ULONG ulUIParam, LPMAPIPROGRESS lpProgress, ULONG ulFlags) PURE;
-    STDMETHOD(GetRecipientTable)(THIS_ ULONG ulFlags, LPMAPITABLE *lppTable) PURE;
-    STDMETHOD(ModifyRecipients)(THIS_ ULONG ulFlags, LPADRLIST lpMods) PURE;
-    STDMETHOD(SubmitMessage)(THIS_ ULONG ulFlags) PURE;
-    STDMETHOD(SetReadFlag)(THIS_ ULONG ulFlags) PURE;
-};
+  DECLARE_MAPI_INTERFACE_(IMessage,IMAPIProp) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROP_METHODS(PURE)
+      MAPI_IMESSAGE_METHODS(PURE)
+  };
+
+#define NO_ATTACHMENT ((ULONG) 0x00000000)
+#define ATTACH_BY_VALUE ((ULONG) 0x00000001)
+#define ATTACH_BY_REFERENCE ((ULONG) 0x00000002)
+#define ATTACH_BY_REF_RESOLVE ((ULONG) 0x00000003)
+#define ATTACH_BY_REF_ONLY ((ULONG) 0x00000004)
+#define ATTACH_EMBEDDED_MSG ((ULONG) 0x00000005)
+#define ATTACH_OLE ((ULONG) 0x00000006)
+
+#define MAPI_IATTACH_METHODS(IPURE)
+
 #undef INTERFACE
-
-#if !defined(__cplusplus) || defined(CINTERFACE)
-        /*** IUnknown methods ***/
-#define IMessage_QueryInterface(p,a,b)        (p)->lpVtbl->QueryInterface(p,a,b)
-#define IMessage_AddRef(p)                    (p)->lpVtbl->AddRef(p)
-#define IMessage_Release(p)                   (p)->lpVtbl->Release(p)
-        /*** IMAPIProp methods ***/
-#define IMessage_GetLastError(p,a,b,c)        (p)->lpVtbl->GetLastError(p,a,b,c)
-#define IMessage_SaveChanges(p,a)             (p)->lpVtbl->SaveChanges(p,a)
-#define IMessage_GetProps(p,a,b,c,d)          (p)->lpVtbl->GetProps(p,a,b,c,d)
-#define IMessage_GetPropList(p,a,b)           (p)->lpVtbl->GetPropList(p,a,b)
-#define IMessage_OpenProperty(p,a,b,c,d,e)    (p)->lpVtbl->OpenProperty(p,a,b,c,d,e)
-#define IMessage_SetProps(p,a,b,c)            (p)->lpVtbl->SetProps(p,a,b,c)
-#define IMessage_DeleteProps(p,a,b)           (p)->lpVtbl->DeleteProps(p,a,b)
-#define IMessage_CopyTo(p,a,b,c,d,e,f,g,h,i)  (p)->lpVtbl->CopyTo(p,a,b,c,d,e,f,g,h,i)
-#define IMessage_CopyProps(p,a,b,c,d,e,f,g)   (p)->lpVtbl->CopyProps(p,a,b,c,d,e,f,g)
-#define IMessage_GetNamesFromIDs(p,a,b,c,d,e) (p)->lpVtbl->GetNamesFromIDs(p,a,b,c,d,e)
-#define IMessage_GetIDsFromNames(p,a,b,c,d)   (p)->lpVtbl->GetIDsFromNames(p,a,b,c,d)
-        /*** IMessage methods ***/
-#define IMessage_GetAttachmentTable(p,a,b)    (p)->lpVtbl->GetAttachmentTable(p,a,b)
-#define IMessage_OpenAttach(p,a,b,c,d)        (p)->lpVtbl->OpenAttach(p,a,b,c,d)
-#define IMessage_CreateAttach(p,a,b,c,d)      (p)->lpVtbl->CreateAttach(p,a,b,c,d)
-#define IMessage_DeleteAttach(p,a,b,c,d)      (p)->lpVtbl->DeleteAttach(p,a,b,c,d)
-#define IMessage_GetRecipientTable(p,a,b)     (p)->lpVtbl->GetRecipientTable(p,a,b)
-#define IMessage_ModifyRecipients(p,a,b)      (p)->lpVtbl->ModifyRecipients(p,a,b)
-#define IMessage_SubmitMessage(p,a)           (p)->lpVtbl->SubmitMessage(p,a)
-#define IMessage_SetReadFlag(p,a)             (p)->lpVtbl->SetReadFlag(p,a)
-
-#endif
-
-/* Message flags (PR_MESSAGE_FLAGS) */
-
-#define MSGFLAG_READ         0x00000001U
-#define MSGFLAG_UNMODIFIED   0x00000002U
-#define MSGFLAG_SUBMIT       0x00000004U
-#define MSGFLAG_UNSENT       0x00000008U
-#define MSGFLAG_HASATTACH    0x00000010U
-#define MSGFLAG_FROMME       0x00000020U
-
-/*****************************************************************************
- * IAttach interface
- */
 #define INTERFACE IAttach
-DECLARE_INTERFACE_(IAttach,IMAPIProp)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-    /*** IMAPIProp methods ***/
-    STDMETHOD(GetLastError)(THIS_ HRESULT hRes, ULONG ulFlags, LPMAPIERROR *lppErr) PURE;
-    STDMETHOD(SaveChanges)(THIS_ ULONG ulFlags) PURE;
-    STDMETHOD(GetProps)(THIS_ LPSPropTagArray lpPropTags, ULONG ulFlags, ULONG *lpValues, LPSPropValue *lppProps) PURE;
-    STDMETHOD(GetPropList)(THIS_ ULONG  ulFlags, LPSPropTagArray *lppPropTagArray) PURE;
-    STDMETHOD(OpenProperty)(THIS_ ULONG ulPropTag, LPCIID lpIid, ULONG ulOpts, ULONG ulFlags, LPUNKNOWN *lppUnk) PURE;
-    STDMETHOD(SetProps)(THIS_ ULONG cValues, LPSPropValue lpProps, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(DeleteProps)(THIS_ LPSPropTagArray lpPropTags, LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyTo)(THIS_ ULONG ciidExclude, LPCIID lpIid, LPSPropTagArray lpProps, ULONG ulParam,
-                      LPMAPIPROGRESS lpProgress, LPCIID lpIface,LPVOID lpDest, ULONG ulFlags,
-                      LPSPropProblemArray *lppProbs) PURE;
-    STDMETHOD(CopyProps)(THIS_ LPSPropTagArray lpIncludeProps, ULONG ulParam, LPMAPIPROGRESS lpProgress,
-                         LPCIID lpIid, LPVOID lpDestObj, ULONG ulFlags, LPSPropProblemArray *lppProblems) PURE;
-    STDMETHOD(GetNamesFromIDs)(THIS_ LPSPropTagArray *lppPropTags, LPGUID lpIid, ULONG ulFlags, ULONG *lpCount,
-                               LPMAPINAMEID **lpppNames) PURE;
-    STDMETHOD(GetIDsFromNames)(THIS_ ULONG cPropNames, LPMAPINAMEID *lppNames, ULONG ulFlags, LPSPropTagArray *lppPropTags) PURE;
-};
+  DECLARE_MAPI_INTERFACE_(IAttach,IMAPIProp) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROP_METHODS(PURE)
+      MAPI_IATTACH_METHODS(PURE)
+  };
+
+#define GET_ADRPARM_VERSION(ulFlags) (((ULONG)ulFlags) & 0xF0000000)
+#define SET_ADRPARM_VERSION(ulFlags,ulVersion) (((ULONG)ulVersion) | (((ULONG)ulFlags) & 0x0FFFFFFF))
+
+#define ADRPARM_HELP_CTX ((ULONG) 0x00000000)
+
+#define DIALOG_MODAL ((ULONG) 0x00000001)
+#define DIALOG_SDI ((ULONG) 0x00000002)
+#define DIALOG_OPTIONS ((ULONG) 0x00000004)
+#define ADDRESS_ONE ((ULONG) 0x00000008)
+#define AB_SELECTONLY ((ULONG) 0x00000010)
+#define AB_RESOLVE ((ULONG) 0x00000020)
+
+#define DT_MAILUSER ((ULONG) 0x00000000)
+#define DT_DISTLIST ((ULONG) 0x00000001)
+#define DT_FORUM ((ULONG) 0x00000002)
+#define DT_AGENT ((ULONG) 0x00000003)
+#define DT_ORGANIZATION ((ULONG) 0x00000004)
+#define DT_PRIVATE_DISTLIST ((ULONG) 0x00000005)
+#define DT_REMOTE_MAILUSER ((ULONG) 0x00000006)
+
+#define DT_MODIFIABLE ((ULONG) 0x00010000)
+#define DT_GLOBAL ((ULONG) 0x00020000)
+#define DT_LOCAL ((ULONG) 0x00030000)
+#define DT_WAN ((ULONG) 0x00040000)
+#define DT_NOT_SPECIFIC ((ULONG) 0x00050000)
+
+#define DT_FOLDER ((ULONG) 0x01000000)
+#define DT_FOLDER_LINK ((ULONG) 0x02000000)
+#define DT_FOLDER_SPECIAL ((ULONG) 0x04000000)
+
+  typedef WINBOOL (WINAPI ACCELERATEABSDI)(ULONG ulUIParam,LPVOID lpvmsg);
+  typedef ACCELERATEABSDI *LPFNABSDI;
+  typedef void (WINAPI DISMISSMODELESS)(ULONG ulUIParam,LPVOID lpvContext);
+  typedef DISMISSMODELESS *LPFNDISMISS;
+  typedef SCODE (WINAPI *LPFNBUTTON)(ULONG ulUIParam,LPVOID lpvContext,ULONG cbEntryID,LPENTRYID lpSelection,ULONG ulFlags);
+
+  typedef struct _ADRPARM {
+    ULONG cbABContEntryID;
+    LPENTRYID lpABContEntryID;
+    ULONG ulFlags;
+    LPVOID lpReserved;
+    ULONG ulHelpContext;
+    LPTSTR lpszHelpFileName;
+    LPFNABSDI lpfnABSDI;
+    LPFNDISMISS lpfnDismiss;
+    LPVOID lpvDismissContext;
+    LPTSTR lpszCaption;
+    LPTSTR lpszNewEntryTitle;
+    LPTSTR lpszDestWellsTitle;
+    ULONG cDestFields;
+    ULONG nDestFieldFocus;
+    LPTSTR *lppszDestTitles;
+    ULONG *lpulDestComps;
+    LPSRestriction lpContRestriction;
+    LPSRestriction lpHierRestriction;
+  } ADRPARM,*LPADRPARM;
+
+#define MAPI_DEFERRED_ERRORS ((ULONG) 0x00000008)
+
+#define MAPI_ASSOCIATED ((ULONG) 0x00000040)
+
+#define MDB_NO_DIALOG ((ULONG) 0x00000001)
+#define MDB_WRITE ((ULONG) 0x00000004)
+
+#define MDB_TEMPORARY ((ULONG) 0x00000020)
+#define MDB_NO_MAIL ((ULONG) 0x00000080)
+
+#define AB_NO_DIALOG ((ULONG) 0x00000001)
+
+#define MAPI_ENABLED ((ULONG) 0x00000000)
+#define MAPI_DISABLED ((ULONG) 0x00000001)
+
+#define MAPI_IMAPICONTROL_METHODS(IPURE) MAPIMETHOD(GetLastError) (THIS_ HRESULT hResult,ULONG ulFlags,LPMAPIERROR *lppMAPIError) IPURE; MAPIMETHOD(Activate) (THIS_ ULONG ulFlags,ULONG ulUIParam) IPURE; MAPIMETHOD(GetState) (THIS_ ULONG ulFlags,ULONG *lpulState) IPURE;
 #undef INTERFACE
+#define INTERFACE IMAPIControl
+  DECLARE_MAPI_INTERFACE_(IMAPIControl,IUnknown) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPICONTROL_METHODS(PURE)
+  };
 
-#if !defined(__cplusplus) || defined(CINTERFACE)
-        /*** IUnknown methods ***/
-#define IAttach_QueryInterface(p,a,b)        (p)->lpVtbl->QueryInterface(p,a,b)
-#define IAttach_AddRef(p)                    (p)->lpVtbl->AddRef(p)
-#define IAttach_Release(p)                   (p)->lpVtbl->Release(p)
-        /*** IMAPIProp methods ***/
-#define IAttach_GetLastError(p,a,b,c)        (p)->lpVtbl->GetLastError(p,a,b,c)
-#define IAttach_SaveChanges(p,a)             (p)->lpVtbl->SaveChanges(p,a)
-#define IAttach_GetProps(p,a,b,c,d)          (p)->lpVtbl->GetProps(p,a,b,c,d)
-#define IAttach_GetPropList(p,a,b)           (p)->lpVtbl->GetPropList(p,a,b)
-#define IAttach_OpenProperty(p,a,b,c,d,e)    (p)->lpVtbl->OpenProperty(p,a,b,c,d,e)
-#define IAttach_SetProps(p,a,b,c)            (p)->lpVtbl->SetProps(p,a,b,c)
-#define IAttach_DeleteProps(p,a,b)           (p)->lpVtbl->DeleteProps(p,a,b)
-#define IAttach_CopyTo(p,a,b,c,d,e,f,g,h,i)  (p)->lpVtbl->CopyTo(p,a,b,c,d,e,f,g,h,i)
-#define IAttach_CopyProps(p,a,b,c,d,e,f,g)   (p)->lpVtbl->CopyProps(p,a,b,c,d,e,f,g)
-#define IAttach_GetNamesFromIDs(p,a,b,c,d,e) (p)->lpVtbl->GetNamesFromIDs(p,a,b,c,d,e)
-#define IAttach_GetIDsFromNames(p,a,b,c,d)   (p)->lpVtbl->GetIDsFromNames(p,a,b,c,d)
+  DECLARE_MAPI_INTERFACE_PTR(IMAPIControl,LPMAPICONTROL);
+
+#define DT_MULTILINE ((ULONG) 0x00000001)
+#define DT_EDITABLE ((ULONG) 0x00000002)
+#define DT_REQUIRED ((ULONG) 0x00000004)
+#define DT_SET_IMMEDIATE ((ULONG) 0x00000008)
+#define DT_PASSWORD_EDIT ((ULONG) 0x00000010)
+#define DT_ACCEPT_DBCS ((ULONG) 0x00000020)
+#define DT_SET_SELECTION ((ULONG) 0x00000040)
+
+#define DTCT_LABEL ((ULONG) 0x00000000)
+#define DTCT_EDIT ((ULONG) 0x00000001)
+#define DTCT_LBX ((ULONG) 0x00000002)
+#define DTCT_COMBOBOX ((ULONG) 0x00000003)
+#define DTCT_DDLBX ((ULONG) 0x00000004)
+#define DTCT_CHECKBOX ((ULONG) 0x00000005)
+#define DTCT_GROUPBOX ((ULONG) 0x00000006)
+#define DTCT_BUTTON ((ULONG) 0x00000007)
+#define DTCT_PAGE ((ULONG) 0x00000008)
+#define DTCT_RADIOBUTTON ((ULONG) 0x00000009)
+#define DTCT_MVLISTBOX ((ULONG) 0x0000000B)
+#define DTCT_MVDDLBX ((ULONG) 0x0000000C)
+
+  typedef struct _DTBLLABEL {
+    ULONG ulbLpszLabelName;
+    ULONG ulFlags;
+  } DTBLLABEL,*LPDTBLLABEL;
+#define SizedDtblLabel(n,u) struct _DTBLLABEL_ ## u { DTBLLABEL dtbllabel; TCHAR lpszLabelName[n]; } u
+
+  typedef struct _DTBLEDIT {
+    ULONG ulbLpszCharsAllowed;
+    ULONG ulFlags;
+    ULONG ulNumCharsAllowed;
+    ULONG ulPropTag;
+  } DTBLEDIT,*LPDTBLEDIT;
+#define SizedDtblEdit(n,u) struct _DTBLEDIT_ ## u { DTBLEDIT dtbledit; TCHAR lpszCharsAllowed[n]; } u
+
+#define MAPI_NO_HBAR ((ULONG) 0x00000001)
+#define MAPI_NO_VBAR ((ULONG) 0x00000002)
+
+  typedef struct _DTBLLBX {
+    ULONG ulFlags;
+    ULONG ulPRSetProperty;
+    ULONG ulPRTableName;
+  } DTBLLBX,*LPDTBLLBX;
+
+  typedef struct _DTBLCOMBOBOX {
+    ULONG ulbLpszCharsAllowed;
+    ULONG ulFlags;
+    ULONG ulNumCharsAllowed;
+    ULONG ulPRPropertyName;
+    ULONG ulPRTableName;
+  } DTBLCOMBOBOX,*LPDTBLCOMBOBOX;
+#define SizedDtblComboBox(n,u) struct _DTBLCOMBOBOX_ ## u { DTBLCOMBOBOX dtblcombobox; TCHAR lpszCharsAllowed[n]; } u
+
+  typedef struct _DTBLDDLBX {
+    ULONG ulFlags;
+    ULONG ulPRDisplayProperty;
+    ULONG ulPRSetProperty;
+    ULONG ulPRTableName;
+  } DTBLDDLBX,*LPDTBLDDLBX;
+
+  typedef struct _DTBLCHECKBOX {
+    ULONG ulbLpszLabel;
+    ULONG ulFlags;
+    ULONG ulPRPropertyName;
+  } DTBLCHECKBOX,*LPDTBLCHECKBOX;
+#define SizedDtblCheckBox(n,u) struct _DTBLCHECKBOX_ ## u { DTBLCHECKBOX dtblcheckbox; TCHAR lpszLabel[n]; } u
+
+  typedef struct _DTBLGROUPBOX {
+    ULONG ulbLpszLabel;
+    ULONG ulFlags;
+  } DTBLGROUPBOX,*LPDTBLGROUPBOX;
+#define SizedDtblGroupBox(n,u) struct _DTBLGROUPBOX_ ## u { DTBLGROUPBOX dtblgroupbox; TCHAR lpszLabel[n]; } u
+
+  typedef struct _DTBLBUTTON {
+    ULONG ulbLpszLabel;
+    ULONG ulFlags;
+    ULONG ulPRControl;
+  } DTBLBUTTON,*LPDTBLBUTTON;
+#define SizedDtblButton(n,u) struct _DTBLBUTTON_ ## u { DTBLBUTTON dtblbutton; TCHAR lpszLabel[n]; } u
+
+  typedef struct _DTBLPAGE {
+    ULONG ulbLpszLabel;
+    ULONG ulFlags;
+    ULONG ulbLpszComponent;
+    ULONG ulContext;
+  } DTBLPAGE,*LPDTBLPAGE;
+#define SizedDtblPage(n,n1,u) struct _DTBLPAGE_ ## u { DTBLPAGE dtblpage; TCHAR lpszLabel[n]; TCHAR lpszComponent[n1]; } u
+
+  typedef struct _DTBLRADIOBUTTON {
+    ULONG ulbLpszLabel;
+    ULONG ulFlags;
+    ULONG ulcButtons;
+    ULONG ulPropTag;
+    __LONG32 lReturnValue;
+  } DTBLRADIOBUTTON,*LPDTBLRADIOBUTTON;
+#define SizedDtblRadioButton(n,u) struct _DTBLRADIOBUTTON_ ## u { DTBLRADIOBUTTON dtblradiobutton; TCHAR lpszLabel[n]; } u
+
+  typedef struct _DTBLMVLISTBOX {
+    ULONG ulFlags;
+    ULONG ulMVPropTag;
+  } DTBLMVLISTBOX,*LPDTBLMVLISTBOX;
+
+  typedef struct _DTBLMVDDLBX {
+    ULONG ulFlags;
+    ULONG ulMVPropTag;
+  } DTBLMVDDLBX,*LPDTBLMVDDLBX;
+
+#define UI_SERVICE 0x00000002
+#define SERVICE_UI_ALWAYS 0x00000002
+#define SERVICE_UI_ALLOWED 0x00000010
+#define UI_CURRENT_PROVIDER_FIRST 0x00000004
+
+#define MAPI_IPROVIDERADMIN_METHODS(IPURE) MAPIMETHOD(GetLastError) (THIS_ HRESULT hResult,ULONG ulFlags,LPMAPIERROR *lppMAPIError) IPURE; MAPIMETHOD(GetProviderTable) (THIS_ ULONG ulFlags,LPMAPITABLE *lppTable) IPURE; MAPIMETHOD(CreateProvider) (THIS_ LPTSTR lpszProvider,ULONG cValues,LPSPropValue lpProps,ULONG ulUIParam,ULONG ulFlags,MAPIUID *lpUID) IPURE; MAPIMETHOD(DeleteProvider) (THIS_ LPMAPIUID lpUID) IPURE; MAPIMETHOD(OpenProfileSection) (THIS_ LPMAPIUID lpUID,LPCIID lpInterface,ULONG ulFlags,LPPROFSECT *lppProfSect) IPURE;
+
+#undef INTERFACE
+#define INTERFACE IProviderAdmin
+  DECLARE_MAPI_INTERFACE_(IProviderAdmin,IUnknown) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IPROVIDERADMIN_METHODS(PURE)
+  };
+
+#ifdef __cplusplus
+}
 #endif
-
-/* Attachment flags */
-
-#define NO_ATTACHMENT        0x00000000U
-#define ATTACH_BY_VALUE      0x00000001U
-
-#endif /*MAPIDEFS_H*/
+#endif

@@ -1,62 +1,207 @@
-/*
- * authz.h
- *
- * Authorization Framework
- *
- * THIS SOFTWARE IS NOT COPYRIGHTED
- *
- * This source code is offered for use in the public domain. You may
- * use, modify or distribute it freely.
- *
- * This code is distributed in the hope that it will be useful but
- * WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
- * DISCLAIMED. This includes but is not limited to warranties of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
+/**
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER within this package.
  */
-#ifndef __AUTHZ_H
-#define __AUTHZ_H
 
-#if !defined(_AUTHZ_)
-#define AUTHZAPI DECLSPEC_IMPORT
-#else
-#define AUTHZAPI
-#endif
+#include <winapifamily.h>
+
+#ifndef __AUTHZ_H__
+#define __AUTHZ_H__
+
+#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define AUTHZ_ACCESS_CHECK_NO_DEEP_COPY_SD  0x1
+#ifndef _AUTHZ_
+#define AUTHZAPI DECLSPEC_IMPORT
+#else
+#define AUTHZAPI
+#endif
 
-#define AUTHZ_GENERATE_SUCCESS_AUDIT    0x1
-#define AUTHZ_GENERATE_FAILURE_AUDIT    0x2
+#ifndef __WIDL__
+#include <windows.h>
+#endif
+
+#include <adtgen.h>
 
 #define AUTHZ_SKIP_TOKEN_GROUPS 0x2
 #define AUTHZ_REQUIRE_S4U_LOGON 0x4
+#define AUTHZ_COMPUTE_PRIVILEGES 0x8
 
-#define AUTHZ_NO_SUCCESS_AUDIT  0x1
-#define AUTHZ_NO_FAILURE_AUDIT  0x2
-#define AUTHZ_NO_ALLOC_STRINGS  0x4
-
-#define AUTHZ_RM_FLAG_NO_AUDIT  0x1
-#define AUTHZ_RM_FLAG_INITIALIZE_UNDER_IMPERSONATION    0x2
-
-typedef HANDLE AUTHZ_CLIENT_CONTEXT_HANDLE, *PAUTHZ_CLIENT_CONTEXT_HANDLE;
-typedef HANDLE AUTHZ_AUDIT_INFO_HANDLE, *PAUTHZ_AUDIT_INFO_HANDLE;
-typedef HANDLE AUTHZ_AUDIT_EVENT_HANDLE, *PAUTHZ_AUDIT_EVENT_HANDLE;
-typedef HANDLE AUTHZ_AUDIT_EVENT_TYPE_HANDLE, *PAUTHZ_AUDIT_EVENT_TYPE_HANDLE;
-typedef HANDLE AUTHZ_ACCESS_CHECK_RESULTS_HANDLE, *PAUTHZ_ACCESS_CHECK_RESULTS_HANDLE;
-typedef HANDLE AUTHZ_RESOURCE_MANAGER_HANDLE, *PAUTHZ_RESOURCE_MANAGER_HANDLE;
-typedef HANDLE AUTHZ_SECURITY_EVENT_PROVIDER_HANDLE, *PAUTHZ_SECURITY_EVENT_PROVIDER_HANDLE;
-
-#if !defined(_ADTGEN_H)
-/* FIXME - AUDIT_PARAMS is defined in adtgen.h!!!!! */
-typedef PVOID PAUDIT_PARAMS;
+  DECLARE_HANDLE(AUTHZ_ACCESS_CHECK_RESULTS_HANDLE);
+  DECLARE_HANDLE(AUTHZ_CLIENT_CONTEXT_HANDLE);
+  DECLARE_HANDLE(AUTHZ_RESOURCE_MANAGER_HANDLE);
+  DECLARE_HANDLE(AUTHZ_AUDIT_EVENT_HANDLE);
+  DECLARE_HANDLE(AUTHZ_AUDIT_EVENT_TYPE_HANDLE);
+  DECLARE_HANDLE(AUTHZ_SECURITY_EVENT_PROVIDER_HANDLE);
+#if _WIN32_WINNT >= 0x0602
+  DECLARE_HANDLE(AUTHZ_CAP_CHANGE_SUBSCRIPTION_HANDLE);
 #endif
 
-typedef enum _AUTHZ_CONTEXT_INFORMATION_CLASS
-{
+  typedef AUTHZ_ACCESS_CHECK_RESULTS_HANDLE *PAUTHZ_ACCESS_CHECK_RESULTS_HANDLE;
+  typedef AUTHZ_CLIENT_CONTEXT_HANDLE *PAUTHZ_CLIENT_CONTEXT_HANDLE;
+  typedef AUTHZ_RESOURCE_MANAGER_HANDLE *PAUTHZ_RESOURCE_MANAGER_HANDLE;
+  typedef AUTHZ_AUDIT_EVENT_HANDLE *PAUTHZ_AUDIT_EVENT_HANDLE;
+  typedef AUTHZ_AUDIT_EVENT_TYPE_HANDLE *PAUTHZ_AUDIT_EVENT_TYPE_HANDLE;
+  typedef AUTHZ_SECURITY_EVENT_PROVIDER_HANDLE *PAUTHZ_SECURITY_EVENT_PROVIDER_HANDLE;
+#if _WIN32_WINNT >= 0x0602
+  typedef AUTHZ_CAP_CHANGE_SUBSCRIPTION_HANDLE *PAUTHZ_CAP_CHANGE_SUBSCRIPTION_HANDLE;
+#endif
+
+  typedef struct _AUTHZ_ACCESS_REQUEST {
+    ACCESS_MASK DesiredAccess;
+    PSID PrincipalSelfSid;
+    POBJECT_TYPE_LIST ObjectTypeList;
+    DWORD ObjectTypeListLength;
+    PVOID OptionalArguments;
+  } AUTHZ_ACCESS_REQUEST,*PAUTHZ_ACCESS_REQUEST;
+
+#define AUTHZ_GENERATE_SUCCESS_AUDIT 0x1
+#define AUTHZ_GENERATE_FAILURE_AUDIT 0x2
+
+  typedef struct _AUTHZ_ACCESS_REPLY {
+    DWORD ResultListLength;
+    PACCESS_MASK GrantedAccessMask;
+    PDWORD SaclEvaluationResults;
+    PDWORD Error;
+  } AUTHZ_ACCESS_REPLY,*PAUTHZ_ACCESS_REPLY;
+
+  typedef WINBOOL (CALLBACK *PFN_AUTHZ_DYNAMIC_ACCESS_CHECK) (AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext, PACE_HEADER pAce, PVOID pArgs, PBOOL pbAceApplicable);
+  typedef WINBOOL (CALLBACK *PFN_AUTHZ_COMPUTE_DYNAMIC_GROUPS) (AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext, PVOID Args, PSID_AND_ATTRIBUTES *pSidAttrArray, PDWORD pSidCount, PSID_AND_ATTRIBUTES *pRestrictedSidAttrArray, PDWORD pRestrictedSidCount);
+  typedef VOID (CALLBACK *PFN_AUTHZ_FREE_DYNAMIC_GROUPS) (PSID_AND_ATTRIBUTES pSidAttrArray);
+#if _WIN32_WINNT >= 0x0602
+  typedef WINBOOL (CALLBACK *PFN_AUTHZ_GET_CENTRAL_ACCESS_POLICY) (AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext, PSID capid, PVOID pArgs, PBOOL pCentralAccessPolicyApplicable, PVOID *ppCentralAccessPolicy);
+  typedef VOID (CALLBACK *PFN_AUTHZ_FREE_CENTRAL_ACCESS_POLICY) (PVOID pCentralAccessPolicy);
+#endif
+
+#define AUTHZ_SECURITY_ATTRIBUTE_TYPE_INVALID 0x00
+#define AUTHZ_SECURITY_ATTRIBUTE_TYPE_INT64 0x01
+#define AUTHZ_SECURITY_ATTRIBUTE_TYPE_UINT64 0x02
+#define AUTHZ_SECURITY_ATTRIBUTE_TYPE_STRING 0x03
+#define AUTHZ_SECURITY_ATTRIBUTE_TYPE_FQBN 0x04
+#if _WIN32_WINNT >= 0x0602
+#define AUTHZ_SECURITY_ATTRIBUTE_TYPE_SID 0x05
+#define AUTHZ_SECURITY_ATTRIBUTE_TYPE_BOOLEAN 0x06
+#endif
+#define AUTHZ_SECURITY_ATTRIBUTE_TYPE_OCTET_STRING 0x10
+
+  typedef struct _AUTHZ_SECURITY_ATTRIBUTE_FQBN_VALUE {
+    ULONG64 Version;
+    PWSTR pName;
+  } AUTHZ_SECURITY_ATTRIBUTE_FQBN_VALUE,*PAUTHZ_SECURITY_ATTRIBUTE_FQBN_VALUE;
+
+  typedef struct _AUTHZ_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE {
+    PVOID pValue;
+    ULONG ValueLength;
+  } AUTHZ_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE,*PAUTHZ_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE;
+
+  typedef enum {
+    AUTHZ_SECURITY_ATTRIBUTE_OPERATION_NONE = 0,
+    AUTHZ_SECURITY_ATTRIBUTE_OPERATION_REPLACE_ALL,
+    AUTHZ_SECURITY_ATTRIBUTE_OPERATION_ADD,
+    AUTHZ_SECURITY_ATTRIBUTE_OPERATION_DELETE,
+    AUTHZ_SECURITY_ATTRIBUTE_OPERATION_REPLACE
+  } AUTHZ_SECURITY_ATTRIBUTE_OPERATION,*PAUTHZ_SECURITY_ATTRIBUTE_OPERATION;
+
+#if _WIN32_WINNT >= 0x0602
+  typedef enum {
+    AUTHZ_SID_OPERATION_NONE = 0,
+    AUTHZ_SID_OPERATION_REPLACE_ALL,
+    AUTHZ_SID_OPERATION_ADD,
+    AUTHZ_SID_OPERATION_DELETE,
+    AUTHZ_SID_OPERATION_REPLACE
+  } AUTHZ_SID_OPERATION,*PAUTHZ_SID_OPERATION;
+#endif
+
+#define AUTHZ_SECURITY_ATTRIBUTE_NON_INHERITABLE 0x1
+#define AUTHZ_SECURITY_ATTRIBUTE_VALUE_CASE_SENSITIVE 0x2
+
+#define AUTHZ_SECURITY_ATTRIBUTE_VALID_FLAGS (AUTHZ_SECURITY_ATTRIBUTE_NON_INHERITABLE | AUTHZ_SECURITY_ATTRIBUTE_VALUE_CASE_SENSITIVE)
+
+#define AUTHZ_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1 1
+
+#define AUTHZ_SECURITY_ATTRIBUTES_INFORMATION_VERSION AUTHZ_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1
+
+#define AUTHZ_ACCESS_CHECK_NO_DEEP_COPY_SD 0x1
+
+#define AUTHZ_RM_FLAG_NO_AUDIT 0x1
+#define AUTHZ_RM_FLAG_INITIALIZE_UNDER_IMPERSONATION 0x2
+#define AUTHZ_RM_FLAG_NO_CENTRAL_ACCESS_POLICIES 0x4
+
+#define AUTHZ_VALID_RM_INIT_FLAGS (AUTHZ_RM_FLAG_NO_AUDIT | AUTHZ_RM_FLAG_INITIALIZE_UNDER_IMPERSONATION | AUTHZ_RM_FLAG_NO_CENTRAL_ACCESS_POLICIES)
+
+  typedef struct _AUTHZ_SECURITY_ATTRIBUTE_V1 {
+    PWSTR pName;
+    USHORT ValueType;
+    USHORT Reserved;
+    ULONG Flags;
+    ULONG ValueCount;
+    union {
+      PLONG64 pInt64;
+      PULONG64 pUint64;
+      PWSTR *ppString;
+      PAUTHZ_SECURITY_ATTRIBUTE_FQBN_VALUE pFqbn;
+      PAUTHZ_SECURITY_ATTRIBUTE_OCTET_STRING_VALUE pOctetString;
+    } Values;
+  } AUTHZ_SECURITY_ATTRIBUTE_V1,*PAUTHZ_SECURITY_ATTRIBUTE_V1;
+
+  typedef struct _AUTHZ_SECURITY_ATTRIBUTES_INFORMATION {
+    USHORT Version;
+    USHORT Reserved;
+    ULONG AttributeCount;
+    union {
+      PAUTHZ_SECURITY_ATTRIBUTE_V1 pAttributeV1;
+    } Attribute;
+  } AUTHZ_SECURITY_ATTRIBUTES_INFORMATION,*PAUTHZ_SECURITY_ATTRIBUTES_INFORMATION;
+
+  AUTHZAPI WINBOOL WINAPI AuthzAccessCheck (DWORD Flags, AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext, PAUTHZ_ACCESS_REQUEST pRequest, AUTHZ_AUDIT_EVENT_HANDLE hAuditEvent, PSECURITY_DESCRIPTOR pSecurityDescriptor, PSECURITY_DESCRIPTOR *OptionalSecurityDescriptorArray, DWORD OptionalSecurityDescriptorCount, PAUTHZ_ACCESS_REPLY pReply, PAUTHZ_ACCESS_CHECK_RESULTS_HANDLE phAccessCheckResults);
+  AUTHZAPI WINBOOL WINAPI AuthzCachedAccessCheck (DWORD Flags, AUTHZ_ACCESS_CHECK_RESULTS_HANDLE hAccessCheckResults, PAUTHZ_ACCESS_REQUEST pRequest, AUTHZ_AUDIT_EVENT_HANDLE hAuditEvent, PAUTHZ_ACCESS_REPLY pReply);
+  AUTHZAPI WINBOOL WINAPI AuthzOpenObjectAudit (DWORD Flags, AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext, PAUTHZ_ACCESS_REQUEST pRequest, AUTHZ_AUDIT_EVENT_HANDLE hAuditEvent, PSECURITY_DESCRIPTOR pSecurityDescriptor, PSECURITY_DESCRIPTOR *OptionalSecurityDescriptorArray, DWORD OptionalSecurityDescriptorCount, PAUTHZ_ACCESS_REPLY pReply);
+  AUTHZAPI WINBOOL WINAPI AuthzFreeHandle (AUTHZ_ACCESS_CHECK_RESULTS_HANDLE hAccessCheckResults);
+  AUTHZAPI WINBOOL WINAPI AuthzInitializeResourceManager (DWORD Flags, PFN_AUTHZ_DYNAMIC_ACCESS_CHECK pfnDynamicAccessCheck, PFN_AUTHZ_COMPUTE_DYNAMIC_GROUPS pfnComputeDynamicGroups, PFN_AUTHZ_FREE_DYNAMIC_GROUPS pfnFreeDynamicGroups, PCWSTR szResourceManagerName, PAUTHZ_RESOURCE_MANAGER_HANDLE phAuthzResourceManager);
+
+#if _WIN32_WINNT >= 0x0602
+
+#define AUTHZ_RPC_INIT_INFO_CLIENT_VERSION_V1 1
+#define AUTHZ_INIT_INFO_VERSION_V1 1
+
+  typedef struct _AUTHZ_RPC_INIT_INFO_CLIENT {
+    USHORT version;
+    PWSTR ObjectUuid;
+    PWSTR ProtSeq;
+    PWSTR NetworkAddr;
+    PWSTR Endpoint;
+    PWSTR Options;
+    PWSTR ServerSpn;
+  } AUTHZ_RPC_INIT_INFO_CLIENT,*PAUTHZ_RPC_INIT_INFO_CLIENT;
+
+  typedef struct _AUTHZ_INIT_INFO {
+    USHORT version;
+    PCWSTR szResourceManagerName;
+    PFN_AUTHZ_DYNAMIC_ACCESS_CHECK pfnDynamicAccessCheck;
+    PFN_AUTHZ_COMPUTE_DYNAMIC_GROUPS pfnComputeDynamicGroups;
+    PFN_AUTHZ_FREE_DYNAMIC_GROUPS pfnFreeDynamicGroups;
+    PFN_AUTHZ_GET_CENTRAL_ACCESS_POLICY pfnGetCentralAccessPolicy;
+    PFN_AUTHZ_FREE_CENTRAL_ACCESS_POLICY pfnFreeCentralAccessPolicy;
+  } AUTHZ_INIT_INFO,*PAUTHZ_INIT_INFO;
+
+  AUTHZAPI WINBOOL WINAPI AuthzInitializeResourceManagerEx (DWORD Flags, PAUTHZ_INIT_INFO pAuthzInitInfo, PAUTHZ_RESOURCE_MANAGER_HANDLE phAuthzResourceManager);
+  AUTHZAPI WINBOOL WINAPI AuthzInitializeRemoteResourceManager (PAUTHZ_RPC_INIT_INFO_CLIENT pRpcInitInfo, PAUTHZ_RESOURCE_MANAGER_HANDLE phAuthzResourceManager);
+#endif
+
+  AUTHZAPI WINBOOL WINAPI AuthzFreeResourceManager (AUTHZ_RESOURCE_MANAGER_HANDLE hAuthzResourceManager);
+  AUTHZAPI WINBOOL WINAPI AuthzInitializeContextFromToken (DWORD Flags, HANDLE TokenHandle, AUTHZ_RESOURCE_MANAGER_HANDLE hAuthzResourceManager, PLARGE_INTEGER pExpirationTime, LUID Identifier, PVOID DynamicGroupArgs, PAUTHZ_CLIENT_CONTEXT_HANDLE phAuthzClientContext);
+  AUTHZAPI WINBOOL WINAPI AuthzInitializeContextFromSid (DWORD Flags, PSID UserSid, AUTHZ_RESOURCE_MANAGER_HANDLE hAuthzResourceManager, PLARGE_INTEGER pExpirationTime, LUID Identifier, PVOID DynamicGroupArgs, PAUTHZ_CLIENT_CONTEXT_HANDLE phAuthzClientContext);
+  AUTHZAPI WINBOOL WINAPI AuthzInitializeContextFromAuthzContext (DWORD Flags, AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext, PLARGE_INTEGER pExpirationTime, LUID Identifier, PVOID DynamicGroupArgs, PAUTHZ_CLIENT_CONTEXT_HANDLE phNewAuthzClientContext);
+#if _WIN32_WINNT >= 0x0602
+  AUTHZAPI WINBOOL WINAPI AuthzInitializeCompoundContext (AUTHZ_CLIENT_CONTEXT_HANDLE UserContext, AUTHZ_CLIENT_CONTEXT_HANDLE DeviceContext, PAUTHZ_CLIENT_CONTEXT_HANDLE phCompoundContext);
+#endif
+  AUTHZAPI WINBOOL WINAPI AuthzAddSidsToContext (AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext, PSID_AND_ATTRIBUTES Sids, DWORD SidCount, PSID_AND_ATTRIBUTES RestrictedSids, DWORD RestrictedSidCount, PAUTHZ_CLIENT_CONTEXT_HANDLE phNewAuthzClientContext);
+  AUTHZAPI WINBOOL WINAPI AuthzModifySecurityAttributes (AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext, PAUTHZ_SECURITY_ATTRIBUTE_OPERATION pOperations, PAUTHZ_SECURITY_ATTRIBUTES_INFORMATION pAttributes);
+
+  typedef enum _AUTHZ_CONTEXT_INFORMATION_CLASS {
     AuthzContextInfoUserSid = 1,
     AuthzContextInfoGroupsSids,
     AuthzContextInfoRestrictedSids,
@@ -66,254 +211,83 @@ typedef enum _AUTHZ_CONTEXT_INFORMATION_CLASS
     AuthzContextInfoIdentifier,
     AuthzContextInfoSource,
     AuthzContextInfoAll,
-    AuthzContextInfoAuthenticationId
-} AUTHZ_CONTEXT_INFORMATION_CLASS, *PAUTHZ_CONTEXT_INFORMATION_CLASS;
+    AuthzContextInfoAuthenticationId,
+    AuthzContextInfoSecurityAttributes,
+    AuthzContextInfoDeviceSids,
+    AuthzContextInfoUserClaims,
+    AuthzContextInfoDeviceClaims,
+    AuthzContextInfoAppContainerSid,
+    AuthzContextInfoCapabilitySids
+  } AUTHZ_CONTEXT_INFORMATION_CLASS;
 
-typedef struct _AUTHZ_ACCESS_REQUEST
-{
-    ACCESS_MASK DesiredAccess;
-    PSID PrincipalSelfSid;
-    POBJECT_TYPE_LIST ObjectTypeList;
-    DWORD ObjectTypeListLength;
-    PVOID OptionalArguments;
-} AUTHZ_ACCESS_REQUEST, *PAUTHZ_ACCESS_REQUEST;
+#if _WIN32_WINNT >= 0x0602
+  AUTHZAPI WINBOOL WINAPI AuthzModifyClaims (AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext, AUTHZ_CONTEXT_INFORMATION_CLASS ClaimClass, PAUTHZ_SECURITY_ATTRIBUTE_OPERATION pClaimOperations, PAUTHZ_SECURITY_ATTRIBUTES_INFORMATION pClaims);
+  AUTHZAPI WINBOOL WINAPI AuthzModifySids (AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext, AUTHZ_CONTEXT_INFORMATION_CLASS SidClass, PAUTHZ_SID_OPERATION pSidOperations, PTOKEN_GROUPS pSids);
+  AUTHZAPI WINBOOL WINAPI AuthzSetAppContainerInformation (AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext, PSID pAppContainerSid, DWORD CapabilityCount, PSID_AND_ATTRIBUTES pCapabilitySids);
+#endif
+  AUTHZAPI WINBOOL WINAPI AuthzGetInformationFromContext (AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext, AUTHZ_CONTEXT_INFORMATION_CLASS InfoClass, DWORD BufferSize, PDWORD pSizeRequired, PVOID Buffer);
+  AUTHZAPI WINBOOL WINAPI AuthzFreeContext (AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext);
 
-typedef struct _AUTHZ_ACCESS_REPLY
-{
-    DWORD ResultListLength;
-    PACCESS_MASK GrantedAccessMask;
-    PDWORD SaclEvaluationResults;
-    PDWORD Error;
-} AUTHZ_ACCESS_REPLY, *PAUTHZ_ACCESS_REPLY;
+#define AUTHZ_NO_SUCCESS_AUDIT 0x1
+#define AUTHZ_NO_FAILURE_AUDIT 0x2
+#define AUTHZ_NO_ALLOC_STRINGS 0x4
+#define AUTHZ_WPD_CATEGORY_FLAG 0x10
 
-typedef struct _AUTHZ_REGISTRATION_OBJECT_TYPE_NAME_OFFSET
-{
+#define AUTHZ_VALID_OBJECT_ACCESS_AUDIT_FLAGS (AUTHZ_NO_SUCCESS_AUDIT | AUTHZ_NO_FAILURE_AUDIT | AUTHZ_NO_ALLOC_STRINGS | AUTHZ_WPD_CATEGORY_FLAG)
+
+  AUTHZAPI WINBOOL WINAPI AuthzInitializeObjectAccessAuditEvent (DWORD Flags, AUTHZ_AUDIT_EVENT_TYPE_HANDLE hAuditEventType, PWSTR szOperationType, PWSTR szObjectType, PWSTR szObjectName, PWSTR szAdditionalInfo, PAUTHZ_AUDIT_EVENT_HANDLE phAuditEvent, DWORD dwAdditionalParameterCount,...);
+  AUTHZAPI WINBOOL WINAPI AuthzInitializeObjectAccessAuditEvent2 (DWORD Flags, AUTHZ_AUDIT_EVENT_TYPE_HANDLE hAuditEventType, PWSTR szOperationType, PWSTR szObjectType, PWSTR szObjectName, PWSTR szAdditionalInfo, PWSTR szAdditionalInfo2, PAUTHZ_AUDIT_EVENT_HANDLE phAuditEvent, DWORD dwAdditionalParameterCount,...);
+
+  typedef enum _AUTHZ_AUDIT_EVENT_INFORMATION_CLASS {
+    AuthzAuditEventInfoFlags = 1,
+    AuthzAuditEventInfoOperationType,
+    AuthzAuditEventInfoObjectType,
+    AuthzAuditEventInfoObjectName,
+    AuthzAuditEventInfoAdditionalInfo,
+  } AUTHZ_AUDIT_EVENT_INFORMATION_CLASS;
+
+  AUTHZAPI WINBOOL WINAPI AuthzFreeAuditEvent (AUTHZ_AUDIT_EVENT_HANDLE hAuditEvent);
+  AUTHZAPI WINBOOL WINAPI AuthzEvaluateSacl (AUTHZ_CLIENT_CONTEXT_HANDLE AuthzClientContext, PAUTHZ_ACCESS_REQUEST pRequest, PACL Sacl, ACCESS_MASK GrantedAccess, WINBOOL AccessGranted, PBOOL pbGenerateAudit);
+
+  typedef struct _AUTHZ_REGISTRATION_OBJECT_TYPE_NAME_OFFSET {
     PWSTR szObjectTypeName;
     DWORD dwOffset;
-} AUTHZ_REGISTRATION_OBJECT_TYPE_NAME_OFFSET, *PAUTHZ_REGISTRATION_OBJECT_TYPE_NAME_OFFSET;
+  } AUTHZ_REGISTRATION_OBJECT_TYPE_NAME_OFFSET,*PAUTHZ_REGISTRATION_OBJECT_TYPE_NAME_OFFSET;
 
-typedef struct _AUTHZ_SOURCE_SCHEMA_REGISTRATION
-{
+  typedef struct _AUTHZ_SOURCE_SCHEMA_REGISTRATION {
     DWORD dwFlags;
     PWSTR szEventSourceName;
     PWSTR szEventMessageFile;
     PWSTR szEventSourceXmlSchemaFile;
     PWSTR szEventAccessStringsFile;
     PWSTR szExecutableImagePath;
-    PVOID pReserved;
+    __C89_NAMELESS union {
+      PVOID pReserved;
+      GUID *pProviderGuid;
+    };
     DWORD dwObjectTypeNameCount;
     AUTHZ_REGISTRATION_OBJECT_TYPE_NAME_OFFSET ObjectTypeNames[ANYSIZE_ARRAY];
-} AUTHZ_SOURCE_SCHEMA_REGISTRATION, *PAUTHZ_SOURCE_SCHEMA_REGISTRATION;
+  } AUTHZ_SOURCE_SCHEMA_REGISTRATION,*PAUTHZ_SOURCE_SCHEMA_REGISTRATION;
 
-typedef BOOL (CALLBACK *PFN_AUTHZ_DYNAMIC_ACCESS_CHECK)(IN AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext,
-                                                        IN PACE_HEADER pAce,
-                                                        IN PVOID pArgs  OPTIONAL,
-                                                        IN OUT PBOOL pbAceApplicable);
+#define AUTHZ_FLAG_ALLOW_MULTIPLE_SOURCE_INSTANCES 0x1
 
-typedef BOOL (CALLBACK *PFN_AUTHZ_COMPUTE_DYNAMIC_GROUPS)(IN AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext,
-                                                          IN PVOID Args,
-                                                          OUT PSID_AND_ATTRIBUTES* pSidAttrArray,
-                                                          OUT PDWORD pSidCount,
-                                                          OUT PSID_AND_ATTRIBUTES* pRestrictedSidAttrArray,
-                                                          OUT PDWORD pRestrictedSidCount);
-
-typedef VOID (CALLBACK *PFN_AUTHZ_FREE_DYNAMIC_GROUPS)(IN PSID_AND_ATTRIBUTES pSidAttrArray);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzAccessCheck(IN DWORD flags,
-                 IN AUTHZ_CLIENT_CONTEXT_HANDLE AuthzClientContext,
-                 IN PAUTHZ_ACCESS_REQUEST pRequest,
-                 IN AUTHZ_AUDIT_INFO_HANDLE AuditInfo,
-                 IN PSECURITY_DESCRIPTOR pSecurityDescriptor,
-                 IN PSECURITY_DESCRIPTOR* OptionalSecurityDescriptorArray,
-                 IN DWORD OptionalSecurityDescriptorCount  OPTIONAL,
-                 IN OUT PAUTHZ_ACCESS_REPLY pReply,
-                 OUT PAUTHZ_ACCESS_CHECK_RESULTS_HANDLE pAuthzHandle);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzAddSidsToContext(IN AUTHZ_CLIENT_CONTEXT_HANDLE OrigClientContext,
-                      IN PSID_AND_ATTRIBUTES Sids,
-                      IN DWORD SidCount,
-                      IN PSID_AND_ATTRIBUTES RestrictedSids,
-                      IN DWORD RestrictedSidCount,
-                      OUT PAUTHZ_CLIENT_CONTEXT_HANDLE pNewClientContext);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzCachedAccessCheck(IN DWORD Flags,
-                       IN AUTHZ_ACCESS_CHECK_RESULTS_HANDLE AuthzHandle,
-                       IN PAUTHZ_ACCESS_REQUEST pRequest,
-                       IN AUTHZ_AUDIT_EVENT_HANDLE AuditInfo,
-                       OUT PAUTHZ_ACCESS_REPLY pReply);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzEnumerateSecurityEventSources(IN DWORD dwFlags,
-                                   OUT PAUTHZ_SOURCE_SCHEMA_REGISTRATION Buffer,
-                                   OUT PDWORD pdwCount,
-                                   IN OUT PDWORD pdwLength);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzFreeAuditEvent(IN AUTHZ_AUDIT_EVENT_HANDLE pAuditEventInfo);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzFreeContext(IN AUTHZ_CLIENT_CONTEXT_HANDLE AuthzClientContext);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzFreeHandle(IN AUTHZ_ACCESS_CHECK_RESULTS_HANDLE AuthzHandle);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzFreeResourceManager(IN AUTHZ_RESOURCE_MANAGER_HANDLE AuthzResourceManager);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzGetInformationFromContext(IN AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext,
-                               IN AUTHZ_CONTEXT_INFORMATION_CLASS InfoClass,
-                               IN DWORD BufferSize,
-                               OUT PDWORD pSizeRequired,
-                               OUT PVOID Buffer);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzInitializeContextFromAuthzContext(IN DWORD flags,
-                                       IN AUTHZ_CLIENT_CONTEXT_HANDLE AuthzHandle,
-                                       IN PLARGE_INTEGER ExpirationTime,
-                                       IN LUID Identifier,
-                                       IN PVOID DynamicGroupArgs,
-                                       OUT PAUTHZ_CLIENT_CONTEXT_HANDLE phNewAuthzHandle);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzInitializeContextFromSid(IN DWORD Flags,
-                              IN PSID UserSid,
-                              IN AUTHZ_RESOURCE_MANAGER_HANDLE AuthzResourceManager,
-                              IN PLARGE_INTEGER pExpirationTime,
-                              IN LUID Identifier,
-                              IN PVOID DynamicGroupArgs,
-                              OUT PAUTHZ_CLIENT_CONTEXT_HANDLE pAuthzClientContext);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzInitializeContextFromToken(IN DWORD Flags,
-                                IN HANDLE TokenHandle,
-                                IN AUTHZ_RESOURCE_MANAGER_HANDLE AuthzResourceManager,
-                                IN PLARGE_INTEGER pExpirationTime,
-                                IN LUID Identifier,
-                                IN PVOID DynamicGroupArgs,
-                                OUT PAUTHZ_CLIENT_CONTEXT_HANDLE pAuthzClientContext);
-
-AUTHZAPI
-BOOL
-WINAPIV
-AuthzInitializeObjectAccessAuditEvent(IN DWORD Flags,
-                                      IN AUTHZ_AUDIT_EVENT_TYPE_HANDLE hAuditEventType,
-                                      IN PWSTR szOperationType,
-                                      IN PWSTR szObjectType,
-                                      IN PWSTR szObjectName,
-                                      IN PWSTR szAdditionalInfo,
-                                      OUT PAUTHZ_AUDIT_EVENT_HANDLE phAuditEvent,
-                                      IN DWORD dwAdditionalParameterCount,
-                                      ...);
-
-AUTHZAPI
-BOOL
-WINAPIV
-AuthzInitializeObjectAccessAuditEvent2(IN DWORD Flags,
-                                       IN AUTHZ_AUDIT_EVENT_TYPE_HANDLE hAuditEventType,
-                                       IN PWSTR szOperationType,
-                                       IN PWSTR szObjectType,
-                                       IN PWSTR szObjectName,
-                                       IN PWSTR szAdditionalInfo,
-                                       IN PWSTR szAdditionalInfo2,
-                                       OUT PAUTHZ_AUDIT_EVENT_HANDLE phAuditEvent,
-                                       IN DWORD dwAdditionalParameterCount,
-                                       ...);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzInitializeResourceManager(IN DWORD flags,
-                               IN PFN_AUTHZ_DYNAMIC_ACCESS_CHECK pfnAccessCheck,
-                               IN PFN_AUTHZ_COMPUTE_DYNAMIC_GROUPS pfnComputeDynamicGroups,
-                               IN PFN_AUTHZ_FREE_DYNAMIC_GROUPS pfnFreeDynamicGroups,
-                               IN PCWSTR ResourceManagerName,
-                               IN PAUTHZ_RESOURCE_MANAGER_HANDLE pAuthzResourceManager);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzInstallSecurityEventSource(IN DWORD dwFlags,
-                                IN PAUTHZ_SOURCE_SCHEMA_REGISTRATION pRegistration);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzOpenObjectAudit(IN DWORD Flags,
-                     IN AUTHZ_CLIENT_CONTEXT_HANDLE hAuthzClientContext,
-                     IN PAUTHZ_ACCESS_REQUEST pRequest,
-                     IN AUTHZ_AUDIT_EVENT_HANDLE hAuditEvent,
-                     IN PSECURITY_DESCRIPTOR pSecurityDescriptor,
-                     IN PSECURITY_DESCRIPTOR* SecurityDescriptorArray,
-                     IN DWORD SecurityDescriptorCount,
-                     OUT PAUTHZ_ACCESS_REPLY pReply);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzRegisterSecurityEventSource(IN DWORD dwFlags,
-                                 IN PCWSTR szEventSourceName,
-                                 IN PAUTHZ_SECURITY_EVENT_PROVIDER_HANDLE phEventProvider);
-
-AUTHZAPI
-BOOL
-WINAPIV
-AuthzReportSecurityEvent(IN DWORD dwFlags,
-                         IN AUTHZ_SECURITY_EVENT_PROVIDER_HANDLE hEventProvider,
-                         IN DWORD dwAuditId,
-                         IN PSID pUserSid  OPTIONAL,
-                         IN DWORD dwCount,
-                         ...);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzReportSecurityEventFromParams(IN DWORD dwFlags,
-                                   IN AUTHZ_SECURITY_EVENT_PROVIDER_HANDLE hEventProvider,
-                                   IN DWORD dwAuditId,
-                                   IN PSID pUserSid  OPTIONAL,
-                                   IN PAUDIT_PARAMS pParams);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzUninstallSecurityEventSource(IN DWORD dwFlags,
-                                  IN PWSTR szEventSourceName);
-
-AUTHZAPI
-BOOL
-WINAPI
-AuthzUnregisterSecurityEventSource(IN DWORD dwFlags,
-                                   IN OUT PAUTHZ_SECURITY_EVENT_PROVIDER_HANDLE phEventProvider);
+  AUTHZAPI WINBOOL WINAPI AuthzInstallSecurityEventSource (DWORD dwFlags, PAUTHZ_SOURCE_SCHEMA_REGISTRATION pRegistration);
+  AUTHZAPI WINBOOL WINAPI AuthzUninstallSecurityEventSource (DWORD dwFlags, PCWSTR szEventSourceName);
+  AUTHZAPI WINBOOL WINAPI AuthzEnumerateSecurityEventSources (DWORD dwFlags, PAUTHZ_SOURCE_SCHEMA_REGISTRATION Buffer, PDWORD pdwCount, PDWORD pdwLength);
+  AUTHZAPI WINBOOL WINAPI AuthzRegisterSecurityEventSource (DWORD dwFlags, PCWSTR szEventSourceName, PAUTHZ_SECURITY_EVENT_PROVIDER_HANDLE phEventProvider);
+  AUTHZAPI WINBOOL WINAPI AuthzUnregisterSecurityEventSource (DWORD dwFlags, PAUTHZ_SECURITY_EVENT_PROVIDER_HANDLE phEventProvider);
+  AUTHZAPI WINBOOL WINAPI AuthzReportSecurityEvent (DWORD dwFlags, AUTHZ_SECURITY_EVENT_PROVIDER_HANDLE hEventProvider, DWORD dwAuditId, PSID pUserSid, DWORD dwCount,...);
+  AUTHZAPI WINBOOL WINAPI AuthzReportSecurityEventFromParams (DWORD dwFlags, AUTHZ_SECURITY_EVENT_PROVIDER_HANDLE hEventProvider, DWORD dwAuditId, PSID pUserSid, PAUDIT_PARAMS pParams);
+#if _WIN32_WINNT >= 0x0602
+  AUTHZAPI WINBOOL WINAPI AuthzRegisterCapChangeNotification (PAUTHZ_CAP_CHANGE_SUBSCRIPTION_HANDLE phCapChangeSubscription, LPTHREAD_START_ROUTINE pfnCapChangeCallback, PVOID pCallbackContext);
+  AUTHZAPI WINBOOL WINAPI AuthzUnregisterCapChangeNotification (AUTHZ_CAP_CHANGE_SUBSCRIPTION_HANDLE hCapChangeSubscription);
+  AUTHZAPI WINBOOL WINAPI AuthzFreeCentralAccessPolicyCache ();
+#endif
 
 #ifdef __cplusplus
 }
 #endif
-#endif /* __AUTHZ_H */
+
+#endif
+
+#endif

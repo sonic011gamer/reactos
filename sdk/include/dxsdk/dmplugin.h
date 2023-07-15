@@ -1,3 +1,4 @@
+#undef INTERFACE
 /*
  *  DirectMusic Performance Layer Plugins API
  *
@@ -21,9 +22,7 @@
 #ifndef __WINE_DMUSIC_PLUGIN_H
 #define __WINE_DMUSIC_PLUGIN_H
 
-#ifndef __WINESRC__
 #include <windows.h>
-#endif /* __WINESRC__ */
 
 #define COM_NO_WINDOWS_H
 #include <objbase.h>
@@ -40,11 +39,11 @@ extern "C" {
  */
 #define DMUS_REGSTR_PATH_TOOLS "Software\\Microsoft\\DirectMusic\\Tools"
 
-
+	
 /*****************************************************************************
  * Predeclare the interfaces
  */
-/* CLSIDs */
+/* CLSIDs */	
 DEFINE_GUID(CLSID_DirectMusicBandTrack,              0xd2ac2894,0xb39b,0x11d1,0x87,0x04,0x00,0x60,0x08,0x93,0xb1,0xbd);
 DEFINE_GUID(CLSID_DirectMusicChordTrack,             0xd2ac288b,0xb39b,0x11d1,0x87,0x04,0x00,0x60,0x08,0x93,0xb1,0xbd);
 DEFINE_GUID(CLSID_DirectMusicChordMapTrack,          0xd2ac2896,0xb39b,0x11d1,0x87,0x04,0x00,0x60,0x08,0x93,0xb1,0xbd);
@@ -103,11 +102,8 @@ typedef LONG MUSIC_TIME;
 /*****************************************************************************
  * Enumerations
  */
-/* typedef definitions */
-typedef enum enumDMUS_TRACKF_FLAGS DMUS_TRACKF_FLAGS;
-
-/* actual enumerations */
-enum enumDMUS_TRACKF_FLAGS {
+typedef enum enumDMUS_TRACKF_FLAGS
+{
 	DMUS_TRACKF_SEEK       = 0x001,
 	DMUS_TRACKF_LOOP       = 0x002,
 	DMUS_TRACKF_START      = 0x004,
@@ -119,7 +115,7 @@ enum enumDMUS_TRACKF_FLAGS {
 	DMUS_TRACKF_STOP       = 0x100,
 	DMUS_TRACKF_RECOMPOSE  = 0x200,
 	DMUS_TRACKF_CLOCK      = 0x400,
-};
+} DMUS_TRACKF_FLAGS;
 
 /*****************************************************************************
  * IDirectMusicTool interface

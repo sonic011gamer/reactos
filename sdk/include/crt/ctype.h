@@ -1,7 +1,7 @@
 /**
  * This file has no copyright assigned and is placed in the Public Domain.
- * This file is part of the w64 mingw-runtime package.
- * No warranty is given; refer to the file DISCLAIMER within this package.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 #ifndef _INC_CTYPE
 #define _INC_CTYPE
@@ -17,36 +17,63 @@ extern "C" {
 #endif
 
 #ifndef _CRT_CTYPEDATA_DEFINED
-# define _CRT_CTYPEDATA_DEFINED
-# ifndef _CTYPE_DISABLE_MACROS
-#  ifndef __PCTYPE_FUNC
-#   ifdef _DLL
-#    define __PCTYPE_FUNC __pctype_func()
-#   else
-#    define __PCTYPE_FUNC _pctype
-#   endif
-#  endif /* !__PCTYPE_FUNC */
-  _CRTIMP const unsigned short * __cdecl __pctype_func(void);
-#  ifndef _M_CEE_PURE
-  _CRTDATA(extern const unsigned short *_pctype);
-#  else
-#   define _pctype (__pctype_func())
-#  endif /* !_M_CEE_PURE */
-# endif /* !_CTYPE_DISABLE_MACROS */
-#endif /* !_CRT_CTYPEDATA_DEFINED */
+#define _CRT_CTYPEDATA_DEFINED
+#ifndef _CTYPE_DISABLE_MACROS
+
+#ifndef __PCTYPE_FUNC
+#define __PCTYPE_FUNC __pctype_func()
+#ifdef _MSVCRT_
+#define __pctype_func()	(_pctype)
+#else
+#ifdef _UCRT
+  _CRTIMP unsigned short* __pctype_func(void);
+#else
+#define __pctype_func()	(* __MINGW_IMP_SYMBOL(_pctype))
+#endif
+#endif
+#endif
+
+#ifndef _pctype
+#ifdef _MSVCRT_
+  extern unsigned short *_pctype;
+#else
+#ifdef _UCRT
+#define _pctype (__pctype_func())
+#else
+  extern unsigned short ** __MINGW_IMP_SYMBOL(_pctype);
+#define _pctype (* __MINGW_IMP_SYMBOL(_pctype))
+#endif
+#endif
+#endif
+
+#endif
+#endif
 
 #ifndef _CRT_WCTYPEDATA_DEFINED
 #define _CRT_WCTYPEDATA_DEFINED
-# ifndef _CTYPE_DISABLE_MACROS
-  _CRTDATA(extern const unsigned short _wctype[]);
-  _CRTIMP const wctype_t * __cdecl __pwctype_func(void);
-#  ifndef _M_CEE_PURE
-  _CRTDATA(extern const wctype_t *_pwctype);
-#  else
-#   define _pwctype (__pwctype_func())
-#  endif /* !_M_CEE_PURE */
-# endif /* !_CTYPE_DISABLE_MACROS */
-#endif /* !_CRT_WCTYPEDATA_DEFINED */
+#ifndef _CTYPE_DISABLE_MACROS
+#if !defined(_wctype) && defined(_CRT_USE_WINAPI_FAMILY_DESKTOP_APP)
+#ifdef _MSVCRT_
+  extern unsigned short *_wctype;
+#else
+  extern unsigned short ** __MINGW_IMP_SYMBOL(_wctype);
+#define _wctype (* __MINGW_IMP_SYMBOL(_wctype))
+#endif
+#endif
+#ifdef _MSVCRT_
+#define __pwctype_func() (_pwctype)
+#ifndef _pwctype
+  extern unsigned short *_pwctype;
+#endif
+#else
+#define __pwctype_func() (* __MINGW_IMP_SYMBOL(_pwctype))
+#ifndef _pwctype
+  extern unsigned short ** __MINGW_IMP_SYMBOL(_pwctype);
+#define _pwctype (* __MINGW_IMP_SYMBOL(_pwctype))
+#endif
+#endif
+#endif
+#endif
 
   /* CRT stuff */
 #if 1
@@ -78,545 +105,96 @@ extern "C" {
 #ifndef _CTYPE_DEFINED
 #define _CTYPE_DEFINED
 
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _isctype(
-    _In_ int _C,
-    _In_ int _Type);
+  _CRTIMP int __cdecl _isctype(int _C,int _Type);
+  _CRTIMP int __cdecl _isctype_l(int _C,int _Type,_locale_t _Locale);
+  _CRTIMP int __cdecl isalpha(int _C);
+  _CRTIMP int __cdecl _isalpha_l(int _C,_locale_t _Locale);
+  _CRTIMP int __cdecl isupper(int _C);
+  _CRTIMP int __cdecl _isupper_l(int _C,_locale_t _Locale);
+  _CRTIMP int __cdecl islower(int _C);
+  _CRTIMP int __cdecl _islower_l(int _C,_locale_t _Locale);
+  _CRTIMP int __cdecl isdigit(int _C);
+  _CRTIMP int __cdecl _isdigit_l(int _C,_locale_t _Locale);
+  _CRTIMP int __cdecl isxdigit(int _C);
+  _CRTIMP int __cdecl _isxdigit_l(int _C,_locale_t _Locale);
+  _CRTIMP int __cdecl isspace(int _C);
+  _CRTIMP int __cdecl _isspace_l(int _C,_locale_t _Locale);
+  _CRTIMP int __cdecl ispunct(int _C);
+  _CRTIMP int __cdecl _ispunct_l(int _C,_locale_t _Locale);
+  _CRTIMP int __cdecl isalnum(int _C);
+  _CRTIMP int __cdecl _isalnum_l(int _C,_locale_t _Locale);
+  _CRTIMP int __cdecl isprint(int _C);
+  _CRTIMP int __cdecl _isprint_l(int _C,_locale_t _Locale);
+  _CRTIMP int __cdecl isgraph(int _C);
+  _CRTIMP int __cdecl _isgraph_l(int _C,_locale_t _Locale);
+  _CRTIMP int __cdecl iscntrl(int _C);
+  _CRTIMP int __cdecl _iscntrl_l(int _C,_locale_t _Locale);
+  _CRTIMP int __cdecl toupper(int _C);
+  _CRTIMP int __cdecl tolower(int _C);
+  _CRTIMP int __cdecl _tolower(int _C);
+  _CRTIMP int __cdecl _tolower_l(int _C,_locale_t _Locale);
+  _CRTIMP int __cdecl _toupper(int _C);
+  _CRTIMP int __cdecl _toupper_l(int _C,_locale_t _Locale);
+  _CRTIMP int __cdecl __isascii(int _C);
+  _CRTIMP int __cdecl __toascii(int _C);
+  _CRTIMP int __cdecl __iscsymf(int _C);
+  _CRTIMP int __cdecl __iscsym(int _C);
 
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _isctype_l(
-    _In_ int _C,
-    _In_ int _Type,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  isalpha(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _isalpha_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  isupper(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _isupper_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  islower(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _islower_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  isdigit(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _isdigit_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  isxdigit(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _isxdigit_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  isspace(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _isspace_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  ispunct(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _ispunct_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  isalnum(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _isalnum_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  isprint(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _isprint_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  isgraph(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _isgraph_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iscntrl(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iscntrl_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  toupper(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  tolower(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _tolower(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _tolower_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _toupper(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _toupper_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  __isascii(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  __toascii(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  __iscsymf(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  __iscsym(
-    _In_ int _C);
-
-#if (defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || !defined (NO_OLDNAMES)
-  int __cdecl isblank(int _C);
+#if (defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || !defined (NO_OLDNAMES) || defined (__cplusplus)
+int __cdecl isblank(int _C);
 #endif
-
-#endif /* !_CTYPE_DEFINED */
+#endif
 
 #ifndef _WCTYPE_DEFINED
 #define _WCTYPE_DEFINED
 
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iswalpha(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswalpha_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iswupper(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswupper_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iswlower(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswlower_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iswdigit(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswdigit_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iswxdigit(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswxdigit_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iswspace(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswspace_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iswpunct(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswpunct_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iswalnum(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswalnum_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iswprint(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswprint_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iswgraph(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswgraph_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iswcntrl(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswcntrl_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iswascii(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  isleadbyte(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _isleadbyte_l(
-    _In_ int _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  wint_t
-  __cdecl
-  towupper(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  wint_t
-  __cdecl
-  _towupper_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  wint_t
-  __cdecl
-  towlower(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  wint_t
-  __cdecl
-  _towlower_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  iswctype(
-    _In_ wint_t _C,
-    _In_ wctype_t _Type);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswctype_l(
-    _In_ wint_t _C,
-    _In_ wctype_t _Type,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  __iswcsymf(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswcsymf_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  __iswcsym(
-    _In_ wint_t _C);
-
-  _Check_return_
-  _CRTIMP
-  int
-  __cdecl
-  _iswcsym_l(
-    _In_ wint_t _C,
-    _In_opt_ _locale_t _Locale);
-
-  _CRTIMP
-  int
-  __cdecl
-  is_wctype(
-    _In_ wint_t _C,
-    _In_ wctype_t _Type);
-
-#if (defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || !defined (NO_OLDNAMES)
-  int __cdecl iswblank(wint_t _C);
+  int __cdecl iswalpha(wint_t _C);
+  _CRTIMP int __cdecl _iswalpha_l(wint_t _C,_locale_t _Locale);
+  int __cdecl iswupper(wint_t _C);
+  _CRTIMP int __cdecl _iswupper_l(wint_t _C,_locale_t _Locale);
+  int __cdecl iswlower(wint_t _C);
+  _CRTIMP int __cdecl _iswlower_l(wint_t _C,_locale_t _Locale);
+  int __cdecl iswdigit(wint_t _C);
+  _CRTIMP int __cdecl _iswdigit_l(wint_t _C,_locale_t _Locale);
+  int __cdecl iswxdigit(wint_t _C);
+  _CRTIMP int __cdecl _iswxdigit_l(wint_t _C,_locale_t _Locale);
+  int __cdecl iswspace(wint_t _C);
+  _CRTIMP int __cdecl _iswspace_l(wint_t _C,_locale_t _Locale);
+  int __cdecl iswpunct(wint_t _C);
+  _CRTIMP int __cdecl _iswpunct_l(wint_t _C,_locale_t _Locale);
+  int __cdecl iswalnum(wint_t _C);
+  _CRTIMP int __cdecl _iswalnum_l(wint_t _C,_locale_t _Locale);
+  int __cdecl iswprint(wint_t _C);
+  _CRTIMP int __cdecl _iswprint_l(wint_t _C,_locale_t _Locale);
+  int __cdecl iswgraph(wint_t _C);
+  _CRTIMP int __cdecl _iswgraph_l(wint_t _C,_locale_t _Locale);
+  int __cdecl iswcntrl(wint_t _C);
+  _CRTIMP int __cdecl _iswcntrl_l(wint_t _C,_locale_t _Locale);
+  int __cdecl iswascii(wint_t _C);
+#ifdef _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
+  int __cdecl isleadbyte(int _C);
+  _CRTIMP int __cdecl _isleadbyte_l(int _C,_locale_t _Locale);
+#endif /* _CRT_USE_WINAPI_FAMILY_DESKTOP_APP */
+  wint_t __cdecl towupper(wint_t _C);
+  _CRTIMP wint_t __cdecl _towupper_l(wint_t _C,_locale_t _Locale);
+  wint_t __cdecl towlower(wint_t _C);
+  _CRTIMP wint_t __cdecl _towlower_l(wint_t _C,_locale_t _Locale);
+  int __cdecl iswctype(wint_t _C,wctype_t _Type);
+#if __MSVCRT_VERSION__ >= 0x800
+  _CRTIMP int __cdecl _iswctype_l(wint_t _C,wctype_t _Type,_locale_t _Locale);
+  _CRTIMP int __cdecl __iswcsymf(wint_t _C);
+  _CRTIMP int __cdecl _iswcsymf_l(wint_t _C,_locale_t _Locale);
+  _CRTIMP int __cdecl __iswcsym(wint_t _C);
+  _CRTIMP int __cdecl _iswcsym_l(wint_t _C,_locale_t _Locale);
 #endif
+#ifdef _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
+  int __cdecl is_wctype(wint_t _C,wctype_t _Type);
+#endif /* _CRT_USE_WINAPI_FAMILY_DESKTOP_APP */
 
-#endif /* _WCTYPE_DEFINED */
+#if (defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || !defined (NO_OLDNAMES) || defined (__cplusplus)
+int __cdecl iswblank(wint_t _C);
+#endif
+#endif
 
 #ifndef _CTYPE_DISABLE_MACROS
 
@@ -625,21 +203,25 @@ extern "C" {
 #ifndef __mb_cur_max
 #ifdef _MSVCRT_
   extern int __mb_cur_max;
+#define __mb_cur_max	__mb_cur_max
 #else
-#define __mb_cur_max	(*_imp____mb_cur_max)
-  extern int *_imp____mb_cur_max;
+#ifndef _UCRT
+  extern int * __MINGW_IMP_SYMBOL(__mb_cur_max);
+#endif
+#define __mb_cur_max	(___mb_cur_max_func())
 #endif
 #endif
-#ifdef _MSVCRT_
-#define ___mb_cur_max_func() (__mb_cur_max)
-#else
-#define ___mb_cur_max_func() (*_imp____mb_cur_max)
-#endif
+_CRTIMP int __cdecl ___mb_cur_max_func(void);
 #endif
 
-#define __chvalidchk(a,b) (__PCTYPE_FUNC[(a)] & (b))
-#define _chvalidchk_l(_Char,_Flag,_Locale) (!_Locale ? __chvalidchk(_Char,_Flag) : ((_locale_t)_Locale)->locinfo->pctype[_Char] & (_Flag))
+#define __chvalidchk(a,b) (__PCTYPE_FUNC[(unsigned char)(a)] & (b))
+#ifdef _UCRT
+#define _chvalidchk_l(_Char,_Flag,_Locale) (!_Locale ? __chvalidchk(_Char,_Flag) : ((_locale_t)_Locale)->locinfo->_locale_pctype[(unsigned char)(_Char)] & (_Flag))
+#define _ischartype_l(_Char,_Flag,_Locale) (((_Locale)!=NULL && (((_locale_t)(_Locale))->locinfo->_locale_mb_cur_max) > 1) ? _isctype_l(_Char,(_Flag),_Locale) : _chvalidchk_l(_Char,_Flag,_Locale))
+#else
+#define _chvalidchk_l(_Char,_Flag,_Locale) (!_Locale ? __chvalidchk(_Char,_Flag) : ((_locale_t)_Locale)->locinfo->pctype[(unsigned char)(_Char)] & (_Flag))
 #define _ischartype_l(_Char,_Flag,_Locale) (((_Locale)!=NULL && (((_locale_t)(_Locale))->locinfo->mb_cur_max) > 1) ? _isctype_l(_Char,(_Flag),_Locale) : _chvalidchk_l(_Char,_Flag,_Locale))
+#endif
 #define _isalpha_l(_Char,_Locale) _ischartype_l(_Char,_ALPHA,_Locale)
 #define _isupper_l(_Char,_Locale) _ischartype_l(_Char,_UPPER,_Locale)
 #define _islower_l(_Char,_Locale) _ischartype_l(_Char,_LOWER,_Locale)
@@ -697,59 +279,21 @@ extern "C" {
 #define _iswcsym_l(_c,_p) (_iswalnum_l(_c,_p) || ((_c)=='_'))
 #endif
 
-#ifndef NO_OLDNAMES
-
+#ifndef	NO_OLDNAMES
 #ifndef _CTYPE_DEFINED
-
-  _Check_return_
-  _CRTIMP
-  _CRT_NONSTDC_DEPRECATE(__isascii)
-  _CRTIMP
-  int
-  __cdecl
-  isascii(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  _CRT_NONSTDC_DEPRECATE(__toascii)
-  _CRTIMP
-  int
-  __cdecl
-  toascii(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  _CRT_NONSTDC_DEPRECATE(__iscsymf)
-  _CRTIMP
-  int
-  __cdecl
-  iscsymf(
-    _In_ int _C);
-
-  _Check_return_
-  _CRTIMP
-  _CRT_NONSTDC_DEPRECATE(__iscsym)
-  _CRTIMP
-  int
-  __cdecl
-  iscsym(
-    _In_ int _C);
-
-#else /* _CTYPE_DEFINED */
-
+  int __cdecl isascii(int _C) __MINGW_ATTRIB_DEPRECATED_MSVC2005;
+  int __cdecl toascii(int _C) __MINGW_ATTRIB_DEPRECATED_MSVC2005;
+  int __cdecl iscsymf(int _C) __MINGW_ATTRIB_DEPRECATED_MSVC2005;
+  int __cdecl iscsym(int _C) __MINGW_ATTRIB_DEPRECATED_MSVC2005;
+#else
 #define isascii __isascii
 #define toascii __toascii
 #define iscsymf __iscsymf
 #define iscsym __iscsym
-
-#endif /* _CTYPE_DEFINED */
-
-#endif /* NO_OLDNAMES */
+#endif
+#endif
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* !_INC_CTYPE */
+#endif

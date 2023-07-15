@@ -1,347 +1,263 @@
-/*
- * Copyright 2004 Huw D M Davies
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-#ifndef __WINE_ADVPUB_H
-#define __WINE_ADVPUB_H
-
-#include <setupapi.h>
-/* FIXME: #include <cfgmgr32.h> */
+#ifndef _ADVPUB_H_
+#define _ADVPUB_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifndef S_ASYNCHRONOUS
-#define S_ASYNCHRONOUS  _HRESULT_TYPEDEF_(0x401E8L)
+#define S_ASYNCHRONOUS _HRESULT_TYPEDEF_(0x401e8)
 #endif
 
-typedef struct _CabInfoA
-{
-    LPSTR  pszCab;
-    LPSTR  pszInf;
-    LPSTR  pszSection;
-    CHAR   szSrcPath[MAX_PATH];
-    DWORD  dwFlags;
-} CABINFOA, *PCABINFOA;
+#define achRUNSETUPCOMMANDFUNCTION "RunSetupCommand"
 
-typedef struct _CabInfoW
-{
-    LPWSTR pszCab;
-    LPWSTR pszInf;
-    LPWSTR pszSection;
-    WCHAR  szSrcPath[MAX_PATH];
-    DWORD  dwFlags;
-} CABINFOW, *PCABINFOW;
+  HRESULT WINAPI RunSetupCommand(HWND hWnd,LPCSTR szCmdName,LPCSTR szInfSection,LPCSTR szDir,LPCSTR lpszTitle,HANDLE *phEXE,DWORD dwFlags,LPVOID pvReserved);
 
-DECL_WINELIB_TYPE_AW(CABINFO)
-DECL_WINELIB_TYPE_AW(PCABINFO)
+  typedef HRESULT (WINAPI *RUNSETUPCOMMAND)(HWND hWnd,LPCSTR szCmdName,LPCSTR szInfSection,LPCSTR szDir,LPCSTR szTitle,HANDLE *phEXE,DWORD dwFlags,LPVOID pvReserved);
 
-typedef struct _PERUSERSECTIONA
-{
-    CHAR  szGUID[39 /*MAX_GUID_STRING_LEN*/ + 20];
-    CHAR  szDispName[128];
-    CHAR  szLocale[10];
-    CHAR  szStub[MAX_PATH * 4];
-    CHAR  szVersion[32];
-    CHAR  szCompID[128];
-    DWORD dwIsInstalled;
-    BOOL  bRollback;
-} PERUSERSECTIONA, *PPERUSERSECTIONA;
+#define RSC_FLAG_INF 1
+#define RSC_FLAG_SKIPDISKSPACECHECK 2
+#define RSC_FLAG_QUIET 4
+#define RSC_FLAG_NGCONV 8
+#define RSC_FLAG_UPDHLPDLLS 16
+#define RSC_FLAG_DELAYREGISTEROCX 512
+#define RSC_FLAG_SETUPAPI 1024
 
-typedef struct _PERUSERSECTIONW
-{
-    WCHAR szGUID[39 /*MAX_GUID_STRING_LEN*/ + 20];
-    WCHAR szDispName[128];
-    WCHAR szLocale[10];
-    WCHAR szStub[MAX_PATH * 4];
-    WCHAR szVersion[32];
-    WCHAR szCompID[128];
-    DWORD dwIsInstalled;
-    BOOL  bRollback;
-} PERUSERSECTIONW, *PPERUSERSECTIONW;
+#define achNEEDREBOOTINITFUNCTION "NeedRebootInit"
 
-DECL_WINELIB_TYPE_AW(PERUSERSECTION)
-DECL_WINELIB_TYPE_AW(PPERUSERSECTION)
+  DWORD WINAPI NeedRebootInit(VOID);
 
-typedef struct _StrEntryA
-{
+  typedef DWORD (WINAPI *NEEDREBOOTINIT)(VOID);
+
+#define achNEEDREBOOTFUNCTION "NeedReboot"
+
+  WINBOOL WINAPI NeedReboot(DWORD dwRebootCheck);
+
+  typedef WINBOOL (WINAPI *NEEDREBOOT)(DWORD dwRebootCheck);
+
+#define achPRECHECKREBOOT "RebootCheckOnInstall"
+
+  HRESULT WINAPI RebootCheckOnInstall(HWND hwnd,PCSTR pszINF,PCSTR pszSec,DWORD dwReserved);
+
+  typedef HRESULT (WINAPI *REBOOTCHECKONINSTALL)(HWND,PCSTR,PCSTR,DWORD);
+
+#define c_szTRANSLATEINFSTRING "TranslateInfString"
+
+  HRESULT WINAPI TranslateInfString(PCSTR pszInfFilename,PCSTR pszInstallSection,PCSTR pszTranslateSection,PCSTR pszTranslateKey,PSTR pszBuffer,DWORD dwBufferSize,PDWORD pdwRequiredSize,PVOID pvReserved);
+
+  typedef HRESULT (WINAPI *TRANSLATEINFSTRING)(PCSTR pszInfFilename,PCSTR pszInstallSection,PCSTR pszTranslateSection,PCSTR pszTranslateKey,PSTR pszBuffer,DWORD dwBufferSize,PDWORD pdwRequiredSize,PVOID pvReserved);
+
+#define achREGINSTALL "RegInstall"
+
+  typedef struct _StrEntry {
     LPSTR pszName;
     LPSTR pszValue;
-} STRENTRYA, *LPSTRENTRYA;
+  } STRENTRY,*LPSTRENTRY;
 
-typedef struct _StrEntryW
-{
-    LPWSTR pszName;
-    LPWSTR pszValue;
-} STRENTRYW, *LPSTRENTRYW;
+  typedef const STRENTRY CSTRENTRY;
+  typedef CSTRENTRY *LPCSTRENTRY;
 
-DECL_WINELIB_TYPE_AW(STRENTRY)
-DECL_WINELIB_TYPE_AW(LPSTRENTRY)
-
-typedef struct _StrTableA
-{
+  typedef struct _StrTable {
     DWORD cEntries;
-    STRENTRYA* pse;
-} STRTABLEA, *LPSTRTABLEA;
-typedef const STRTABLEA CSTRTABLEA, *LPCSTRTABLEA;
+    LPSTRENTRY pse;
+  } STRTABLE,*LPSTRTABLE;
 
-typedef struct _StrTableW
-{
-    DWORD cEntries;
-    STRENTRYW* pse;
-} STRTABLEW, *LPSTRTABLEW;
-typedef const STRTABLEW CSTRTABLEW, *LPCSTRTABLEW;
+  typedef const STRTABLE CSTRTABLE;
+  typedef CSTRTABLE *LPCSTRTABLE;
 
-DECL_WINELIB_TYPE_AW(STRTABLE)
-DECL_WINELIB_TYPE_AW(CSTRTABLE)
-DECL_WINELIB_TYPE_AW(LPSTRTABLE)
-DECL_WINELIB_TYPE_AW(LPCSTRTABLE)
+  HRESULT WINAPI RegInstall(HMODULE hm,LPCSTR pszSection,LPCSTRTABLE pstTable);
 
-/* Flags for AddDelBackupEntry */
-#define AADBE_ADD_ENTRY             0x01
-#define AADBE_DEL_ENTRY             0x02
+  typedef HRESULT (WINAPI *REGINSTALL)(HMODULE hm,LPCSTR pszSection,LPCSTRTABLE pstTable);
 
-/* Flags for AdvInstallFile */
-#define AIF_WARNIFSKIP              0x00000001
-#define AIF_NOSKIP                  0x00000002
-#define AIF_NOVERSIONCHECK          0x00000004
-#define AIF_FORCE_FILE_IN_USE       0x00000008
-#define AIF_NOOVERWRITE             0x00000010
-#define AIF_NO_VERSION_DIALOG       0x00000020
-#define AIF_REPLACEONLY             0x00000400
-#define AIF_NOLANGUAGECHECK         0x10000000
-#define AIF_QUIET                   0x20000000
+#define achLAUNCHINFSECTIONEX "LaunchINFSectionEx"
 
-/* Flags for RunSetupCommand */
-#define RSC_FLAG_INF                0x00000001
-#define RSC_FLAG_SKIPDISKSPACECHECK 0x00000002
-#define RSC_FLAG_QUIET              0x00000004
-#define RSC_FLAG_NGCONV             0x00000008
-#define RSC_FLAG_UPDHLPDLLS         0x00000010
-#define RSC_FLAG_DELAYREGISTEROCX   0x00000200
-#define RSC_FLAG_SETUPAPI           0x00000400
+  HRESULT WINAPI LaunchINFSectionEx(HWND hwnd,HINSTANCE hInstance,PSTR pszParms,INT nShow);
 
-/* Flags for LaunchINFSection */
-#define LIS_QUIET                   0x00000001
-#define LIS_NOGRPCONV               0x00000002
+  typedef HRESULT (WINAPI *LAUNCHINFSECTIONEX)(HWND hwnd,HINSTANCE hInst,PSTR pszParams,INT nShow);
 
-/* Flags for DelNode */
-#define ADN_DEL_IF_EMPTY            0x00000001
-#define ADN_DONT_DEL_SUBDIRS        0x00000002
-#define ADN_DONT_DEL_DIR            0x00000004
-#define ADN_DEL_UNC_PATHS           0x00000008
+#define ALINF_QUIET 4
+#define ALINF_NGCONV 8
+#define ALINF_UPDHLPDLLS 16
+#define ALINF_BKINSTALL 32
+#define ALINF_ROLLBACK 64
+#define ALINF_CHECKBKDATA 128
+#define ALINF_ROLLBKDOALL 256
+#define ALINF_DELAYREGISTEROCX 512
 
-/* Flags for RegRestoreAll, RegSaveRestore, RegSaveRestoreOnINF */
-#define  IE4_RESTORE                0x00000001
-#define  IE4_BACKNEW                0x00000002
-#define  IE4_NODELETENEW            0x00000004
-#define  IE4_NOMESSAGES             0x00000008
-#define  IE4_NOPROGRESS             0x00000010
-#define  IE4_NOENUMKEY              0x00000020
-#define  IE4_NO_CRC_MAPPING         0x00000040
-#define  IE4_REGSECTION             0x00000080
-#define  IE4_FRDOALL                0x00000100
-#define  IE4_UPDREFCNT              0x00000200
-#define  IE4_USEREFCNT              0x00000400
-#define  IE4_EXTRAINCREFCNT         0x00000800
+#define achEXECUTECAB "ExecuteCab"
 
-/* Flags for file save and restore functions */
-#define  AFSR_RESTORE               IE4_RESTORE
-#define  AFSR_BACKNEW               IE4_BACKNEW
-#define  AFSR_NODELETENEW           IE4_NODELETENEW
-#define  AFSR_NOMESSAGES            IE4_NOMESSAGES
-#define  AFSR_NOPROGRESS            IE4_NOPROGRESS
-#define  AFSR_UPDREFCNT             IE4_UPDREFCNT
-#define  AFSR_USEREFCNT             IE4_USEREFCNT
-#define  AFSR_EXTRAINCREFCNT        IE4_EXTRAINCREFCNT
+  typedef struct _CabInfo {
+    PSTR pszCab;
+    PSTR pszInf;
+    PSTR pszSection;
+    char szSrcPath[MAX_PATH];
+    DWORD dwFlags;
+  } CABINFO,*PCABINFO;
 
-HRESULT WINAPI AddDelBackupEntryA(LPCSTR lpcszFileList, LPCSTR lpcszBackupDir,
-     LPCSTR lpcszBaseName, DWORD dwFlags);
-HRESULT WINAPI AddDelBackupEntryW(LPCWSTR lpcszFileList, LPCWSTR lpcszBackupDir,
-     LPCWSTR lpcszBaseName, DWORD dwFlags);
-#define AddDelBackupEntry WINELIB_NAME_AW(AddDelBackupEntry)
-HRESULT WINAPI AdvInstallFileA(HWND hwnd, LPCSTR lpszSourceDir,
-     LPCSTR lpszSourceFile, LPCSTR lpszDestDir, LPCSTR lpszDestFile,
-     DWORD dwFlags, DWORD dwReserved);
-HRESULT WINAPI AdvInstallFileW(HWND hwnd, LPCWSTR lpszSourceDir,
-     LPCWSTR lpszSourceFile, LPCWSTR lpszDestDir, LPCWSTR lpszDestFile,
-     DWORD dwFlags, DWORD dwReserved);
-#define AdvInstallFile WINELIB_NAME_AW(AdvInstallFile)
-HRESULT WINAPI CloseINFEngine(HINF hInf);
-HRESULT WINAPI DelNodeA(LPCSTR pszFileOrDirName, DWORD dwFlags);
-HRESULT WINAPI DelNodeW(LPCWSTR pszFileOrDirName, DWORD dwFlags);
-#define DelNode WINELIB_NAME_AW(DelNode)
-HRESULT WINAPI DelNodeRunDLL32A(HWND,HINSTANCE,LPSTR,INT);
-HRESULT WINAPI DelNodeRunDLL32W(HWND,HINSTANCE,LPWSTR,INT);
-#define DelNodeRunDLL32 WINELIB_NAME_AW(DelNodeRunDLL32)
-HRESULT WINAPI ExecuteCabA( HWND hwnd, CABINFOA* pCab, LPVOID pReserved );
-HRESULT WINAPI ExecuteCabW( HWND hwnd, CABINFOW* pCab, LPVOID pReserved );
-#define ExecuteCab WINELIB_NAME_AW(ExecuteCab)
-HRESULT WINAPI ExtractFilesA(LPCSTR,LPCSTR,DWORD,LPCSTR,LPVOID,DWORD);
-HRESULT WINAPI ExtractFilesW(LPCWSTR,LPCWSTR,DWORD,LPCWSTR,LPVOID,DWORD);
-#define ExtractFiles WINELIB_NAME_AW(ExtractFiles)
+  HRESULT WINAPI ExecuteCab(HWND hwnd,PCABINFO pCab,LPVOID pReserved);
 
-HRESULT
-WINAPI
-FileSaveMarkNotExistA(
-  _In_opt_ LPSTR pszFileList,
-  _In_opt_ LPSTR pszDir,
-  _In_opt_ LPSTR pszBaseName);
+  typedef HRESULT (WINAPI *EXECUTECAB)(HWND hwnd,PCABINFO pCab,LPVOID pReserved);
 
-HRESULT
-WINAPI
-FileSaveMarkNotExistW(
-  _In_opt_ LPWSTR pszFileList,
-  _In_opt_ LPWSTR pszDir,
-  _In_opt_ LPWSTR pszBaseName);
+#define AIF_WARNIFSKIP 0x00000001
+#define AIF_NOSKIP 0x00000002
+#define AIF_NOVERSIONCHECK 0x00000004
+#define AIF_FORCE_FILE_IN_USE 0x00000008
+#define AIF_NOOVERWRITE 0x00000010
 
-#define FileSaveMarkNotExist WINELIB_NAME_AW(FileSaveMarkNotExist)
+#define AIF_NO_VERSION_DIALOG 0x00000020
+#define AIF_REPLACEONLY 0x00000400
 
-HRESULT WINAPI FileSaveRestoreA(HWND hDlg, LPSTR pszFileList, LPSTR pszDir,
-     LPSTR pszBaseName, DWORD dwFlags);
-HRESULT WINAPI FileSaveRestoreW(HWND hDlg, LPWSTR pszFileList, LPWSTR pszDir,
-     LPWSTR pszBaseName, DWORD dwFlags);
-#define FileSaveRestore WINELIB_NAME_AW(FileSaveRestore)
-HRESULT WINAPI FileSaveRestoreOnINFA(HWND hWnd, LPCSTR pszTitle, LPCSTR pszINF,
-     LPCSTR pszSection, LPCSTR pszBackupDir, LPCSTR pszBaseBackupFile, DWORD dwFlags);
-HRESULT WINAPI FileSaveRestoreOnINFW(HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszINF,
-     LPCWSTR pszSection, LPCWSTR pszBackupDir, LPCWSTR pszBaseBackupFile, DWORD dwFlags);
-#define FileSaveRestoreOnINF WINELIB_NAME_AW(FileSaveRestoreOnINF)
-HRESULT WINAPI GetVersionFromFileA(LPCSTR lpszFilename, LPDWORD pdwMSVer, LPDWORD pdwLSVer, BOOL bVersion);
-HRESULT WINAPI GetVersionFromFileW(LPCWSTR lpszFilename, LPDWORD pdwMSVer, LPDWORD pdwLSVer, BOOL bVersion);
-#define GetVersionFromFile WINELIB_NAME_AW(GetVersionFromFile)
-HRESULT WINAPI GetVersionFromFileExA(LPCSTR lpszFilename, LPDWORD pdwMSVer, LPDWORD pdwLSVer, BOOL bVersion);
-HRESULT WINAPI GetVersionFromFileExW(LPCWSTR lpszFilename, LPDWORD pdwMSVer, LPDWORD pdwLSVer, BOOL bVersion);
-#define GetVersionFromFileEx WINELIB_NAME_AW(GetVersionFromFileEx)
-BOOL WINAPI IsNTAdmin(DWORD,LPDWORD);
-INT WINAPI LaunchINFSectionA(HWND,HINSTANCE,LPSTR,INT);
-INT WINAPI LaunchINFSectionW(HWND,HINSTANCE,LPWSTR,INT);
-#define LaunchINFSection WINELIB_NAME_AW(LaunchINFSection)
+#define AIF_NOLANGUAGECHECK 0x10000000
 
-HRESULT
-WINAPI
-LaunchINFSectionExA(
-  _In_opt_ HWND,
-  _In_opt_ HINSTANCE,
-  _In_ LPSTR,
-  _In_ INT);
+#define AIF_QUIET 0x20000000
 
-HRESULT
-WINAPI
-LaunchINFSectionExW(
-  _In_opt_ HWND,
-  _In_opt_ HINSTANCE,
-  _In_ LPWSTR,
-  _In_ INT);
+#define achADVINSTALLFILE "AdvInstallFile"
 
-#define LaunchINFSectionEx WINELIB_NAME_AW(LaunchINFSectionEx)
+  HRESULT WINAPI AdvInstallFile(HWND hwnd,LPCSTR lpszSourceDir,LPCSTR lpszSourceFile,LPCSTR lpszDestDir,LPCSTR lpszDestFile,DWORD dwFlags,DWORD dwReserved);
 
-DWORD WINAPI NeedRebootInit(VOID);
-BOOL WINAPI NeedReboot(DWORD dwRebootCheck);
-HRESULT WINAPI OpenINFEngineA(LPCSTR pszInfFilename, LPCSTR pszInstallSection,
-     DWORD dwFlags, HINF *phInf, PVOID pvReserved);
-HRESULT WINAPI OpenINFEngineW(LPCWSTR pszInfFilename, LPCWSTR pszInstallSection,
-     DWORD dwFlags, HINF *phInf, PVOID pvReserved);
-#define OpenINFEngine WINELIB_NAME_AW(OpenINFEngine)
-HRESULT WINAPI RebootCheckOnInstallA(HWND hWnd, LPCSTR pszINF, LPCSTR pszSec, DWORD dwReserved);
-HRESULT WINAPI RebootCheckOnInstallW(HWND hWnd, LPCWSTR pszINF, LPCWSTR pszSec, DWORD dwReserved);
-#define RebootCheckOnInstall WINELIB_NAME_AW(RebootCheckOnInstall)
-HRESULT WINAPI RegInstallA(HMODULE hm, LPCSTR pszSection, const STRTABLEA* pstTable);
-HRESULT WINAPI RegInstallW(HMODULE hm, LPCWSTR pszSection, const STRTABLEW* pstTable);
-#define RegInstall WINELIB_NAME_AW(RegInstall)
+  typedef HRESULT (WINAPI *ADVINSTALLFILE)(HWND hwnd,LPCSTR lpszSourceDir,LPCSTR lpszSourceFile,LPCSTR lpszDestDir,LPCSTR lpszDestFile,DWORD dwFlags,DWORD dwReserved);
 
-HRESULT
-WINAPI
-RegRestoreAllA(
-  _In_opt_ HWND hWnd,
-  _In_opt_ LPSTR pszTitleString,
-  _In_ HKEY hkBackupKey);
+#define IE4_RESTORE 0x00000001
+#define IE4_BACKNEW 0x00000002
+#define IE4_NODELETENEW 0x00000004
+#define IE4_NOMESSAGES 0x00000008
+#define IE4_NOPROGRESS 0x00000010
+#define IE4_NOENUMKEY 0x00000020
+#define IE4_NO_CRC_MAPPING 0x00000040
 
-HRESULT
-WINAPI
-RegRestoreAllW(
-  _In_opt_ HWND hWnd,
-  _In_opt_ LPWSTR pszTitleString,
-  _In_ HKEY hkBackupKey);
+#define IE4_REGSECTION 0x00000080
+#define IE4_FRDOALL 0x00000100
+#define IE4_UPDREFCNT 0x00000200
+#define IE4_USEREFCNT 0x00000400
+#define IE4_EXTRAINCREFCNT 0x00000800
 
-#define RegRestoreAll WINELIB_NAME_AW(RegRestoreAll)
+#define IE4_REMOVREGBKDATA 0x00001000
 
-HRESULT WINAPI RegSaveRestoreA(HWND hWnd, LPCSTR pszTitleString, HKEY hkBackupKey,
-     LPCSTR pcszRootKey, LPCSTR pcszSubKey, LPCSTR pcszValueName, DWORD dwFlags);
-HRESULT WINAPI RegSaveRestoreW(HWND hWnd, LPCWSTR pszTitleString, HKEY hkBackupKey,
-     LPCWSTR pcszRootKey, LPCWSTR pcszSubKey, LPCWSTR pcszValueName, DWORD dwFlags);
-#define RegSaveRestore WINELIB_NAME_AW(RegSaveRestore)
-HRESULT WINAPI RegSaveRestoreOnINFA(HWND hWnd, LPCSTR pszTitle, LPCSTR pszINF,
-     LPCSTR pszSection, HKEY hHKLMBackKey, HKEY hHKCUBackKey, DWORD dwFlags);
-HRESULT WINAPI RegSaveRestoreOnINFW(HWND hWnd, LPCWSTR pszTitle, LPCWSTR pszINF,
-     LPCWSTR pszSection, HKEY hHKLMBackKey, HKEY hHKCUBackKey, DWORD dwFlags);
-#define RegSaveRestoreOnINF WINELIB_NAME_AW(RegSaveRestoreOnINF)
-HRESULT WINAPI RunSetupCommandA(HWND hWnd,
-     LPCSTR szCmdName, LPCSTR szInfSection, LPCSTR szDir, LPCSTR lpszTitle,
-     HANDLE *phEXE, DWORD dwFlags, LPVOID pvReserved);
-HRESULT WINAPI RunSetupCommandW(HWND hWnd,
-     LPCWSTR szCmdName, LPCWSTR szInfSection, LPCWSTR szDir, LPCWSTR lpszTitle,
-     HANDLE *phEXE, DWORD dwFlags, LPVOID pvReserved);
-#define RunSetupCommand WINELIB_NAME_AW(RunSetupCommand)
-HRESULT WINAPI SetPerUserSecValuesA(PERUSERSECTIONA* pPerUser);
-HRESULT WINAPI SetPerUserSecValuesW(PERUSERSECTIONW* pPerUser);
-#define SetPerUserSecValues WINELIB_NAME_AW(SetPerUserSecValues)
+  HRESULT WINAPI RegSaveRestore(HWND hWnd,PCSTR pszTitleString,HKEY hkBckupKey,PCSTR pcszRootKey,PCSTR pcszSubKey,PCSTR pcszValueName,DWORD dwFlags);
 
-HRESULT
-WINAPI
-TranslateInfStringA(
-  _In_ LPCSTR pszInfFilename,
-  _In_ LPCSTR pszInstallSection,
-  _In_ LPCSTR pszTranslateSection,
-  _In_ LPCSTR pszTranslateKey,
-  _Out_writes_opt_(dwBufferSize) LPSTR pszBuffer,
-  _In_ DWORD dwBufferSize,
-  _Out_ PDWORD pdwRequiredSize,
-  _Reserved_ PVOID pvReserved);
+  typedef HRESULT (WINAPI *REGSAVERESTORE)(HWND hWnd,PCSTR pszTitleString,HKEY hkBckupKey,PCSTR pcszRootKey,PCSTR pcszSubKey,PCSTR pcszValueName,DWORD dwFlags);
 
-HRESULT
-WINAPI
-TranslateInfStringW(
-  _In_ LPCWSTR pszInfFilename,
-  _In_ LPCWSTR pszInstallSection,
-  _In_ LPCWSTR pszTranslateSection,
-  _In_ LPCWSTR pszTranslateKey,
-  _Out_writes_opt_(dwBufferSize) LPWSTR pszBuffer,
-  _In_ DWORD dwBufferSize,
-  _Out_ PDWORD pdwRequiredSize,
-  _Reserved_ PVOID pvReserved);
+  HRESULT WINAPI RegSaveRestoreOnINF(HWND hWnd,PCSTR pszTitle,PCSTR pszINF,PCSTR pszSection,HKEY hHKLMBackKey,HKEY hHKCUBackKey,DWORD dwFlags);
 
-#define TranslateInfString WINELIB_NAME_AW(TranslateInfString)
-HRESULT WINAPI TranslateInfStringExA(HINF hInf, LPCSTR pszInfFilename,
-    LPCSTR pszTranslateSection, LPCSTR pszTranslateKey, LPSTR pszBuffer,
-    DWORD dwBufferSize, PDWORD pdwRequiredSize, PVOID pvReserved);
-HRESULT WINAPI TranslateInfStringExW(HINF hInf, LPCWSTR pszInfFilename,
-    LPCWSTR pszTranslateSection, LPCWSTR pszTranslateKey, LPWSTR pszBuffer,
-    DWORD dwBufferSize, PDWORD pdwRequiredSize, PVOID pvReserved);
-#define TranslateInfStringEx WINELIB_NAME_AW(TranslateInfStringEx)
-HRESULT WINAPI UserInstStubWrapperA(HWND hWnd, HINSTANCE hInstance, LPSTR pszParms, INT nShow);
-HRESULT WINAPI UserInstStubWrapperW(HWND hWnd, HINSTANCE hInstance, LPWSTR pszParms, INT nShow);
-#define UserInstStubWrapper WINELIB_NAME_AW(UserInstStubWrapper)
-HRESULT WINAPI UserUnInstStubWrapperA(HWND hWnd, HINSTANCE hInstance, LPSTR pszParms, INT nShow);
-HRESULT WINAPI UserUnInstStubWrapperW(HWND hWnd, HINSTANCE hInstance, LPWSTR pszParms, INT nShow);
-#define UserUnInstStubWrapper WINELIB_NAME_AW(UserUnInstStubWrapper)
+  typedef HRESULT (WINAPI *REGSAVERESTOREONINF)(HWND hWnd,PCSTR pszTitle,PCSTR pszINF,PCSTR pszSection,HKEY hHKLMBackKey,HKEY hHKCUBackKey,DWORD dwFlags);
+
+#define ARSR_RESTORE IE4_RESTORE
+#define ARSR_NOMESSAGES IE4_NOMESSAGES
+#define ARSR_REGSECTION IE4_REGSECTION
+#define ARSR_REMOVREGBKDATA IE4_REMOVREGBKDATA
+
+#define REG_SAVE_LOG_KEY "RegSaveLogFile"
+#define REG_RESTORE_LOG_KEY "RegRestoreLogFile"
+
+  HRESULT WINAPI RegRestoreAll(HWND hWnd,PSTR pszTitleString,HKEY hkBckupKey);
+  typedef HRESULT (WINAPI *REGRESTOREALL)(HWND hWnd,PSTR pszTitleString,HKEY hkBckupKey);
+
+  HRESULT WINAPI FileSaveRestore(HWND hDlg,LPSTR lpFileList,LPSTR lpDir,LPSTR lpBaseName,DWORD dwFlags);
+
+  typedef HRESULT (WINAPI *FILESAVERESTORE)(HWND hDlg,LPSTR lpFileList,LPSTR lpDir,LPSTR lpBaseName,DWORD dwFlags);
+
+  HRESULT WINAPI FileSaveRestoreOnINF(HWND hWnd,PCSTR pszTitle,PCSTR pszINF,PCSTR pszSection,PCSTR pszBackupDir,PCSTR pszBaseBackupFile,DWORD dwFlags);
+
+  typedef HRESULT (WINAPI *FILESAVERESTOREONINF)(HWND hDlg,PCSTR pszTitle,PCSTR pszINF,PCSTR pszSection,PCSTR pszBackupDir,PCSTR pszBaseBackFile,DWORD dwFlags);
+
+#define AFSR_RESTORE IE4_RESTORE
+#define AFSR_BACKNEW IE4_BACKNEW
+#define AFSR_NODELETENEW IE4_NODELETENEW
+#define AFSR_NOMESSAGES IE4_NOMESSAGES
+#define AFSR_NOPROGRESS IE4_NOPROGRESS
+#define AFSR_UPDREFCNT IE4_UPDREFCNT
+#define AFSR_USEREFCNT IE4_USEREFCNT
+#define AFSR_EXTRAINCREFCNT IE4_EXTRAINCREFCNT
+
+  HRESULT WINAPI AddDelBackupEntry(LPCSTR lpcszFileList,LPCSTR lpcszBackupDir,LPCSTR lpcszBaseName,DWORD dwFlags);
+
+  typedef HRESULT (WINAPI *ADDDELBACKUPENTRY)(LPCSTR lpcszFileList,LPCSTR lpcszBackupDir,LPCSTR lpcszBaseName,DWORD dwFlags);
+
+#define AADBE_ADD_ENTRY 0x01
+#define AADBE_DEL_ENTRY 0x02
+
+  HRESULT WINAPI FileSaveMarkNotExist(LPSTR lpFileList,LPSTR lpDir,LPSTR lpBaseName);
+
+  typedef HRESULT (WINAPI *FILESAVEMARKNOTEXIST)(LPSTR lpFileList,LPSTR lpDir,LPSTR lpBaseName);
+
+  HRESULT WINAPI GetVersionFromFile(LPSTR lpszFilename,LPDWORD pdwMSVer,LPDWORD pdwLSVer,WINBOOL bVersion);
+
+  typedef HRESULT (WINAPI *GETVERSIONFROMFILE)(LPSTR lpszFilename,LPDWORD pdwMSVer,LPDWORD pdwLSVer,WINBOOL bVersion);
+
+  HRESULT WINAPI GetVersionFromFileEx(LPSTR lpszFilename,LPDWORD pdwMSVer,LPDWORD pdwLSVer,WINBOOL bVersion);
+
+  typedef HRESULT (WINAPI *GETVERSIONFROMFILE)(LPSTR lpszFilename,LPDWORD pdwMSVer,LPDWORD pdwLSVer,WINBOOL bVersion);
+
+#define achISNTADMIN "IsNTAdmin"
+
+  WINBOOL WINAPI IsNTAdmin(DWORD dwReserved,DWORD *lpdwReserved);
+
+  typedef WINBOOL (WINAPI *ISNTADMIN)(DWORD,DWORD *);
+
+#define ADN_DEL_IF_EMPTY 0x00000001
+#define ADN_DONT_DEL_SUBDIRS 0x00000002
+#define ADN_DONT_DEL_DIR 0x00000004
+#define ADN_DEL_UNC_PATHS 0x00000008
+
+#define achDELNODE "DelNode"
+
+  HRESULT WINAPI DelNode(LPCSTR pszFileOrDirName,DWORD dwFlags);
+
+  typedef HRESULT (WINAPI *DELNODE)(LPCSTR pszFileOrDirName,DWORD dwFlags);
+
+#define achDELNODERUNDLL32 "DelNodeRunDLL32"
+
+  HRESULT WINAPI DelNodeRunDLL32(HWND hwnd,HINSTANCE hInstance,PSTR pszParms,INT nShow);
+
+  typedef HRESULT (WINAPI *DELNODERUNDLL32)(HWND hwnd,HINSTANCE hInst,PSTR pszParams,INT nShow);
+  typedef PVOID HINF;
+
+  HRESULT WINAPI OpenINFEngine(PCSTR pszInfFilename,PCSTR pszInstallSection,DWORD dwFlags,HINF *phInf,PVOID pvReserved);
+  HRESULT WINAPI TranslateInfStringEx(HINF hInf,PCSTR pszInfFilename,PCSTR pszTranslateSection,PCSTR pszTranslateKey,PSTR pszBuffer,DWORD dwBufferSize,PDWORD pdwRequiredSize,PVOID pvReserved);
+  HRESULT WINAPI CloseINFEngine(HINF hInf);
+  HRESULT WINAPI ExtractFiles(LPCSTR pszCabName,LPCSTR pszExpandDir,DWORD dwFlags,LPCSTR pszFileList,LPVOID lpReserved,DWORD dwReserved);
+  INT WINAPI LaunchINFSection(HWND,HINSTANCE,PSTR,INT);
+
+#define LIS_QUIET 0x0001
+#define LIS_NOGRPCONV 0x0002
+
+#define RUNCMDS_QUIET 0x00000001
+#define RUNCMDS_NOWAIT 0x00000002
+#define RUNCMDS_DELAYPOSTCMD 0x00000004
+
+#define awchMSIE4GUID L"{89820200-ECBD-11cf-8B85-00AA005B4383}"
+#define achUserInstStubWrapper "UserInstStubWrapper"
+#define achUserUnInstStubWrapper "UserUnInstStubWrapper"
+
+  typedef HRESULT (WINAPI *USERINSTSTUBWRAPPER)(HWND hwnd,HINSTANCE hInst,PSTR pszParams,INT nShow);
+  typedef HRESULT (WINAPI *USERUNINSTSTUBWRAPPER)(HWND hwnd,HINSTANCE hInst,PSTR pszParams,INT nShow);
+
+  HRESULT WINAPI UserInstStubWrapper(HWND hwnd,HINSTANCE hInstance,PSTR pszParms,INT nShow);
+  HRESULT WINAPI UserUnInstStubWrapper(HWND hwnd,HINSTANCE hInstance,PSTR pszParms,INT nShow);
+
+  typedef struct _PERUSERSECTION {
+    char szGUID[39+20];
+    char szDispName[128];
+    char szLocale[10];
+    char szStub[MAX_PATH*4];
+    char szVersion[32];
+    char szCompID[128];
+    DWORD dwIsInstalled;
+    WINBOOL bRollback;
+  } PERUSERSECTION,*PPERUSERSECTION;
+
+  HRESULT WINAPI SetPerUserSecValues(PPERUSERSECTION pPerUser);
+
+#define achSetPerUserSecValues "SetPerUserSecValues"
+
+  typedef HRESULT (WINAPI *SETPERUSERSECVALUES)(PPERUSERSECTION pPerUser);
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* __WINE_ADVPUB_H */
+#endif

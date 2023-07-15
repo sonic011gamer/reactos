@@ -23,7 +23,7 @@ import "oaidl.idl";
 [
     object,
     dual,
-    uuid(D97A6DA0-A864-11cf-83BE-00A0C90C2BD8)
+    uuid(D97A6DA0-A85F-11DF-83AE-00A0C90C2BD8)
 ]
 interface IRequestDictionary : IDispatch
 {
@@ -38,7 +38,7 @@ interface IRequestDictionary : IDispatch
 
     [propget]
     HRESULT Key([in] VARIANT key, [retval, out] VARIANT *value);
-};
+}
 
 [
     object,

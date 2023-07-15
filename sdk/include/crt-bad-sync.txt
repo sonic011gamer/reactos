@@ -1,0 +1,103 @@
+# How 2 badly sync ReactOS CRT with the latest ones
+
+mingw headers version is: mingw-w64-mingw-w64-c3e587c067a00a561899d49d3e63a659e38802ec (11.0.1)
+wine headers version is: 8.1.0
+
+1. rm -fr psdk, dxsdk, crt
+2. Copy everything inside mingw-w64-headers\include into psdk
+3. Delete GL, KHR directory
+4. Move gdiplus into the root folder (replace original gdiplus.h inside root)
+5. Copy all the root files from mingw-w64-headers\ddk\include into psdk
+6. Copy the following files from Wine includes:
+-- place the following files into psdk
+d2d1.idl
+d2d1_1.idl
+d2d1_1helper.idl
+d2d1_2.idl
+d2d1_3.idl
+d2d1effectauthor.idl
+d2d1effects.idl
+d2d1effects_1.idl
+d2d1effects_2.idl
+iads.idl
+transact.idl
+access.idl
+asptlb.idl
+asynot.idl
+asysta.idl
+atliface.idl
+binres.idl
+cmdbas.idl
+cmdpre.idl
+cmdprp.idl
+cmdstrm.idl
+cmdtxt.idl
+cmdwpr.idl
+cmnquery.idl
+cdosys.idl
+amsi.idl
+amvideo.idl
+cor.idl
+cordebug.idl
+crtrow.idl
+cryptdlg.h
+cvconst.h
+dyngraph.idl
+hlink.idl
+hrtfapoapi.idl
+htiface.idl
+htiframe.idl
+httprequest.idl
+ieautomation.idl
+ifmib.h
+imnact.idl
+imnxport.idl
+indexsrv.idl
+inseng.idl
+7. Copy the following files from ReactOS original code:
+-- dxsdk
+DShowIDL (the folder)
+dsetup.h
+amparse.h
+amva.h
+bdatif.idl
+ddrawex.h
+dsetup.h
+dshowasf.idl
+dv.h
+dx7todx8.h
+dxsdkver.h
+dyngraph.idl
+il21dec.h
+Iwstdec.h
+mixerocx.idl
+mpconfig.h
+mpeg2error.h
+mpegtype.h
+pixplugin.h
+rmxfguid.h
+rmxftmpl.h
+tvratings.idl
+videoacc.idl
+vmrender.idl
+vpconfig.h
+vpnotify.h
+vptype.h
+-- crt
+armintr.h
+emmintrin.h
+mmintrin.h
+stdbool.h (ikr??)
+xmmintrin.h
+-- psdk
+dxgi_internal.idl
+stdole32.idl
+stdole2.idl
+atsmedia.h
+chstring.h
+dmemmgr.h (REPLACE THE ORIGINAL MINGW ONE)
+gcc_sal.h
+idndl.h
+6. Run "psdk-mingw-postfix.py"
+
+..... largeint.h was removed in mingw-w64 headers .......

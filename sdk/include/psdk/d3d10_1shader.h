@@ -1,3 +1,4 @@
+#undef INTERFACE
 /*
  * Copyright 2010 Rico Schüller
  *
@@ -44,8 +45,8 @@ DECLARE_INTERFACE_(ID3D10ShaderReflection1, IUnknown)
     STDMETHOD(GetConversionInstructionCount)(THIS_ UINT *count) PURE;
     STDMETHOD(GetBitwiseInstructionCount)(THIS_ UINT *count) PURE;
     STDMETHOD(GetGSInputPrimitive)(THIS_ D3D10_PRIMITIVE *prim) PURE;
-    STDMETHOD(IsLevel9Shader)(THIS_ BOOL *level9shader) PURE;
-    STDMETHOD(IsSampleFrequencyShader)(THIS_ BOOL *samplefrequency) PURE;
+    STDMETHOD(IsLevel9Shader)(THIS_ WINBOOL *level9shader) PURE;
+    STDMETHOD(IsSampleFrequencyShader)(THIS_ WINBOOL *samplefrequency) PURE;
 };
 #undef INTERFACE
 

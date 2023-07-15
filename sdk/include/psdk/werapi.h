@@ -1,127 +1,181 @@
-/*
- * Windows Error Reporing definitions
- *
- * Copyright (C) 2010 Louis Lenders
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
-#ifndef __WINE_WERAPI_H
-#define __WINE_WERAPI_H
+#ifndef _INC_WERAPI
+#define _INC_WERAPI
+#if (_WIN32_WINNT >= 0x0600)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* Only 10 parameter are allowed in WerReportSetParameter */
-#define WER_MAX_PARAM_COUNT 10
-#define WER_P0 0
-#define WER_P1 1
-#define WER_P2 2
-#define WER_P3 3
-#define WER_P4 4
-#define WER_P5 5
-#define WER_P6 6
-#define WER_P7 7
-#define WER_P8 8
-#define WER_P9 9
+typedef enum _WER_FILE_TYPE {
+  WerFileTypeMicrodump = 1,
+  WerFileTypeMinidump,
+  WerFileTypeHeapdump,
+  WerFileTypeUserDocument,
+  WerFileTypeOther,
+  WerFileTypeMax
+} WER_FILE_TYPE;
 
-/* Flags for WerReportSubmit */
-#define WER_SUBMIT_HONOR_RECOVERY           0x0001
-#define WER_SUBMIT_HONOR_RESTART            0x0002
-#define WER_SUBMIT_QUEUE                    0x0004
-#define WER_SUBMIT_SHOW_DEBUG               0x0008
-#define WER_SUBMIT_ADD_REGISTERED_DATA      0x0010
-#define WER_SUBMIT_OUTOFPROCESS             0x0020
-#define WER_SUBMIT_NO_CLOSE_UI              0x0040
-#define WER_SUBMIT_NO_QUEUE                 0x0080
-#define WER_SUBMIT_NO_ARCHIVE               0x0100
-#define WER_SUBMIT_START_MINIMIZED          0x0200
-#define WER_SUBMIT_OUTOFPROCESS_ASYNC       0x0400
-#define WER_SUBMIT_BYPASS_DATA_THROTTLING   0x0800
-#define WER_SUBMIT_ARCHIVE_PARAMETERS_ONLY  0x1000
-#define WER_SUBMIT_REPORT_MACHINE_ID        0x2000
-
-/* #### */
-
-typedef HANDLE HREPORT;
-
-typedef enum _WER_CONSENT
-{
-    WerConsentNotAsked = 1,
-    WerConsentApproved,
-    WerConsentDenied,
-    WerConsentAlwaysPrompt,
-    WerConsentMax
-} WER_CONSENT;
-
-typedef enum _WER_REGISTER_FILE_TYPE
-{
-    WerRegFileTypeUserDocument = 1,
-    WerRegFileTypeOther = 2,
-    WerRegFileTypeMax
+typedef enum _WER_REGISTER_FILE_TYPE {
+  WerRegFileTypeUserDocument = 1,
+  WerRegFileTypeOther,
+  WerRegFileTypeMax
 } WER_REGISTER_FILE_TYPE;
 
-typedef struct _WER_REPORT_INFORMATION
-{
-    DWORD   dwSize;
-    HANDLE  hProcess;
-    WCHAR   wzConsentKey[64];
-    WCHAR   wzFriendlyEventName[128];
-    WCHAR   wzApplicationName[128];
-    WCHAR   wzApplicationPath[MAX_PATH];
-    WCHAR   wzDescription[512];
-    HWND    hwndParent;
-} WER_REPORT_INFORMATION, *PWER_REPORT_INFORMATION;
+typedef enum _WER_DUMP_TYPE {
+  WerDumpTypeMicroDump = 1,
+  WerDumpTypeMiniDump,
+  WerDumpTypeHeapDump,
+  WerDumpTypeMax
+} WER_DUMP_TYPE;
 
+typedef enum _WER_REPORT_UI {
+  WerUIAdditionalDataDlgHeader = 1,
+  WerUIIconFilePath,
+  WerUIConsentDlgHeader,
+  WerUIConsentDlgBody,
+  WerUIOnlineSolutionCheckText,
+  WerUIOfflineSolutionCheckText,
+  WerUICloseText,
+  WerUICloseDlgHeader,
+  WerUICloseDlgBody,
+  WerUICloseDlgButtonText,
+  WerUICustomActionButtonText,
+  WerUIMax
+} WER_REPORT_UI;
 
-typedef enum _WER_REPORT_TYPE
-{
-    WerReportNonCritical = 0,
-    WerReportCritical,
-    WerReportApplicationCrash,
-    WerReportApplicationHang,
-    WerReportKernel,
-    WerReportInvalid
+typedef enum _WER_CONSENT {
+  WerConsentNotAsked = 1,
+  WerConsentApproved,
+  WerConsentDenied,
+  WerConsentAlwaysPrompt,
+  WerConsentMax
+} WER_CONSENT;
+
+typedef enum _WER_SUBMIT_RESULT {
+  WerReportQueued = 1,
+  WerReportUploaded,
+  WerReportDebug,
+  WerReportFailed,
+  WerDisabled,
+  WerReportCancelled,
+  WerDisabledQueue,
+  WerReportAsync,
+  WerCustomAction
+} WER_SUBMIT_RESULT;
+
+typedef enum _WER_REPORT_TYPE {
+  WerReportNonCritical = 0,
+  WerReportCritical,
+  WerReportApplicationCrash,
+  WerReportApplicationHang,
+  WerReportKernel,
+  WerReportInvalid
 } WER_REPORT_TYPE;
 
-typedef enum _WER_SUBMIT_RESULT
-{
-    WerReportQueued = 1,
-    WerReportUploaded,
-    WerReportDebug,
-    WerReportFailed,
-    WerDisabled,
-    WerReportCancelled,
-    WerDisabledQueue,
-    WerReportAsync,
-    WerCustomAction
-} WER_SUBMIT_RESULT, *PWER_SUBMIT_RESULT;
+typedef struct _WER_DUMP_CUSTOM_OPTIONS {
+  DWORD dwSize;
+  DWORD dwMask;
+  DWORD dwDumpFlags;
+  WINBOOL bOnlyThisThread;
+  DWORD dwExceptionThreadFlags;
+  DWORD dwOtherThreadFlags;
+  DWORD dwExceptionThreadExFlags;
+  DWORD dwOtherThreadExFlags;
+  DWORD dwPreferredModuleFlags;
+  DWORD dwOtherModuleFlags;
+  WCHAR wzPreferredModuleList[WER_MAX_PREFERRED_MODULES_BUFFER];
+} WER_DUMP_CUSTOM_OPTIONS, *PWER_DUMP_CUSTOM_OPTIONS;
 
-/* #### */
+typedef struct _WER_EXCEPTION_INFORMATION {
+  PEXCEPTION_POINTERS pExceptionPointers;
+  WINBOOL             bClientPointers;
+} WER_EXCEPTION_INFORMATION, *PWER_EXCEPTION_INFORMATION;
 
-HRESULT WINAPI WerAddExcludedApplication(PCWSTR, BOOL);
-HRESULT WINAPI WerRegisterFile(PCWSTR file, WER_REGISTER_FILE_TYPE regfiletype, DWORD flags);
-HRESULT WINAPI WerRemoveExcludedApplication(PCWSTR, BOOL);
-HRESULT WINAPI WerReportCloseHandle(HREPORT);
-HRESULT WINAPI WerReportCreate(PCWSTR, WER_REPORT_TYPE, PWER_REPORT_INFORMATION, HREPORT*);
-HRESULT WINAPI WerReportSetParameter(HREPORT, DWORD, PCWSTR, PCWSTR);
-HRESULT WINAPI WerReportSubmit(HREPORT, WER_CONSENT, DWORD, PWER_SUBMIT_RESULT);
+typedef struct _WER_REPORT_INFORMATION {
+  DWORD  dwSize;
+  HANDLE hProcess;
+  WCHAR  wzConsentKey[64];
+  WCHAR  wzFriendlyEventName[128];
+  WCHAR  wzApplicationName[128];
+  WCHAR  wzApplicationPath[MAX_PATH];
+  WCHAR  wzDescription[512];
+  HWND   hwndParent;
+} WER_REPORT_INFORMATION, *PWER_REPORT_INFORMATION;
+
+HRESULT WINAPI WerAddExcludedApplication(PCWSTR pwzExeName,WINBOOL bAllUsers);
+HRESULT WINAPI WerGetFlags(HANDLE hProcess,PDWORD pdwFlags);
+HRESULT WINAPI WerRegisterFile(PCWSTR pwzFile,WER_REGISTER_FILE_TYPE regFileType,DWORD dwFlags);
+HRESULT WINAPI WerRegisterMemoryBlock(PVOID pvAddress,DWORD dwSize);
+HRESULT WINAPI WerRemoveExcludedApplication(PCWSTR pwzExeName,WINBOOL bAllUsers);
+HRESULT WINAPI WerReportAddDump(HREPORT hReportHandle,HANDLE hProcess,HANDLE hThread,WER_DUMP_TYPE dumpType,PWER_EXCEPTION_INFORMATION pExceptionParam,PWER_DUMP_CUSTOM_OPTIONS pDumpCustomOptions,DWORD dwFlags);
+HRESULT WINAPI WerReportAddFile(HREPORT hReportHandle,PCWSTR pwzPath,WER_FILE_TYPE repFileType,DWORD dwFileFlags);
+HRESULT WINAPI WerReportCloseHandle(HREPORT hReportHandle);
+HRESULT WINAPI WerReportCreate(PCWSTR pwzEventType,WER_REPORT_TYPE repType,PWER_REPORT_INFORMATION pReportInformation,HREPORT *phReportHandle);
+HRESULT WINAPI WerReportHang(HWND hwndHungWindow,PCWSTR wszHungApplicationName);
+HRESULT WINAPI WerReportSetParameter(HREPORT hReportHandle,DWORD dwparamID,PCWSTR pwzName,PCWSTR pwzValue);
+HRESULT WINAPI WerReportSetUIOption(HREPORT hReportHandle,WER_REPORT_UI repUITypeID,PCWSTR pwzValue);
+HRESULT WINAPI WerReportSubmit(HREPORT hReportHandle,WER_CONSENT consent,DWORD dwFlags,PWER_SUBMIT_RESULT pSubmitResult);
+HRESULT WINAPI WerSetFlags(DWORD dwFlags);
+HRESULT WINAPI WerUnregisterFile(PCWSTR pwzFilePath);
+HRESULT WINAPI WerUnregisterMemoryBlock(PVOID pvAddress);
+
+#if (_WIN32_WINNT >= 0x0601)
+typedef struct _WER_RUNTIME_EXCEPTION_INFORMATION {
+  DWORD            dwSize;
+  HANDLE           hProcess;
+  HANDLE           hThread;
+  EXCEPTION_RECORD exceptionRecord;
+  CONTEXT          context;
+  PCWSTR           pwszReportId;
+} WER_RUNTIME_EXCEPTION_INFORMATION, *PWER_RUNTIME_EXCEPTION_INFORMATION;
+
+typedef HRESULT (WINAPI *PFN_WER_RUNTIME_EXCEPTION_EVENT)(
+  PVOID pContext,
+  const PWER_RUNTIME_EXCEPTION_INFORMATION pExceptionInformation,
+  WINBOOL *pbOwnershipClaimed,
+  PWSTR pwszEventName,
+  PDWORD pchSize,
+  PDWORD pdwSignatureCount
+);
+
+typedef HRESULT (WINAPI *PFN_WER_RUNTIME_EXCEPTION_DEBUGGER_LAUNCH)(
+  PVOID pContext,
+  const PWER_RUNTIME_EXCEPTION_INFORMATION pExceptionInformation,
+  PBOOL pbIsCustomDebugger,
+  PWSTR pwszDebuggerLaunch,
+  PDWORD pchDebuggerLaunch,
+  PBOOL pbIsDebuggerAutolaunch
+);
+
+typedef HRESULT (WINAPI *PFN_WER_RUNTIME_EXCEPTION_EVENT_SIGNATURE)(
+  PVOID pContext,
+  const PWER_RUNTIME_EXCEPTION_INFORMATION pExceptionInformation,
+  DWORD dwIndex,
+  PWSTR pwszName,
+  PDWORD pchName,
+  PWSTR pwszValue,
+  PDWORD pchValue
+);
+
+HRESULT WINAPI WerRegisterRuntimeExceptionModule(
+  PCWSTR pwszOutOfProcessCallbackDll,
+  PVOID pContext
+);
+
+HRESULT WINAPI WerUnregisterRuntimeExceptionModule(
+  PCWSTR pwszOutOfProcessCallbackDll,
+  PVOID pContext
+);
+
+#endif /*(_WIN32_WINNT >= 0x0601)*/
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* __WINE_WERAPI_H */
+#endif /*(_WIN32_WINNT >= 0x0600)*/
+#endif /*_INC_WERAPI*/

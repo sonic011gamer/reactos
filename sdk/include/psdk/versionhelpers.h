@@ -1,29 +1,14 @@
-/*
- * versionhelpers.h
- *
- * Inline helper functions for Windows version detection
- *
- * This file is part of the ReactOS PSDK package.
- *
- * Contributors:
- *   Created by Timo Kreuzer <timo.kreuzer@reactos.org>
- *
- * THIS SOFTWARE IS NOT COPYRIGHTED
- *
- * This source code is offered for use in the public domain. You may
- * use, modify or distribute it freely.
- *
- * This code is distributed in the hope that it will be useful but
- * WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
- * DISCLAMED. This includes but is not limited to warranties of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
+/**
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER within this package.
  */
 
-#pragma once
-#define _versionhelpers_H_INCLUDED_
+#ifndef _INC_VERSIONHELPERS
+#define _INC_VERSIONHELPERS
 
-#include <specstrings.h>
+#include <winapifamily.h>
+
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) && !defined(__WIDL__)
 
 #ifdef __cplusplus
 #define VERSIONHELPERAPI inline bool
@@ -31,126 +16,72 @@
 #define VERSIONHELPERAPI FORCEINLINE BOOL
 #endif
 
-VERSIONHELPERAPI
-IsWindowsVersionOrGreater(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor)
+VERSIONHELPERAPI IsWindowsVersionOrGreater(WORD major, WORD minor, WORD servpack)
 {
-    OSVERSIONINFOEXW osvi = { sizeof(osvi), wMajorVersion, wMinorVersion, 0, 0, {0}, wServicePackMajor, 0, 0, 0, 0 };
-    DWORDLONG dwlConditionMask = VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL);
-    dwlConditionMask = VerSetConditionMask(dwlConditionMask, VER_MINORVERSION, VER_GREATER_EQUAL);
-    dwlConditionMask = VerSetConditionMask(dwlConditionMask, VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
-
-    return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
+    OSVERSIONINFOEXW vi = {sizeof(vi),major,minor,0,0,{0},servpack};
+    return VerifyVersionInfoW(&vi, VER_MAJORVERSION|VER_MINORVERSION|VER_SERVICEPACKMAJOR,
+        VerSetConditionMask(VerSetConditionMask(VerSetConditionMask(0,
+            VER_MAJORVERSION,VER_GREATER_EQUAL),
+            VER_MINORVERSION,VER_GREATER_EQUAL),
+            VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL));
 }
 
-VERSIONHELPERAPI
-IsWindowsXPOrGreater()
-{
-    return IsWindowsVersionOrGreater(5, 1, 0);
+VERSIONHELPERAPI IsWindowsXPOrGreater(void) {
+    return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINXP), LOBYTE(_WIN32_WINNT_WINXP), 0);
 }
 
-VERSIONHELPERAPI
-IsWindowsXPSP1OrGreater()
-{
-    return IsWindowsVersionOrGreater(5, 1, 1);
+VERSIONHELPERAPI IsWindowsXPSP1OrGreater(void) {
+    return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINXP), LOBYTE(_WIN32_WINNT_WINXP), 1);
 }
 
-VERSIONHELPERAPI
-IsWindowsXPSP2OrGreater()
-{
-    return IsWindowsVersionOrGreater(5, 1, 2);
+VERSIONHELPERAPI IsWindowsXPSP2OrGreater(void) {
+    return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINXP), LOBYTE(_WIN32_WINNT_WINXP), 2);
 }
 
-VERSIONHELPERAPI
-IsWindowsXPSP3OrGreater()
-{
-    return IsWindowsVersionOrGreater(5, 1, 3);
+VERSIONHELPERAPI IsWindowsXPSP3OrGreater(void) {
+    return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINXP), LOBYTE(_WIN32_WINNT_WINXP), 3);
 }
 
-VERSIONHELPERAPI
-IsWindowsVistaOrGreater()
-{
-    return IsWindowsVersionOrGreater(6, 0, 0);
+VERSIONHELPERAPI IsWindowsVistaOrGreater(void) {
+    return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA), LOBYTE(_WIN32_WINNT_VISTA), 0);
 }
 
-VERSIONHELPERAPI
-IsWindowsVistaSP1OrGreater()
-{
-    return IsWindowsVersionOrGreater(6, 0, 1);
+VERSIONHELPERAPI IsWindowsVistaSP1OrGreater(void) {
+    return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA), LOBYTE(_WIN32_WINNT_VISTA), 1);
 }
 
-VERSIONHELPERAPI
-IsWindowsVistaSP2OrGreater()
-{
-    return IsWindowsVersionOrGreater(6, 0, 2);
+VERSIONHELPERAPI IsWindowsVistaSP2OrGreater(void) {
+    return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA), LOBYTE(_WIN32_WINNT_VISTA), 2);
 }
 
-VERSIONHELPERAPI
-IsWindows7OrGreater()
-{
-    return IsWindowsVersionOrGreater(6, 1, 0);
+VERSIONHELPERAPI IsWindows7OrGreater(void) {
+    return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN7), LOBYTE(_WIN32_WINNT_WIN7), 0);
 }
 
-VERSIONHELPERAPI
-IsWindows7SP1OrGreater()
-{
-    return IsWindowsVersionOrGreater(6, 1, 1);
+VERSIONHELPERAPI IsWindows7SP1OrGreater(void) {
+    return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN7), LOBYTE(_WIN32_WINNT_WIN7), 1);
 }
 
-VERSIONHELPERAPI
-IsWindows8OrGreater()
-{
-    return IsWindowsVersionOrGreater(6, 2, 0);
+VERSIONHELPERAPI IsWindows8OrGreater(void) {
+    return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN8), LOBYTE(_WIN32_WINNT_WIN8), 0);
 }
 
-VERSIONHELPERAPI
-IsWindows8Point1OrGreater()
-{
-    return IsWindowsVersionOrGreater(6, 3, 0);
+VERSIONHELPERAPI IsWindows8Point1OrGreater(void) {
+    return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINBLUE), LOBYTE(_WIN32_WINNT_WINBLUE), 0);
 }
 
-VERSIONHELPERAPI
-IsWindowsThresholdOrGreater()
-{
-    return IsWindowsVersionOrGreater(10, 0, 0);
+VERSIONHELPERAPI IsWindowsThresholdOrGreater(void) {
+    return IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINTHRESHOLD), LOBYTE(_WIN32_WINNT_WINTHRESHOLD), 0);
 }
 
-VERSIONHELPERAPI
-IsWindows10OrGreater()
-{
-    return IsWindowsVersionOrGreater(10, 0, 0);
+VERSIONHELPERAPI IsWindows10OrGreater(void) {
+    return IsWindowsThresholdOrGreater();
 }
 
-VERSIONHELPERAPI
-IsWindowsServer()
-{
-    OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0, 0, VER_NT_WORKSTATION };
-    DWORDLONG const dwlConditionMask = VerSetConditionMask(0, VER_PRODUCT_TYPE, VER_EQUAL);
-    return VerifyVersionInfoW(&osvi, VER_PRODUCT_TYPE, dwlConditionMask) == FALSE;
+VERSIONHELPERAPI IsWindowsServer(void) {
+    OSVERSIONINFOEXW vi = {sizeof(vi),0,0,0,0,{0},0,0,0,VER_NT_WORKSTATION};
+    return !VerifyVersionInfoW(&vi, VER_PRODUCT_TYPE, VerSetConditionMask(0, VER_PRODUCT_TYPE, VER_EQUAL));
 }
 
-VERSIONHELPERAPI
-IsActiveSessionCountLimited()
-{
-    OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0, 0, 0, 0 };
-    DWORDLONG dwlConditionMask = VerSetConditionMask(0, VER_SUITENAME, VER_AND);
-    BOOL fSuiteTerminal, fSuiteSingleUserTS;
-
-    osvi.wSuiteMask = VER_SUITE_TERMINAL;
-    fSuiteTerminal = VerifyVersionInfoW(&osvi, VER_SUITENAME, dwlConditionMask);
-
-    osvi.wSuiteMask = VER_SUITE_SINGLEUSERTS;
-    fSuiteSingleUserTS = VerifyVersionInfoW(&osvi, VER_SUITENAME, dwlConditionMask);
-
-    return !(fSuiteTerminal & !fSuiteSingleUserTS);
-}
-
-#ifdef __REACTOS__
-VERSIONHELPERAPI
-IsReactOS()
-{
-    // FIXME: Find a better method!
-    WCHAR szWinDir[MAX_PATH];
-    GetWindowsDirectoryW(szWinDir, _countof(szWinDir));
-    return (wcsstr(szWinDir, L"ReactOS") != NULL);
-}
-#endif // __REACTOS__
+#endif
+#endif

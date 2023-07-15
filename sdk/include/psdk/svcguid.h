@@ -1,9 +1,12 @@
-#ifndef _SVCGUID_H
-#define _SVCGUID_H
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
+ */
+#ifndef _SVCGUID_
+#define _SVCGUID_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <basetyps.h>
 
 #define SVCID_HOSTNAME { 0x0002a800,0,0,{ 0xC0,0,0,0,0,0,0,0x46 } }
 #define SVCID_INET_HOSTADDRBYINETSTRING { 0x0002a801,0,0,{ 0xC0,0,0,0,0,0,0,0x46 } }
@@ -227,8 +230,4 @@ extern "C" {
 #define SVCID_DNS_TYPE_NXT SVCID_DNS(0x001e)
 #define SVCID_DNS_TYPE_SRV SVCID_DNS(0x0021)
 #define SVCID_DNS_TYPE_ATMA SVCID_DNS(0x0022)
-
-#ifdef __cplusplus
-}
-#endif
 #endif

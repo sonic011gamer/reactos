@@ -1,4 +1,10 @@
-#pragma once
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
+ */
+#ifndef _WSIPV6OK_
+#define _WSIPV6OK_
 
 #ifdef IPV6STRICT
 
@@ -79,5 +85,5 @@
 #define WSAAsyncGetHostByAddr(a,b,c,d,e,f,g) WSAAsyncGetHostByAddr_IPV6INCOMPATIBLE
 #undef WSAAsyncGetHostByName
 #define WSAAsyncGetHostByName(a,b,c,d,e) WSAAsyncGetHostByName_IPV6INCOMPATIBLE
-
+#endif
 #endif

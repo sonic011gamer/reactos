@@ -1,7 +1,7 @@
 /**
  * This file has no copyright assigned and is placed in the Public Domain.
- * This file is part of the w64 mingw-runtime package.
- * No warranty is given; refer to the file DISCLAIMER within this package.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 #ifndef _INC_DOS
 #define _INC_DOS
@@ -15,6 +15,7 @@
 extern "C" {
 #endif
 
+#ifdef _CRT_USE_WINAPI_FAMILY_DESKTOP_APP
 #ifndef _DISKFREE_T_DEFINED
 #define _DISKFREE_T_DEFINED
 
@@ -38,6 +39,7 @@ extern "C" {
 #define _GETDISKFREE_DEFINED
   _CRTIMP unsigned __cdecl _getdiskfree(unsigned _Drive,struct _diskfree_t *_DiskFree);
 #endif
+#endif /* _CRT_USE_WINAPI_FAMILY_DESKTOP_APP */
 
 #if (defined(_X86_) && !defined(__x86_64))
   void __cdecl _disable(void);

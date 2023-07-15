@@ -1,3 +1,4 @@
+#undef INTERFACE
 /*
  * Copyright 2009 Henri Verbeet for CodeWeavers
  *
@@ -215,7 +216,7 @@ HRESULT WINAPI D3D10CompileShader(const char *data, SIZE_T data_size, const char
         const D3D10_SHADER_MACRO *defines, ID3D10Include *include, const char *entrypoint,
         const char *profile, UINT flags, ID3D10Blob **shader, ID3D10Blob **error_messages);
 HRESULT WINAPI D3D10DisassembleShader(const void *data, SIZE_T data_size,
-        BOOL color_code, const char *comments, ID3D10Blob **disassembly);
+        WINBOOL color_code, const char *comments, ID3D10Blob **disassembly);
 const char * WINAPI D3D10GetVertexShaderProfile(ID3D10Device *device);
 const char * WINAPI D3D10GetGeometryShaderProfile(ID3D10Device *device);
 const char * WINAPI D3D10GetPixelShaderProfile(ID3D10Device *device);

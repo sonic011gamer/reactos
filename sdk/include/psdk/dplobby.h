@@ -1,3 +1,5 @@
+#include <_mingw_unicode.h>
+#undef INTERFACE
 /*
  * Copyright (C) 1999 Francois Gouget
  * Copyright (C) 1999 Peter Hunnisett
@@ -14,7 +16,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
 #ifndef __WINE_DPLOBBY_H
@@ -56,7 +58,7 @@ typedef struct IDirectPlayLobby3 IDirectPlayLobby3A, *LPDIRECTPLAYLOBBY3A;
 
 /* DPLPROPERTY_MessagesSupported {762CCDA1-D916-11d0-BA39-00C04FD7ED67}.
  * Purpose: Request if the lobby supports standard (?).
- * Response: Answer is a BOOL. TRUE if supports the standard (?) and FALSE otherwise. Of course, it might not respond at all.
+ * Response: Answer is a WINBOOL. TRUE if supports the standard (?) and FALSE otherwise. Of course, it might not respond at all.
  */
 DEFINE_GUID(DPLPROPERTY_MessagesSupported, 0x762ccda1, 0xd916, 0x11d0, 0xba, 0x39, 0x0, 0xc0, 0x4f, 0xd7, 0xed, 0x67);
 
@@ -103,7 +105,7 @@ typedef struct tagDPLDATA_PLAYERSCORE
  * System messages can be identified by dwMessageFlags having a value of DPLMSG_SYSTEM
  * after a call to ReceiveLobbyMessage.
  *
- * Standard messages can be indentified by dwMessageFlags having a value of DPLMSG_STANDARD
+ * Standard messages can be identified by dwMessageFlags having a value of DPLMSG_STANDARD
  * after a call to ReceiveLobbyMessage.
  */
 
@@ -127,7 +129,7 @@ typedef struct tagDPLDATA_PLAYERSCORE
 
 
 
-/* Used to indentify the message type */
+/* Used to identify the message type */
 typedef struct tagDPLMSG_GENERIC
 {
     DWORD       dwType;         /* Message type */
@@ -151,7 +153,7 @@ typedef struct tagDPLMSG_SETPROPERTY
         DWORD   dwPropertyData[1];   /* Buffer containing data */
 } DPLMSG_SETPROPERTY, *LPDPLMSG_SETPROPERTY;
 
-#define DPL_NOCONFIRMATION                      0L
+#define DPL_NOCONFIRMATION      0
 
 /* Reply to DPLMSG_SETPROPERTY */
 typedef struct tagDPLMSG_SETPROPERTYRESPONSE
@@ -193,7 +195,7 @@ typedef struct tagDPLMSG_NEWSESSIONHOST
 
 /*****************************************************************************
  * DirectPlay Address ID's
- * A DirectPlay address is composed of multiple data chunks, each assocated with
+ * A DirectPlay address is composed of multiple data chunks, each associated with
  * a GUID to give significance to the type of data. All chunks have an associated
  * size so that unknown chunks can be ignored for backwards compatibility!
  * EnumAddresses function is used to parse the address data chunks.
@@ -346,21 +348,21 @@ typedef struct tagDPAPPLICATIONDESC
 
 extern HRESULT WINAPI DirectPlayLobbyCreateW(LPGUID, LPDIRECTPLAYLOBBY*,  IUnknown*, LPVOID, DWORD );
 extern HRESULT WINAPI DirectPlayLobbyCreateA(LPGUID, LPDIRECTPLAYLOBBYA*, IUnknown*, LPVOID, DWORD );
-#define DirectPlayLobbyCreate WINELIB_NAME_AW(DirectPlayLobbyCreate)
+#define DirectPlayLobbyCreate __MINGW_NAME_AW(DirectPlayLobbyCreate)
 
 
-typedef BOOL (CALLBACK *LPDPENUMADDRESSCALLBACK)(
+typedef WINBOOL (CALLBACK *LPDPENUMADDRESSCALLBACK)(
     REFGUID         guidDataType,
     DWORD           dwDataSize,
     LPCVOID         lpData,
     LPVOID          lpContext );
 
-typedef BOOL (CALLBACK *LPDPLENUMADDRESSTYPESCALLBACK)(
+typedef WINBOOL (CALLBACK *LPDPLENUMADDRESSTYPESCALLBACK)(
     REFGUID         guidDataType,
     LPVOID          lpContext,
     DWORD           dwFlags );
 
-typedef BOOL (CALLBACK *LPDPLENUMLOCALAPPLICATIONSCALLBACK)(
+typedef WINBOOL (CALLBACK *LPDPLENUMLOCALAPPLICATIONSCALLBACK)(
     LPCDPLAPPINFO   lpAppInfo,
     LPVOID          lpContext,
     DWORD           dwFlags );

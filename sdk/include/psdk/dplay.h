@@ -1,3 +1,4 @@
+#undef INTERFACE
 /*
  * Copyright (C) the Wine project
  *
@@ -332,6 +333,19 @@ typedef struct tagDPSECURITYDESC
 
 typedef const DPSECURITYDESC *LPCDPSECURITYDESC;
 
+typedef struct
+{
+    DWORD dwSize;
+    DWORD dwFlags;
+    union
+    {
+        LPWSTR  lpszAccountID;
+        LPSTR   lpszAccountIDA;
+    } DUMMYUNIONNAME;
+} DPACCOUNTDESC, *LPDPACCOUNTDESC;
+
+typedef const DPACCOUNTDESC *LPCDPACCOUNTDESC;
+
 typedef struct tagDPCREDENTIALS
 {
     DWORD dwSize;               /* Size of structure */
@@ -357,14 +371,14 @@ typedef const DPCREDENTIALS *LPCDPCREDENTIALS;
 
 
 
-typedef BOOL (CALLBACK *LPDPENUMDPCALLBACKW)(
+typedef WINBOOL (CALLBACK *LPDPENUMDPCALLBACKW)(
     LPGUID      lpguidSP,
     LPWSTR      lpSPName,
     DWORD       dwMajorVersion,
     DWORD       dwMinorVersion,
     LPVOID      lpContext);
 
-typedef BOOL (CALLBACK *LPDPENUMDPCALLBACKA)(
+typedef WINBOOL (CALLBACK *LPDPENUMDPCALLBACKA)(
     LPGUID      lpguidSP,
     LPSTR       lpSPName,       /* ptr to str w/ driver description */
     DWORD       dwMajorVersion, /* Major # of driver spec in lpguidSP */
@@ -378,7 +392,7 @@ typedef const GUID *LPCGUID;
 
 typedef const DPNAME *LPCDPNAME;
 
-typedef BOOL (CALLBACK *LPDPENUMCONNECTIONSCALLBACK)(
+typedef WINBOOL (CALLBACK *LPDPENUMCONNECTIONSCALLBACK)(
     LPCGUID     lpguidSP,
     LPVOID      lpConnection,
     DWORD       dwConnectionSize,
@@ -386,7 +400,7 @@ typedef BOOL (CALLBACK *LPDPENUMCONNECTIONSCALLBACK)(
     DWORD       dwFlags,
     LPVOID      lpContext);
 
-typedef BOOL (CALLBACK *LPDPENUMSESSIONSCALLBACK)(
+typedef WINBOOL (CALLBACK *LPDPENUMSESSIONSCALLBACK)(
     LPDPSESSIONDESC lpDPSessionDesc,
     LPVOID      lpContext,
     LPDWORD     lpdwTimeOut,
@@ -397,21 +411,21 @@ extern HRESULT WINAPI DirectPlayEnumerateA( LPDPENUMDPCALLBACKA, LPVOID );
 extern HRESULT WINAPI DirectPlayEnumerateW( LPDPENUMDPCALLBACKW, LPVOID );
 extern HRESULT WINAPI DirectPlayCreate( LPGUID lpGUID, LPDIRECTPLAY *lplpDP, IUnknown *pUnk );
 
-typedef BOOL (CALLBACK *LPDPENUMPLAYERSCALLBACK)(
+typedef WINBOOL (CALLBACK *LPDPENUMPLAYERSCALLBACK)(
     DPID   dpId,
     LPSTR  lpFriendlyName,
     LPSTR  lpFormalName,
     DWORD  dwFlags,
     LPVOID          lpContext );
 
-typedef BOOL (CALLBACK *LPDPENUMPLAYERSCALLBACK2)(
+typedef WINBOOL (CALLBACK *LPDPENUMPLAYERSCALLBACK2)(
     DPID            dpId,
     DWORD           dwPlayerType,
     LPCDPNAME       lpName,
     DWORD           dwFlags,
     LPVOID          lpContext );
 
-typedef BOOL (CALLBACK *LPDPENUMSESSIONSCALLBACK2)(
+typedef WINBOOL (CALLBACK *LPDPENUMSESSIONSCALLBACK2)(
     LPCDPSESSIONDESC2   lpThisSD,
     LPDWORD             lpdwTimeOut,
     DWORD               dwFlags,
@@ -437,7 +451,7 @@ DECLARE_INTERFACE_(IDirectPlay,IUnknown)
     STDMETHOD(DeletePlayerFromGroup)(THIS_ DPID idGroup, DPID idPlayer) PURE;
     STDMETHOD(DestroyPlayer)(THIS_ DPID idPlayer) PURE;
     STDMETHOD(DestroyGroup)(THIS_ DPID idGroup) PURE;
-    STDMETHOD(EnableNewPlayers)(THIS_ BOOL) PURE;
+    STDMETHOD(EnableNewPlayers)(THIS_ WINBOOL) PURE;
     STDMETHOD(EnumGroupPlayers)(THIS_ DPID idGroup, LPDPENUMPLAYERSCALLBACK lpEnumPlayersCallback, LPVOID lpContext, DWORD dwFlags) PURE;
     STDMETHOD(EnumGroups)(THIS_ DWORD, LPDPENUMPLAYERSCALLBACK lpEnumPlayersCallback, LPVOID lpContext, DWORD dwFlags) PURE;
     STDMETHOD(EnumPlayers)(THIS_ DWORD, LPDPENUMPLAYERSCALLBACK lpEnumPlayersCallback, LPVOID lpContext, DWORD dwFlags) PURE;

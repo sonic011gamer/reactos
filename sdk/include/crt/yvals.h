@@ -1,13 +1,11 @@
 /**
  * This file has no copyright assigned and is placed in the Public Domain.
- * This file is part of the w64 mingw-runtime package.
+ * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 #ifndef _YVALS
 #define _YVALS
 
-#include <_mingw.h>
-/* TODO, don't include crtdef.h.  */
 #include <crtdefs.h>
 
 #pragma pack(push,_CRT_PACKING)
@@ -162,12 +160,15 @@
 #define _END_EXTERN_C
 #endif
 
-#define _Restrict restrict
+#define _Restrict __restrict__
 
 #ifdef __cplusplus
+#pragma push_macro("_Bool")
+#undef _Bool
 _STD_BEGIN
 typedef bool _Bool;
 _STD_END
+#pragma pop_macro("_Bool")
 #endif
 
 #define _LONGLONG /* __MINGW_EXTENSION */ __int64
@@ -260,7 +261,9 @@ _STD_END
 _C_STD_BEGIN
 _CRTIMP void __cdecl _Atexit(void (__cdecl *)(void));
 
+#if !defined(_UCRT) && !defined(__LARGE_MBSTATE_T)
 typedef int _Mbstatet;
+#endif
 
 #define _ATEXIT_T void
 #define _Mbstinit(x) mbstate_t x = {0}

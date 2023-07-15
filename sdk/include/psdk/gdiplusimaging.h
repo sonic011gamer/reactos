@@ -1,453 +1,411 @@
 /*
- * Copyright (C) 2007 Google (Evan Stade)
+ * gdiplusimaging.h
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * GDI+ Imaging and image metadata
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * This file is part of the w32api package.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ * Contributors:
+ *   Created by Markus Koenig <markus@stber-koenig.de>
+ *
+ * THIS SOFTWARE IS NOT COPYRIGHTED
+ *
+ * This source code is offered for use in the public domain. You may
+ * use, modify or distribute it freely.
+ *
+ * This code is distributed in the hope that it will be useful but
+ * WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
+ * DISCLAIMED. This includes but is not limited to warranties of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
  */
 
-#ifndef _GDIPLUSIMAGING_H
-#define _GDIPLUSIMAGING_H
+#ifndef __GDIPLUS_IMAGING_H
+#define __GDIPLUS_IMAGING_H
+#if __GNUC__ >=3
+#pragma GCC system_header
+#endif
 
-DEFINE_GUID(ImageFormatUndefined, 0xb96b3ca9, 0x728, 0x11d3, 0x9d, 0x7b, 0, 0, 0xf8, 0x1e, 0xf3, 0x2e);
-DEFINE_GUID(ImageFormatMemoryBMP, 0xb96b3caa, 0x728, 0x11d3, 0x9d, 0x7b, 0, 0, 0xf8, 0x1e, 0xf3, 0x2e);
-DEFINE_GUID(ImageFormatBMP, 0xb96b3cab, 0x728, 0x11d3, 0x9d, 0x7b, 0, 0, 0xf8, 0x1e, 0xf3, 0x2e);
-DEFINE_GUID(ImageFormatEMF, 0xb96b3cac, 0x728, 0x11d3, 0x9d, 0x7b, 0, 0, 0xf8, 0x1e, 0xf3, 0x2e);
-DEFINE_GUID(ImageFormatWMF, 0xb96b3cad, 0x728, 0x11d3, 0x9d, 0x7b, 0, 0, 0xf8, 0x1e, 0xf3, 0x2e);
-DEFINE_GUID(ImageFormatJPEG, 0xb96b3cae, 0x728, 0x11d3, 0x9d, 0x7b, 0, 0, 0xf8, 0x1e, 0xf3, 0x2e);
-DEFINE_GUID(ImageFormatPNG, 0xb96b3caf, 0x728, 0x11d3, 0x9d, 0x7b, 0, 0, 0xf8, 0x1e, 0xf3, 0x2e);
-DEFINE_GUID(ImageFormatGIF, 0xb96b3cb0, 0x728, 0x11d3, 0x9d, 0x7b, 0, 0, 0xf8, 0x1e, 0xf3, 0x2e);
-DEFINE_GUID(ImageFormatTIFF, 0xb96b3cb1, 0x728, 0x11d3, 0x9d, 0x7b, 0, 0, 0xf8, 0x1e, 0xf3, 0x2e);
-DEFINE_GUID(ImageFormatEXIF, 0xb96b3cb2, 0x728, 0x11d3, 0x9d, 0x7b, 0, 0, 0xf8, 0x1e, 0xf3, 0x2e);
-DEFINE_GUID(ImageFormatIcon, 0xb96b3cb5, 0x728, 0x11d3, 0x9d, 0x7b, 0, 0, 0xf8, 0x1e, 0xf3, 0x2e);
+typedef enum ImageCodecFlags {
+	ImageCodecFlagsEncoder = 0x00000001,
+	ImageCodecFlagsDecoder = 0x00000002,
+	ImageCodecFlagsSupportBitmap = 0x00000004,
+	ImageCodecFlagsSupportVector = 0x00000008,
+	ImageCodecFlagsSeekableEncode = 0x00000010,
+	ImageCodecFlagsBlockingDecode = 0x00000020,
+	ImageCodecFlagsBuiltin = 0x00010000,
+	ImageCodecFlagsSystem = 0x00020000,
+	ImageCodecFlagsUser = 0x00040000
+} ImageCodecFlags;
 
-DEFINE_GUID(FrameDimensionTime, 0x6aedbd6d, 0x3fb5, 0x418a, 0x83, 0xa6, 0x7f, 0x45, 0x22, 0x9d, 0xc8, 0x72);
-DEFINE_GUID(FrameDimensionPage, 0x7462dc86, 0x6180, 0x4c7e, 0x8e, 0x3f, 0xee, 0x73, 0x33, 0xa7, 0xa4, 0x83);
-DEFINE_GUID(FrameDimensionResolution, 0x84236f7b, 0x3bd3, 0x428f, 0x8d, 0xab, 0x4e, 0xa1, 0x43, 0x9c, 0xa3, 0x15);
+typedef enum ImageFlags {
+	ImageFlagsNone = 0,
+	ImageFlagsScalable = 0x00000001,
+	ImageFlagsHasAlpha = 0x00000002,
+	ImageFlagsHasTranslucent = 0x00000004,
+	ImageFlagsPartiallyScalable = 0x00000008,
+	ImageFlagsColorSpaceRGB = 0x00000010,
+	ImageFlagsColorSpaceCMYK = 0x00000020,
+	ImageFlagsColorSpaceGRAY = 0x00000040,
+	ImageFlagsColorSpaceYCBCR = 0x00000080,
+	ImageFlagsColorSpaceYCCK = 0x00000100,
+	ImageFlagsHasRealDPI = 0x00001000,
+	ImageFlagsHasRealPixelSize = 0x00002000,
+	ImageFlagsReadOnly = 0x00010000,
+	ImageFlagsCaching = 0x00020000
+} ImageFlags;
 
-enum ImageLockMode
-{
-    ImageLockModeRead = 1,
-    ImageLockModeWrite = 2,
-    ImageLockModeUserInputBuf = 4
-};
+typedef enum ImageLockMode {
+	ImageLockModeRead = 1,
+	ImageLockModeWrite = 2,
+	ImageLockModeUserInputBuf = 4
+} ImageLockMode;
 
-enum RotateFlipType
-{
-    RotateNoneFlipNone = 0,
-    Rotate180FlipXY = RotateNoneFlipNone,
+typedef enum ItemDataPosition {
+	ItemDataPositionAfterHeader = 0,
+	ItemDataPositionAfterPalette = 1,
+	ItemDataPositionAfterBits = 2
+} ItemDataPosition;
 
-    Rotate90FlipNone = 1,
-    Rotate270FlipXY = Rotate90FlipNone,
+typedef enum RotateFlipType {
+	RotateNoneFlipNone = 0,
+	Rotate90FlipNone = 1,
+	Rotate180FlipNone = 2,
+	Rotate270FlipNone = 3,
+	RotateNoneFlipX = 4,
+	Rotate90FlipX = 5,
+	Rotate180FlipX = 6,
+	Rotate270FlipX = 7,
+	Rotate180FlipXY = 0,
+	Rotate270FlipXY = 1, 
+	RotateNoneFlipXY = 2,
+	Rotate90FlipXY = 3,
+	Rotate180FlipY = 4,
+	Rotate270FlipY = 5,
+	RotateNoneFlipY = 6,
+	Rotate90FlipY = 7
+} RotateFlipType;
 
-    Rotate180FlipNone = 2,
-    RotateNoneFlipXY = Rotate180FlipNone,
-
-    Rotate270FlipNone = 3,
-    Rotate90FlipXY = Rotate270FlipNone,
-
-    RotateNoneFlipX = 4,
-    Rotate180FlipY = RotateNoneFlipX,
-
-    Rotate90FlipX = 5,
-    Rotate270FlipY = Rotate90FlipX,
-
-    Rotate180FlipX = 6,
-    RotateNoneFlipY = Rotate180FlipX,
-
-    Rotate270FlipX = 7,
-    Rotate90FlipY = Rotate270FlipX
-};
-
-#ifdef __cplusplus
-class EncoderParameter
-{
-  public:
-    GUID Guid;
-    ULONG NumberOfValues;
-    ULONG Type;
-    VOID *Value;
-};
-
-class EncoderParameters
-{
-  public:
-    UINT Count;
-    EncoderParameter Parameter[1];
-};
-
-class ImageCodecInfo
-{
-  public:
-    CLSID Clsid;
-    GUID FormatID;
-    const WCHAR *CodecName;
-    const WCHAR *DllName;
-    const WCHAR *FormatDescription;
-    const WCHAR *FilenameExtension;
-    const WCHAR *MimeType;
-    DWORD Flags;
-    DWORD Version;
-    DWORD SigCount;
-    DWORD SigSize;
-    const BYTE *SigPattern;
-    const BYTE *SigMask;
-};
-
-class BitmapData
-{
-  public:
-    UINT Width;
-    UINT Height;
-    INT Stride;
-    Gdiplus::PixelFormat PixelFormat;
-    VOID *Scan0;
-    UINT_PTR Reserved;
-};
-
-class ImageItemData
-{
-  public:
-    UINT Size;
-    UINT Position;
-    VOID *Desc;
-    UINT DescSize;
-    VOID *Data;
-    UINT DataSize;
-    UINT Cookie;
-};
-
-class PropertyItem
-{
-  public:
-    PROPID id;
-    ULONG length;
-    WORD type;
-    VOID *value;
-};
-
-#else /* end of c++ typedefs */
-
-typedef enum ImageLockMode ImageLockMode;
-typedef enum RotateFlipType RotateFlipType;
-
-typedef struct EncoderParameter
-{
-    GUID Guid;
-    ULONG NumberOfValues;
-    ULONG Type;
-    VOID *Value;
-} EncoderParameter;
-
-typedef struct EncoderParameters
-{
-    UINT Count;
-    EncoderParameter Parameter[1];
-} EncoderParameters;
-
-typedef struct ImageCodecInfo
-{
-    CLSID Clsid;
-    GUID FormatID;
-    const WCHAR *CodecName;
-    const WCHAR *DllName;
-    const WCHAR *FormatDescription;
-    const WCHAR *FilenameExtension;
-    const WCHAR *MimeType;
-    DWORD Flags;
-    DWORD Version;
-    DWORD SigCount;
-    DWORD SigSize;
-    const BYTE *SigPattern;
-    const BYTE *SigMask;
-} ImageCodecInfo;
-
-typedef struct BitmapData
-{
-    UINT Width;
-    UINT Height;
-    INT Stride;
-    PixelFormat PixelFormat;
-    VOID *Scan0;
-    UINT_PTR Reserved; /* undocumented: stores the lock mode */
+typedef struct BitmapData {
+	UINT Width;
+	UINT Height;
+	INT Stride;
+	INT PixelFormat;  /* MSDN: "PixelFormat PixelFormat;" */
+	VOID *Scan0;
+	UINT_PTR Reserved;
 } BitmapData;
 
-typedef struct ImageItemData
-{
-    UINT Size;
-    UINT Position;
-    VOID *Desc;
-    UINT DescSize;
-    VOID *Data;
-    UINT DataSize;
-    UINT Cookie;
+typedef struct EncoderParameter {
+	GUID Guid;
+	ULONG NumberOfValues;
+	ULONG Type;
+	VOID *Value;
+} EncoderParameter;
+
+typedef struct EncoderParameters {
+	UINT Count;
+	EncoderParameter Parameter[1];
+} EncoderParameters;
+
+typedef struct ImageCodecInfo {
+	CLSID Clsid;
+	GUID FormatID;
+	WCHAR *CodecName;
+	WCHAR *DllName;
+	WCHAR *FormatDescription;
+	WCHAR *FilenameExtension;
+	WCHAR *MimeType;
+	DWORD Flags;
+	DWORD Version;
+	DWORD SigCount;
+	DWORD SigSize;
+	BYTE *SigPattern;
+	BYTE *SigMask;
+} ImageCodecInfo;
+
+/* FIXME: The order of fields is probably wrong. Please don't use this
+ * structure until this problem is resolved!  Can't test because
+ * ImageItemData is not supported by the redistributable GDI+ 1.0 DLL. */
+typedef struct ImageItemData {
+	UINT Size;
+	UINT Position;
+	VOID *Desc;
+	UINT DescSize;
+	UINT *Data;
+	UINT DataSize;
+	UINT Cookie;
 } ImageItemData;
 
-typedef struct PropertyItem
-{
-    PROPID id;
-    ULONG length;
-    WORD type;
-    VOID *value;
+typedef struct PropertyItem {
+	PROPID id;
+	ULONG length;
+	WORD type;
+	VOID *value;
 } PropertyItem;
 
-#endif /* end of c typedefs */
+#define PropertyTagGpsVer ((PROPID) 0x0000)
+#define PropertyTagGpsLatitudeRef ((PROPID) 0x0001)
+#define PropertyTagGpsLatitude ((PROPID) 0x0002)
+#define PropertyTagGpsLongitudeRef ((PROPID) 0x0003)
+#define PropertyTagGpsLongitude ((PROPID) 0x0004)
+#define PropertyTagGpsAltitudeRef ((PROPID) 0x0005)
+#define PropertyTagGpsAltitude ((PROPID) 0x0006)
+#define PropertyTagGpsGpsTime ((PROPID) 0x0007)
+#define PropertyTagGpsGpsSatellites ((PROPID) 0x0008)
+#define PropertyTagGpsGpsStatus ((PROPID) 0x0009)
+#define PropertyTagGpsGpsMeasureMode ((PROPID) 0x000A)
+#define PropertyTagGpsGpsDop ((PROPID) 0x000B)
+#define PropertyTagGpsSpeedRef ((PROPID) 0x000C)
+#define PropertyTagGpsSpeed ((PROPID) 0x000D)
+#define PropertyTagGpsTrackRef ((PROPID) 0x000E)
+#define PropertyTagGpsTrack ((PROPID) 0x000F)
+#define PropertyTagGpsImgDirRef ((PROPID) 0x0010)
+#define PropertyTagGpsImgDir ((PROPID) 0x0011)
+#define PropertyTagGpsMapDatum ((PROPID) 0x0012)
+#define PropertyTagGpsDestLatRef ((PROPID) 0x0013)
+#define PropertyTagGpsDestLat ((PROPID) 0x0014)
+#define PropertyTagGpsDestLongRef ((PROPID) 0x0015)
+#define PropertyTagGpsDestLong ((PROPID) 0x0016)
+#define PropertyTagGpsDestBearRef ((PROPID) 0x0017)
+#define PropertyTagGpsDestBear ((PROPID) 0x0018)
+#define PropertyTagGpsDestDistRef ((PROPID) 0x0019)
+#define PropertyTagGpsDestDist ((PROPID) 0x001A)
+#define PropertyTagNewSubfileType ((PROPID) 0x00FE)
+#define PropertyTagSubfileType ((PROPID) 0x00FF)
+#define PropertyTagImageWidth ((PROPID) 0x0100)
+#define PropertyTagImageHeight ((PROPID) 0x0101)
+#define PropertyTagBitsPerSample ((PROPID) 0x0102)
+#define PropertyTagCompression ((PROPID) 0x0103)
+#define PropertyTagPhotometricInterp ((PROPID) 0x0106)
+#define PropertyTagThreshHolding ((PROPID) 0x0107)
+#define PropertyTagCellWidth ((PROPID) 0x0108)
+#define PropertyTagCellHeight ((PROPID) 0x0109)
+#define PropertyTagFillOrder ((PROPID) 0x010A)
+#define PropertyTagDocumentName ((PROPID) 0x010D)
+#define PropertyTagImageDescription ((PROPID) 0x010E)
+#define PropertyTagEquipMake ((PROPID) 0x010F)
+#define PropertyTagEquipModel ((PROPID) 0x0110)
+#define PropertyTagStripOffsets ((PROPID) 0x0111)
+#define PropertyTagOrientation ((PROPID) 0x0112)
+#define PropertyTagSamplesPerPixel ((PROPID) 0x0115)
+#define PropertyTagRowsPerStrip ((PROPID) 0x0116)
+#define PropertyTagStripBytesCount ((PROPID) 0x0117)
+#define PropertyTagMinSampleValue ((PROPID) 0x0118)
+#define PropertyTagMaxSampleValue ((PROPID) 0x0119)
+#define PropertyTagXResolution ((PROPID) 0x011A)
+#define PropertyTagYResolution ((PROPID) 0x011B)
+#define PropertyTagPlanarConfig ((PROPID) 0x011C)
+#define PropertyTagPageName ((PROPID) 0x011D)
+#define PropertyTagXPosition ((PROPID) 0x011E)
+#define PropertyTagYPosition ((PROPID) 0x011F)
+#define PropertyTagFreeOffset ((PROPID) 0x0120)
+#define PropertyTagFreeByteCounts ((PROPID) 0x0121)
+#define PropertyTagGrayResponseUnit ((PROPID) 0x0122)
+#define PropertyTagGrayResponseCurve ((PROPID) 0x0123)
+#define PropertyTagT4Option ((PROPID) 0x0124)
+#define PropertyTagT6Option ((PROPID) 0x0125)
+#define PropertyTagResolutionUnit ((PROPID) 0x0128)
+#define PropertyTagPageNumber ((PROPID) 0x0129)
+#define PropertyTagTransferFunction ((PROPID) 0x012D)
+#define PropertyTagSoftwareUsed ((PROPID) 0x0131)
+#define PropertyTagDateTime ((PROPID) 0x0132)
+#define PropertyTagArtist ((PROPID) 0x013B)
+#define PropertyTagHostComputer ((PROPID) 0x013C)
+#define PropertyTagPredictor ((PROPID) 0x013D)
+#define PropertyTagWhitePoint ((PROPID) 0x013E)
+#define PropertyTagPrimaryChromaticities ((PROPID) 0x013F)
+#define PropertyTagColorMap ((PROPID) 0x0140)
+#define PropertyTagHalftoneHints ((PROPID) 0x0141)
+#define PropertyTagTileWidth ((PROPID) 0x0142)
+#define PropertyTagTileLength ((PROPID) 0x0143)
+#define PropertyTagTileOffset ((PROPID) 0x0144)
+#define PropertyTagTileByteCounts ((PROPID) 0x0145)
+#define PropertyTagInkSet ((PROPID) 0x014C)
+#define PropertyTagInkNames ((PROPID) 0x014D)
+#define PropertyTagNumberOfInks ((PROPID) 0x014E)
+#define PropertyTagDotRange ((PROPID) 0x0150)
+#define PropertyTagTargetPrinter ((PROPID) 0x0151)
+#define PropertyTagExtraSamples ((PROPID) 0x0152)
+#define PropertyTagSampleFormat ((PROPID) 0x0153)
+#define PropertyTagSMinSampleValue ((PROPID) 0x0154)
+#define PropertyTagSMaxSampleValue ((PROPID) 0x0155)
+#define PropertyTagTransferRange ((PROPID) 0x0156)
+#define PropertyTagJPEGProc ((PROPID) 0x0200)
+#define PropertyTagJPEGInterFormat ((PROPID) 0x0201)
+#define PropertyTagJPEGInterLength ((PROPID) 0x0202)
+#define PropertyTagJPEGRestartInterval ((PROPID) 0x0203)
+#define PropertyTagJPEGLosslessPredictors ((PROPID) 0x0205)
+#define PropertyTagJPEGPointTransforms ((PROPID) 0x0206)
+#define PropertyTagJPEGQTables ((PROPID) 0x0207)
+#define PropertyTagJPEGDCTables ((PROPID) 0x0208)
+#define PropertyTagJPEGACTables ((PROPID) 0x0209)
+#define PropertyTagYCbCrCoefficients ((PROPID) 0x0211)
+#define PropertyTagYCbCrSubsampling ((PROPID) 0x0212)
+#define PropertyTagYCbCrPositioning ((PROPID) 0x0213)
+#define PropertyTagREFBlackWhite ((PROPID) 0x0214)
+#define PropertyTagGamma ((PROPID) 0x0301)
+#define PropertyTagICCProfileDescriptor ((PROPID) 0x0302)
+#define PropertyTagSRGBRenderingIntent ((PROPID) 0x0303)
+#define PropertyTagImageTitle ((PROPID) 0x0320)
+#define PropertyTagResolutionXUnit ((PROPID) 0x5001)
+#define PropertyTagResolutionYUnit ((PROPID) 0x5002)
+#define PropertyTagResolutionXLengthUnit ((PROPID) 0x5003)
+#define PropertyTagResolutionYLengthUnit ((PROPID) 0x5004)
+#define PropertyTagPrintFlags ((PROPID) 0x5005)
+#define PropertyTagPrintFlagsVersion ((PROPID) 0x5006)
+#define PropertyTagPrintFlagsCrop ((PROPID) 0x5007)
+#define PropertyTagPrintFlagsBleedWidth ((PROPID) 0x5008)
+#define PropertyTagPrintFlagsBleedWidthScale ((PROPID) 0x5009)
+#define PropertyTagHalftoneLPI ((PROPID) 0x500A)
+#define PropertyTagHalftoneLPIUnit ((PROPID) 0x500B)
+#define PropertyTagHalftoneDegree ((PROPID) 0x500C)
+#define PropertyTagHalftoneShape ((PROPID) 0x500D)
+#define PropertyTagHalftoneMisc ((PROPID) 0x500E)
+#define PropertyTagHalftoneScreen ((PROPID) 0x500F)
+#define PropertyTagJPEGQuality ((PROPID) 0x5010)
+#define PropertyTagGridSize ((PROPID) 0x5011)
+#define PropertyTagThumbnailFormat ((PROPID) 0x5012)
+#define PropertyTagThumbnailWidth ((PROPID) 0x5013)
+#define PropertyTagThumbnailHeight ((PROPID) 0x5014)
+#define PropertyTagThumbnailColorDepth ((PROPID) 0x5015)
+#define PropertyTagThumbnailPlanes ((PROPID) 0x5016)
+#define PropertyTagThumbnailRawBytes ((PROPID) 0x5017)
+#define PropertyTagThumbnailSize ((PROPID) 0x5018)
+#define PropertyTagThumbnailCompressedSize ((PROPID) 0x5019)
+#define PropertyTagColorTransferFunction ((PROPID) 0x501A)
+#define PropertyTagThumbnailData ((PROPID) 0x501B)
+#define PropertyTagThumbnailImageWidth ((PROPID) 0x5020)
+#define PropertyTagThumbnailImageHeight ((PROPID) 0x5021)
+#define PropertyTagThumbnailBitsPerSample ((PROPID) 0x5022)
+#define PropertyTagThumbnailCompression ((PROPID) 0x5023)
+#define PropertyTagThumbnailPhotometricInterp ((PROPID) 0x5024)
+#define PropertyTagThumbnailImageDescription ((PROPID) 0x5025)
+#define PropertyTagThumbnailEquipMake ((PROPID) 0x5026)
+#define PropertyTagThumbnailEquipModel ((PROPID) 0x5027)
+#define PropertyTagThumbnailStripOffsets ((PROPID) 0x5028)
+#define PropertyTagThumbnailOrientation ((PROPID) 0x5029)
+#define PropertyTagThumbnailSamplesPerPixel ((PROPID) 0x502A)
+#define PropertyTagThumbnailRowsPerStrip ((PROPID) 0x502B)
+#define PropertyTagThumbnailStripBytesCount ((PROPID) 0x502C)
+#define PropertyTagThumbnailResolutionX ((PROPID) 0x502D)
+#define PropertyTagThumbnailResolutionY ((PROPID) 0x502E)
+#define PropertyTagThumbnailPlanarConfig ((PROPID) 0x502F)
+#define PropertyTagThumbnailResolutionUnit ((PROPID) 0x5030)
+#define PropertyTagThumbnailTransferFunction ((PROPID) 0x5031)
+#define PropertyTagThumbnailSoftwareUsed ((PROPID) 0x5032)
+#define PropertyTagThumbnailDateTime ((PROPID) 0x5033)
+#define PropertyTagThumbnailArtist ((PROPID) 0x5034)
+#define PropertyTagThumbnailWhitePoint ((PROPID) 0x5035)
+#define PropertyTagThumbnailPrimaryChromaticities ((PROPID) 0x5036)
+#define PropertyTagThumbnailYCbCrCoefficients ((PROPID) 0x5037)
+#define PropertyTagThumbnailYCbCrSubsampling ((PROPID) 0x5038)
+#define PropertyTagThumbnailYCbCrPositioning ((PROPID) 0x5039)
+#define PropertyTagThumbnailRefBlackWhite ((PROPID) 0x503A)
+#define PropertyTagThumbnailCopyRight ((PROPID) 0x503B)
+#define PropertyTagLuminanceTable ((PROPID) 0x5090)
+#define PropertyTagChrominanceTable ((PROPID) 0x5091)
+#define PropertyTagFrameDelay ((PROPID) 0x5100)
+#define PropertyTagLoopCount ((PROPID) 0x5101)
+#define PropertyTagGlobalPalette ((PROPID) 0x5102)
+#define PropertyTagIndexBackground ((PROPID) 0x5103)
+#define PropertyTagIndexTransparent ((PROPID) 0x5104)
+#define PropertyTagPixelUnit ((PROPID) 0x5110)
+#define PropertyTagPixelPerUnitX ((PROPID) 0x5111)
+#define PropertyTagPixelPerUnitY ((PROPID) 0x5112)
+#define PropertyTagPaletteHistogram ((PROPID) 0x5113)
+#define PropertyTagCopyright ((PROPID) 0x8298)
+#define PropertyTagExifExposureTime ((PROPID) 0x829A)
+#define PropertyTagExifFNumber ((PROPID) 0x829D)
+#define PropertyTagExifIFD ((PROPID) 0x8769)
+#define PropertyTagICCProfile ((PROPID) 0x8773)
+#define PropertyTagExifExposureProg ((PROPID) 0x8822)
+#define PropertyTagExifSpectralSense ((PROPID) 0x8824)
+#define PropertyTagGpsIFD ((PROPID) 0x8825)
+#define PropertyTagExifISOSpeed ((PROPID) 0x8827)
+#define PropertyTagExifOECF ((PROPID) 0x8828)
+#define PropertyTagExifVer ((PROPID) 0x9000)
+#define PropertyTagExifDTOrig ((PROPID) 0x9003)
+#define PropertyTagExifDTDigitized ((PROPID) 0x9004)
+#define PropertyTagExifCompConfig ((PROPID) 0x9101)
+#define PropertyTagExifCompBPP ((PROPID) 0x9102)
+#define PropertyTagExifShutterSpeed ((PROPID) 0x9201)
+#define PropertyTagExifAperture ((PROPID) 0x9202)
+#define PropertyTagExifBrightness ((PROPID) 0x9203)
+#define PropertyTagExifExposureBias ((PROPID) 0x9204)
+#define PropertyTagExifMaxAperture ((PROPID) 0x9205)
+#define PropertyTagExifSubjectDist ((PROPID) 0x9206)
+#define PropertyTagExifMeteringMode ((PROPID) 0x9207)
+#define PropertyTagExifLightSource ((PROPID) 0x9208)
+#define PropertyTagExifFlash ((PROPID) 0x9209)
+#define PropertyTagExifFocalLength ((PROPID) 0x920A)
+#define PropertyTagExifMakerNote ((PROPID) 0x927C)
+#define PropertyTagExifUserComment ((PROPID) 0x9286)
+#define PropertyTagExifDTSubsec ((PROPID) 0x9290)
+#define PropertyTagExifDTOrigSS ((PROPID) 0x9291)
+#define PropertyTagExifDTDigSS ((PROPID) 0x9292)
+#define PropertyTagExifFPXVer ((PROPID) 0xA000)
+#define PropertyTagExifColorSpace ((PROPID) 0xA001)
+#define PropertyTagExifPixXDim ((PROPID) 0xA002)
+#define PropertyTagExifPixYDim ((PROPID) 0xA003)
+#define PropertyTagExifRelatedWav ((PROPID) 0xA004)
+#define PropertyTagExifInterop ((PROPID) 0xA005)
+#define PropertyTagExifFlashEnergy ((PROPID) 0xA20B)
+#define PropertyTagExifSpatialFR ((PROPID) 0xA20C)
+#define PropertyTagExifFocalXRes ((PROPID) 0xA20E)
+#define PropertyTagExifFocalYRes ((PROPID) 0xA20F)
+#define PropertyTagExifFocalResUnit ((PROPID) 0xA210)
+#define PropertyTagExifSubjectLoc ((PROPID) 0xA214)
+#define PropertyTagExifExposureIndex ((PROPID) 0xA215)
+#define PropertyTagExifSensingMethod ((PROPID) 0xA217)
+#define PropertyTagExifFileSource ((PROPID) 0xA300)
+#define PropertyTagExifSceneType ((PROPID) 0xA301)
+#define PropertyTagExifCfaPattern ((PROPID) 0xA302)
 
-/* property types */
-#define PropertyTagTypeByte 1
-#define PropertyTagTypeASCII 2
-#define PropertyTagTypeShort 3
-#define PropertyTagTypeLong 4
-#define PropertyTagTypeRational 5
-#define PropertyTagTypeUndefined 7
-#define PropertyTagTypeSLONG 9
-#define PropertyTagTypeSRational 10
+#define PropertyTagTypeByte ((WORD) 1)
+#define PropertyTagTypeASCII ((WORD) 2)
+#define PropertyTagTypeShort ((WORD) 3)
+#define PropertyTagTypeLong ((WORD) 4)
+#define PropertyTagTypeRational ((WORD) 5)
+#define PropertyTagTypeUndefined ((WORD) 7)
+#define PropertyTagTypeSLONG ((WORD) 9)
+#define PropertyTagTypeSRational ((WORD) 10)
 
-/* property IDs */
-#define PropertyTagExifIFD 0x8769
-#define PropertyTagGpsIFD 0x8825
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#define PropertyTagNewSubfileType 0x00FE
-#define PropertyTagSubfileType 0x00FF
-#define PropertyTagImageWidth 0x0100
-#define PropertyTagImageHeight 0x0101
-#define PropertyTagBitsPerSample 0x0102
-#define PropertyTagCompression 0x0103
-#define PropertyTagPhotometricInterp 0x0106
-#define PropertyTagThreshHolding 0x0107
-#define PropertyTagCellWidth 0x0108
-#define PropertyTagCellHeight 0x0109
-#define PropertyTagFillOrder 0x010A
-#define PropertyTagDocumentName 0x010D
-#define PropertyTagImageDescription 0x010E
-#define PropertyTagEquipMake 0x010F
-#define PropertyTagEquipModel 0x0110
-#define PropertyTagStripOffsets 0x0111
-#define PropertyTagOrientation 0x0112
-#define PropertyTagSamplesPerPixel 0x0115
-#define PropertyTagRowsPerStrip 0x0116
-#define PropertyTagStripBytesCount 0x0117
-#define PropertyTagMinSampleValue 0x0118
-#define PropertyTagMaxSampleValue 0x0119
-#define PropertyTagXResolution 0x011A
-#define PropertyTagYResolution 0x011B
-#define PropertyTagPlanarConfig 0x011C
-#define PropertyTagPageName 0x011D
-#define PropertyTagXPosition 0x011E
-#define PropertyTagYPosition 0x011F
-#define PropertyTagFreeOffset 0x0120
-#define PropertyTagFreeByteCounts 0x0121
-#define PropertyTagGrayResponseUnit 0x0122
-#define PropertyTagGrayResponseCurve 0x0123
-#define PropertyTagT4Option 0x0124
-#define PropertyTagT6Option 0x0125
-#define PropertyTagResolutionUnit 0x0128
-#define PropertyTagPageNumber 0x0129
-#define PropertyTagTransferFuncition 0x012D
-#define PropertyTagSoftwareUsed 0x0131
-#define PropertyTagDateTime 0x0132
-#define PropertyTagArtist 0x013B
-#define PropertyTagHostComputer 0x013C
-#define PropertyTagPredictor 0x013D
-#define PropertyTagWhitePoint 0x013E
-#define PropertyTagPrimaryChromaticities 0x013F
-#define PropertyTagColorMap 0x0140
-#define PropertyTagHalftoneHints 0x0141
-#define PropertyTagTileWidth 0x0142
-#define PropertyTagTileLength 0x0143
-#define PropertyTagTileOffset 0x0144
-#define PropertyTagTileByteCounts 0x0145
-#define PropertyTagInkSet 0x014C
-#define PropertyTagInkNames 0x014D
-#define PropertyTagNumberOfInks 0x014E
-#define PropertyTagDotRange 0x0150
-#define PropertyTagTargetPrinter 0x0151
-#define PropertyTagExtraSamples 0x0152
-#define PropertyTagSampleFormat 0x0153
-#define PropertyTagSMinSampleValue 0x0154
-#define PropertyTagSMaxSampleValue 0x0155
-#define PropertyTagTransferRange 0x0156
+extern const GUID EncoderChrominanceTable;   /* f2e455dc-09b3-4316-8260-676ada32481c */
+extern const GUID EncoderColorDepth;         /* 66087055-ad66-4c7c-9a18-38a2310b8337 */
+extern const GUID EncoderColorSpace;         /* ? */
+extern const GUID EncoderCompression;        /* e09d739d-ccd4-44ee-8eba-3fbf8be4fc58 */
+extern const GUID EncoderImageItems;         /* ? */
+extern const GUID EncoderLuminanceTable;     /* edb33bce-0266-4a77-b904-27216099e717 */
+extern const GUID EncoderQuality;            /* 1d5be4b5-fa4a-452d-9cdd-5db35105e7eb */
+extern const GUID EncoderRenderMethod;       /* 6d42c53a-229a-4825-8bb7-5c99e2b9a8b8 */
+extern const GUID EncoderSaveAsCMYK;         /* ? */
+extern const GUID EncoderSaveFlag;           /* 292266fc-ac40-47bf-8cfc-a85b89a655de */
+extern const GUID EncoderScanMethod;         /* 3a4e2661-3109-4e56-8536-42c156e7dcfa */
+extern const GUID EncoderTransformation;     /* 8d0eb2d1-a58e-4ea8-aa14-108074b7b6f9 */
+extern const GUID EncoderVersion;            /* 24d18c76-814a-41a4-bf53-1c219cccf797 */
 
-#define PropertyTagJPEGProc 0x0200
-#define PropertyTagJPEGInterFormat 0x0201
-#define PropertyTagJPEGInterLength 0x0202
-#define PropertyTagJPEGRestartInterval 0x0203
-#define PropertyTagJPEGLosslessPredictors 0x0205
-#define PropertyTagJPEGPointTransforms 0x0206
-#define PropertyTagJPEGQTables 0x0207
-#define PropertyTagJPEGDCTables 0x0208
-#define PropertyTagJPEGACTables 0x0209
+extern const GUID ImageFormatBMP;            /* b96b3cab-0728-11d3-9d7b-0000f81ef32e */
+extern const GUID ImageFormatEMF;            /* b96b3cac-0728-11d3-9d7b-0000f81ef32e */
+extern const GUID ImageFormatEXIF;           /* ? */
+extern const GUID ImageFormatGIF;            /* b96b3cb0-0728-11d3-9d7b-0000f81ef32e */
+extern const GUID ImageFormatIcon;           /* b96b3cb5-0728-11d3-9d7b-0000f81ef32e */
+extern const GUID ImageFormatJPEG;           /* b96b3cae-0728-11d3-9d7b-0000f81ef32e */
+extern const GUID ImageFormatMemoryBMP;      /* b96b3caa-0728-11d3-9d7b-0000f81ef32e */
+extern const GUID ImageFormatPNG;            /* b96b3caf-0728-11d3-9d7b-0000f81ef32e */
+extern const GUID ImageFormatTIFF;           /* b96b3cb1-0728-11d3-9d7b-0000f81ef32e */
+extern const GUID ImageFormatUndefined;      /* ? */
+extern const GUID ImageFormatWMF;            /* b96b3cad-0728-11d3-9d7b-0000f81ef32e */
 
-#define PropertyTagYCbCrCoefficients 0x0211
-#define PropertyTagYCbCrSubsampling 0x0212
-#define PropertyTagYCbCrPositioning 0x0213
-#define PropertyTagREFBlackWhite 0x0214
+extern const GUID FrameDimensionPage;        /* 7462dc86-6180-4c7e-8e3f-ee7333a7a483 */
+extern const GUID FrameDimensionResolution;  /* ? */
+extern const GUID FrameDimensionTime;        /* 6aedbd6d-3fb5-418a-83a6-7f45229dc872 */
 
-#define PropertyTagICCProfile 0x8773
+#ifdef __cplusplus
+}  /* extern "C" */
+#endif
 
-#define PropertyTagGamma 0x0301
-#define PropertyTagICCProfileDescriptor 0x0302
-#define PropertyTagSRGBRenderingIntent 0x0303
-
-#define PropertyTagImageTitle 0x0320
-#define PropertyTagCopyright 0x8298
-
-#define PropertyTagResolutionXUnit 0x5001
-#define PropertyTagResolutionYUnit 0x5002
-#define PropertyTagResolutionXLengthUnit 0x5003
-#define PropertyTagResolutionYLengthUnit 0x5004
-#define PropertyTagPrintFlags 0x5005
-#define PropertyTagPrintFlagsVersion 0x5006
-#define PropertyTagPrintFlagsCrop 0x5007
-#define PropertyTagPrintFlagsBleedWidth 0x5008
-#define PropertyTagPrintFlagsBleedWidthScale 0x5009
-#define PropertyTagHalftoneLPI 0x500A
-#define PropertyTagHalftoneLPIUnit 0x500B
-#define PropertyTagHalftoneDegree 0x500C
-#define PropertyTagHalftoneShape 0x500D
-#define PropertyTagHalftoneMisc 0x500E
-#define PropertyTagHalftoneScreen 0x500F
-#define PropertyTagJPEGQuality 0x5010
-#define PropertyTagGridSize 0x5011
-#define PropertyTagThumbnailFormat 0x5012
-#define PropertyTagThumbnailWidth 0x5013
-#define PropertyTagThumbnailHeight 0x5014
-#define PropertyTagThumbnailColorDepth 0x5015
-#define PropertyTagThumbnailPlanes 0x5016
-#define PropertyTagThumbnailRawBytes 0x5017
-#define PropertyTagThumbnailSize 0x5018
-#define PropertyTagThumbnailCompressedSize 0x5019
-#define PropertyTagColorTransferFunction 0x501A
-#define PropertyTagThumbnailData 0x501B
-
-#define PropertyTagThumbnailImageWidth 0x5020
-#define PropertyTagThumbnailImageHeight 0x5021
-#define PropertyTagThumbnailBitsPerSample 0x5022
-#define PropertyTagThumbnailCompression 0x5023
-#define PropertyTagThumbnailPhotometricInterp 0x5024
-#define PropertyTagThumbnailImageDescription 0x5025
-#define PropertyTagThumbnailEquipMake 0x5026
-#define PropertyTagThumbnailEquipModel 0x5027
-#define PropertyTagThumbnailStripOffsets 0x5028
-#define PropertyTagThumbnailOrientation 0x5029
-#define PropertyTagThumbnailSamplesPerPixel 0x502A
-#define PropertyTagThumbnailRowsPerStrip 0x502B
-#define PropertyTagThumbnailStripBytesCount 0x502C
-#define PropertyTagThumbnailResolutionX 0x502D
-#define PropertyTagThumbnailResolutionY 0x502E
-#define PropertyTagThumbnailPlanarConfig 0x502F
-#define PropertyTagThumbnailResolutionUnit 0x5030
-#define PropertyTagThumbnailTransferFunction 0x5031
-#define PropertyTagThumbnailSoftwareUsed 0x5032
-#define PropertyTagThumbnailDateTime 0x5033
-#define PropertyTagThumbnailArtist 0x5034
-#define PropertyTagThumbnailWhitePoint 0x5035
-#define PropertyTagThumbnailPrimaryChromaticities 0x5036
-#define PropertyTagThumbnailYCbCrCoefficients 0x5037
-#define PropertyTagThumbnailYCbCrSubsampling 0x5038
-#define PropertyTagThumbnailYCbCrPositioning 0x5039
-#define PropertyTagThumbnailRefBlackWhite 0x503A
-#define PropertyTagThumbnailCopyRight 0x503B
-
-#define PropertyTagLuminanceTable 0x5090
-#define PropertyTagChrominanceTable 0x5091
-
-#define PropertyTagFrameDelay 0x5100
-#define PropertyTagLoopCount 0x5101
-#define PropertyTagGlobalPalette 0x5102
-#define PropertyTagIndexBackground 0x5103
-#define PropertyTagIndexTransparent 0x5104
-
-#define PropertyTagPixelUnit 0x5110
-#define PropertyTagPixelPerUnitX 0x5111
-#define PropertyTagPixelPerUnitY 0x5112
-#define PropertyTagPaletteHistogram 0x5113
-
-#define PropertyTagExifExposureTime 0x829A
-#define PropertyTagExifFNumber 0x829D
-
-#define PropertyTagExifExposureProg 0x8822
-#define PropertyTagExifSpectralSense 0x8824
-#define PropertyTagExifISOSpeed 0x8827
-#define PropertyTagExifOECF 0x8828
-
-#define PropertyTagExifVer 0x9000
-#define PropertyTagExifDTOrig 0x9003
-#define PropertyTagExifDTDigitized 0x9004
-
-#define PropertyTagExifCompConfig 0x9101
-#define PropertyTagExifCompBPP 0x9102
-
-#define PropertyTagExifShutterSpeed 0x9201
-#define PropertyTagExifAperture 0x9202
-#define PropertyTagExifBrightness 0x9203
-#define PropertyTagExifExposureBias 0x9204
-#define PropertyTagExifMaxAperture 0x9205
-#define PropertyTagExifSubjectDist 0x9206
-#define PropertyTagExifMeteringMode 0x9207
-#define PropertyTagExifLightSource 0x9208
-#define PropertyTagExifFlash 0x9209
-#define PropertyTagExifFocalLength 0x920A
-#define PropertyTagExifMakerNote 0x927C
-#define PropertyTagExifUserComment 0x9286
-#define PropertyTagExifDTSubsec 0x9290
-#define PropertyTagExifDTOrigSS 0x9291
-#define PropertyTagExifDTDigSS 0x9292
-
-#define PropertyTagExifFPXVer 0xA000
-#define PropertyTagExifColorSpace 0xA001
-#define PropertyTagExifPixXDim 0xA002
-#define PropertyTagExifPixYDim 0xA003
-#define PropertyTagExifRelatedWav 0xA004
-#define PropertyTagExifInterop 0xA005
-#define PropertyTagExifFlashEnergy 0xA20B
-#define PropertyTagExifSpatialFR 0xA20C
-#define PropertyTagExifFocalXRes 0xA20E
-#define PropertyTagExifFocalYRes 0xA20F
-#define PropertyTagExifFocalResUnit 0xA210
-#define PropertyTagExifSubjectLoc 0xA214
-#define PropertyTagExifExposureIndex 0xA215
-#define PropertyTagExifSensingMethod 0xA217
-#define PropertyTagExifFileSource 0xA300
-#define PropertyTagExifSceneType 0xA301
-#define PropertyTagExifCfaPattern 0xA302
-
-#define PropertyTagGpsVer 0x0000
-#define PropertyTagGpsLatitudeRef 0x0001
-#define PropertyTagGpsLatitude 0x0002
-#define PropertyTagGpsLongitudeRef 0x0003
-#define PropertyTagGpsLongitude 0x0004
-#define PropertyTagGpsAltitudeRef 0x0005
-#define PropertyTagGpsAltitude 0x0006
-#define PropertyTagGpsGpsTime 0x0007
-#define PropertyTagGpsGpsSatellites 0x0008
-#define PropertyTagGpsGpsStatus 0x0009
-#define PropertyTagGpsGpsMeasureMode 0x000A
-#define PropertyTagGpsGpsDop 0x000B
-#define PropertyTagGpsSpeedRef 0x000C
-#define PropertyTagGpsSpeed 0x000D
-#define PropertyTagGpsTrackRef 0x000E
-#define PropertyTagGpsTrack 0x000F
-#define PropertyTagGpsImgDirRef 0x0010
-#define PropertyTagGpsImgDir 0x0011
-#define PropertyTagGpsMapDatum 0x0012
-#define PropertyTagGpsDestLatRef 0x0013
-#define PropertyTagGpsDestLat 0x0014
-#define PropertyTagGpsDestLongRef 0x0015
-#define PropertyTagGpsDestLong 0x0016
-#define PropertyTagGpsDestBearRef 0x0017
-#define PropertyTagGpsDestBear 0x0018
-#define PropertyTagGpsDestDistRef 0x0019
-#define PropertyTagGpsDestDist 0x001A
-
-#endif /* _GDIPLUSIMAGING_H */
+#endif /* __GDIPLUS_IMAGING_H */

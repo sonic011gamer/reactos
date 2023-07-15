@@ -1,115 +1,105 @@
+/**
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER within this package.
+ *
+ * dmksctrl.h
+ *
+ * Contributors:
+ *   Created by Johannes Anderwald
+ *   Reworked by Kai Tietz
+ *
+ */
 
-
-ifndef _DMKSCTRL_
+#ifndef _DMKSCTRL_
 #define _DMKSCTRL_
 
-#if _MSC_VER >= 1200
-#pragma warning(push)
-#endif
+#include <winapifamily.h>
+
+#if WINAPI_FAMILY_PARTITION (WINAPI_PARTITION_DESKTOP)
 
 #include <pshpack8.h>
 #include <objbase.h>
 
-DEFINE_GUID(IID_IKsControl,                   0x28F54685, 0x06FD, 0x11D2, 0xB2, 0x7A, 0x00, 0xA0, 0xC9, 0x22, 0x31, 0x96);
-#ifndef _KSMEDIA_
-DEFINE_GUID(KSDATAFORMAT_SUBTYPE_MIDI,        0x1D262760, 0xE957, 0x11CF, 0xA5, 0xD6, 0x28, 0xDB, 0x04, 0xC1, 0x00, 0x00);
-DEFINE_GUID(KSDATAFORMAT_SUBTYPE_DIRECTMUSIC, 0x1A82F8BC, 0x3F8B, 0x11D2, 0xB7, 0x74, 0x00, 0x60, 0x08, 0x33, 0x16, 0xC1);
+#ifndef _NTRTL_
+#ifndef DEFINE_GUIDEX
+#define DEFINE_GUIDEX(name) EXTERN_C const CDECL GUID name
+#endif
+
+#ifndef STATICGUIDOF
+#define STATICGUIDOF(guid) STATIC_##guid
+#endif
 #endif
 
 #ifndef STATIC_IID_IKsControl
-  #define STATIC_IID_IKsControl 0x28F54685L, 0x06FD, 0x11D2, 0xB2, 0x7A, 0x00, 0xA0, 0xC9, 0x22, 0x31, 0x96
-#endif
-
-#if !defined(_NTRTL_)
-  #ifndef STATICGUIDOF
-    #define STATICGUIDOF(guid) STATIC_##guid
-  #endif
-  #ifndef DEFINE_GUIDEX
-    #define DEFINE_GUIDEX(name) EXTERN_C const CDECL GUID name
-  #endif
+#define STATIC_IID_IKsControl 0x28f54685, 0x06fd, 0x11d2, 0xb2, 0x7a, 0x00, 0xa0, 0xc9, 0x22, 0x31, 0x96
 #endif
 
 #ifndef _KS_
 #define _KS_
-#define KSMETHOD_TYPE_NONE                      0x00000000
-#define KSMETHOD_TYPE_READ                      0x00000001
-#define KSMETHOD_TYPE_WRITE                     0x00000002
-#define KSMETHOD_TYPE_MODIFY                    0x00000003
-#define KSMETHOD_TYPE_SOURCE                    0x00000004
-#define KSMETHOD_TYPE_SEND                      0x00000001
-#define KSMETHOD_TYPE_SETSUPPORT                0x00000100
-#define KSMETHOD_TYPE_BASICSUPPORT              0x00000200
-#define KSPROPERTY_TYPE_GET                     0x00000001
-#define KSPROPERTY_TYPE_SET                     0x00000002
-#define KSPROPERTY_TYPE_SETSUPPORT              0x00000100
-#define KSPROPERTY_TYPE_BASICSUPPORT            0x00000200
-#define KSPROPERTY_TYPE_RELATIONS               0x00000400
-#define KSPROPERTY_TYPE_SERIALIZESET            0x00000800
-#define KSPROPERTY_TYPE_UNSERIALIZESET          0x00001000
-#define KSPROPERTY_TYPE_SERIALIZERAW            0x00002000
-#define KSPROPERTY_TYPE_UNSERIALIZERAW          0x00004000
-#define KSPROPERTY_TYPE_SERIALIZESIZE           0x00008000
-#define KSPROPERTY_TYPE_DEFAULTVALUES           0x00010000
-#define KSPROPERTY_TYPE_TOPOLOGY                0x10000000
 
-#if (defined(_MSC_EXTENSIONS) || defined(__cplusplus)) && !defined(CINTERFACE)
-typedef struct
-{
-  union
-  {
-    struct
-    {
+typedef struct {
+  __C89_NAMELESS union {
+    __C89_NAMELESS struct {
       GUID Set;
       ULONG Id;
       ULONG Flags;
     };
-  LONGLONG Alignment;
-  };
-} KSIDENTIFIER, *PKSIDENTIFIER,KSPROPERTY, *PKSPROPERTY, KSMETHOD, *PKSMETHOD, KSEVENT, *PKSEVENT;
-#else
-typedef struct
-{
-  union
-  {
-    struct
-    {
-      GUID Set;
-      ULONG Id;
-      ULONG Flags;
-    } Data;
     LONGLONG Alignment;
   };
-} KSIDENTIFIER, *PKSIDENTIFIER,KSPROPERTY, *PKSPROPERTY, KSMETHOD, *PKSMETHOD, KSEVENT, *PKSEVENT;
-#endif
+} KSIDENTIFIER,*PKSIDENTIFIER;
+
+typedef KSIDENTIFIER KSPROPERTY,*PKSPROPERTY, KSMETHOD,*PKSMETHOD, KSEVENT,*PKSEVENT;
+
+#define KSMETHOD_TYPE_NONE 0x0
+#define KSMETHOD_TYPE_READ 0x1
+#define KSMETHOD_TYPE_SEND 0x1
+#define KSMETHOD_TYPE_WRITE 0x2
+#define KSMETHOD_TYPE_MODIFY 0x3
+#define KSMETHOD_TYPE_SOURCE 0x4
+#define KSMETHOD_TYPE_SETSUPPORT 0x100
+#define KSMETHOD_TYPE_BASICSUPPORT 0x200
+
+#define KSPROPERTY_TYPE_GET 0x1
+#define KSPROPERTY_TYPE_SET 0x2
+#define KSPROPERTY_TYPE_SETSUPPORT 0x100
+#define KSPROPERTY_TYPE_BASICSUPPORT 0x200
+#define KSPROPERTY_TYPE_RELATIONS 0x400
+#define KSPROPERTY_TYPE_SERIALIZESET 0x800
+#define KSPROPERTY_TYPE_UNSERIALIZESET 0x1000
+#define KSPROPERTY_TYPE_SERIALIZERAW 0x2000
+#define KSPROPERTY_TYPE_UNSERIALIZERAW 0x4000
+#define KSPROPERTY_TYPE_SERIALIZESIZE 0x8000
+#define KSPROPERTY_TYPE_DEFAULTVALUES 0x10000
+#define KSPROPERTY_TYPE_TOPOLOGY 0x10000000
 #endif
 
 #ifndef _IKsControl_
 #define _IKsControl_
 
 #ifdef DECLARE_INTERFACE_
-
-
 #undef INTERFACE
 #define INTERFACE IKsControl
-DECLARE_INTERFACE_(IKsControl, IUnknown)
-{
-  STDMETHOD(QueryInterface) (THIS_ REFIID, LPVOID FAR *) PURE;
-  STDMETHOD_(ULONG,AddRef) (THIS) PURE;
-  STDMETHOD_(ULONG,Release) (THIS) PURE;
-  STDMETHOD(KsProperty)(THIS_ IN PKSPROPERTY Property, IN ULONG PropertyLength, IN OUT LPVOID PropertyData,
-                              IN ULONG DataLength, OUT ULONG* BytesReturned) PURE;
-  STDMETHOD(KsMethod)(THIS_ IN PKSMETHOD Method, IN ULONG MethodLength, IN OUT LPVOID MethodData,
-                            IN ULONG DataLength, OUT ULONG* BytesReturned) PURE;
-  STDMETHOD(KsEvent)(THIS_ IN PKSEVENT Event OPTIONAL, IN ULONG EventLength, IN OUT LPVOID EventData,
-                           IN ULONG DataLength, OUT ULONG* BytesReturned) PURE;
+
+DECLARE_INTERFACE_ (IKsControl, IUnknown) {
+#ifndef __cplusplus
+  STDMETHOD (QueryInterface) (THIS_ REFIID, LPVOID *) PURE;
+  STDMETHOD_ (ULONG, AddRef) (THIS) PURE;
+  STDMETHOD_ (ULONG, Release) (THIS) PURE;
+#endif
+  STDMETHOD (KsProperty) (THIS_ PKSPROPERTY Property, ULONG PropertyLength, LPVOID PropertyData, ULONG DataLength, ULONG *BytesReturned) PURE;
+  STDMETHOD (KsMethod) (THIS_ PKSMETHOD Method, ULONG MethodLength, LPVOID MethodData, ULONG DataLength, ULONG *BytesReturned) PURE;
+  STDMETHOD (KsEvent) (THIS_ PKSEVENT Event, ULONG EventLength, LPVOID EventData, ULONG DataLength, ULONG *BytesReturned) PURE;
 };
 #endif
 #endif
 
 #include <poppack.h>
 
-#if _MSC_VER >= 1200
-#pragma warning(pop)
+DEFINE_GUID (IID_IKsControl, 0x28f54685, 0x06fd, 0x11d2, 0xb2, 0x7a, 0x00, 0xa0, 0xc9, 0x22, 0x31, 0x96);
+#ifndef _KSMEDIA_
+DEFINE_GUID (KSDATAFORMAT_SUBTYPE_MIDI, 0x1d262760, 0xe957, 0x11cf, 0xa5, 0xd6, 0x28, 0xdb, 0x04, 0xc1, 0x00, 0x00);
+DEFINE_GUID (KSDATAFORMAT_SUBTYPE_DIRECTMUSIC, 0x1a82f8bc, 0x3f8b, 0x11d2, 0xb7, 0x74, 0x00, 0x60, 0x08, 0x33, 0x16, 0xc1);
 #endif
 
+#endif
 #endif

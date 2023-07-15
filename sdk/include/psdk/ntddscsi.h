@@ -1,6 +1,6 @@
 /**
  * This file has no copyright assigned and is placed in the Public Domain.
- * This file is part of the w64 mingw-runtime package.
+ * This file is part of the mingw-w64 runtime package.
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 #ifdef DEFINE_GUID
@@ -9,8 +9,8 @@
 #define FAR
 #endif
 
-DEFINE_GUID(ScsiRawInterfaceGuid,0x53f56309L,0xb6bf,0x11d0,0x94,0xf2,0x00,0xa0,0xc9,0x1e,0xfb,0x8b);
-DEFINE_GUID(WmiScsiAddressGuid,0x53f5630fL,0xb6bf,0x11d0,0x94,0xf2,0x00,0xa0,0xc9,0x1e,0xfb,0x8b);
+DEFINE_GUID(ScsiRawInterfaceGuid,0x53f56309,0xb6bf,0x11d0,0x94,0xf2,0x00,0xa0,0xc9,0x1e,0xfb,0x8b);
+DEFINE_GUID(WmiScsiAddressGuid,0x53f5630f,0xb6bf,0x11d0,0x94,0xf2,0x00,0xa0,0xc9,0x1e,0xfb,0x8b);
 #endif /* DEFINE_GUID */
 
 #ifndef _NTDDSCSIH_
@@ -20,9 +20,9 @@ DEFINE_GUID(WmiScsiAddressGuid,0x53f5630fL,0xb6bf,0x11d0,0x94,0xf2,0x00,0xa0,0xc
 extern "C" {
 #endif
 
-#define IOCTL_SCSI_BASE     FILE_DEVICE_CONTROLLER
+#define IOCTL_SCSI_BASE		FILE_DEVICE_CONTROLLER
 
-#define DD_SCSI_DEVICE_NAME "\\Device\\ScsiPort"
+#define DD_SCSI_DEVICE_NAME	"\\Device\\ScsiPort"
 #define DD_SCSI_DEVICE_NAME_U  L"\\Device\\ScsiPort"
 
 #define IOCTL_SCSI_PASS_THROUGH CTL_CODE(IOCTL_SCSI_BASE,0x0401,METHOD_BUFFERED,FILE_READ_ACCESS | FILE_WRITE_ACCESS)
@@ -34,8 +34,6 @@ extern "C" {
 #define IOCTL_SCSI_RESCAN_BUS CTL_CODE(IOCTL_SCSI_BASE,0x0407,METHOD_BUFFERED,FILE_ANY_ACCESS)
 #define IOCTL_SCSI_GET_DUMP_POINTERS CTL_CODE(IOCTL_SCSI_BASE,0x0408,METHOD_BUFFERED,FILE_ANY_ACCESS)
 #define IOCTL_SCSI_FREE_DUMP_POINTERS CTL_CODE(IOCTL_SCSI_BASE,0x0409,METHOD_BUFFERED,FILE_ANY_ACCESS)
-#define IOCTL_SCSI_PASS_THROUGH_EX CTL_CODE(IOCTL_SCSI_BASE, 0x0411, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
-#define IOCTL_SCSI_PASS_THROUGH_DIRECT_EX CTL_CODE(IOCTL_SCSI_BASE, 0x0412, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
 #define IOCTL_IDE_PASS_THROUGH CTL_CODE(IOCTL_SCSI_BASE,0x040a,METHOD_BUFFERED,FILE_READ_ACCESS | FILE_WRITE_ACCESS)
 #define IOCTL_ATA_PASS_THROUGH CTL_CODE(IOCTL_SCSI_BASE,0x040b,METHOD_BUFFERED,FILE_READ_ACCESS | FILE_WRITE_ACCESS)
 #define IOCTL_ATA_PASS_THROUGH_DIRECT CTL_CODE(IOCTL_SCSI_BASE,0x040c,METHOD_BUFFERED,FILE_READ_ACCESS | FILE_WRITE_ACCESS)
@@ -100,93 +98,11 @@ extern "C" {
     UCHAR DataIn;
     ULONG DataTransferLength;
     ULONG TimeOutValue;
-    VOID * POINTER_32 DataBuffer;
+    VOID *DataBuffer;
     ULONG SenseInfoOffset;
     UCHAR Cdb[16];
   } SCSI_PASS_THROUGH_DIRECT32,*PSCSI_PASS_THROUGH_DIRECT32;
 #endif /* _WIN64 */
-
-
-  typedef struct _SCSI_PASS_THROUGH_EX {
-    ULONG Version;
-    ULONG Length;
-    ULONG CdbLength;
-    ULONG StorAddressLength;
-    UCHAR ScsiStatus;
-    UCHAR SenseInfoLength;
-    UCHAR DataDirection;
-    UCHAR Reserved;
-    ULONG TimeOutValue;
-    ULONG StorAddressOffset;
-    ULONG SenseInfoOffset;
-    ULONG DataOutTransferLength;
-    ULONG DataInTransferLength;
-    ULONG_PTR DataOutBufferOffset;
-    ULONG_PTR DataInBufferOffset;
-    UCHAR Cdb[ANYSIZE_ARRAY];
-  } SCSI_PASS_THROUGH_EX, *PSCSI_PASS_THROUGH_EX;
-
-typedef struct _SCSI_PASS_THROUGH_DIRECT_EX
-{
-  ULONG Version;
-  ULONG Length;
-  ULONG CdbLength;
-  ULONG StorAddressLength;
-  UCHAR ScsiStatus;
-  UCHAR SenseInfoLength;
-  UCHAR DataDirection;
-  UCHAR Reserved;
-  ULONG TimeOutValue;
-  ULONG StorAddressOffset;
-  ULONG SenseInfoOffset;
-  ULONG DataOutTransferLength;
-  ULONG DataInTransferLength;
-  PVOID DataOutBuffer;
-  PVOID DataInBuffer;
-  UCHAR Cdb[ANYSIZE_ARRAY];
-} SCSI_PASS_THROUGH_DIRECT_EX, *PSCSI_PASS_THROUGH_DIRECT_EX;
-
-#if defined(_WIN64)
-typedef struct _SCSI_PASS_THROUGH32_EX
-{
-  ULONG Version;
-  ULONG Length;
-  ULONG CdbLength;
-  ULONG StorAddressLength;
-  UCHAR ScsiStatus;
-  UCHAR SenseInfoLength;
-  UCHAR DataDirection;
-  UCHAR Reserved;
-  ULONG TimeOutValue;
-  ULONG StorAddressOffset;
-  ULONG SenseInfoOffset;
-  ULONG DataOutTransferLength;
-  ULONG DataInTransferLength;
-  ULONG32 DataOutBufferOffset;
-  ULONG32 DataInBufferOffset;
-  UCHAR Cdb[ANYSIZE_ARRAY];
-} SCSI_PASS_THROUGH32_EX, *PSCSI_PASS_THROUGH32_EX;
-
-typedef struct _SCSI_PASS_THROUGH_DIRECT32_EX
-{
-  ULONG Version;
-  ULONG Length;
-  ULONG CdbLength;
-  ULONG StorAddressLength;
-  UCHAR ScsiStatus;
-  UCHAR SenseInfoLength;
-  UCHAR DataDirection;
-  UCHAR Reserved;
-  ULONG TimeOutValue;
-  ULONG StorAddressOffset;
-  ULONG SenseInfoOffset;
-  ULONG DataOutTransferLength;
-  ULONG DataInTransferLength;
-  VOID * POINTER_32 DataOutBuffer;
-  VOID * POINTER_32 DataInBuffer;
-  UCHAR Cdb[ANYSIZE_ARRAY];
-} SCSI_PASS_THROUGH_DIRECT32_EX, *PSCSI_PASS_THROUGH_DIRECT32_EX;
-#endif
 
   typedef struct _ATA_PASS_THROUGH_EX {
     USHORT Length;
@@ -245,7 +161,7 @@ typedef struct _SCSI_PASS_THROUGH_DIRECT32_EX
     ULONG DataTransferLength;
     ULONG TimeOutValue;
     ULONG ReservedAsUlong;
-    VOID * POINTER_32 DataBuffer;
+    VOID *DataBuffer;
     UCHAR PreviousTaskFile[8];
     UCHAR CurrentTaskFile[8];
   } ATA_PASS_THROUGH_DIRECT32,*PATA_PASS_THROUGH_DIRECT32;

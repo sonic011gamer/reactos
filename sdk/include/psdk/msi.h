@@ -1,1552 +1,810 @@
-/*
- * Copyright (C) 2002,2003 Mike McCormack
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
+#ifndef _MSI_H_
+#define _MSI_H_
 
-#ifndef __WINE_MSI_H
-#define __WINE_MSI_H
+#include <_mingw_unicode.h>
 
-#ifndef _MSI_NO_CRYPTO
-#include <wincrypt.h>
+#ifndef NTDDI_WIN2K
+#define NTDDI_WIN2K 0x05000000
+#endif
+#ifndef NTDDI_WINXP
+#define NTDDI_WINXP 0x05010000
+#endif
+#ifndef NTDDI_WINXPSP2
+#define NTDDI_WINXPSP2 0x05010200
+#endif
+#ifndef NTDDI_WS03SP1
+#define NTDDI_WS03SP1 0x05020100
+#endif
+#ifndef NTDDI_VISTA
+#define NTDDI_VISTA 0x06000000
+#endif
+#ifndef NTDDI_VISTASP1
+#define NTDDI_VISTASP1 0x06000100
 #endif
 
-#define MAX_GUID_CHARS 38
+#ifndef _WIN32_MSI
+#if defined(NTDDI_VERSION) && NTDDI_VERSION >= NTDDI_VISTASP1
+#define _WIN32_MSI 450
+#elif defined(NTDDI_VERSION) && NTDDI_VERSION >= NTDDI_VISTA
+#define _WIN32_MSI 400
+#elif defined(NTDDI_VERSION) && NTDDI_VERSION >= NTDDI_WS03SP1
+#define _WIN32_MSI 310
+#elif defined(NTDDI_VERSION) && NTDDI_VERSION >= NTDDI_WINXPSP2
+#define _WIN32_MSI 300
+#else
+#define _WIN32_MSI 200
+#endif
+#endif
+
+#ifndef MAX_GUID_CHARS
+#define MAX_GUID_CHARS  38
+#endif
+
+#if _WIN32_MSI >= 150 && !defined (_MSI_NO_CRYPTO)
+#include "wincrypt.h"
+#endif
+
+typedef unsigned __LONG32 MSIHANDLE;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef ULONG MSIHANDLE;
-
-typedef enum tagINSTALLSTATE
-{
-    INSTALLSTATE_NOTUSED = -7,
-    INSTALLSTATE_BADCONFIG = -6,
-    INSTALLSTATE_INCOMPLETE = -5,
-    INSTALLSTATE_SOURCEABSENT = -4,
-    INSTALLSTATE_MOREDATA = -3,
-    INSTALLSTATE_INVALIDARG = -2,
-    INSTALLSTATE_UNKNOWN = -1,
-    INSTALLSTATE_BROKEN = 0,
-    INSTALLSTATE_ADVERTISED = 1,
-    INSTALLSTATE_ABSENT = 2,
-    INSTALLSTATE_LOCAL = 3,
-    INSTALLSTATE_SOURCE = 4,
-    INSTALLSTATE_DEFAULT = 5
-} INSTALLSTATE;
-
-typedef enum tagMSIPATCHSTATE
-{
-    MSIPATCHSTATE_INVALID = 0,
-    MSIPATCHSTATE_APPLIED = 1,
-    MSIPATCHSTATE_SUPERSEDED = 2,
-    MSIPATCHSTATE_OBSOLETED = 4,
-    MSIPATCHSTATE_REGISTERED = 8,
-    MSIPATCHSTATE_ALL = (MSIPATCHSTATE_APPLIED | MSIPATCHSTATE_SUPERSEDED |
-                         MSIPATCHSTATE_OBSOLETED | MSIPATCHSTATE_REGISTERED)
-} MSIPATCHSTATE;
-
-typedef enum tagINSTALLUILEVEL
-{
-    INSTALLUILEVEL_NOCHANGE = 0,
-    INSTALLUILEVEL_DEFAULT = 1,
-    INSTALLUILEVEL_NONE = 2,
-    INSTALLUILEVEL_BASIC = 3,
-    INSTALLUILEVEL_REDUCED = 4,
-    INSTALLUILEVEL_FULL = 5,
-    INSTALLUILEVEL_HIDECANCEL = 0x20,
-    INSTALLUILEVEL_PROGRESSONLY = 0x40,
-    INSTALLUILEVEL_ENDDIALOG = 0x80,
-    INSTALLUILEVEL_SOURCERESONLY = 0x100
-} INSTALLUILEVEL;
-
-typedef enum tagUSERINFOSTATE
-{
-    USERINFOSTATE_MOREDATA = -3,
-    USERINFOSTATE_INVALIDARG = -2,
-    USERINFOSTATE_UNKNOWN = -1,
-    USERINFOSTATE_ABSENT = 0,
-    USERINFOSTATE_PRESENT = 1,
-} USERINFOSTATE;
-
-typedef enum tagINSTALLLEVEL
-{
-    INSTALLLEVEL_DEFAULT = 0,
-    INSTALLLEVEL_MINIMUM = 1,
-    INSTALLLEVEL_MAXIMUM = 0xFFFF
-} INSTALLLEVEL;
-
-typedef enum tagINSTALLMESSAGE
-{
-    INSTALLMESSAGE_FATALEXIT = 0,
-    INSTALLMESSAGE_ERROR = 0x01000000,
-    INSTALLMESSAGE_WARNING = 0x02000000,
-    INSTALLMESSAGE_USER = 0x03000000,
-    INSTALLMESSAGE_INFO = 0x04000000,
-    INSTALLMESSAGE_FILESINUSE = 0x05000000,
-    INSTALLMESSAGE_RESOLVESOURCE = 0x06000000,
-    INSTALLMESSAGE_OUTOFDISKSPACE = 0x07000000,
-    INSTALLMESSAGE_ACTIONSTART = 0x08000000,
-    INSTALLMESSAGE_ACTIONDATA = 0x09000000,
-    INSTALLMESSAGE_PROGRESS = 0x0a000000,
-    INSTALLMESSAGE_COMMONDATA = 0x0b000000,
-    INSTALLMESSAGE_INITIALIZE = 0x0c000000,
-    INSTALLMESSAGE_TERMINATE = 0x0d000000,
-    INSTALLMESSAGE_SHOWDIALOG = 0x0e000000,
-    INSTALLMESSAGE_RMFILESINUSE = 0x19000000,
-    INSTALLMESSAGE_INSTALLSTART = 0x1A000000,
-    INSTALLMESSAGE_INSTALLEND = 0x1B000000,
-} INSTALLMESSAGE;
-
-typedef enum tagREINSTALLMODE
-{
-    REINSTALLMODE_REPAIR = 0x00000001,
-    REINSTALLMODE_FILEMISSING = 0x00000002,
-    REINSTALLMODE_FILEOLDERVERSION = 0x00000004,
-    REINSTALLMODE_FILEEQUALVERSION = 0x00000008,
-    REINSTALLMODE_FILEEXACT = 0x00000010,
-    REINSTALLMODE_FILEVERIFY = 0x00000020,
-    REINSTALLMODE_FILEREPLACE = 0x00000040,
-    REINSTALLMODE_MACHINEDATA = 0x00000080,
-    REINSTALLMODE_USERDATA = 0x00000100,
-    REINSTALLMODE_SHORTCUT = 0x00000200,
-    REINSTALLMODE_PACKAGE = 0x00000400
-} REINSTALLMODE;
-
-typedef enum tagINSTALLLOGMODE
-{
-    INSTALLLOGMODE_FATALEXIT      = (1 << (INSTALLMESSAGE_FATALEXIT >> 24)),
-    INSTALLLOGMODE_ERROR          = (1 << (INSTALLMESSAGE_ERROR >> 24)),
-    INSTALLLOGMODE_WARNING        = (1 << (INSTALLMESSAGE_WARNING >> 24)),
-    INSTALLLOGMODE_USER           = (1 << (INSTALLMESSAGE_USER >> 24)),
-    INSTALLLOGMODE_INFO           = (1 << (INSTALLMESSAGE_INFO >> 24)),
-    INSTALLLOGMODE_FILESINUSE     = (1 << (INSTALLMESSAGE_FILESINUSE >> 24)),
-    INSTALLLOGMODE_RESOLVESOURCE  = (1 << (INSTALLMESSAGE_RESOLVESOURCE >> 24)),
-    INSTALLLOGMODE_OUTOFDISKSPACE = (1 << (INSTALLMESSAGE_OUTOFDISKSPACE >> 24)),
-    INSTALLLOGMODE_ACTIONSTART    = (1 << (INSTALLMESSAGE_ACTIONSTART >> 24)),
-    INSTALLLOGMODE_ACTIONDATA     = (1 << (INSTALLMESSAGE_ACTIONDATA >> 24)),
-    INSTALLLOGMODE_PROGRESS       = (1 << (INSTALLMESSAGE_PROGRESS >> 24)),
-    INSTALLLOGMODE_PROPERTYDUMP   = (1 << (INSTALLMESSAGE_PROGRESS >> 24)),
-    INSTALLLOGMODE_COMMONDATA     = (1 << (INSTALLMESSAGE_COMMONDATA >> 24)),
-    INSTALLLOGMODE_INITIALIZE     = (1 << (INSTALLMESSAGE_INITIALIZE >> 24)),
-    INSTALLLOGMODE_VERBOSE        = (1 << (INSTALLMESSAGE_INITIALIZE >> 24)),
-    INSTALLLOGMODE_TERMINATE      = (1 << (INSTALLMESSAGE_TERMINATE >> 24)),
-    INSTALLLOGMODE_EXTRADEBUG     = (1 << (INSTALLMESSAGE_TERMINATE >> 24)),
-    INSTALLLOGMODE_SHOWDIALOG     = (1 << (INSTALLMESSAGE_SHOWDIALOG >> 24)),
-    INSTALLLOGMODE_RMFILESINUSE   = (1 << (INSTALLMESSAGE_RMFILESINUSE >> 24)),
-    INSTALLLOGMODE_INSTALLSTART   = (1 << (INSTALLMESSAGE_INSTALLSTART >> 24)),
-    INSTALLLOGMODE_INSTALLEND     = (1 << (INSTALLMESSAGE_INSTALLEND >> 24)),
-} INSTALLLOGMODE;
-
-typedef enum tagINSTALLLOGATTRIBUTES
-{
-    INSTALLLOGATTRIBUTES_APPEND = 0x00000001,
-    INSTALLLOGATTRIBUTES_FLUSHEACHLINE = 0x00000002
-} INSTALLLOGATTRIBUTES;
-
-typedef enum tagINSTALLMODE
-{
-    INSTALLMODE_NODETECTION_ANY     = -4,
-    INSTALLMODE_NOSOURCERESOLUTION  = -3,
-    INSTALLMODE_NODETECTION         = -2,
-    INSTALLMODE_EXISTING            = -1,
-    INSTALLMODE_DEFAULT             = 0
-} INSTALLMODE;
-
-typedef enum tagADVERTISEFLAGS
-{
-    ADVERTISEFLAGS_MACHINEASSIGN = 0,
-    ADVERTISEFLAGS_USERASSIGN = 1
-} ADVERTISEFLAGS;
-
-typedef enum tagSCRIPTFLAGS
-{
-    SCRIPTFLAGS_CACHEINFO = 1,
-    SCRIPTFLAGS_SHORTCUTS = 4,
-    SCRIPTFLAGS_MACHINEASSIGN = 8,
-    SCRIPTFLAGS_REGDATA_APPINFO = 0x10,
-    SCRIPTFLAGS_REGDATA_CNFGINFO = 0x20,
-    SCRIPTFLAGS_VALIDATE_TRANSFORMS_LIST = 0x40,
-    SCRIPTFLAGS_REGDATA_CLASSINFO = 0x80,
-    SCRIPTFLAGS_REGDATA_EXTENSIONINFO = 0x100,
-} SCRIPTFLAGS;
-
-typedef enum tagINSTALLTYPE
-{
-    INSTALLTYPE_DEFAULT = 0,
-    INSTALLTYPE_NETWORK_IMAGE = 1,
-    INSTALLTYPE_SINGLE_INSTANCE = 2,
-} INSTALLTYPE;
-
-typedef enum tagMSIINSTALLCONTEXT
-{
-    MSIINSTALLCONTEXT_FIRSTVISIBLE  =   0,
-    MSIINSTALLCONTEXT_NONE          =   0,
-    MSIINSTALLCONTEXT_USERMANAGED   =   1,
-    MSIINSTALLCONTEXT_USERUNMANAGED =   2,
-    MSIINSTALLCONTEXT_MACHINE       =   4,
-    MSIINSTALLCONTEXT_ALL           = (MSIINSTALLCONTEXT_USERMANAGED | MSIINSTALLCONTEXT_USERUNMANAGED | MSIINSTALLCONTEXT_MACHINE),
-    MSIINSTALLCONTEXT_ALLUSERMANAGED=   8,
-} MSIINSTALLCONTEXT;
-
-typedef enum tagMSISOURCETYPE
-{
-    MSISOURCETYPE_UNKNOWN = 0x00000000L,
-    MSISOURCETYPE_NETWORK = 0x00000001L,
-    MSISOURCETYPE_URL     = 0x00000002L,
-    MSISOURCETYPE_MEDIA   = 0x00000004L
-} MSISOURCETYPE;
-
-typedef enum tagMSICODE
-{
-    MSICODE_PRODUCT = 0x00000000L,
-    MSICODE_PATCH   = 0x40000000L
-} MSICODE;
-
-typedef enum tagINSTALLFEATUREATTRIBUTE
-{
-    INSTALLFEATUREATTRIBUTE_FAVORLOCAL             = 1 << 0,
-    INSTALLFEATUREATTRIBUTE_FAVORSOURCE            = 1 << 1,
-    INSTALLFEATUREATTRIBUTE_FOLLOWPARENT           = 1 << 2,
-    INSTALLFEATUREATTRIBUTE_FAVORADVERTISE         = 1 << 3,
-    INSTALLFEATUREATTRIBUTE_DISALLOWADVERTISE      = 1 << 4,
-    INSTALLFEATUREATTRIBUTE_NOUNSUPPORTEDADVERTISE = 1 << 5
-} INSTALLFEATUREATTRIBUTE;
-
-typedef struct _MSIFILEHASHINFO {
-    ULONG dwFileHashInfoSize;
-    ULONG dwData[4];
-} MSIFILEHASHINFO, *PMSIFILEHASHINFO;
-
-typedef enum tagMSIPATCHDATATYPE
-{
-    MSIPATCH_DATATYPE_PATCHFILE = 0,
-    MSIPATCH_DATATYPE_XMLPATH = 1,
-    MSIPATCH_DATATYPE_XMLBLOB = 2,
-} MSIPATCHDATATYPE, *PMSIPATCHDATATYPE;
-
-typedef struct tagMSIPATCHSEQUENCEINFOA
-{
-    LPCSTR szPatchData;
-    MSIPATCHDATATYPE ePatchDataType;
-    DWORD dwOrder;
-    UINT uStatus;
-} MSIPATCHSEQUENCEINFOA, *PMSIPATCHSEQUENCEINFOA;
-
-typedef struct tagMSIPATCHSEQUENCEINFOW
-{
-    LPCWSTR szPatchData;
-    MSIPATCHDATATYPE ePatchDataType;
-    DWORD dwOrder;
-    UINT uStatus;
-} MSIPATCHSEQUENCEINFOW, *PMSIPATCHSEQUENCEINFOW;
-
-#define MAX_FEATURE_CHARS 38
-
-#define ERROR_PATCH_TARGET_NOT_FOUND        1642
-
-/* Strings defined in msi.h */
-/* Advertised Information */
-
-#define INSTALLPROPERTY_PACKAGENAMEA "PackageName"
-static const WCHAR INSTALLPROPERTY_PACKAGENAMEW[] = {'P','a','c','k','a','g','e','N','a','m','e',0};
-#define INSTALLPROPERTY_PACKAGENAME WINELIB_NAME_AW(INSTALLPROPERTY_PACKAGENAME)
-
-#define INSTALLPROPERTY_TRANSFORMSA "Transforms"
-static const WCHAR INSTALLPROPERTY_TRANSFORMSW[] = {'T','r','a','n','s','f','o','r','m','s',0};
-#define INSTALLPROPERTY_TRANSFORMS WINELIB_NAME_AW(INSTALLPROPERTY_TRANSFORMS)
-
-#define INSTALLPROPERTY_LANGUAGEA "Language"
-static const WCHAR INSTALLPROPERTY_LANGUAGEW[] = {'L','a','n','g','u','a','g','e',0};
-#define INSTALLPROPERTY_LANGUAGE WINELIB_NAME_AW(INSTALLPROPERTY_LANGUAGE)
-
-#define INSTALLPROPERTY_PRODUCTNAMEA "ProductName"
-static const WCHAR INSTALLPROPERTY_PRODUCTNAMEW[] = {'P','r','o','d','u','c','t','N','a','m','e',0};
-#define INSTALLPROPERTY_PRODUCTNAME WINELIB_NAME_AW(INSTALLPROPERTY_PRODUCTNAME)
-
-#define INSTALLPROPERTY_ASSIGNMENTTYPEA "AssignmentType"
-static const WCHAR INSTALLPROPERTY_ASSIGNMENTTYPEW[] = {'A','s','s','i','g','n','m','e','n','t','T','y','p','e',0};
-#define INSTALLPROPERTY_ASSIGNMENTTYPE WINELIB_NAME_AW(INSTALLPROPERTY_ASSIGNMENTTYPE)
-
-#define INSTALLPROPERTY_PACKAGECODEA "PackageCode"
-static const WCHAR INSTALLPROPERTY_PACKAGECODEW[] = {'P','a','c','k','a','g','e','C','o','d','e',0};
-#define INSTALLPROPERTY_PACKAGECODE WINELIB_NAME_AW(INSTALLPROPERTY_PACKAGECODE)
-
-#define INSTALLPROPERTY_VERSIONA "Version"
-static const WCHAR INSTALLPROPERTY_VERSIONW[]= {'V','e','r','s','i','o','n',0};
-#define INSTALLPROPERTY_VERSION WINELIB_NAME_AW(INSTALLPROPERTY_VERSION)
-
-/* MSI version 1.1 and above */
-
-#define INSTALLPROPERTY_PRODUCTICONA "ProductIcon"
-static const WCHAR INSTALLPROPERTY_PRODUCTICONW[]  = {'P','r','o','d','u','c','t','I','c','o','n',0};
-#define INSTALLPROPERTY_PRODUCTICON WINELIB_NAME_AW(INSTALLPROPERTY_PRODUCTICON)
-
-/* MSI version 1.5 and above */
-#define INSTALLPROPERTY_INSTANCETYPEA "InstanceType"
-static const WCHAR INSTALLPROPERTY_INSTANCETYPEW[] = {'I','n','s','t','a','n','c','e','T','y','p','e',0};
-#define INSTALLPROPERTY_INSTANCETYPE WINELIB_NAME_AW(INSTALLPROPERTY_INSTANCETYPE)
-
-/* MSI version 3 and above */
-#define INSTALLPROPERTY_AUTHORIZED_LUA_APPA "AuthorizedLUAApp"
-static const WCHAR INSTALLPROPERTY_AUTHORIZED_LUA_APPW[] = {'A','u','t','h','o','r','i','z','e','d','L','U','A','A','p','p',0};
-#define INSTALLPROPERTY_AUTHORIZED_LUA_APP WINELIB_NAME_AW(INSTALLPROPERTY_AUTHORIZED_LUA_APP)
-
-
-/* Installed Information */
-#define INSTALLPROPERTY_INSTALLEDPRODUCTNAMEA "InstalledProductName"
-static const WCHAR INSTALLPROPERTY_INSTALLEDPRODUCTNAMEW[] = {'I','n','s','t','a','l','l','e','d','P','r','o','d','u','c','t','N','a','m','e',0};
-#define INSTALLPROPERTY_INSTALLEDPRODUCTNAME WINELIB_NAME_AW(INSTALLPROPERTY_INSTALLEDPRODUCTNAME)
-
-#define INSTALLPROPERTY_VERSIONSTRINGA "VersionString"
-static const WCHAR INSTALLPROPERTY_VERSIONSTRINGW[] = {'V','e','r','s','i','o','n','S','t','r','i','n','g',0};
-#define INSTALLPROPERTY_VERSIONSTRING WINELIB_NAME_AW(INSTALLPROPERTY_VERSIONSTRING)
-
-#define INSTALLPROPERTY_HELPLINKA "HelpLink"
-static const WCHAR INSTALLPROPERTY_HELPLINKW[] = {'H','e','l','p','L','i','n','k',0};
-#define INSTALLPROPERTY_HELPLINK WINELIB_NAME_AW(INSTALLPROPERTY_HELPLINK)
-
-#define INSTALLPROPERTY_HELPTELEPHONEA "HelpTelephone"
-static const WCHAR INSTALLPROPERTY_HELPTELEPHONEW[] = {'H','e','l','p','T','e','l','e','p','h','o','n','e',0};
-#define INSTALLPROPERTY_HELPTELEPHONE WINELIB_NAME_AW(INSTALLPROPERTY_HELPTELEPHONE)
-
-#define INSTALLPROPERTY_INSTALLLOCATIONA "InstallLocation"
-static const WCHAR INSTALLPROPERTY_INSTALLLOCATIONW[] = {'I','n','s','t','a','l','l','L','o','c','a','t','i','o','n',0};
-#define INSTALLPROPERTY_INSTALLLOCATION WINELIB_NAME_AW(INSTALLPROPERTY_INSTALLLOCATION)
-
-#define INSTALLPROPERTY_INSTALLSOURCEA "InstallSource"
-static const WCHAR INSTALLPROPERTY_INSTALLSOURCEW[] = {'I','n','s','t','a','l','l','S','o','u','r','c','e',0};
-#define INSTALLPROPERTY_INSTALLSOURCE WINELIB_NAME_AW(INSTALLPROPERTY_INSTALLSOURCE)
-
-#define INSTALLPROPERTY_INSTALLDATEA "InstallDate"
-static const WCHAR INSTALLPROPERTY_INSTALLDATEW[] = {'I','n','s','t','a','l','l','D','a','t','e',0};
-#define INSTALLPROPERTY_INSTALLDATE WINELIB_NAME_AW(INSTALLPROPERTY_INSTALLDATE)
-
-#define INSTALLPROPERTY_PUBLISHERA "Publisher"
-static const WCHAR INSTALLPROPERTY_PUBLISHERW[] ={'P','u','b','l','i','s','h','e','r',0};
-#define INSTALLPROPERTY_PUBLISHER WINELIB_NAME_AW(INSTALLPROPERTY_PUBLISHER)
-
-#define INSTALLPROPERTY_LOCALPACKAGEA "LocalPackage"
-static const WCHAR INSTALLPROPERTY_LOCALPACKAGEW[] = {'L','o','c','a','l','P','a','c','k','a','g','e',0};
-#define INSTALLPROPERTY_LOCALPACKAGE WINELIB_NAME_AW(INSTALLPROPERTY_LOCALPACKAGE)
-
-#define INSTALLPROPERTY_URLINFOABOUTA "URLInfoAbout"
-static const WCHAR INSTALLPROPERTY_URLINFOABOUTW[] = {'U','R','L','I','n','f','o','A','b','o','u','t',0};
-#define INSTALLPROPERTY_URLINFOABOUT WINELIB_NAME_AW(INSTALLPROPERTY_URLINFOABOUT)
-
-#define INSTALLPROPERTY_URLUPDATEINFOA "URLUpdateInfo"
-static const WCHAR INSTALLPROPERTY_URLUPDATEINFOW[] = {'U','R','L','U','p','d','a','t','e','I','n','f','o',0};
-#define INSTALLPROPERTY_URLUPDATEINFO WINELIB_NAME_AW(INSTALLPROPERTY_URLUPDATEINFO)
-
-#define INSTALLPROPERTY_VERSIONMINORA "VersionMinor"
-static const WCHAR INSTALLPROPERTY_VERSIONMINORW[] = {'V','e','r','s','i','o','n','M','i','n','o','r',0};
-#define INSTALLPROPERTY_VERSIONMINOR WINELIB_NAME_AW(INSTALLPROPERTY_VERSIONMINOR)
-
-#define INSTALLPROPERTY_VERSIONMAJORA "VersionMajor"
-static const WCHAR INSTALLPROPERTY_VERSIONMAJORW[] = {'V','e','r','s','i','o','n','M','a','j','o','r',0};
-#define INSTALLPROPERTY_VERSIONMAJOR WINELIB_NAME_AW(INSTALLPROPERTY_VERSIONMAJOR)
-
-#define INSTALLPROPERTY_PRODUCTIDA "ProductID"
-static const WCHAR INSTALLPROPERTY_PRODUCTIDW[] = {'P','r','o','d','u','c','t','I','D',0};
-#define INSTALLPROPERTY_PRODUCTID WINELIB_NAME_AW(INSTALLPROPERTY_PRODUCTID)
-
-#define INSTALLPROPERTY_REGCOMPANYA "RegCompany"
-static const WCHAR INSTALLPROPERTY_REGCOMPANYW[] = {'R','e','g','C','o','m','p','a','n','y',0};
-#define INSTALLPROPERTY_REGCOMPANY WINELIB_NAME_AW(INSTALLPROPERTY_REGCOMPANY)
-
-#define INSTALLPROPERTY_REGOWNERA "RegOwner"
-static const WCHAR INSTALLPROPERTY_REGOWNERW[] = {'R','e','g','O','w','n','e','r',0};
-#define INSTALLPROPERTY_REGOWNER WINELIB_NAME_AW(INSTALLPROPERTY_REGOWNER)
-
-/* MSI Version 3.0 and greater */
-#define INSTALLPROPERTY_UNINSTALLABLEA "Uninstallable"
-static const WCHAR INSTALLPROPERTY_UNINSTALLABLEW[] = {'U','n','i','n','s','t','a','l','l','a','b','l','e',0};
-#define INSTALLPROPERTY_UNINSTALLABLE WINELIB_NAME_AW(INSTALLPROPERTY_UNINSTALLABLE)
-
-#define INSTALLPROPERTY_PRODUCTSTATEA "State"
-static const WCHAR INSTALLPROPERTY_PRODUCTSTATEW[] = {'S','t','a','t','e',0};
-#define INSTALLPROPERTY_PRODUCTSTATE WINELIB_NAME_AW(INSTALLPROPERTY_PRODUCTSTATE)
-
-#define INSTALLPROPERTY_PATCHSTATEA "State"
-static const WCHAR INSTALLPROPERTY_PATCHSTATEW[] ={'S','t','a','t','e',0};
-#define INSTALLPROPERTY_PATCHSTATE WINELIB_NAME_AW(INSTALLPROPERTY_PATCHSTATE)
-
-#define INSTALLPROPERTY_PATCHTYPEA "PatchType"
-static const WCHAR INSTALLPROPERTY_PATCHTYPEW[] = {'P','a','t','c','h','T','y','p','e',0};
-#define INSTALLPROPERTY_PATCHTYPE WINELIB_NAME_AW(INSTALLPROPERTY_PATCHTYPE)
-
-#define INSTALLPROPERTY_LUAENABLEDA "LUAEnabled"
-static const WCHAR INSTALLPROPERTY_LUAENABLEDW[] = {'L','U','A','E','n','a','b','l','e','d',0};
-#define INSTALLPROPERTY_LUAENABLED WINELIB_NAME_AW(INSTALLPROPERTY_LUAENABLED)
-
-#define INSTALLPROPERTY_DISPLAYNAMEA "DisplayName"
-static const WCHAR INSTALLPROPERTY_DISPLAYNAMEW[] = {'D','i','s','p','l','a','y','N','a','m','e',0};
-#define INSTALLPROPERTY_DISPLAYNAME WINELIB_NAME_AW(INSTALLPROPERTY_DISPLAYNAME)
-
-#define INSTALLPROPERTY_MOREINFOURLA "MoreInfoURL"
-static const WCHAR INSTALLPROPERTY_MOREINFOURLW[] = {'M','o','r','e','I','n','f','o','U','R','L',0};
-#define INSTALLPROPERTY_MOREINFOURL WINELIB_NAME_AW(INSTALLPROPERTY_MOREINFOURL)
-
-/* Source List Info */
-#define INSTALLPROPERTY_LASTUSEDSOURCEA "LastUsedSource"
-static const WCHAR INSTALLPROPERTY_LASTUSEDSOURCEW[] = {'L','a','s','t','U','s','e','d','S','o','u','r','c','e',0};
-#define INSTALLPROPERTY_LASTUSEDSOURCE WINELIB_NAME_AW(INSTALLPROPERTY_LASTUSEDSOURCE)
-
-#define INSTALLPROPERTY_LASTUSEDTYPEA "LastUsedType"
-static const WCHAR INSTALLPROPERTY_LASTUSEDTYPEW[] = {'L','a','s','t','U','s','e','d','T','y','p','e',0};
-#define INSTALLPROPERTY_LASTUSEDTYPE WINELIB_NAME_AW(INSTALLPROPERTY_LASTUSEDTYPE)
-
-#define INSTALLPROPERTY_MEDIAPACKAGEPATHA "MediaPackagePath"
-static const WCHAR INSTALLPROPERTY_MEDIAPACKAGEPATHW[] = {'M','e','d','i','a','P','a','c','k','a','g','e','P','a','t','h',0};
-#define INSTALLPROPERTY_MEDIAPACKAGEPATH WINELIB_NAME_AW(INSTALLPROPERTY_MEDIAPACKAGEPATH)
-
-#define INSTALLPROPERTY_DISKPROMPTA "DiskPrompt"
-static const WCHAR INSTALLPROPERTY_DISKPROMPTW[] = {'D','i','s','k','P','r','o','m','p','t',0};
-#define INSTALLPROPERTY_DISKPROMPT WINELIB_NAME_AW(INSTALLPROPERTY_DISKPROMPT)
-
-typedef INT (CALLBACK *INSTALLUI_HANDLERA)(LPVOID, UINT, LPCSTR);
-typedef INT (CALLBACK *INSTALLUI_HANDLERW)(LPVOID, UINT, LPCWSTR);
-typedef INT (CALLBACK *INSTALLUI_HANDLER_RECORD)(LPVOID, UINT, MSIHANDLE);
-typedef INSTALLUI_HANDLER_RECORD* PINSTALLUI_HANDLER_RECORD;
-
-UINT
-WINAPI
-MsiAdvertiseProductA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ LANGID);
-
-UINT
-WINAPI
-MsiAdvertiseProductW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ LANGID);
-
-#define     MsiAdvertiseProduct WINELIB_NAME_AW(MsiAdvertiseProduct)
-
-UINT
-WINAPI
-MsiAdvertiseProductExA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ LANGID,
-  _In_ DWORD,
-  _In_ DWORD);
-
-UINT
-WINAPI
-MsiAdvertiseProductExW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ LANGID,
-  _In_ DWORD,
-  _In_ DWORD);
-
-#define     MsiAdvertiseProductEx WINELIB_NAME_AW(MsiAdvertiseProductEx)
-
-UINT WINAPI MsiInstallProductA(_In_ LPCSTR, _In_opt_ LPCSTR);
-UINT WINAPI MsiInstallProductW(_In_ LPCWSTR, _In_opt_ LPCWSTR);
-#define     MsiInstallProduct WINELIB_NAME_AW(MsiInstallProduct)
-
-UINT WINAPI MsiReinstallProductA(_In_ LPCSTR, _In_ DWORD);
-UINT WINAPI MsiReinstallProductW(_In_ LPCWSTR, _In_ DWORD);
-#define     MsiReinstallProduct WINELIB_NAME_AW(MsiReinstallProduct)
-
-UINT
-WINAPI
-MsiApplyPatchA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ INSTALLTYPE,
-  _In_opt_ LPCSTR);
-
-UINT
-WINAPI
-MsiApplyPatchW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ INSTALLTYPE,
-  _In_opt_ LPCWSTR);
-
-#define     MsiApplyPatch WINELIB_NAME_AW(MsiApplyPatch)
-
-UINT WINAPI MsiEnumComponentCostsA(MSIHANDLE, LPCSTR, DWORD, INSTALLSTATE, LPSTR, LPDWORD, LPINT, LPINT);
-UINT WINAPI MsiEnumComponentCostsW(MSIHANDLE, LPCWSTR, DWORD, INSTALLSTATE, LPWSTR, LPDWORD, LPINT, LPINT);
-#define     MsiEnumComponentCosts WINELIB_NAME_AW(MsiEnumComponentCosts)
-
-UINT
-WINAPI
-MsiEnumProductsA(
-  _In_ DWORD,
-  _Out_writes_(MAX_GUID_CHARS + 1) LPSTR);
-
-UINT
-WINAPI
-MsiEnumProductsW(
-  _In_ DWORD,
-  _Out_writes_(MAX_GUID_CHARS + 1) LPWSTR);
-
-#define     MsiEnumProducts WINELIB_NAME_AW(MsiEnumProducts)
-
-UINT
-WINAPI
-MsiEnumProductsExA(
-  _In_opt_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ DWORD,
-  _In_ DWORD,
-  _Out_writes_opt_(MAX_GUID_CHARS + 1) CHAR[39],
-  _Out_opt_ MSIINSTALLCONTEXT*,
-  _Out_writes_opt_(*pcchSid) LPSTR,
-  _Inout_opt_ LPDWORD pcchSid);
-
-UINT
-WINAPI
-MsiEnumProductsExW(
-  _In_opt_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ DWORD,
-  _In_ DWORD,
-  _Out_writes_opt_(MAX_GUID_CHARS + 1) WCHAR[39],
-  _Out_opt_ MSIINSTALLCONTEXT*,
-  _Out_writes_opt_(*pcchSid) LPWSTR,
-  _Inout_opt_ LPDWORD pcchSid);
-
-#define     MsiEnumProductsEx WINELIB_NAME_AW(MsiEnumProductsEx)
-
-UINT
-WINAPI
-MsiEnumFeaturesA(
-  _In_ LPCSTR,
-  _In_ DWORD,
-  _Out_writes_(MAX_FEATURE_CHARS + 1) LPSTR,
-  _Out_writes_opt_(MAX_FEATURE_CHARS + 1) LPSTR);
-
-UINT
-WINAPI
-MsiEnumFeaturesW(
-  _In_ LPCWSTR,
-  _In_ DWORD,
-  _Out_writes_(MAX_FEATURE_CHARS + 1) LPWSTR,
-  _Out_writes_opt_(MAX_FEATURE_CHARS + 1) LPWSTR);
-
-#define     MsiEnumFeatures WINELIB_NAME_AW(MsiEnumFeatures)
-
-UINT
-WINAPI
-MsiEnumComponentsA(
-  _In_ DWORD,
-  _Out_writes_(MAX_GUID_CHARS + 1) LPSTR);
-
-UINT
-WINAPI
-MsiEnumComponentsW(
-  _In_ DWORD,
-  _Out_writes_(MAX_GUID_CHARS + 1) LPWSTR);
-
-#define     MsiEnumComponents WINELIB_NAME_AW(MsiEnumComponents)
-
-UINT
-WINAPI
-MsiEnumComponentsExA(
-  _In_opt_ LPCSTR,
-  _In_ DWORD,
-  _In_ DWORD,
-  _Out_writes_opt_(MAX_GUID_CHARS + 1) CHAR[39],
-  _Out_opt_ MSIINSTALLCONTEXT *,
-  _Out_writes_opt_(*pcchSid) LPSTR,
-  _Inout_opt_ LPDWORD pcchSid);
-
-UINT
-WINAPI
-MsiEnumComponentsExW(
-  _In_opt_ LPCWSTR,
-  _In_ DWORD,
-  _In_ DWORD,
-  _Out_writes_opt_(MAX_GUID_CHARS + 1) WCHAR[39],
-  _Out_opt_ MSIINSTALLCONTEXT *,
-  _Out_writes_opt_(*pcchSid) LPWSTR,
-  _Inout_opt_ LPDWORD pcchSid);
-
-#define     MsiEnumComponentsEx WINELIB_NAME_AW(MsiEnumComponentsEx)
-
-UINT
-WINAPI
-MsiEnumClientsA(
-  _In_ LPCSTR,
-  _In_ DWORD,
-  _Out_writes_(MAX_GUID_CHARS + 1) LPSTR);
-
-UINT
-WINAPI
-MsiEnumClientsW(
-  _In_ LPCWSTR,
-  _In_ DWORD,
-  _Out_writes_(MAX_GUID_CHARS + 1) LPWSTR);
-
-#define     MsiEnumClients WINELIB_NAME_AW(MsiEnumClients)
-
-UINT WINAPI MsiEnumClientsExA(_In_ LPCSTR szComponent, _In_opt_ LPCSTR szUserSid, _In_ DWORD dwContext, _In_ DWORD dwProductIndex, _Out_opt_ CHAR szProductBuf[39], _Out_opt_ MSIINSTALLCONTEXT* pdwInstalledContext, _Out_opt_ LPSTR szSid, _Inout_opt_ LPDWORD pcchSid);
-UINT WINAPI MsiEnumClientsExW(_In_ LPCWSTR szComponent, _In_opt_ LPCWSTR szUserSid, _In_ DWORD dwContext, _In_ DWORD dwProductIndex, _Out_opt_ WCHAR szProductBuf[39], _Out_opt_ MSIINSTALLCONTEXT* pdwInstalledContext, _Out_opt_ LPWSTR szSid, _Inout_opt_ LPDWORD pcchSid);
-#define     MsiEnumClientsEx WINELIB_NAME_AW(MsiEnumClientsEx)
-
-UINT WINAPI MsiOpenPackageA(_In_ LPCSTR, _Out_ MSIHANDLE*);
-UINT WINAPI MsiOpenPackageW(_In_ LPCWSTR, _Out_ MSIHANDLE*);
-#define     MsiOpenPackage WINELIB_NAME_AW(MsiOpenPackage)
-
-UINT WINAPI MsiOpenPackageExA(_In_ LPCSTR, _In_ DWORD, _Out_ MSIHANDLE*);
-UINT WINAPI MsiOpenPackageExW(_In_ LPCWSTR, _In_ DWORD, _Out_ MSIHANDLE*);
-#define     MsiOpenPackageEx WINELIB_NAME_AW(MsiOpenPackageEx)
-
-UINT WINAPI MsiOpenProductA(_In_ LPCSTR, _Out_ MSIHANDLE*);
-UINT WINAPI MsiOpenProductW(_In_ LPCWSTR, _Out_ MSIHANDLE*);
-#define     MsiOpenProduct WINELIB_NAME_AW(MsiOpenProduct)
-
-UINT
-WINAPI
-MsiGetProductPropertyA(
-  _In_ MSIHANDLE,
-  _In_ LPCSTR,
-  _Out_writes_opt_(*pcchValueBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchValueBuf);
-
-UINT
-WINAPI
-MsiGetProductPropertyW(
-  _In_ MSIHANDLE,
-  _In_ LPCWSTR,
-  _Out_writes_opt_(*pcchValueBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchValueBuf);
-
-#define     MsiGetProductProperty WINELIB_NAME_AW(MsiGetProductProperty)
-
-UINT WINAPI MsiVerifyPackageA(_In_ LPCSTR);
-UINT WINAPI MsiVerifyPackageW(_In_ LPCWSTR);
-#define     MsiVerifyPackage WINELIB_NAME_AW(MsiVerifyPackage)
-
-UINT
-WINAPI
-MsiQueryComponentStateA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ LPCSTR,
-  _Out_opt_ INSTALLSTATE*);
-
-UINT
-WINAPI
-MsiQueryComponentStateW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ LPCWSTR,
-  _Out_opt_ INSTALLSTATE*);
-
-#define     MsiQueryComponentState WINELIB_NAME_AW(MsiQueryComponentState)
-
-INSTALLSTATE WINAPI MsiQueryProductStateA(_In_ LPCSTR);
-INSTALLSTATE WINAPI MsiQueryProductStateW(_In_ LPCWSTR);
-#define      MsiQueryProductState WINELIB_NAME_AW(MsiQueryProductState)
-
-UINT WINAPI MsiConfigureProductA(_In_ LPCSTR, _In_ int, _In_ INSTALLSTATE);
-UINT WINAPI MsiConfigureProductW(_In_ LPCWSTR, _In_ int, _In_ INSTALLSTATE);
-#define     MsiConfigureProduct WINELIB_NAME_AW(MsiConfigureProduct)
-
-UINT
-WINAPI
-MsiConfigureProductExA(
-  _In_ LPCSTR,
-  _In_ int,
-  _In_ INSTALLSTATE,
-  _In_opt_ LPCSTR);
-
-UINT
-WINAPI
-MsiConfigureProductExW(
-  _In_ LPCWSTR,
-  _In_ int,
-  _In_ INSTALLSTATE,
-  _In_opt_ LPCWSTR);
-
-#define     MsiConfigureProductEx WINELIB_NAME_AW(MsiConfigureProductEx)
-
-UINT
-WINAPI
-MsiConfigureFeatureA(
-  _In_ LPCSTR,
-  _In_ LPCSTR,
-  _In_ INSTALLSTATE);
-
-UINT
-WINAPI
-MsiConfigureFeatureW(
-  _In_ LPCWSTR,
-  _In_ LPCWSTR,
-  _In_ INSTALLSTATE);
-
-#define     MsiConfigureFeature WINELIB_NAME_AW(MsiConfigureFeature)
-
-UINT
-WINAPI
-MsiGetProductCodeA(
-  _In_ LPCSTR,
-  _Out_writes_(MAX_GUID_CHARS + 1) LPSTR);
-
-UINT
-WINAPI
-MsiGetProductCodeW(
-  _In_ LPCWSTR,
-  _Out_writes_(MAX_GUID_CHARS + 1) LPWSTR);
-
-#define     MsiGetProductCode WINELIB_NAME_AW(MsiGetProductCode)
-
-UINT
-WINAPI
-MsiGetProductInfoA(
-  _In_ LPCSTR,
-  _In_ LPCSTR,
-  _Out_writes_opt_(*pcchValueBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchValueBuf);
-
-UINT
-WINAPI
-MsiGetProductInfoW(
-  _In_ LPCWSTR,
-  _In_ LPCWSTR,
-  _Out_writes_opt_(*pcchValueBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchValueBuf);
-
-#define     MsiGetProductInfo WINELIB_NAME_AW(MsiGetProductInfo)
-
-UINT
-WINAPI
-MsiGetProductInfoExA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ LPCSTR,
-  _Out_writes_opt_(*pcchValue) LPSTR,
-  _Inout_opt_ LPDWORD pcchValue);
-
-UINT
-WINAPI
-MsiGetProductInfoExW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ LPCWSTR,
-  _Out_writes_opt_(*pcchValue) LPWSTR,
-  _Inout_opt_ LPDWORD pcchValue);
-
-#define     MsiGetProductInfoEx WINELIB_NAME_AW(MsiGetProductInfoEx)
-
-UINT
-WINAPI
-MsiGetPatchInfoExA(
-  _In_ LPCSTR,
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ LPCSTR,
-  _Out_writes_opt_(*pcchValue) LPSTR,
-  _Inout_opt_ LPDWORD pcchValue);
-
-UINT
-WINAPI
-MsiGetPatchInfoExW(
-  _In_ LPCWSTR,
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ LPCWSTR,
-  _Out_writes_opt_(*pcchValue) LPWSTR,
-  _Inout_opt_ LPDWORD pcchValue);
-
-#define     MsiGetPatchInfoEx WINELIB_NAME_AW(MsiGetPatchInfoEx)
-
-UINT
-WINAPI
-MsiGetPatchInfoA(
-  _In_ LPCSTR,
-  _In_ LPCSTR,
-  _Out_writes_opt_(*pcchValueBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchValueBuf);
-
-UINT
-WINAPI
-MsiGetPatchInfoW(
-  _In_ LPCWSTR,
-  _In_ LPCWSTR,
-  _Out_writes_opt_(*pcchValueBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchValueBuf);
-
-#define     MsiGetPatchInfo WINELIB_NAME_AW(MsiGetPatchInfo)
-
-UINT WINAPI MsiEnableLogA(_In_ DWORD, _In_opt_ LPCSTR, _In_ DWORD);
-UINT WINAPI MsiEnableLogW(_In_ DWORD, _In_opt_ LPCWSTR, _In_ DWORD);
-#define     MsiEnableLog WINELIB_NAME_AW(MsiEnableLog)
-
-INSTALLUI_HANDLERA
-WINAPI
-MsiSetExternalUIA(
-  _In_opt_ INSTALLUI_HANDLERA,
-  _In_ DWORD,
-  _In_opt_ LPVOID);
-
-INSTALLUI_HANDLERW
-WINAPI
-MsiSetExternalUIW(
-  _In_opt_ INSTALLUI_HANDLERW,
-  _In_ DWORD,
-  _In_opt_ LPVOID);
-
-#define MsiSetExternalUI WINELIB_NAME_AW(MsiSetExternalUI)
-
-INSTALLSTATE
-WINAPI
-MsiGetComponentPathA(
-  _In_ LPCSTR,
-  _In_ LPCSTR,
-  _Out_writes_opt_(*pcchBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchBuf);
-
-INSTALLSTATE
-WINAPI
-MsiGetComponentPathW(
-  _In_ LPCWSTR,
-  _In_ LPCWSTR,
-  _Out_writes_opt_(*pcchBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchBuf);
-
-#define MsiGetComponentPath WINELIB_NAME_AW(MsiGetComponentPath)
-
-INSTALLSTATE WINAPI MsiQueryFeatureStateA(_In_ LPCSTR, _In_ LPCSTR);
-INSTALLSTATE WINAPI MsiQueryFeatureStateW(_In_ LPCWSTR, _In_ LPCWSTR);
-#define MsiQueryFeatureState WINELIB_NAME_AW(MsiQueryFeatureState)
-
-UINT
-WINAPI
-MsiQueryFeatureStateExA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ LPCSTR,
-  _Out_opt_ INSTALLSTATE*);
-
-UINT
-WINAPI
-MsiQueryFeatureStateExW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ LPCWSTR,
-  _Out_opt_ INSTALLSTATE*);
-
-#define     MsiQueryFeatureStateEx WINELIB_NAME_AW(MsiQueryFeatureStateEx)
-
-UINT
-WINAPI
-MsiGetFeatureInfoA(
-  _In_ MSIHANDLE,
-  _In_ LPCSTR,
-  _Out_opt_ LPDWORD,
-  _Out_writes_opt_(*pcchTitleBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchTitleBuf,
-  _Out_writes_opt_(*pcchHelpBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchHelpBuf);
-
-UINT
-WINAPI
-MsiGetFeatureInfoW(
-  _In_ MSIHANDLE,
-  _In_ LPCWSTR,
-  _Out_opt_ LPDWORD,
-  _Out_writes_opt_(*pcchTitleBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchTitleBuf,
-  _Out_writes_opt_(*pcchHelpBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchHelpBuf);
-
-#define MsiGetFeatureInfo WINELIB_NAME_AW(MsiGetFeatureInfo)
-
-UINT
-WINAPI
-MsiGetFeatureUsageA(
-  _In_ LPCSTR,
-  _In_ LPCSTR,
-  _Out_opt_ LPDWORD,
-  _Out_opt_ LPWORD);
-
-UINT
-WINAPI
-MsiGetFeatureUsageW(
-  _In_ LPCWSTR,
-  _In_ LPCWSTR,
-  _Out_opt_ LPDWORD,
-  _Out_opt_ LPWORD);
-
-#define MsiGetFeatureUsage WINELIB_NAME_AW(MsiGetFeatureUsage)
-
-UINT
-WINAPI
-MsiEnumRelatedProductsA(
-  _In_ LPCSTR,
-  _Reserved_ DWORD,
-  _In_ DWORD,
-  _Out_writes_(MAX_GUID_CHARS + 1) LPSTR);
-
-UINT
-WINAPI
-MsiEnumRelatedProductsW(
-  _In_ LPCWSTR,
-  _Reserved_ DWORD,
-  _In_ DWORD,
-  _Out_writes_(MAX_GUID_CHARS + 1) LPWSTR);
-
-#define MsiEnumRelatedProducts WINELIB_NAME_AW(MsiEnumRelatedProducts)
-
-UINT
-WINAPI
-MsiProvideAssemblyA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ DWORD,
-  _In_ DWORD,
-  _Out_writes_opt_(*pcchPathBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchPathBuf);
-
-UINT
-WINAPI
-MsiProvideAssemblyW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ DWORD,
-  _In_ DWORD,
-  _Out_writes_opt_(*pcchPathBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchPathBuf);
-
-#define MsiProvideAssembly WINELIB_NAME_AW(MsiProvideAssembly)
-
-UINT
-WINAPI
-MsiEnumComponentQualifiersA(
-  _In_ LPCSTR,
-  _In_ DWORD,
-  _Out_writes_(*pcchQualifierBuf) LPSTR,
-  _Inout_ LPDWORD pcchQualifierBuf,
-  _Out_writes_opt_(*pcchApplicationDataBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchApplicationDataBuf);
-
-UINT
-WINAPI
-MsiEnumComponentQualifiersW(
-  _In_ LPCWSTR,
-  _In_ DWORD,
-  _Out_writes_(*pcchQualifierBuf) LPWSTR,
-  _Inout_ LPDWORD pcchQualifierBuf,
-  _Out_writes_opt_(*pcchApplicationDataBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchApplicationDataBuf);
-
-#define MsiEnumComponentQualifiers WINELIB_NAME_AW(MsiEnumComponentQualifiers)
-
-UINT
-WINAPI
-MsiGetFileVersionA(
-  _In_ LPCSTR,
-  _Out_writes_opt_(*pcchVersionBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchVersionBuf,
-  _Out_writes_opt_(*pcchLangBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchLangBuf);
-
-UINT
-WINAPI
-MsiGetFileVersionW(
-  _In_ LPCWSTR,
-  _Out_writes_opt_(*pcchVersionBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchVersionBuf,
-  _Out_writes_opt_(*pcchLangBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchLangBuf);
-
-#define MsiGetFileVersion WINELIB_NAME_AW(MsiGetFileVersion)
-
-UINT WINAPI MsiMessageBoxA(HWND, LPCSTR, LPCSTR, UINT, WORD, DWORD);
-UINT WINAPI MsiMessageBoxW(HWND, LPCWSTR, LPCWSTR, UINT, WORD, DWORD);
-#define MsiMessageBox WINELIB_NAME_AW(MsiMessageBox)
-
-UINT
-WINAPI
-MsiProvideQualifiedComponentExA(
-  _In_ LPCSTR,
-  _In_ LPCSTR,
-  _In_ DWORD,
-  _In_opt_ LPCSTR,
-  _Reserved_ DWORD,
-  _Reserved_ DWORD,
-  _Out_writes_opt_(*pcchPathBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchPathBuf);
-
-UINT
-WINAPI
-MsiProvideQualifiedComponentExW(
-  _In_ LPCWSTR,
-  _In_ LPCWSTR,
-  _In_ DWORD,
-  _In_opt_ LPCWSTR,
-  _Reserved_ DWORD,
-  _Reserved_ DWORD,
-  _Out_writes_opt_(*pcchPathBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchPathBuf);
-
-#define MsiProvideQualifiedComponentEx WINELIB_NAME_AW(MsiProvideQualifiedComponentEx)
-
-UINT
-WINAPI
-MsiProvideQualifiedComponentA(
-  _In_ LPCSTR,
-  _In_ LPCSTR,
-  _In_ DWORD,
-  _Out_writes_opt_(*pcchPathBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchPathBuf);
-
-UINT
-WINAPI
-MsiProvideQualifiedComponentW(
-  _In_ LPCWSTR,
-  _In_ LPCWSTR,
-  _In_ DWORD,
-  _Out_writes_opt_(*pcchPathBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchPathBuf);
-
-#define MsiProvideQualifiedComponent WINELIB_NAME_AW(MsiProvideQualifiedComponent)
-
-USERINFOSTATE
-WINAPI
-MsiGetUserInfoA(
-  _In_ LPCSTR,
-  _Out_writes_opt_(*pcchUserNameBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchUserNameBuf,
-  _Out_writes_opt_(*pcchOrgNameBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchOrgNameBuf,
-  _Out_writes_opt_(*pcchSerialBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchSerialBuf);
-
-USERINFOSTATE
-WINAPI
-MsiGetUserInfoW(
-  _In_ LPCWSTR,
-  _Out_writes_opt_(*pcchUserNameBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchUserNameBuf,
-  _Out_writes_opt_(*pcchOrgNameBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchOrgNameBuf,
-  _Out_writes_opt_(*pcchSerialBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchSerialBuf);
-
-#define MsiGetUserInfo WINELIB_NAME_AW(MsiGetUserInfo)
-
-UINT WINAPI MsiProvidedComponentA(LPCSTR, LPCSTR, LPCSTR, DWORD, LPSTR, LPDWORD);
-UINT WINAPI MsiProvideComponentW(LPCWSTR, LPCWSTR, LPCWSTR, DWORD, LPWSTR, LPDWORD);
-#define MsiProvideComponent WINELIB_NAME_AW(MsiProvideComponent)
-
-UINT WINAPI MsiCollectUserInfoA(_In_ LPCSTR);
-UINT WINAPI MsiCollectUserInfoW(_In_ LPCWSTR);
-#define MsiCollectUserInfo WINELIB_NAME_AW(MsiCollectUserInfo)
-
-UINT WINAPI MsiReinstallFeatureA(_In_ LPCSTR, _In_ LPCSTR, _In_ DWORD);
-UINT WINAPI MsiReinstallFeatureW(_In_ LPCWSTR, _In_ LPCWSTR, _In_ DWORD);
-#define MsiReinstallFeature WINELIB_NAME_AW(MsiReinstallFeature)
-
-UINT
-WINAPI
-MsiGetShortcutTargetA(
-  _In_ LPCSTR,
-  _Out_writes_opt_(MAX_GUID_CHARS + 1) LPSTR,
-  _Out_writes_opt_(MAX_FEATURE_CHARS + 1) LPSTR,
-  _Out_writes_opt_(MAX_GUID_CHARS + 1) LPSTR);
-
-UINT
-WINAPI
-MsiGetShortcutTargetW(
-  _In_ LPCWSTR,
-  _Out_writes_opt_(MAX_GUID_CHARS + 1) LPWSTR,
-  _Out_writes_opt_(MAX_FEATURE_CHARS + 1) LPWSTR,
-  _Out_writes_opt_(MAX_GUID_CHARS + 1) LPWSTR);
-
-#define MsiGetShortcutTarget WINELIB_NAME_AW(MsiGetShortcutTarget)
-
-INSTALLSTATE WINAPI MsiUseFeatureW(_In_ LPCWSTR, _In_ LPCWSTR);
-INSTALLSTATE WINAPI MsiUseFeatureA(_In_ LPCSTR, _In_ LPCSTR);
-#define MsiUseFeature WINELIB_NAME_AW(MsiUseFeature)
-
-INSTALLSTATE
-WINAPI
-MsiUseFeatureExW(
-  _In_ LPCWSTR,
-  _In_ LPCWSTR,
-  _In_ DWORD,
-  _Reserved_ DWORD);
-
-INSTALLSTATE
-WINAPI
-MsiUseFeatureExA(
-  _In_ LPCSTR,
-  _In_ LPCSTR,
-  _In_ DWORD,
-  _Reserved_ DWORD);
-
-#define MsiUseFeatureEx WINELIB_NAME_AW(MsiUseFeatureEx)
-
-HRESULT
-WINAPI
-MsiGetFileSignatureInformationA(
-  _In_ LPCSTR,
-  _In_ DWORD,
-  _Outptr_ PCCERT_CONTEXT*,
-  _Out_writes_bytes_opt_(*pcbHashData) LPBYTE,
-  _Inout_opt_ LPDWORD pcbHashData);
-
-HRESULT
-WINAPI
-MsiGetFileSignatureInformationW(
-  _In_ LPCWSTR,
-  _In_ DWORD,
-  _Outptr_ PCCERT_CONTEXT*,
-  _Out_writes_bytes_opt_(*pcbHashData) LPBYTE,
-  _Inout_opt_ LPDWORD pcbHashData);
-
-#define MsiGetFileSignatureInformation WINELIB_NAME_AW(MsiGetFileSignatureInformation)
-
-INSTALLSTATE
-WINAPI
-MsiLocateComponentA(
-  _In_ LPCSTR,
-  _Out_writes_opt_(*pcchBuf) LPSTR,
-  _Inout_opt_ LPDWORD pcchBuf);
-
-INSTALLSTATE
-WINAPI
-MsiLocateComponentW(
-  _In_ LPCWSTR,
-  _Out_writes_opt_(*pcchBuf) LPWSTR,
-  _Inout_opt_ LPDWORD pcchBuf);
-
-#define  MsiLocateComponent WINELIB_NAME_AW(MsiLocateComponent)
-
-UINT
-WINAPI
-MsiSourceListAddSourceA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _Reserved_ DWORD,
-  _In_ LPCSTR);
-
-UINT
-WINAPI
-MsiSourceListAddSourceW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _Reserved_ DWORD,
-  _In_ LPCWSTR);
-
-#define     MsiSourceListAddSource WINELIB_NAME_AW(MsiSourceListAddSource)
-
-UINT
-WINAPI
-MsiSourceListEnumMediaDisksA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ DWORD,
-  _Out_opt_ LPDWORD,
-  _Out_writes_opt_(*pcchVolumeLabel) LPSTR,
-  _Inout_opt_ LPDWORD pcchVolumeLabel,
-  _Out_writes_opt_(*pcchDiskPrompt) LPSTR,
-  _Inout_opt_ LPDWORD pcchDiskPrompt);
-
-UINT
-WINAPI
-MsiSourceListEnumMediaDisksW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ DWORD,
-  _Out_opt_ LPDWORD,
-  _Out_writes_opt_(*pcchVolumeLabel) LPWSTR,
-  _Inout_opt_ LPDWORD pcchVolumeLabel,
-  _Out_writes_opt_(*pcchDiskPrompt) LPWSTR,
-  _Inout_opt_ LPDWORD pcchDiskPrompt);
-
-#define     MsiSourceListEnumMediaDisks WINELIB_NAME_AW(MsiSourceListEnumMediaDisks)
-
-UINT
-WINAPI
-MsiSourceListEnumSourcesA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ DWORD,
-  _Out_writes_opt_(*pcchSource) LPSTR,
-  _Inout_opt_ LPDWORD pcchSource);
-
-UINT
-WINAPI
-MsiSourceListEnumSourcesW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ DWORD,
-  _Out_writes_opt_(*pcchSource) LPWSTR,
-  _Inout_opt_ LPDWORD pcchSource);
-
-#define     MsiSourceListEnumSources WINELIB_NAME_AW(MsiSourceListEnumSources)
-
-UINT
-WINAPI
-MsiSourceListClearSourceA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ LPCSTR);
-
-UINT
-WINAPI
-MsiSourceListClearSourceW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ LPCWSTR);
-
-#define     MsiSourceListClearSource WINELIB_NAME_AW(MsiSourceListClearSource)
-
-UINT
-WINAPI
-MsiSourceListClearAllA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _Reserved_ DWORD);
-
-UINT
-WINAPI
-MsiSourceListClearAllW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _Reserved_ DWORD);
-
-#define     MsiSourceListClearAll WINELIB_NAME_AW(MsiSourceListClearAll)
-
-UINT
-WINAPI
-MsiSourceListGetInfoA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ LPCSTR,
-  _Out_writes_opt_(*pcchValue) LPSTR,
-  _Inout_opt_ LPDWORD pcchValue);
-
-UINT
-WINAPI
-MsiSourceListGetInfoW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ LPCWSTR,
-  _Out_writes_opt_(*pcchValue) LPWSTR,
-  _Inout_opt_ LPDWORD pcchValue);
-
-#define     MsiSourceListGetInfo WINELIB_NAME_AW(MsiSourceListGetInfo)
-
-UINT
-WINAPI
-MsiSourceListSetInfoA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ LPCSTR,
-  _In_ LPCSTR);
-
-UINT
-WINAPI
-MsiSourceListSetInfoW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ LPCWSTR,
-  _In_ LPCWSTR);
-
-#define     MsiSourceListSetInfo WINELIB_NAME_AW(MsiSourceListSetInfo)
-
-UINT
-WINAPI
-MsiSourceListAddSourceExA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ LPCSTR,
-  _In_ DWORD);
-
-UINT
-WINAPI
-MsiSourceListAddSourceExW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ LPCWSTR,
-  _In_ DWORD);
-
-#define     MsiSourceListAddSourceEx WINELIB_NAME_AW(MsiSourceListAddSourceEx)
-
-UINT
-WINAPI
-MsiSourceListAddMediaDiskA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ DWORD,
-  _In_opt_ LPCSTR,
-  _In_opt_ LPCSTR);
-
-UINT
-WINAPI
-MsiSourceListAddMediaDiskW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD,
-  _In_ DWORD,
-  _In_opt_ LPCWSTR,
-  _In_opt_ LPCWSTR);
-
-#define     MsiSourceListAddMediaDisk WINELIB_NAME_AW(MsiSourceListAddMediaDisk)
-
-UINT WINAPI MsiSourceListForceResolutionA(const CHAR*, const CHAR*, DWORD);
-UINT WINAPI MsiSourceListForceResolutionW(const WCHAR*, const WCHAR*, DWORD);
-#define     MsiSourceListForceResolution WINELIB_NAME_AW(MsiSourceListForceResolution)
-
-UINT
-WINAPI
-MsiEnumPatchesA(
-  _In_ LPCSTR,
-  _In_ DWORD,
-  _Out_writes_(MAX_GUID_CHARS + 1) LPSTR,
-  _Out_writes_(*pcchTransformsBuf) LPSTR,
-  _Inout_ LPDWORD pcchTransformsBuf);
-
-UINT
-WINAPI
-MsiEnumPatchesW(
-  _In_ LPCWSTR,
-  _In_ DWORD,
-  _Out_writes_(MAX_GUID_CHARS + 1) LPWSTR,
-  _Out_writes_(*pcchTransformsBuf) LPWSTR,
-  _Inout_ LPDWORD pcchTransformsBuf);
-
-#define     MsiEnumPatches WINELIB_NAME_AW(MsiEnumPatches)
-
-UINT
-WINAPI
-MsiEnumPatchesExA(
-  _In_opt_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ DWORD,
-  _In_ DWORD,
-  _In_ DWORD,
-  _Out_writes_opt_(MAX_GUID_CHARS + 1) LPSTR,
-  _Out_writes_opt_(MAX_GUID_CHARS + 1) LPSTR,
-  _Out_opt_ MSIINSTALLCONTEXT*,
-  _Out_writes_opt_(*pcchTargetUserSid) LPSTR,
-  _Inout_opt_ LPDWORD pcchTargetUserSid);
-
-UINT
-WINAPI
-MsiEnumPatchesExW(
-  _In_opt_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ DWORD,
-  _In_ DWORD,
-  _In_ DWORD,
-  _Out_writes_opt_(MAX_GUID_CHARS + 1) LPWSTR,
-  _Out_writes_opt_(MAX_GUID_CHARS + 1) LPWSTR,
-  _Out_opt_ MSIINSTALLCONTEXT*,
-  _Out_writes_opt_(*pcchTargetUserSid) LPWSTR,
-  _Inout_opt_ LPDWORD pcchTargetUserSid);
-
-#define     MsiEnumPatchesEx WINELIB_NAME_AW(MsiEnumPatchesEx)
-
-UINT
-WINAPI
-MsiGetFileHashA(
-  _In_ LPCSTR,
-  _In_ DWORD,
-  _Inout_ PMSIFILEHASHINFO);
-
-UINT
-WINAPI
-MsiGetFileHashW(
-  _In_ LPCWSTR,
-  _In_ DWORD,
-  _Inout_ PMSIFILEHASHINFO);
-
-#define     MsiGetFileHash WINELIB_NAME_AW(MsiGetFileHash)
-
-UINT
-WINAPI
-MsiAdvertiseScriptA(
-  _In_ LPCSTR,
-  _In_ DWORD,
-  _In_opt_ PHKEY,
-  _In_ BOOL);
-
-UINT
-WINAPI
-MsiAdvertiseScriptW(
-  _In_ LPCWSTR,
-  _In_ DWORD,
-  _In_opt_ PHKEY,
-  _In_ BOOL);
-
-#define     MsiAdvertiseScript WINELIB_NAME_AW(MsiAdvertiseScript)
-
-UINT WINAPI MsiIsProductElevatedA(_In_ LPCSTR, _Out_ BOOL *);
-UINT WINAPI MsiIsProductElevatedW(_In_ LPCWSTR, _Out_ BOOL *);
-#define     MsiIsProductElevated WINELIB_NAME_AW(MsiIsProductElevated)
-
-UINT WINAPI MsiDatabaseMergeA(MSIHANDLE, MSIHANDLE, LPCSTR);
-UINT WINAPI MsiDatabaseMergeW(MSIHANDLE, MSIHANDLE, LPCWSTR);
-#define     MsiDatabaseMerge WINELIB_NAME_AW(MsiDatabaseMerge)
-
-UINT
-WINAPI
-MsiInstallMissingComponentA(
-  _In_ LPCSTR,
-  _In_ LPCSTR,
-  _In_ INSTALLSTATE);
-
-UINT
-WINAPI
-MsiInstallMissingComponentW(
-  _In_ LPCWSTR,
-  _In_ LPCWSTR,
-  _In_ INSTALLSTATE);
-
-#define     MsiInstallMissingComponent WINELIB_NAME_AW(MsiInstallMissingComponent)
-
-UINT
-WINAPI
-MsiDetermineApplicablePatchesA(
-  _In_ LPCSTR,
-  _In_ DWORD cPatchInfo,
-  _Inout_updates_(cPatchInfo) PMSIPATCHSEQUENCEINFOA);
-
-UINT
-WINAPI
-MsiDetermineApplicablePatchesW(
-  _In_ LPCWSTR,
-  _In_ DWORD cPatchInfo,
-  _Inout_updates_(cPatchInfo) PMSIPATCHSEQUENCEINFOW);
-
-#define     MsiDetermineApplicablePatches WINELIB_NAME_AW(MsiDetermineApplicablePatches)
-
-UINT
-WINAPI
-MsiDeterminePatchSequenceA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD cPatchInfo,
-  _Inout_updates_(cPatchInfo) PMSIPATCHSEQUENCEINFOA);
-
-UINT
-WINAPI
-MsiDeterminePatchSequenceW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_ MSIINSTALLCONTEXT,
-  _In_ DWORD cPatchInfo,
-  _Inout_updates_(cPatchInfo) PMSIPATCHSEQUENCEINFOW);
-
-#define     MsiDeterminePatchSequence WINELIB_NAME_AW(MsiDeterminePatchSequence)
-
-UINT
-WINAPI
-MsiApplyMultiplePatchesA(
-  _In_ LPCSTR,
-  _In_opt_ LPCSTR,
-  _In_opt_ LPCSTR);
-
-UINT
-WINAPI
-MsiApplyMultiplePatchesW(
-  _In_ LPCWSTR,
-  _In_opt_ LPCWSTR,
-  _In_opt_ LPCWSTR);
-
-#define     MsiApplyMultiplePatches WINELIB_NAME_AW(MsiApplyMultiplePatches)
-
-UINT
-WINAPI
-MsiBeginTransactionA(
-  _In_ LPCSTR,
-  _In_ DWORD,
-  _Out_ MSIHANDLE *,
-  _Out_ HANDLE *);
-
-UINT
-WINAPI
-MsiBeginTransactionW(
-  _In_ LPCWSTR,
-  _In_ DWORD,
-  _Out_ MSIHANDLE *,
-  _Out_ HANDLE *);
-
-#define     MsiBeginTransaction WINELIB_NAME_AW(MsiBeginTransaction)
-
-UINT WINAPI MsiEndTransaction(_In_ DWORD);
-
-/* Non Unicode */
-UINT WINAPI MsiCloseHandle(MSIHANDLE);
-UINT WINAPI MsiCloseAllHandles(void);
-INSTALLUILEVEL WINAPI MsiSetInternalUI(_In_ INSTALLUILEVEL, _Inout_opt_ HWND*);
-
-UINT
-WINAPI
-MsiSetExternalUIRecord(
-  _In_opt_ INSTALLUI_HANDLER_RECORD,
-  _In_ DWORD,
-  _In_opt_ LPVOID,
-  _Out_opt_ PINSTALLUI_HANDLER_RECORD);
+  UINT WINAPI MsiCloseHandle(MSIHANDLE hAny);
+  UINT WINAPI MsiCloseAllHandles();
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __WINE_MSI_H */
+#ifdef __cplusplus
+class PMSIHANDLE {
+  MSIHANDLE m_h;
+public:
+  PMSIHANDLE():m_h(0){}
+  PMSIHANDLE(MSIHANDLE h):m_h(h) { }
+  ~PMSIHANDLE() { if (m_h!=0) MsiCloseHandle (m_h); }
+  void operator =(MSIHANDLE h) { if (m_h) MsiCloseHandle (m_h); m_h=h; }
+  operator MSIHANDLE() { return m_h; }
+  MSIHANDLE *operator &() { if (m_h) MsiCloseHandle (m_h); m_h = 0; return &m_h; }
+};
+#endif
+
+typedef enum tagINSTALLMESSAGE {
+  INSTALLMESSAGE_FATALEXIT = 0x00000000,INSTALLMESSAGE_ERROR = 0x01000000,INSTALLMESSAGE_WARNING = 0x02000000,INSTALLMESSAGE_USER = 0x03000000,
+  INSTALLMESSAGE_INFO = 0x04000000,INSTALLMESSAGE_FILESINUSE = 0x05000000,INSTALLMESSAGE_RESOLVESOURCE = 0x06000000,
+  INSTALLMESSAGE_OUTOFDISKSPACE = 0x07000000,INSTALLMESSAGE_ACTIONSTART = 0x08000000,INSTALLMESSAGE_ACTIONDATA = 0x09000000,
+  INSTALLMESSAGE_PROGRESS = 0x0A000000,INSTALLMESSAGE_COMMONDATA = 0x0B000000,INSTALLMESSAGE_INITIALIZE = 0x0C000000,
+  INSTALLMESSAGE_TERMINATE = 0x0D000000,INSTALLMESSAGE_SHOWDIALOG = 0x0E000000
+#if _WIN32_MSI >= 400
+  ,INSTALLMESSAGE_RMFILESINUSE = 0x19000000
+#endif
+#if _WIN32_MSI >= 450
+  ,INSTALLMESSAGE_INSTALLSTART = 0x1A000000
+  ,INSTALLMESSAGE_INSTALLEND = 0x1B000000
+#endif
+} INSTALLMESSAGE;
+
+typedef int (WINAPI *INSTALLUI_HANDLERA)(LPVOID pvContext,UINT iMessageType,LPCSTR szMessage);
+typedef int (WINAPI *INSTALLUI_HANDLERW)(LPVOID pvContext,UINT iMessageType,LPCWSTR szMessage);
+#define INSTALLUI_HANDLER __MINGW_NAME_AW(INSTALLUI_HANDLER)
+
+#if (_WIN32_MSI >= 310)
+typedef int (WINAPI *INSTALLUI_HANDLER_RECORD)(LPVOID pvContext,UINT iMessageType,MSIHANDLE hRecord);
+typedef INSTALLUI_HANDLER_RECORD *PINSTALLUI_HANDLER_RECORD;
+#endif
+
+typedef enum tagINSTALLUILEVEL {
+  INSTALLUILEVEL_NOCHANGE = 0,INSTALLUILEVEL_DEFAULT = 1,INSTALLUILEVEL_NONE = 2,INSTALLUILEVEL_BASIC = 3,INSTALLUILEVEL_REDUCED = 4,
+  INSTALLUILEVEL_FULL = 5,INSTALLUILEVEL_ENDDIALOG = 0x80,INSTALLUILEVEL_PROGRESSONLY = 0x40,INSTALLUILEVEL_HIDECANCEL = 0x20,
+  INSTALLUILEVEL_SOURCERESONLY = 0x100
+} INSTALLUILEVEL;
+
+typedef enum tagINSTALLSTATE {
+  INSTALLSTATE_NOTUSED = -7,INSTALLSTATE_BADCONFIG = -6,INSTALLSTATE_INCOMPLETE = -5,INSTALLSTATE_SOURCEABSENT = -4,INSTALLSTATE_MOREDATA = -3,
+  INSTALLSTATE_INVALIDARG = -2,INSTALLSTATE_UNKNOWN = -1,INSTALLSTATE_BROKEN = 0,INSTALLSTATE_ADVERTISED = 1,INSTALLSTATE_REMOVED = 1,
+  INSTALLSTATE_ABSENT = 2,INSTALLSTATE_LOCAL = 3,INSTALLSTATE_SOURCE = 4,INSTALLSTATE_DEFAULT = 5
+} INSTALLSTATE;
+
+typedef enum tagUSERINFOSTATE {
+  USERINFOSTATE_MOREDATA = -3,USERINFOSTATE_INVALIDARG = -2,USERINFOSTATE_UNKNOWN = -1,USERINFOSTATE_ABSENT = 0,
+  USERINFOSTATE_PRESENT = 1
+} USERINFOSTATE;
+
+typedef enum tagINSTALLLEVEL {
+  INSTALLLEVEL_DEFAULT = 0,INSTALLLEVEL_MINIMUM = 1,INSTALLLEVEL_MAXIMUM = 0xffff
+} INSTALLLEVEL;
+
+typedef enum tagREINSTALLMODE {
+  REINSTALLMODE_REPAIR = 0x00000001,REINSTALLMODE_FILEMISSING = 0x00000002,REINSTALLMODE_FILEOLDERVERSION = 0x00000004,
+  REINSTALLMODE_FILEEQUALVERSION = 0x00000008,REINSTALLMODE_FILEEXACT = 0x00000010,REINSTALLMODE_FILEVERIFY = 0x00000020,
+  REINSTALLMODE_FILEREPLACE = 0x00000040,REINSTALLMODE_MACHINEDATA = 0x00000080,REINSTALLMODE_USERDATA = 0x00000100,
+  REINSTALLMODE_SHORTCUT = 0x00000200,REINSTALLMODE_PACKAGE = 0x00000400
+} REINSTALLMODE;
+
+typedef enum tagINSTALLOGMODE {
+  INSTALLLOGMODE_FATALEXIT = (1 << (INSTALLMESSAGE_FATALEXIT >> 24)),INSTALLLOGMODE_ERROR = (1 << (INSTALLMESSAGE_ERROR >> 24)),
+  INSTALLLOGMODE_WARNING = (1 << (INSTALLMESSAGE_WARNING >> 24)),INSTALLLOGMODE_USER = (1 << (INSTALLMESSAGE_USER >> 24)),
+  INSTALLLOGMODE_INFO = (1 << (INSTALLMESSAGE_INFO >> 24)),INSTALLLOGMODE_RESOLVESOURCE = (1 << (INSTALLMESSAGE_RESOLVESOURCE >> 24)),
+  INSTALLLOGMODE_OUTOFDISKSPACE = (1 << (INSTALLMESSAGE_OUTOFDISKSPACE >> 24)),INSTALLLOGMODE_ACTIONSTART = (1 << (INSTALLMESSAGE_ACTIONSTART >> 24)),
+  INSTALLLOGMODE_ACTIONDATA = (1 << (INSTALLMESSAGE_ACTIONDATA >> 24)),INSTALLLOGMODE_COMMONDATA = (1 << (INSTALLMESSAGE_COMMONDATA >> 24)),
+  INSTALLLOGMODE_PROPERTYDUMP = (1 << (INSTALLMESSAGE_PROGRESS >> 24)),INSTALLLOGMODE_VERBOSE = (1 << (INSTALLMESSAGE_INITIALIZE >> 24)),
+  INSTALLLOGMODE_EXTRADEBUG = (1 << (INSTALLMESSAGE_TERMINATE >> 24)),INSTALLLOGMODE_LOGONLYONERROR = (1 << (INSTALLMESSAGE_SHOWDIALOG >> 24)),
+  INSTALLLOGMODE_PROGRESS = (1 << (INSTALLMESSAGE_PROGRESS >> 24)),INSTALLLOGMODE_INITIALIZE = (1 << (INSTALLMESSAGE_INITIALIZE >> 24)),
+  INSTALLLOGMODE_TERMINATE = (1 << (INSTALLMESSAGE_TERMINATE >> 24)),INSTALLLOGMODE_SHOWDIALOG = (1 << (INSTALLMESSAGE_SHOWDIALOG >> 24)),
+  INSTALLLOGMODE_FILESINUSE = (1 << (INSTALLMESSAGE_FILESINUSE >> 24))
+#if _WIN32_MSI >= 400
+  ,INSTALLLOGMODE_RMFILESINUSE = (1 << (INSTALLMESSAGE_RMFILESINUSE >> 24))
+#endif
+#if _WIN32_MSI >= 450
+  ,INSTALLLOGMODE_INSTALLSTART = (1 << (INSTALLMESSAGE_INSTALLSTART >> 24))
+  ,INSTALLLOGMODE_INSTALLEND = (1 << (INSTALLMESSAGE_INSTALLEND >> 24))
+#endif
+} INSTALLLOGMODE;
+
+typedef enum tagINSTALLLOGATTRIBUTES {
+  INSTALLLOGATTRIBUTES_APPEND = (1 << 0),INSTALLLOGATTRIBUTES_FLUSHEACHLINE = (1 << 1)
+} INSTALLLOGATTRIBUTES;
+
+typedef enum tagINSTALLFEATUREATTRIBUTE {
+  INSTALLFEATUREATTRIBUTE_FAVORLOCAL = 1 << 0,INSTALLFEATUREATTRIBUTE_FAVORSOURCE = 1 << 1,
+  INSTALLFEATUREATTRIBUTE_FOLLOWPARENT = 1 << 2,INSTALLFEATUREATTRIBUTE_FAVORADVERTISE = 1 << 3,
+  INSTALLFEATUREATTRIBUTE_DISALLOWADVERTISE = 1 << 4,INSTALLFEATUREATTRIBUTE_NOUNSUPPORTEDADVERTISE = 1 << 5
+} INSTALLFEATUREATTRIBUTE;
+
+typedef enum tagINSTALLMODE {
+#if (_WIN32_MSI >= 150)
+  INSTALLMODE_NODETECTION_ANY = -4,
+#endif
+  INSTALLMODE_NOSOURCERESOLUTION = -3,INSTALLMODE_NODETECTION = -2,INSTALLMODE_EXISTING = -1,INSTALLMODE_DEFAULT = 0
+} INSTALLMODE;
+
+#if (_WIN32_MSI >= 300)
+typedef enum tagMSIPATCHSTATE {
+  MSIPATCHSTATE_INVALID = 0,MSIPATCHSTATE_APPLIED = 1,MSIPATCHSTATE_SUPERSEDED = 2,MSIPATCHSTATE_OBSOLETED = 4,MSIPATCHSTATE_REGISTERED = 8,
+  MSIPATCHSTATE_ALL = (MSIPATCHSTATE_APPLIED | MSIPATCHSTATE_SUPERSEDED | MSIPATCHSTATE_OBSOLETED | MSIPATCHSTATE_REGISTERED)
+} MSIPATCHSTATE;
+
+typedef enum tagMSIINSTALLCONTEXT {
+  MSIINSTALLCONTEXT_FIRSTVISIBLE = 0,MSIINSTALLCONTEXT_NONE = 0,MSIINSTALLCONTEXT_USERMANAGED = 1,MSIINSTALLCONTEXT_USERUNMANAGED = 2,
+  MSIINSTALLCONTEXT_MACHINE = 4,
+  MSIINSTALLCONTEXT_ALL = (MSIINSTALLCONTEXT_USERMANAGED | MSIINSTALLCONTEXT_USERUNMANAGED | MSIINSTALLCONTEXT_MACHINE),
+  MSIINSTALLCONTEXT_ALLUSERMANAGED = 8
+} MSIINSTALLCONTEXT;
+
+typedef enum tagMSIPATCHDATATYPE {
+  MSIPATCH_DATATYPE_PATCHFILE = 0,MSIPATCH_DATATYPE_XMLPATH = 1,MSIPATCH_DATATYPE_XMLBLOB = 2
+} MSIPATCHDATATYPE,*PMSIPATCHDATATYPE;
+
+typedef struct tagMSIPATCHSEQUENCEINFOA {
+  LPCSTR szPatchData;
+  MSIPATCHDATATYPE ePatchDataType;
+  DWORD dwOrder;
+  UINT uStatus;
+} MSIPATCHSEQUENCEINFOA,*PMSIPATCHSEQUENCEINFOA;
+
+typedef struct tagMSIPATCHSEQUENCEINFOW {
+  LPCWSTR szPatchData;
+  MSIPATCHDATATYPE ePatchDataType;
+  DWORD dwOrder;
+  UINT uStatus;
+} MSIPATCHSEQUENCEINFOW,*PMSIPATCHSEQUENCEINFOW;
+
+__MINGW_TYPEDEF_AW(MSIPATCHSEQUENCEINFO)
+__MINGW_TYPEDEF_AW(PMSIPATCHSEQUENCEINFO)
+#endif
+
+#define MAX_FEATURE_CHARS 38
+
+#define INSTALLPROPERTY_PACKAGENAME __TEXT("PackageName")
+#define INSTALLPROPERTY_TRANSFORMS __TEXT("Transforms")
+#define INSTALLPROPERTY_LANGUAGE __TEXT("Language")
+#define INSTALLPROPERTY_PRODUCTNAME __TEXT("ProductName")
+#define INSTALLPROPERTY_ASSIGNMENTTYPE __TEXT("AssignmentType")
+#if (_WIN32_MSI >= 150)
+#define INSTALLPROPERTY_INSTANCETYPE __TEXT("InstanceType")
+#endif
+#if (_WIN32_MSI >= 300)
+#define INSTALLPROPERTY_AUTHORIZED_LUA_APP __TEXT("AuthorizedLUAApp")
+#endif
+
+#define INSTALLPROPERTY_PACKAGECODE __TEXT("PackageCode")
+#define INSTALLPROPERTY_VERSION __TEXT("Version")
+#if (_WIN32_MSI >= 110)
+#define INSTALLPROPERTY_PRODUCTICON __TEXT("ProductIcon")
+#endif
+
+#define INSTALLPROPERTY_INSTALLEDPRODUCTNAME __TEXT("InstalledProductName")
+#define INSTALLPROPERTY_VERSIONSTRING __TEXT("VersionString")
+#define INSTALLPROPERTY_HELPLINK __TEXT("HelpLink")
+#define INSTALLPROPERTY_HELPTELEPHONE __TEXT("HelpTelephone")
+#define INSTALLPROPERTY_INSTALLLOCATION __TEXT("InstallLocation")
+#define INSTALLPROPERTY_INSTALLSOURCE __TEXT("InstallSource")
+#define INSTALLPROPERTY_INSTALLDATE __TEXT("InstallDate")
+#define INSTALLPROPERTY_PUBLISHER __TEXT("Publisher")
+#define INSTALLPROPERTY_LOCALPACKAGE __TEXT("LocalPackage")
+#define INSTALLPROPERTY_URLINFOABOUT __TEXT("URLInfoAbout")
+#define INSTALLPROPERTY_URLUPDATEINFO __TEXT("URLUpdateInfo")
+#define INSTALLPROPERTY_VERSIONMINOR __TEXT("VersionMinor")
+#define INSTALLPROPERTY_VERSIONMAJOR __TEXT("VersionMajor")
+#define INSTALLPROPERTY_PRODUCTID __TEXT("ProductID")
+#define INSTALLPROPERTY_REGCOMPANY __TEXT("RegCompany")
+#define INSTALLPROPERTY_REGOWNER __TEXT("RegOwner")
+
+#if (_WIN32_MSI >= 300)
+#define INSTALLPROPERTY_UNINSTALLABLE __TEXT("Uninstallable")
+#define INSTALLPROPERTY_PRODUCTSTATE __TEXT("State")
+#define INSTALLPROPERTY_PATCHSTATE __TEXT("State")
+#define INSTALLPROPERTY_PATCHTYPE __TEXT("PatchType")
+#define INSTALLPROPERTY_LUAENABLED __TEXT("LUAEnabled")
+#define INSTALLPROPERTY_DISPLAYNAME __TEXT("DisplayName")
+#define INSTALLPROPERTY_MOREINFOURL __TEXT("MoreInfoURL")
+
+#define INSTALLPROPERTY_LASTUSEDSOURCE __TEXT("LastUsedSource")
+#define INSTALLPROPERTY_LASTUSEDTYPE __TEXT("LastUsedType")
+#define INSTALLPROPERTY_MEDIAPACKAGEPATH __TEXT("MediaPackagePath")
+#define INSTALLPROPERTY_DISKPROMPT __TEXT("DiskPrompt")
+#endif
+
+typedef enum tagSCRIPTFLAGS {
+  SCRIPTFLAGS_CACHEINFO = 0x00000001,SCRIPTFLAGS_SHORTCUTS = 0x00000004,SCRIPTFLAGS_MACHINEASSIGN = 0x00000008,
+  SCRIPTFLAGS_REGDATA_CNFGINFO = 0x00000020,SCRIPTFLAGS_VALIDATE_TRANSFORMS_LIST = 0x00000040,
+#if (_WIN32_MSI >= 110)
+  SCRIPTFLAGS_REGDATA_CLASSINFO = 0x00000080,SCRIPTFLAGS_REGDATA_EXTENSIONINFO = 0x00000100,
+  SCRIPTFLAGS_REGDATA_APPINFO = SCRIPTFLAGS_REGDATA_CLASSINFO | SCRIPTFLAGS_REGDATA_EXTENSIONINFO,
+#else
+  SCRIPTFLAGS_REGDATA_APPINFO = 0x00000010,
+#endif
+  SCRIPTFLAGS_REGDATA = SCRIPTFLAGS_REGDATA_APPINFO | SCRIPTFLAGS_REGDATA_CNFGINFO
+} SCRIPTFLAGS;
+
+typedef enum tagADVERTISEFLAGS {
+  ADVERTISEFLAGS_MACHINEASSIGN = 0,ADVERTISEFLAGS_USERASSIGN = 1
+} ADVERTISEFLAGS;
+
+typedef enum tagINSTALLTYPE {
+  INSTALLTYPE_DEFAULT = 0,INSTALLTYPE_NETWORK_IMAGE = 1,INSTALLTYPE_SINGLE_INSTANCE = 2
+} INSTALLTYPE;
+
+#if (_WIN32_MSI >= 150)
+typedef struct _MSIFILEHASHINFO {
+  ULONG dwFileHashInfoSize;
+  ULONG dwData [4];
+} MSIFILEHASHINFO,*PMSIFILEHASHINFO;
+
+typedef enum tagMSIARCHITECTUREFLAGS {
+  MSIARCHITECTUREFLAGS_X86 = 0x00000001,MSIARCHITECTUREFLAGS_IA64 = 0x00000002,MSIARCHITECTUREFLAGS_AMD64 = 0x00000004
+} MSIARCHITECTUREFLAGS;
+
+typedef enum tagMSIOPENPACKAGEFLAGS {
+  MSIOPENPACKAGEFLAGS_IGNOREMACHINESTATE = 0x00000001
+} MSIOPENPACKAGEFLAGS;
+
+typedef enum tagMSIADVERTISEOPTIONFLAGS {
+  MSIADVERTISEOPTIONFLAGS_INSTANCE = 0x00000001
+} MSIADVERTISEOPTIONFLAGS;
+#endif
+
+#if (_WIN32_MSI >= 300)
+typedef enum tagMSISOURCETYPE {
+  MSISOURCETYPE_UNKNOWN = 0x00000000,MSISOURCETYPE_NETWORK = 0x00000001,MSISOURCETYPE_URL = 0x00000002,MSISOURCETYPE_MEDIA = 0x00000004
+} MSISOURCETYPE;
+
+typedef enum tagMSICODE {
+  MSICODE_PRODUCT = 0x00000000,MSICODE_PATCH = 0x40000000
+} MSICODE;
+
+#if _WIN32_MSI >= 450
+typedef enum tagMSITRANSACTION {
+  MSITRANSACTION_CHAIN_EMBEDDEDUI = 0x00000001,
+  MSITRANSACTION_JOIN_EXISTING_EMBEDDEDUI = 0x00000002
+} MSITRANSACTION;
+
+typedef enum tagMSITRANSACTIONSTATE {
+  MSITRANSACTIONSTATE_ROLLBACK = 0x00000000,
+  MSITRANSACTIONSTATE_COMMIT = 0x00000001
+} MSITRANSACTIONSTATE;
+#endif
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+  INSTALLUILEVEL WINAPI MsiSetInternalUI(INSTALLUILEVEL dwUILevel,HWND *phWnd);
+  INSTALLUI_HANDLERA WINAPI MsiSetExternalUIA(INSTALLUI_HANDLERA puiHandler,DWORD dwMessageFilter,LPVOID pvContext);
+  INSTALLUI_HANDLERW WINAPI MsiSetExternalUIW(INSTALLUI_HANDLERW puiHandler,DWORD dwMessageFilter,LPVOID pvContext);
+#define MsiSetExternalUI __MINGW_NAME_AW(MsiSetExternalUI)
+
+#if (_WIN32_MSI >= 310)
+  UINT WINAPI MsiSetExternalUIRecord(INSTALLUI_HANDLER_RECORD puiHandler,DWORD dwMessageFilter,LPVOID pvContext,PINSTALLUI_HANDLER_RECORD ppuiPrevHandler);
+#endif
+
+  UINT WINAPI MsiEnableLogA(DWORD dwLogMode,LPCSTR szLogFile,DWORD dwLogAttributes);
+  UINT WINAPI MsiEnableLogW(DWORD dwLogMode,LPCWSTR szLogFile,DWORD dwLogAttributes);
+#define MsiEnableLog __MINGW_NAME_AW(MsiEnableLog)
+
+  INSTALLSTATE WINAPI MsiQueryProductStateA(LPCSTR szProduct);
+  INSTALLSTATE WINAPI MsiQueryProductStateW(LPCWSTR szProduct);
+#define MsiQueryProductState __MINGW_NAME_AW(MsiQueryProductState)
+
+  UINT WINAPI MsiGetProductInfoA(LPCSTR szProduct,LPCSTR szAttribute,LPSTR lpValueBuf,DWORD *pcchValueBuf);
+  UINT WINAPI MsiGetProductInfoW(LPCWSTR szProduct,LPCWSTR szAttribute,LPWSTR lpValueBuf,DWORD *pcchValueBuf);
+#define MsiGetProductInfo __MINGW_NAME_AW(MsiGetProductInfo)
+
+#if (_WIN32_MSI >= 300)
+  UINT WINAPI MsiGetProductInfoExA(LPCSTR szProductCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,LPCSTR szProperty,LPSTR szValue,LPDWORD pcchValue);
+  UINT WINAPI MsiGetProductInfoExW(LPCWSTR szProductCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,LPCWSTR szProperty,LPWSTR szValue,LPDWORD pcchValue);
+#define MsiGetProductInfoEx __MINGW_NAME_AW(MsiGetProductInfoEx)
+#endif
+
+  UINT WINAPI MsiInstallProductA(LPCSTR szPackagePath,LPCSTR szCommandLine);
+  UINT WINAPI MsiInstallProductW(LPCWSTR szPackagePath,LPCWSTR szCommandLine);
+#define MsiInstallProduct __MINGW_NAME_AW(MsiInstallProduct)
+
+  UINT WINAPI MsiConfigureProductA(LPCSTR szProduct,int iInstallLevel,INSTALLSTATE eInstallState);
+  UINT WINAPI MsiConfigureProductW(LPCWSTR szProduct,int iInstallLevel,INSTALLSTATE eInstallState);
+#define MsiConfigureProduct __MINGW_NAME_AW(MsiConfigureProduct)
+
+  UINT WINAPI MsiConfigureProductExA(LPCSTR szProduct,int iInstallLevel,INSTALLSTATE eInstallState,LPCSTR szCommandLine);
+  UINT WINAPI MsiConfigureProductExW(LPCWSTR szProduct,int iInstallLevel,INSTALLSTATE eInstallState,LPCWSTR szCommandLine);
+#define MsiConfigureProductEx __MINGW_NAME_AW(MsiConfigureProductEx)
+
+  UINT WINAPI MsiReinstallProductA(LPCSTR szProduct,DWORD szReinstallMode);
+  UINT WINAPI MsiReinstallProductW(LPCWSTR szProduct,DWORD szReinstallMode);
+#define MsiReinstallProduct __MINGW_NAME_AW(MsiReinstallProduct)
+
+#if (_WIN32_MSI >= 150)
+  UINT WINAPI MsiAdvertiseProductExA(LPCSTR szPackagePath,LPCSTR szScriptfilePath,LPCSTR szTransforms,LANGID lgidLanguage,DWORD dwPlatform,DWORD dwOptions);
+  UINT WINAPI MsiAdvertiseProductExW(LPCWSTR szPackagePath,LPCWSTR szScriptfilePath,LPCWSTR szTransforms,LANGID lgidLanguage,DWORD dwPlatform,DWORD dwOptions);
+#define MsiAdvertiseProductEx __MINGW_NAME_AW(MsiAdvertiseProductEx)
+#endif
+
+  UINT WINAPI MsiAdvertiseProductA(LPCSTR szPackagePath,LPCSTR szScriptfilePath,LPCSTR szTransforms,LANGID lgidLanguage);
+  UINT WINAPI MsiAdvertiseProductW(LPCWSTR szPackagePath,LPCWSTR szScriptfilePath,LPCWSTR szTransforms,LANGID lgidLanguage);
+#define MsiAdvertiseProduct __MINGW_NAME_AW(MsiAdvertiseProduct)
+
+#if (_WIN32_MSI >= 150)
+  UINT WINAPI MsiProcessAdvertiseScriptA(LPCSTR szScriptFile,LPCSTR szIconFolder,HKEY hRegData,WINBOOL fShortcuts,WINBOOL fRemoveItems);
+  UINT WINAPI MsiProcessAdvertiseScriptW(LPCWSTR szScriptFile,LPCWSTR szIconFolder,HKEY hRegData,WINBOOL fShortcuts,WINBOOL fRemoveItems);
+#define MsiProcessAdvertiseScript __MINGW_NAME_AW(MsiProcessAdvertiseScript)
+#endif
+
+  UINT WINAPI MsiAdvertiseScriptA(LPCSTR szScriptFile,DWORD dwFlags,PHKEY phRegData,WINBOOL fRemoveItems);
+  UINT WINAPI MsiAdvertiseScriptW(LPCWSTR szScriptFile,DWORD dwFlags,PHKEY phRegData,WINBOOL fRemoveItems);
+#define MsiAdvertiseScript __MINGW_NAME_AW(MsiAdvertiseScript)
+
+  UINT WINAPI MsiGetProductInfoFromScriptA(LPCSTR szScriptFile,LPSTR lpProductBuf39,LANGID *plgidLanguage,DWORD *pdwVersion,LPSTR lpNameBuf,DWORD *pcchNameBuf,LPSTR lpPackageBuf,DWORD *pcchPackageBuf);
+  UINT WINAPI MsiGetProductInfoFromScriptW(LPCWSTR szScriptFile,LPWSTR lpProductBuf39,LANGID *plgidLanguage,DWORD *pdwVersion,LPWSTR lpNameBuf,DWORD *pcchNameBuf,LPWSTR lpPackageBuf,DWORD *pcchPackageBuf);
+#define MsiGetProductInfoFromScript __MINGW_NAME_AW(MsiGetProductInfoFromScript)
+
+  UINT WINAPI MsiGetProductCodeA(LPCSTR szComponent,LPSTR lpBuf39);
+  UINT WINAPI MsiGetProductCodeW(LPCWSTR szComponent,LPWSTR lpBuf39);
+#define MsiGetProductCode __MINGW_NAME_AW(MsiGetProductCode)
+
+  USERINFOSTATE WINAPI MsiGetUserInfoA(LPCSTR szProduct,LPSTR lpUserNameBuf,DWORD *pcchUserNameBuf,LPSTR lpOrgNameBuf,DWORD *pcchOrgNameBuf,LPSTR lpSerialBuf,DWORD *pcchSerialBuf);
+  USERINFOSTATE WINAPI MsiGetUserInfoW(LPCWSTR szProduct,LPWSTR lpUserNameBuf,DWORD *pcchUserNameBuf,LPWSTR lpOrgNameBuf,DWORD *pcchOrgNameBuf,LPWSTR lpSerialBuf,DWORD *pcchSerialBuf);
+#define MsiGetUserInfo __MINGW_NAME_AW(MsiGetUserInfo)
+
+  UINT WINAPI MsiCollectUserInfoA(LPCSTR szProduct);
+  UINT WINAPI MsiCollectUserInfoW(LPCWSTR szProduct);
+#define MsiCollectUserInfo __MINGW_NAME_AW(MsiCollectUserInfo)
+
+  UINT WINAPI MsiApplyPatchA(LPCSTR szPatchPackage,LPCSTR szInstallPackage,INSTALLTYPE eInstallType,LPCSTR szCommandLine);
+  UINT WINAPI MsiApplyPatchW(LPCWSTR szPatchPackage,LPCWSTR szInstallPackage,INSTALLTYPE eInstallType,LPCWSTR szCommandLine);
+#define MsiApplyPatch __MINGW_NAME_AW(MsiApplyPatch)
+
+  UINT WINAPI MsiGetPatchInfoA(LPCSTR szPatch,LPCSTR szAttribute,LPSTR lpValueBuf,DWORD *pcchValueBuf);
+  UINT WINAPI MsiGetPatchInfoW(LPCWSTR szPatch,LPCWSTR szAttribute,LPWSTR lpValueBuf,DWORD *pcchValueBuf);
+#define MsiGetPatchInfo __MINGW_NAME_AW(MsiGetPatchInfo)
+
+  UINT WINAPI MsiEnumPatchesA(LPCSTR szProduct,DWORD iPatchIndex,LPSTR lpPatchBuf,LPSTR lpTransformsBuf,DWORD *pcchTransformsBuf);
+  UINT WINAPI MsiEnumPatchesW(LPCWSTR szProduct,DWORD iPatchIndex,LPWSTR lpPatchBuf,LPWSTR lpTransformsBuf,DWORD *pcchTransformsBuf);
+#define MsiEnumPatches __MINGW_NAME_AW(MsiEnumPatches)
+
+#if (_WIN32_MSI >= 300)
+  UINT WINAPI MsiRemovePatchesA(LPCSTR szPatchList,LPCSTR szProductCode,INSTALLTYPE eUninstallType,LPCSTR szPropertyList);
+  UINT WINAPI MsiRemovePatchesW(LPCWSTR szPatchList,LPCWSTR szProductCode,INSTALLTYPE eUninstallType,LPCWSTR szPropertyList);
+#define MsiRemovePatches __MINGW_NAME_AW(MsiRemovePatches)
+
+  UINT WINAPI MsiExtractPatchXMLDataA(LPCSTR szPatchPath,DWORD dwReserved,LPSTR szXMLData,DWORD *pcchXMLData);
+  UINT WINAPI MsiExtractPatchXMLDataW(LPCWSTR szPatchPath,DWORD dwReserved,LPWSTR szXMLData,DWORD *pcchXMLData);
+#define MsiExtractPatchXMLData __MINGW_NAME_AW(MsiExtractPatchXMLData)
+
+  UINT WINAPI MsiGetPatchInfoExA(LPCSTR szPatchCode,LPCSTR szProductCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,LPCSTR szProperty,LPSTR lpValue,DWORD *pcchValue);
+  UINT WINAPI MsiGetPatchInfoExW(LPCWSTR szPatchCode,LPCWSTR szProductCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,LPCWSTR szProperty,LPWSTR lpValue,DWORD *pcchValue);
+#define MsiGetPatchInfoEx __MINGW_NAME_AW(MsiGetPatchInfoEx)
+
+  UINT WINAPI MsiApplyMultiplePatchesA(LPCSTR szPatchPackages,LPCSTR szProductCode,LPCSTR szPropertiesList);
+  UINT WINAPI MsiApplyMultiplePatchesW(LPCWSTR szPatchPackages,LPCWSTR szProductCode,LPCWSTR szPropertiesList);
+#define MsiApplyMultiplePatches __MINGW_NAME_AW(MsiApplyMultiplePatches)
+
+  UINT WINAPI MsiDeterminePatchSequenceA(LPCSTR szProductCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD cPatchInfo,PMSIPATCHSEQUENCEINFOA pPatchInfo);
+  UINT WINAPI MsiDeterminePatchSequenceW(LPCWSTR szProductCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD cPatchInfo,PMSIPATCHSEQUENCEINFOW pPatchInfo);
+#define MsiDeterminePatchSequence __MINGW_NAME_AW(MsiDeterminePatchSequence)
+
+  UINT WINAPI MsiDetermineApplicablePatchesA(LPCSTR szProductPackagePath,DWORD cPatchInfo,PMSIPATCHSEQUENCEINFOA pPatchInfo);
+  UINT WINAPI MsiDetermineApplicablePatchesW(LPCWSTR szProductPackagePath,DWORD cPatchInfo,PMSIPATCHSEQUENCEINFOW pPatchInfo);
+#define MsiDetermineApplicablePatches __MINGW_NAME_AW(MsiDetermineApplicablePatches)
+
+  UINT WINAPI MsiEnumPatchesExA(LPCSTR szProductCode,LPCSTR szUserSid,DWORD dwContext,DWORD dwFilter,DWORD dwIndex,CHAR szPatchCode[39],CHAR szTargetProductCode[39],MSIINSTALLCONTEXT *pdwTargetProductContext,LPSTR szTargetUserSid,LPDWORD pcchTargetUserSid);
+  UINT WINAPI MsiEnumPatchesExW(LPCWSTR szProductCode,LPCWSTR szUserSid,DWORD dwContext,DWORD dwFilter,DWORD dwIndex,WCHAR szPatchCode[39],WCHAR szTargetProductCode[39],MSIINSTALLCONTEXT *pdwTargetProductContext,LPWSTR szTargetUserSid,LPDWORD pcchTargetUserSid);
+#define MsiEnumPatchesEx __MINGW_NAME_AW(MsiEnumPatchesEx)
+#endif
+
+  INSTALLSTATE WINAPI MsiQueryFeatureStateA(LPCSTR szProduct,LPCSTR szFeature);
+  INSTALLSTATE WINAPI MsiQueryFeatureStateW(LPCWSTR szProduct,LPCWSTR szFeature);
+#define MsiQueryFeatureState __MINGW_NAME_AW(MsiQueryFeatureState)
+
+#if (_WIN32_MSI >= 300)
+  UINT WINAPI MsiQueryFeatureStateExA(LPCSTR szProductCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,LPCSTR szFeature,INSTALLSTATE *pdwState);
+  UINT WINAPI MsiQueryFeatureStateExW(LPCWSTR szProductCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,LPCWSTR szFeature,INSTALLSTATE *pdwState);
+#define MsiQueryFeatureStateEx __MINGW_NAME_AW(MsiQueryFeatureStateEx)
+#endif
+
+  INSTALLSTATE WINAPI MsiUseFeatureA(LPCSTR szProduct,LPCSTR szFeature);
+  INSTALLSTATE WINAPI MsiUseFeatureW(LPCWSTR szProduct,LPCWSTR szFeature);
+#define MsiUseFeature __MINGW_NAME_AW(MsiUseFeature)
+
+  INSTALLSTATE WINAPI MsiUseFeatureExA(LPCSTR szProduct,LPCSTR szFeature,DWORD dwInstallMode,DWORD dwReserved);
+  INSTALLSTATE WINAPI MsiUseFeatureExW(LPCWSTR szProduct,LPCWSTR szFeature,DWORD dwInstallMode,DWORD dwReserved);
+#define MsiUseFeatureEx __MINGW_NAME_AW(MsiUseFeatureEx)
+
+  UINT WINAPI MsiGetFeatureUsageA(LPCSTR szProduct,LPCSTR szFeature,DWORD *pdwUseCount,WORD *pwDateUsed);
+  UINT WINAPI MsiGetFeatureUsageW(LPCWSTR szProduct,LPCWSTR szFeature,DWORD *pdwUseCount,WORD *pwDateUsed);
+#define MsiGetFeatureUsage __MINGW_NAME_AW(MsiGetFeatureUsage)
+
+  UINT WINAPI MsiConfigureFeatureA(LPCSTR szProduct,LPCSTR szFeature,INSTALLSTATE eInstallState);
+  UINT WINAPI MsiConfigureFeatureW(LPCWSTR szProduct,LPCWSTR szFeature,INSTALLSTATE eInstallState);
+#define MsiConfigureFeature __MINGW_NAME_AW(MsiConfigureFeature)
+
+  UINT WINAPI MsiReinstallFeatureA(LPCSTR szProduct,LPCSTR szFeature,DWORD dwReinstallMode);
+  UINT WINAPI MsiReinstallFeatureW(LPCWSTR szProduct,LPCWSTR szFeature,DWORD dwReinstallMode);
+#define MsiReinstallFeature __MINGW_NAME_AW(MsiReinstallFeature)
+
+  UINT WINAPI MsiProvideComponentA(LPCSTR szProduct,LPCSTR szFeature,LPCSTR szComponent,DWORD dwInstallMode,LPSTR lpPathBuf,DWORD *pcchPathBuf);
+  UINT WINAPI MsiProvideComponentW(LPCWSTR szProduct,LPCWSTR szFeature,LPCWSTR szComponent,DWORD dwInstallMode,LPWSTR lpPathBuf,DWORD *pcchPathBuf);
+#define MsiProvideComponent __MINGW_NAME_AW(MsiProvideComponent)
+
+  UINT WINAPI MsiProvideQualifiedComponentA(LPCSTR szCategory,LPCSTR szQualifier,DWORD dwInstallMode,LPSTR lpPathBuf,DWORD *pcchPathBuf);
+  UINT WINAPI MsiProvideQualifiedComponentW(LPCWSTR szCategory,LPCWSTR szQualifier,DWORD dwInstallMode,LPWSTR lpPathBuf,DWORD *pcchPathBuf);
+#define MsiProvideQualifiedComponent __MINGW_NAME_AW(MsiProvideQualifiedComponent)
+
+  UINT WINAPI MsiProvideQualifiedComponentExA(LPCSTR szCategory,LPCSTR szQualifier,DWORD dwInstallMode,LPCSTR szProduct,DWORD dwUnused1,DWORD dwUnused2,LPSTR lpPathBuf,DWORD *pcchPathBuf);
+  UINT WINAPI MsiProvideQualifiedComponentExW(LPCWSTR szCategory,LPCWSTR szQualifier,DWORD dwInstallMode,LPCWSTR szProduct,DWORD dwUnused1,DWORD dwUnused2,LPWSTR lpPathBuf,DWORD *pcchPathBuf);
+#define MsiProvideQualifiedComponentEx __MINGW_NAME_AW(MsiProvideQualifiedComponentEx)
+
+  INSTALLSTATE WINAPI MsiGetComponentPathA(LPCSTR szProduct,LPCSTR szComponent,LPSTR lpPathBuf,DWORD *pcchBuf);
+  INSTALLSTATE WINAPI MsiGetComponentPathW(LPCWSTR szProduct,LPCWSTR szComponent,LPWSTR lpPathBuf,DWORD *pcchBuf);
+#define MsiGetComponentPath __MINGW_NAME_AW(MsiGetComponentPath)
+
+#if (_WIN32_MSI >= 150)
+#define MSIASSEMBLYINFO_NETASSEMBLY 0
+#define MSIASSEMBLYINFO_WIN32ASSEMBLY 1
+
+  UINT WINAPI MsiProvideAssemblyA(LPCSTR szAssemblyName,LPCSTR szAppContext,DWORD dwInstallMode,DWORD dwAssemblyInfo,LPSTR lpPathBuf,DWORD *pcchPathBuf);
+  UINT WINAPI MsiProvideAssemblyW(LPCWSTR szAssemblyName,LPCWSTR szAppContext,DWORD dwInstallMode,DWORD dwAssemblyInfo,LPWSTR lpPathBuf,DWORD *pcchPathBuf);
+#define MsiProvideAssembly __MINGW_NAME_AW(MsiProvideAssembly)
+#endif
+
+#if (_WIN32_MSI >= 300)
+  UINT WINAPI MsiQueryComponentStateA(LPCSTR szProductCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,LPCSTR szComponentCode,INSTALLSTATE *pdwState);
+  UINT WINAPI MsiQueryComponentStateW(LPCWSTR szProductCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,LPCWSTR szComponentCode,INSTALLSTATE *pdwState);
+#define MsiQueryComponentState __MINGW_NAME_AW(MsiQueryComponentState)
+#endif
+
+  UINT WINAPI MsiEnumProductsA(DWORD iProductIndex,LPSTR lpProductBuf);
+  UINT WINAPI MsiEnumProductsW(DWORD iProductIndex,LPWSTR lpProductBuf);
+#define MsiEnumProducts __MINGW_NAME_AW(MsiEnumProducts)
+
+#if (_WIN32_MSI >= 300)
+  UINT WINAPI MsiEnumProductsExA(LPCSTR szProductCode,LPCSTR szUserSid,DWORD dwContext,DWORD dwIndex,CHAR szInstalledProductCode[39],MSIINSTALLCONTEXT *pdwInstalledContext,LPSTR szSid,LPDWORD pcchSid);
+  UINT WINAPI MsiEnumProductsExW(LPCWSTR szProductCode,LPCWSTR szUserSid,DWORD dwContext,DWORD dwIndex,WCHAR szInstalledProductCode[39],MSIINSTALLCONTEXT *pdwInstalledContext,LPWSTR szSid,LPDWORD pcchSid);
+
+#define MsiEnumProductsEx __MINGW_NAME_AW(MsiEnumProductsEx)
+#endif
+
+#if (_WIN32_MSI >= 110)
+  UINT WINAPI MsiEnumRelatedProductsA(LPCSTR lpUpgradeCode,DWORD dwReserved,DWORD iProductIndex,LPSTR lpProductBuf);
+  UINT WINAPI MsiEnumRelatedProductsW(LPCWSTR lpUpgradeCode,DWORD dwReserved,DWORD iProductIndex,LPWSTR lpProductBuf);
+#define MsiEnumRelatedProducts __MINGW_NAME_AW(MsiEnumRelatedProducts)
+#endif
+
+  UINT WINAPI MsiEnumFeaturesA(LPCSTR szProduct,DWORD iFeatureIndex,LPSTR lpFeatureBuf,LPSTR lpParentBuf);
+  UINT WINAPI MsiEnumFeaturesW(LPCWSTR szProduct,DWORD iFeatureIndex,LPWSTR lpFeatureBuf,LPWSTR lpParentBuf);
+#define MsiEnumFeatures __MINGW_NAME_AW(MsiEnumFeatures)
+
+  UINT WINAPI MsiEnumComponentsA(DWORD iComponentIndex,LPSTR lpComponentBuf);
+  UINT WINAPI MsiEnumComponentsW(DWORD iComponentIndex,LPWSTR lpComponentBuf);
+#define MsiEnumComponents __MINGW_NAME_AW(MsiEnumComponents)
+
+  UINT WINAPI MsiEnumClientsA(LPCSTR szComponent,DWORD iProductIndex,LPSTR lpProductBuf);
+  UINT WINAPI MsiEnumClientsW(LPCWSTR szComponent,DWORD iProductIndex,LPWSTR lpProductBuf);
+#define MsiEnumClients __MINGW_NAME_AW(MsiEnumClients)
+
+  UINT WINAPI MsiEnumComponentQualifiersA(LPCSTR szComponent,DWORD iIndex,LPSTR lpQualifierBuf,DWORD *pcchQualifierBuf,LPSTR lpApplicationDataBuf,DWORD *pcchApplicationDataBuf);
+  UINT WINAPI MsiEnumComponentQualifiersW(LPCWSTR szComponent,DWORD iIndex,LPWSTR lpQualifierBuf,DWORD *pcchQualifierBuf,LPWSTR lpApplicationDataBuf,DWORD *pcchApplicationDataBuf);
+#define MsiEnumComponentQualifiers __MINGW_NAME_AW(MsiEnumComponentQualifiers)
+
+  UINT WINAPI MsiOpenProductA(LPCSTR szProduct,MSIHANDLE *hProduct);
+  UINT WINAPI MsiOpenProductW(LPCWSTR szProduct,MSIHANDLE *hProduct);
+#define MsiOpenProduct __MINGW_NAME_AW(MsiOpenProduct)
+
+  UINT WINAPI MsiOpenPackageA(LPCSTR szPackagePath,MSIHANDLE *hProduct);
+  UINT WINAPI MsiOpenPackageW(LPCWSTR szPackagePath,MSIHANDLE *hProduct);
+#define MsiOpenPackage __MINGW_NAME_AW(MsiOpenPackage)
+
+#if (_WIN32_MSI >= 150)
+  UINT WINAPI MsiOpenPackageExA(LPCSTR szPackagePath,DWORD dwOptions,MSIHANDLE *hProduct);
+  UINT WINAPI MsiOpenPackageExW(LPCWSTR szPackagePath,DWORD dwOptions,MSIHANDLE *hProduct);
+#define MsiOpenPackageEx __MINGW_NAME_AW(MsiOpenPackageEx)
+
+#if _WIN32_MSI >= 400
+UINT WINAPI MsiGetPatchFileListA(LPCSTR szProductCode, LPCSTR szPatchPackages, LPDWORD pcFiles, MSIHANDLE **pphFileRecords);
+UINT WINAPI MsiGetPatchFileListW(LPCWSTR szProductCode, LPCWSTR szPatchPackages, LPDWORD pcFiles, MSIHANDLE **pphFileRecords);
+#define MsiGetPatchFileList __MINGW_NAME_AW(MsiGetPatchFileList)
+#endif
+#endif
+
+  UINT WINAPI MsiGetProductPropertyA(MSIHANDLE hProduct,LPCSTR szProperty,LPSTR lpValueBuf,DWORD *pcchValueBuf);
+  UINT WINAPI MsiGetProductPropertyW(MSIHANDLE hProduct,LPCWSTR szProperty,LPWSTR lpValueBuf,DWORD *pcchValueBuf);
+#define MsiGetProductProperty __MINGW_NAME_AW(MsiGetProductProperty)
+
+  UINT WINAPI MsiVerifyPackageA(LPCSTR szPackagePath);
+  UINT WINAPI MsiVerifyPackageW(LPCWSTR szPackagePath);
+#define MsiVerifyPackage __MINGW_NAME_AW(MsiVerifyPackage)
+
+  UINT WINAPI MsiGetFeatureInfoA(MSIHANDLE hProduct,LPCSTR szFeature,DWORD *lpAttributes,LPSTR lpTitleBuf,DWORD *pcchTitleBuf,LPSTR lpHelpBuf,DWORD *pcchHelpBuf);
+  UINT WINAPI MsiGetFeatureInfoW(MSIHANDLE hProduct,LPCWSTR szFeature,DWORD *lpAttributes,LPWSTR lpTitleBuf,DWORD *pcchTitleBuf,LPWSTR lpHelpBuf,DWORD *pcchHelpBuf);
+#define MsiGetFeatureInfo __MINGW_NAME_AW(MsiGetFeatureInfo)
+
+  UINT WINAPI MsiInstallMissingComponentA(LPCSTR szProduct,LPCSTR szComponent,INSTALLSTATE eInstallState);
+  UINT WINAPI MsiInstallMissingComponentW(LPCWSTR szProduct,LPCWSTR szComponent,INSTALLSTATE eInstallState);
+#define MsiInstallMissingComponent __MINGW_NAME_AW(MsiInstallMissingComponent)
+
+  UINT WINAPI MsiInstallMissingFileA(LPCSTR szProduct,LPCSTR szFile);
+  UINT WINAPI MsiInstallMissingFileW(LPCWSTR szProduct,LPCWSTR szFile);
+#define MsiInstallMissingFile __MINGW_NAME_AW(MsiInstallMissingFile)
+
+  INSTALLSTATE WINAPI MsiLocateComponentA(LPCSTR szComponent,LPSTR lpPathBuf,DWORD *pcchBuf);
+  INSTALLSTATE WINAPI MsiLocateComponentW(LPCWSTR szComponent,LPWSTR lpPathBuf,DWORD *pcchBuf);
+#define MsiLocateComponent __MINGW_NAME_AW(MsiLocateComponent)
+
+#if (_WIN32_MSI >= 110)
+  UINT WINAPI MsiSourceListClearAllA(LPCSTR szProduct,LPCSTR szUserName,DWORD dwReserved);
+  UINT WINAPI MsiSourceListClearAllW(LPCWSTR szProduct,LPCWSTR szUserName,DWORD dwReserved);
+#define MsiSourceListClearAll __MINGW_NAME_AW(MsiSourceListClearAll)
+
+  UINT WINAPI MsiSourceListAddSourceA(LPCSTR szProduct,LPCSTR szUserName,DWORD dwReserved,LPCSTR szSource);
+  UINT WINAPI MsiSourceListAddSourceW(LPCWSTR szProduct,LPCWSTR szUserName,DWORD dwReserved,LPCWSTR szSource);
+#define MsiSourceListAddSource __MINGW_NAME_AW(MsiSourceListAddSource)
+
+  UINT WINAPI MsiSourceListForceResolutionA(LPCSTR szProduct,LPCSTR szUserName,DWORD dwReserved);
+  UINT WINAPI MsiSourceListForceResolutionW(LPCWSTR szProduct,LPCWSTR szUserName,DWORD dwReserved);
+#define MsiSourceListForceResolution __MINGW_NAME_AW(MsiSourceListForceResolution)
+#endif
+
+#if (_WIN32_MSI >= 300)
+  UINT WINAPI MsiSourceListAddSourceExA(LPCSTR szProductCodeOrPatchCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,LPCSTR szSource,DWORD dwIndex);
+  UINT WINAPI MsiSourceListAddSourceExW(LPCWSTR szProductCodeOrPatchCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,LPCWSTR szSource,DWORD dwIndex);
+#define MsiSourceListAddSourceEx __MINGW_NAME_AW(MsiSourceListAddSourceEx)
+
+  UINT WINAPI MsiSourceListAddMediaDiskA(LPCSTR szProductCodeOrPatchCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,DWORD dwDiskId,LPCSTR szVolumeLabel,LPCSTR szDiskPrompt);
+  UINT WINAPI MsiSourceListAddMediaDiskW(LPCWSTR szProductCodeOrPatchCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,DWORD dwDiskId,LPCWSTR szVolumeLabel,LPCWSTR szDiskPrompt);
+#define MsiSourceListAddMediaDisk __MINGW_NAME_AW(MsiSourceListAddMediaDisk)
+
+  UINT WINAPI MsiSourceListClearSourceA(LPCSTR szProductCodeOrPatchCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,LPCSTR szSource);
+  UINT WINAPI MsiSourceListClearSourceW(LPCWSTR szProductCodeOrPatchCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,LPCWSTR szSource);
+#define MsiSourceListClearSource __MINGW_NAME_AW(MsiSourceListClearSource)
+
+  UINT WINAPI MsiSourceListClearMediaDiskA(LPCSTR szProductCodeOrPatchCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,DWORD dwDiskId);
+  UINT WINAPI MsiSourceListClearMediaDiskW(LPCWSTR szProductCodeOrPatchCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,DWORD dwDiskId);
+#define MsiSourceListClearMediaDisk __MINGW_NAME_AW(MsiSourceListClearMediaDisk)
+
+  UINT WINAPI MsiSourceListClearAllExA(LPCSTR szProductCodeOrPatchCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions);
+  UINT WINAPI MsiSourceListClearAllExW(LPCWSTR szProductCodeOrPatchCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions);
+#define MsiSourceListClearAllEx __MINGW_NAME_AW(MsiSourceListClearAllEx)
+
+  UINT WINAPI MsiSourceListForceResolutionExA(LPCSTR szProductCodeOrPatchCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions);
+  UINT WINAPI MsiSourceListForceResolutionExW(LPCWSTR szProductCodeOrPatchCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions);
+#define MsiSourceListForceResolutionEx __MINGW_NAME_AW(MsiSourceListForceResolutionEx)
+
+  UINT WINAPI MsiSourceListSetInfoA(LPCSTR szProductCodeOrPatchCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,LPCSTR szProperty,LPCSTR szValue);
+  UINT WINAPI MsiSourceListSetInfoW(LPCWSTR szProductCodeOrPatchCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,LPCWSTR szProperty,LPCWSTR szValue);
+#define MsiSourceListSetInfo __MINGW_NAME_AW(MsiSourceListSetInfo)
+
+  UINT WINAPI MsiSourceListGetInfoA(LPCSTR szProductCodeOrPatchCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,LPCSTR szProperty,LPSTR szValue,LPDWORD pcchValue);
+  UINT WINAPI MsiSourceListGetInfoW(LPCWSTR szProductCodeOrPatchCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,LPCWSTR szProperty,LPWSTR szValue,LPDWORD pcchValue);
+#define MsiSourceListGetInfo __MINGW_NAME_AW(MsiSourceListGetInfo)
+
+  UINT WINAPI MsiSourceListEnumSourcesA(LPCSTR szProductCodeOrPatchCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,DWORD dwIndex,LPSTR szSource,LPDWORD pcchSource);
+  UINT WINAPI MsiSourceListEnumSourcesW(LPCWSTR szProductCodeOrPatchCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,DWORD dwIndex,LPWSTR szSource,LPDWORD pcchSource);
+#define MsiSourceListEnumSources __MINGW_NAME_AW(MsiSourceListEnumSources)
+
+  UINT WINAPI MsiSourceListEnumMediaDisksA(LPCSTR szProductCodeOrPatchCode,LPCSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,DWORD dwIndex,LPDWORD pdwDiskId,LPSTR szVolumeLabel,LPDWORD pcchVolumeLabel,LPSTR szDiskPrompt,LPDWORD pcchDiskPrompt);
+  UINT WINAPI MsiSourceListEnumMediaDisksW(LPCWSTR szProductCodeOrPatchCode,LPCWSTR szUserSid,MSIINSTALLCONTEXT dwContext,DWORD dwOptions,DWORD dwIndex,LPDWORD pdwDiskId,LPWSTR szVolumeLabel,LPDWORD pcchVolumeLabel,LPWSTR szDiskPrompt,LPDWORD pcchDiskPrompt);
+#define MsiSourceListEnumMediaDisks __MINGW_NAME_AW(MsiSourceListEnumMediaDisks)
+#endif
+
+  UINT WINAPI MsiGetFileVersionA(LPCSTR szFilePath,LPSTR lpVersionBuf,DWORD *pcchVersionBuf,LPSTR lpLangBuf,DWORD *pcchLangBuf);
+  UINT WINAPI MsiGetFileVersionW(LPCWSTR szFilePath,LPWSTR lpVersionBuf,DWORD *pcchVersionBuf,LPWSTR lpLangBuf,DWORD *pcchLangBuf);
+#define MsiGetFileVersion __MINGW_NAME_AW(MsiGetFileVersion)
+
+#if (_WIN32_MSI >= 150)
+  UINT WINAPI MsiGetFileHashA(LPCSTR szFilePath,DWORD dwOptions,PMSIFILEHASHINFO pHash);
+  UINT WINAPI MsiGetFileHashW(LPCWSTR szFilePath,DWORD dwOptions,PMSIFILEHASHINFO pHash);
+#define MsiGetFileHash __MINGW_NAME_AW(MsiGetFileHash)
+
+#ifndef _MSI_NO_CRYPTO
+  HRESULT WINAPI MsiGetFileSignatureInformationA(LPCSTR szSignedObjectPath,DWORD dwFlags,PCCERT_CONTEXT *ppcCertContext,BYTE *pbHashData,DWORD *pcbHashData);
+  HRESULT WINAPI MsiGetFileSignatureInformationW(LPCWSTR szSignedObjectPath,DWORD dwFlags,PCCERT_CONTEXT *ppcCertContext,BYTE *pbHashData,DWORD *pcbHashData);
+#define MsiGetFileSignatureInformation __MINGW_NAME_AW(MsiGetFileSignatureInformation)
+
+#define MSI_INVALID_HASH_IS_FATAL 0x1
+#endif
+#endif
+
+#if (_WIN32_MSI >= 110)
+  UINT WINAPI MsiGetShortcutTargetA(LPCSTR szShortcutPath,LPSTR szProductCode,LPSTR szFeatureId,LPSTR szComponentCode);
+  UINT WINAPI MsiGetShortcutTargetW(LPCWSTR szShortcutPath,LPWSTR szProductCode,LPWSTR szFeatureId,LPWSTR szComponentCode);
+#define MsiGetShortcutTarget __MINGW_NAME_AW(MsiGetShortcutTarget)
+
+  UINT WINAPI MsiIsProductElevatedA(LPCSTR szProduct,WINBOOL *pfElevated);
+  UINT WINAPI MsiIsProductElevatedW(LPCWSTR szProduct,WINBOOL *pfElevated);
+#define MsiIsProductElevated __MINGW_NAME_AW(MsiIsProductElevated)
+#endif
+
+#if (_WIN32_MSI >= 310)
+  UINT WINAPI MsiNotifySidChangeA(LPCSTR pOldSid,LPCSTR pNewSid);
+  UINT WINAPI MsiNotifySidChangeW(LPCWSTR pOldSid,LPCWSTR pNewSid);
+#define MsiNotifySidChange __MINGW_NAME_AW(MsiNotifySidChange)
+
+#if _WIN32_MSI >= 450
+UINT WINAPI MsiBeginTransactionA(LPCSTR szName, DWORD dwTransactionAttributes, MSIHANDLE *phTransactionHandle, HANDLE *phChangeOfOwnerEvent);
+UINT WINAPI MsiBeginTransactionW(LPCWSTR szName, DWORD dwTransactionAttributes, MSIHANDLE *phTransactionHandle, HANDLE *phChangeOfOwnerEvent);
+#define MsiBeginTransaction __MINGW_NAME_AW(MsiBeginTransaction)
+
+UINT WINAPI MsiEndTransaction(DWORD dwTransactionState);
+UINT WINAPI MsiJoinTransaction(MSIHANDLE hTransactionHandle, DWORD dwTransactionAttributes, HANDLE *phChangeOfOwnerEvent);
+#endif
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#ifndef ERROR_INSTALL_FAILURE
+#define ERROR_INSTALL_USEREXIT __MSABI_LONG(1602)
+#define ERROR_INSTALL_FAILURE __MSABI_LONG(1603)
+#define ERROR_INSTALL_SUSPEND __MSABI_LONG(1604)
+
+#define ERROR_UNKNOWN_PRODUCT __MSABI_LONG(1605)
+
+#define ERROR_UNKNOWN_FEATURE __MSABI_LONG(1606)
+#define ERROR_UNKNOWN_COMPONENT __MSABI_LONG(1607)
+#define ERROR_UNKNOWN_PROPERTY __MSABI_LONG(1608)
+#define ERROR_INVALID_HANDLE_STATE __MSABI_LONG(1609)
+
+#define ERROR_BAD_CONFIGURATION __MSABI_LONG(1610)
+
+#define ERROR_INDEX_ABSENT __MSABI_LONG(1611)
+
+#define ERROR_INSTALL_SOURCE_ABSENT __MSABI_LONG(1612)
+
+#define ERROR_PRODUCT_UNINSTALLED __MSABI_LONG(1614)
+#define ERROR_BAD_QUERY_SYNTAX __MSABI_LONG(1615)
+#define ERROR_INVALID_FIELD __MSABI_LONG(1616)
+#endif
+
+#ifndef ERROR_INSTALL_SERVICE_FAILURE
+#define ERROR_INSTALL_SERVICE_FAILURE __MSABI_LONG(1601)
+#define ERROR_INSTALL_PACKAGE_VERSION __MSABI_LONG(1613)
+#define ERROR_INSTALL_ALREADY_RUNNING __MSABI_LONG(1618)
+#define ERROR_INSTALL_PACKAGE_OPEN_FAILED __MSABI_LONG(1619)
+#define ERROR_INSTALL_PACKAGE_INVALID __MSABI_LONG(1620)
+#define ERROR_INSTALL_UI_FAILURE __MSABI_LONG(1621)
+#define ERROR_INSTALL_LOG_FAILURE __MSABI_LONG(1622)
+#define ERROR_INSTALL_LANGUAGE_UNSUPPORTED __MSABI_LONG(1623)
+#define ERROR_INSTALL_PACKAGE_REJECTED __MSABI_LONG(1625)
+
+#define ERROR_FUNCTION_NOT_CALLED __MSABI_LONG(1626)
+#define ERROR_FUNCTION_FAILED __MSABI_LONG(1627)
+#define ERROR_INVALID_TABLE __MSABI_LONG(1628)
+#define ERROR_DATATYPE_MISMATCH __MSABI_LONG(1629)
+#define ERROR_UNSUPPORTED_TYPE __MSABI_LONG(1630)
+
+#define ERROR_CREATE_FAILED __MSABI_LONG(1631)
+#endif
+
+#ifndef ERROR_INSTALL_TEMP_UNWRITABLE
+#define ERROR_INSTALL_TEMP_UNWRITABLE __MSABI_LONG(1632)
+#endif
+
+#ifndef ERROR_INSTALL_PLATFORM_UNSUPPORTED
+#define ERROR_INSTALL_PLATFORM_UNSUPPORTED __MSABI_LONG(1633)
+#endif
+
+#ifndef ERROR_INSTALL_NOTUSED
+#define ERROR_INSTALL_NOTUSED __MSABI_LONG(1634)
+#endif
+
+#ifndef ERROR_INSTALL_TRANSFORM_FAILURE
+#define ERROR_INSTALL_TRANSFORM_FAILURE __MSABI_LONG(1624)
+#endif
+
+#ifndef ERROR_PATCH_PACKAGE_OPEN_FAILED
+#define ERROR_PATCH_PACKAGE_OPEN_FAILED __MSABI_LONG(1635)
+#define ERROR_PATCH_PACKAGE_INVALID __MSABI_LONG(1636)
+#define ERROR_PATCH_PACKAGE_UNSUPPORTED __MSABI_LONG(1637)
+#endif
+
+#ifndef ERROR_PRODUCT_VERSION
+#define ERROR_PRODUCT_VERSION __MSABI_LONG(1638)
+#endif
+
+#ifndef ERROR_INVALID_COMMAND_LINE
+#define ERROR_INVALID_COMMAND_LINE __MSABI_LONG(1639)
+#endif
+
+#ifndef ERROR_INSTALL_REMOTE_DISALLOWED
+#define ERROR_INSTALL_REMOTE_DISALLOWED __MSABI_LONG(1640)
+#endif
+
+#ifndef ERROR_SUCCESS_REBOOT_INITIATED
+#define ERROR_SUCCESS_REBOOT_INITIATED __MSABI_LONG(1641)
+#endif
+
+#ifndef ERROR_PATCH_TARGET_NOT_FOUND
+#define ERROR_PATCH_TARGET_NOT_FOUND __MSABI_LONG(1642)
+#endif
+
+#ifndef ERROR_PATCH_PACKAGE_REJECTED
+#define ERROR_PATCH_PACKAGE_REJECTED __MSABI_LONG(1643)
+#endif
+
+#ifndef ERROR_INSTALL_TRANSFORM_REJECTED
+#define ERROR_INSTALL_TRANSFORM_REJECTED __MSABI_LONG(1644)
+#endif
+
+#ifndef ERROR_INSTALL_REMOTE_PROHIBITED
+#define ERROR_INSTALL_REMOTE_PROHIBITED __MSABI_LONG(1645)
+#endif
+
+#ifndef ERROR_PATCH_REMOVAL_UNSUPPORTED
+#define ERROR_PATCH_REMOVAL_UNSUPPORTED __MSABI_LONG(1646)
+#endif
+
+#ifndef ERROR_UNKNOWN_PATCH
+#define ERROR_UNKNOWN_PATCH __MSABI_LONG(1647)
+#endif
+
+#ifndef ERROR_PATCH_NO_SEQUENCE
+#define ERROR_PATCH_NO_SEQUENCE __MSABI_LONG(1648)
+#endif
+
+#ifndef ERROR_PATCH_REMOVAL_DISALLOWED
+#define ERROR_PATCH_REMOVAL_DISALLOWED __MSABI_LONG(1649)
+#endif
+
+#ifndef ERROR_INVALID_PATCH_XML
+#define ERROR_INVALID_PATCH_XML __MSABI_LONG(1650)
+#endif
+
+#ifndef ERROR_PATCH_MANAGED_ADVERTISED_PRODUCT
+#define ERROR_PATCH_MANAGED_ADVERTISED_PRODUCT __MSABI_LONG(1651)
+#endif
+
+#ifndef ERROR_INSTALL_SERVICE_SAFEBOOT
+#define ERROR_INSTALL_SERVICE_SAFEBOOT __MSABI_LONG(1652)
+#endif
+
+#ifndef ERROR_ROLLBACK_DISABLED
+#define ERROR_ROLLBACK_DISABLED __MSABI_LONG(1653)
+#endif
+
+#endif

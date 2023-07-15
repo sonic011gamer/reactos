@@ -1,3 +1,5 @@
+#include <_mingw_unicode.h>
+#undef INTERFACE
 /*
  * Copyright (C) 2007, 2008 Tony Wasserka
  *
@@ -16,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
-#include <d3dx9.h>
+#include "d3dx9.h"
 
 #ifndef __WINE_D3DX9CORE_H
 #define __WINE_D3DX9CORE_H
@@ -24,11 +26,9 @@
 /**********************************************
  ***************** Definitions ****************
  **********************************************/
-/* D3DX_VERSION will be completely ignored since we are
-    implementing all dlls from d3dx9_24 to d3dx9_36 */
 #define D3DX_VERSION 0x0902
 #ifndef D3DX_SDK_VERSION
-#define D3DX_SDK_VERSION 36
+#define D3DX_SDK_VERSION 43
 #endif
 #define D3DXSPRITE_DONOTSAVESTATE          0x00000001
 #define D3DXSPRITE_DONOTMODIFY_RENDERSTATE 0x00000002
@@ -100,7 +100,7 @@ typedef struct _D3DXFONT_DESCA
     UINT Width;
     UINT Weight;
     UINT MipLevels;
-    BOOL Italic;
+    WINBOOL Italic;
     BYTE CharSet;
     BYTE OutputPrecision;
     BYTE Quality;
@@ -114,7 +114,7 @@ typedef struct _D3DXFONT_DESCW
     UINT Width;
     UINT Weight;
     UINT MipLevels;
-    BOOL Italic;
+    WINBOOL Italic;
     BYTE CharSet;
     BYTE OutputPrecision;
     BYTE Quality;
@@ -122,8 +122,8 @@ typedef struct _D3DXFONT_DESCW
     WCHAR FaceName[LF_FACESIZE];
 } D3DXFONT_DESCW, *LPD3DXFONT_DESCW;
 
-DECL_WINELIB_TYPE_AW(D3DXFONT_DESC)
-DECL_WINELIB_TYPE_AW(LPD3DXFONT_DESC)
+__MINGW_TYPEDEF_AW(D3DXFONT_DESC)
+__MINGW_TYPEDEF_AW(LPD3DXFONT_DESC)
 
 #define INTERFACE ID3DXFont
 DECLARE_INTERFACE_(ID3DXFont, IUnknown)
@@ -136,8 +136,8 @@ DECLARE_INTERFACE_(ID3DXFont, IUnknown)
     STDMETHOD(GetDevice)(THIS_ struct IDirect3DDevice9 **device) PURE;
     STDMETHOD(GetDescA)(THIS_ D3DXFONT_DESCA *desc) PURE;
     STDMETHOD(GetDescW)(THIS_ D3DXFONT_DESCW *desc) PURE;
-    STDMETHOD_(BOOL, GetTextMetricsA)(THIS_ TEXTMETRICA *metrics) PURE;
-    STDMETHOD_(BOOL, GetTextMetricsW)(THIS_ TEXTMETRICW *metrics) PURE;
+    STDMETHOD_(WINBOOL, GetTextMetricsA)(THIS_ TEXTMETRICA *metrics) PURE;
+    STDMETHOD_(WINBOOL, GetTextMetricsW)(THIS_ TEXTMETRICW *metrics) PURE;
 
     STDMETHOD_(HDC, GetDC)(THIS) PURE;
     STDMETHOD(GetGlyphData)(THIS_ UINT glyph, struct IDirect3DTexture9 **texture,
@@ -202,10 +202,10 @@ DECLARE_INTERFACE_(ID3DXFont, IUnknown)
 #define ID3DXFont_OnLostDevice(p)          (p)->OnLostDevice()
 #define ID3DXFont_OnResetDevice(p)         (p)->OnResetDevice()
 #endif
-#define ID3DXFont_DrawText       WINELIB_NAME_AW(ID3DXFont_DrawText)
-#define ID3DXFont_GetDesc        WINELIB_NAME_AW(ID3DXFont_GetDesc)
-#define ID3DXFont_GetTextMetrics WINELIB_NAME_AW(ID3DXFont_GetTextMetrics)
-#define ID3DXFont_PreloadText    WINELIB_NAME_AW(ID3DXFont_PreloadText)
+#define ID3DXFont_DrawText       __MINGW_NAME_AW(ID3DXFont_DrawText)
+#define ID3DXFont_GetDesc        __MINGW_NAME_AW(ID3DXFont_GetDesc)
+#define ID3DXFont_GetTextMetrics __MINGW_NAME_AW(ID3DXFont_GetTextMetrics)
+#define ID3DXFont_PreloadText    __MINGW_NAME_AW(ID3DXFont_PreloadText)
 
 #define INTERFACE ID3DXLine
 DECLARE_INTERFACE_(ID3DXLine, IUnknown)
@@ -228,10 +228,10 @@ DECLARE_INTERFACE_(ID3DXLine, IUnknown)
     STDMETHOD_(FLOAT, GetPatternScale)(THIS) PURE;
     STDMETHOD(SetWidth)(THIS_ FLOAT width) PURE;
     STDMETHOD_(FLOAT, GetWidth)(THIS) PURE;
-    STDMETHOD(SetAntialias)(THIS_ BOOL antialias) PURE;
-    STDMETHOD_(BOOL, GetAntialias)(THIS) PURE;
-    STDMETHOD(SetGLLines)(THIS_ BOOL gl_lines) PURE;
-    STDMETHOD_(BOOL, GetGLLines)(THIS) PURE;
+    STDMETHOD(SetAntialias)(THIS_ WINBOOL antialias) PURE;
+    STDMETHOD_(WINBOOL, GetAntialias)(THIS) PURE;
+    STDMETHOD(SetGLLines)(THIS_ WINBOOL gl_lines) PURE;
+    STDMETHOD_(WINBOOL, GetGLLines)(THIS) PURE;
     STDMETHOD(End)(THIS) PURE;
 
     STDMETHOD(OnLostDevice)(THIS) PURE;
@@ -292,7 +292,7 @@ typedef struct _D3DXRTE_DESC
     UINT Size;
     UINT MipLevels;
     D3DFORMAT Format;
-    BOOL DepthStencil;
+    WINBOOL DepthStencil;
     D3DFORMAT DepthStencilFormat;
 } D3DXRTE_DESC;
 
@@ -360,7 +360,7 @@ typedef struct _D3DXRTS_DESC
     UINT Width;
     UINT Height;
     D3DFORMAT Format;
-    BOOL DepthStencil;
+    WINBOOL DepthStencil;
     D3DFORMAT DepthStencilFormat;
 } D3DXRTS_DESC;
 
@@ -478,26 +478,26 @@ DECLARE_INTERFACE_(ID3DXSprite, IUnknown)
 extern "C" {
 #endif
 
-BOOL WINAPI D3DXCheckVersion(UINT d3dsdkvers, UINT d3dxsdkvers);
+WINBOOL WINAPI D3DXCheckVersion(UINT d3dsdkvers, UINT d3dxsdkvers);
 HRESULT WINAPI D3DXCreateFontA(struct IDirect3DDevice9 *device, INT height, UINT width, UINT weight,
-        UINT miplevels, BOOL italic, DWORD charset, DWORD precision, DWORD quality, DWORD pitchandfamily,
+        UINT miplevels, WINBOOL italic, DWORD charset, DWORD precision, DWORD quality, DWORD pitchandfamily,
         const char *facename, struct ID3DXFont **font);
 HRESULT WINAPI D3DXCreateFontW(struct IDirect3DDevice9 *device, INT height, UINT width, UINT weight,
-        UINT miplevels, BOOL italic, DWORD charset, DWORD precision, DWORD quality, DWORD pitchandfamily,
+        UINT miplevels, WINBOOL italic, DWORD charset, DWORD precision, DWORD quality, DWORD pitchandfamily,
         const WCHAR *facename, struct ID3DXFont **font);
-#define D3DXCreateFont WINELIB_NAME_AW(D3DXCreateFont)
+#define D3DXCreateFont __MINGW_NAME_AW(D3DXCreateFont)
 HRESULT WINAPI D3DXCreateFontIndirectA(struct IDirect3DDevice9 *device,
         const D3DXFONT_DESCA *desc, struct ID3DXFont **font);
 HRESULT WINAPI D3DXCreateFontIndirectW(struct IDirect3DDevice9 *device,
         const D3DXFONT_DESCW *desc, struct ID3DXFont **font);
-#define D3DXCreateFontIndirect WINELIB_NAME_AW(D3DXCreateFontIndirect)
+#define D3DXCreateFontIndirect __MINGW_NAME_AW(D3DXCreateFontIndirect)
 HRESULT WINAPI D3DXCreateLine(struct IDirect3DDevice9 *device, struct ID3DXLine **line);
 HRESULT WINAPI D3DXCreateRenderToEnvMap(struct IDirect3DDevice9 *device, UINT size, UINT miplevels,
-        D3DFORMAT format, BOOL stencil, D3DFORMAT stencil_format, struct ID3DXRenderToEnvMap **rtem);
+        D3DFORMAT format, WINBOOL stencil, D3DFORMAT stencil_format, struct ID3DXRenderToEnvMap **rtem);
 HRESULT WINAPI D3DXCreateRenderToSurface(struct IDirect3DDevice9 *device, UINT width, UINT height,
-        D3DFORMAT format, BOOL stencil, D3DFORMAT stencil_format, struct ID3DXRenderToSurface **rts);
+        D3DFORMAT format, WINBOOL stencil, D3DFORMAT stencil_format, struct ID3DXRenderToSurface **rts);
 HRESULT WINAPI D3DXCreateSprite(struct IDirect3DDevice9 *device, struct ID3DXSprite **sprite);
-BOOL WINAPI D3DXDebugMute(BOOL mute);
+WINBOOL WINAPI D3DXDebugMute(WINBOOL mute);
 UINT WINAPI D3DXGetDriverLevel(struct IDirect3DDevice9 *device);
 
 #ifdef __cplusplus

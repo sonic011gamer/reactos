@@ -1,3 +1,5 @@
+#include <_mingw_unicode.h>
+#undef INTERFACE
 /*
  * Copyright 2011 Dylan Smith
  *
@@ -135,7 +137,7 @@ typedef struct _D3DXTRACK_DESC
     FLOAT Weight;
     FLOAT Speed;
     DOUBLE Position;
-    BOOL Enable;
+    WINBOOL Enable;
 } D3DXTRACK_DESC, *LPD3DXTRACK_DESC;
 
 typedef struct _D3DXEVENT_DESC
@@ -150,7 +152,7 @@ typedef struct _D3DXEVENT_DESC
         FLOAT Weight;
         FLOAT Speed;
         DOUBLE Position;
-        BOOL Enable;
+        WINBOOL Enable;
     } DUMMYUNIONNAME;
 } D3DXEVENT_DESC, *LPD3DXEVENT_DESC;
 
@@ -336,7 +338,7 @@ DECLARE_INTERFACE_(ID3DXAnimationController, IUnknown)
     STDMETHOD(SetTrackSpeed)(THIS_ UINT track, float speed) PURE;
     STDMETHOD(SetTrackWeight)(THIS_ UINT track, float weight) PURE;
     STDMETHOD(SetTrackPosition)(THIS_ UINT track, double position) PURE;
-    STDMETHOD(SetTrackEnable)(THIS_ UINT track, BOOL enable) PURE;
+    STDMETHOD(SetTrackEnable)(THIS_ UINT track, WINBOOL enable) PURE;
     STDMETHOD(SetTrackDesc)(THIS_ UINT track, D3DXTRACK_DESC *desc) PURE;
     STDMETHOD(GetTrackDesc)(THIS_ UINT track, D3DXTRACK_DESC *desc) PURE;
     STDMETHOD(SetPriorityBlend)(THIS_ float blend_weight) PURE;
@@ -346,7 +348,7 @@ DECLARE_INTERFACE_(ID3DXAnimationController, IUnknown)
     STDMETHOD_(D3DXEVENTHANDLE, KeyTrackWeight)(THIS_ UINT track, float new_weight,
             double start_time, double duration, D3DXTRANSITION_TYPE transition) PURE;
     STDMETHOD_(D3DXEVENTHANDLE, KeyTrackPosition)(THIS_ UINT track, double new_position, double start_time) PURE;
-    STDMETHOD_(D3DXEVENTHANDLE, KeyTrackEnable)(THIS_ UINT track, BOOL new_enable, double start_time) PURE;
+    STDMETHOD_(D3DXEVENTHANDLE, KeyTrackEnable)(THIS_ UINT track, WINBOOL new_enable, double start_time) PURE;
     STDMETHOD_(D3DXEVENTHANDLE, KeyPriorityBlend)(THIS_ float new_blend_weight,
             double start_time, double duration, D3DXTRANSITION_TYPE transition) PURE;
     STDMETHOD(UnkeyEvent)(THIS_ D3DXEVENTHANDLE event) PURE;
@@ -373,7 +375,7 @@ HRESULT WINAPI D3DXLoadMeshHierarchyFromXA(const char *filename, DWORD flags, st
 HRESULT WINAPI D3DXLoadMeshHierarchyFromXW(const WCHAR *filename, DWORD flags, struct IDirect3DDevice9 *device,
         struct ID3DXAllocateHierarchy *alloc, struct ID3DXLoadUserData *user_data_loader,
         D3DXFRAME **frame_hierarchy, struct ID3DXAnimationController **animation_controller);
-#define D3DXLoadMeshHierarchyFromX WINELIB_NAME_AW(D3DXLoadMeshHierarchyFromX)
+#define D3DXLoadMeshHierarchyFromX __MINGW_NAME_AW(D3DXLoadMeshHierarchyFromX)
 HRESULT WINAPI D3DXLoadMeshHierarchyFromXInMemory(const void *data, DWORD data_size, DWORD flags,
         struct IDirect3DDevice9 *device, struct ID3DXAllocateHierarchy *alloc,
         struct ID3DXLoadUserData *user_data_loader, D3DXFRAME **frame_hierarchy,
@@ -384,7 +386,7 @@ HRESULT WINAPI D3DXSaveMeshHierarchyToFileA(const char *filename, DWORD format,
 HRESULT WINAPI D3DXSaveMeshHierarchyToFileW(const WCHAR *filename, DWORD format,
         const D3DXFRAME *frame_root, ID3DXAnimationController *animation_controller,
         ID3DXSaveUserData *user_data_saver);
-#define D3DXSaveMeshHierarchyToFile WINELIB_NAME_AW(D3DXSaveMeshHierarchyToFile)
+#define D3DXSaveMeshHierarchyToFile __MINGW_NAME_AW(D3DXSaveMeshHierarchyToFile)
 HRESULT WINAPI D3DXFrameDestroy(D3DXFRAME *frame_root, ID3DXAllocateHierarchy *alloc);
 HRESULT WINAPI D3DXFrameAppendChild(D3DXFRAME *parent, const D3DXFRAME *child);
 D3DXFRAME * WINAPI D3DXFrameFind(const D3DXFRAME *root, const char *name);

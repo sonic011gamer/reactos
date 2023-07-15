@@ -1,86 +1,137 @@
-/*
- * Copyright (C) 2006 Robert Shearman (for CodeWeavers)
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
 #ifndef _WINCRED_H_
 #define _WINCRED_H_
+
+#include <_mingw.h>
+#include <_mingw_unicode.h>
+#include <apisetcconv.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef _ADVAPI32_
-#define WINADVAPI
-#else
-#define WINADVAPI DECLSPEC_IMPORT
-#endif
-
 #ifndef __SECHANDLE_DEFINED__
 #define __SECHANDLE_DEFINED__
-typedef struct _SecHandle
-{
+
+  typedef struct _SecHandle {
     ULONG_PTR dwLower;
     ULONG_PTR dwUpper;
-} SecHandle, *PSecHandle;
+  } SecHandle,*PSecHandle;
 #endif
 
-#ifndef __WINE_CTXTHANDLE_DEFINED__
-#define __WINE_CTXTHANDLE_DEFINED__
-typedef SecHandle CtxtHandle;
-typedef PSecHandle PCtxtHandle;
+  typedef PSecHandle PCtxtHandle;
+
+#ifndef _WINBASE_
+#ifndef _FILETIME_
+#define _FILETIME_
+
+  typedef struct _FILETIME {
+    DWORD dwLowDateTime;
+    DWORD dwHighDateTime;
+  } FILETIME;
+
+  typedef struct _FILETIME *PFILETIME;
+  typedef struct _FILETIME *LPFILETIME;
+#endif
 #endif
 
-typedef struct _CREDENTIAL_ATTRIBUTEA
-{
+#if !defined (_NTDEF_) && !defined (_NTSTATUS_PSDK)
+#define _NTSTATUS_PSDK
+  typedef LONG NTSTATUS,*PNTSTATUS;
+#endif
+
+#define STATUS_LOGON_FAILURE ((NTSTATUS)0xC000006D)
+#define STATUS_WRONG_PASSWORD ((NTSTATUS)0xC000006A)
+#define STATUS_PASSWORD_EXPIRED ((NTSTATUS)0xC0000071)
+#define STATUS_PASSWORD_MUST_CHANGE ((NTSTATUS)0xC0000224)
+#define STATUS_ACCESS_DENIED ((NTSTATUS)0xC0000022)
+#define STATUS_DOWNGRADE_DETECTED ((NTSTATUS)0xC0000388)
+#define STATUS_AUTHENTICATION_FIREWALL_FAILED ((NTSTATUS)0xC0000413)
+#define STATUS_ACCOUNT_DISABLED ((NTSTATUS)0xC0000072)
+#define STATUS_ACCOUNT_RESTRICTION ((NTSTATUS)0xC000006E)
+#define STATUS_ACCOUNT_LOCKED_OUT ((NTSTATUS)0xC0000234)
+#define STATUS_ACCOUNT_EXPIRED ((NTSTATUS)0xC0000193)
+#define STATUS_LOGON_TYPE_NOT_GRANTED ((NTSTATUS)0xC000015B)
+
+#define NERR_BASE 2100
+#define NERR_PasswordExpired (NERR_BASE+142)
+
+#define CREDUIP_IS_USER_PASSWORD_ERROR(_Status) ((_Status)==ERROR_LOGON_FAILURE || (_Status)==HRESULT_FROM_WIN32(ERROR_LOGON_FAILURE) || (_Status)==STATUS_LOGON_FAILURE || (_Status)==HRESULT_FROM_NT(STATUS_LOGON_FAILURE) || (_Status)==ERROR_ACCESS_DENIED || (_Status)==HRESULT_FROM_WIN32(ERROR_ACCESS_DENIED) || (_Status)==STATUS_ACCESS_DENIED || (_Status)==HRESULT_FROM_NT(STATUS_ACCESS_DENIED) || (_Status)==ERROR_INVALID_PASSWORD || (_Status)==HRESULT_FROM_WIN32(ERROR_INVALID_PASSWORD) || (_Status)==STATUS_WRONG_PASSWORD || (_Status)==HRESULT_FROM_NT(STATUS_WRONG_PASSWORD) || (_Status)==SEC_E_NO_CREDENTIALS || (_Status)==SEC_E_LOGON_DENIED)
+#define CREDUIP_IS_DOWNGRADE_ERROR(_Status) ((_Status)==ERROR_DOWNGRADE_DETECTED || (_Status)==HRESULT_FROM_WIN32(ERROR_DOWNGRADE_DETECTED) || (_Status)==STATUS_DOWNGRADE_DETECTED || (_Status)==HRESULT_FROM_NT(STATUS_DOWNGRADE_DETECTED))
+#define CREDUIP_IS_EXPIRED_ERROR(_Status) ((_Status)==ERROR_PASSWORD_EXPIRED || (_Status)==HRESULT_FROM_WIN32(ERROR_PASSWORD_EXPIRED) || (_Status)==STATUS_PASSWORD_EXPIRED || (_Status)==HRESULT_FROM_NT(STATUS_PASSWORD_EXPIRED) || (_Status)==ERROR_PASSWORD_MUST_CHANGE || (_Status)==HRESULT_FROM_WIN32(ERROR_PASSWORD_MUST_CHANGE) || (_Status)==STATUS_PASSWORD_MUST_CHANGE || (_Status)==HRESULT_FROM_NT(STATUS_PASSWORD_MUST_CHANGE) || (_Status)==NERR_PasswordExpired || (_Status)==HRESULT_FROM_WIN32(NERR_PasswordExpired))
+#define CREDUI_IS_AUTHENTICATION_ERROR(_Status) (CREDUIP_IS_USER_PASSWORD_ERROR(_Status) || CREDUIP_IS_DOWNGRADE_ERROR(_Status) || CREDUIP_IS_EXPIRED_ERROR(_Status))
+#define CREDUI_NO_PROMPT_AUTHENTICATION_ERROR(_Status) ((_Status)==ERROR_AUTHENTICATION_FIREWALL_FAILED || (_Status)==HRESULT_FROM_WIN32(ERROR_AUTHENTICATION_FIREWALL_FAILED) || (_Status)==STATUS_AUTHENTICATION_FIREWALL_FAILED || (_Status)==HRESULT_FROM_NT(STATUS_AUTHENTICATION_FIREWALL_FAILED) || (_Status)==ERROR_ACCOUNT_DISABLED || (_Status)==HRESULT_FROM_WIN32(ERROR_ACCOUNT_DISABLED) || (_Status)==STATUS_ACCOUNT_DISABLED || (_Status)==HRESULT_FROM_NT(STATUS_ACCOUNT_DISABLED) || (_Status)==ERROR_ACCOUNT_RESTRICTION || (_Status)==HRESULT_FROM_WIN32(ERROR_ACCOUNT_RESTRICTION) || (_Status)==STATUS_ACCOUNT_RESTRICTION || (_Status)==HRESULT_FROM_NT(STATUS_ACCOUNT_RESTRICTION) || (_Status)==ERROR_ACCOUNT_LOCKED_OUT || (_Status)==HRESULT_FROM_WIN32(ERROR_ACCOUNT_LOCKED_OUT) || (_Status)==STATUS_ACCOUNT_LOCKED_OUT || (_Status)==HRESULT_FROM_NT(STATUS_ACCOUNT_LOCKED_OUT) || (_Status)==ERROR_ACCOUNT_EXPIRED || (_Status)==HRESULT_FROM_WIN32(ERROR_ACCOUNT_EXPIRED) || (_Status)==STATUS_ACCOUNT_EXPIRED || (_Status)==HRESULT_FROM_NT(STATUS_ACCOUNT_EXPIRED) || (_Status)==ERROR_LOGON_TYPE_NOT_GRANTED || (_Status)==HRESULT_FROM_WIN32(ERROR_LOGON_TYPE_NOT_GRANTED) || (_Status)==STATUS_LOGON_TYPE_NOT_GRANTED || (_Status)==HRESULT_FROM_NT(STATUS_LOGON_TYPE_NOT_GRANTED))
+
+#define CRED_MAX_STRING_LENGTH 256
+#define CRED_MAX_USERNAME_LENGTH (256+1+256)
+#define CRED_MAX_GENERIC_TARGET_NAME_LENGTH 32767
+#define CRED_MAX_DOMAIN_TARGET_NAME_LENGTH (256+1+80)
+#define CRED_MAX_VALUE_SIZE 256
+#define CRED_MAX_ATTRIBUTES 64
+
+  typedef struct _CREDENTIAL_ATTRIBUTEA {
     LPSTR Keyword;
     DWORD Flags;
     DWORD ValueSize;
     LPBYTE Value;
-} CREDENTIAL_ATTRIBUTEA, *PCREDENTIAL_ATTRIBUTEA;
+  } CREDENTIAL_ATTRIBUTEA,*PCREDENTIAL_ATTRIBUTEA;
 
-typedef struct _CREDENTIAL_ATTRIBUTEW
-{
+  typedef struct _CREDENTIAL_ATTRIBUTEW {
     LPWSTR Keyword;
     DWORD Flags;
     DWORD ValueSize;
     LPBYTE Value;
-} CREDENTIAL_ATTRIBUTEW, *PCREDENTIAL_ATTRIBUTEW;
+  } CREDENTIAL_ATTRIBUTEW,*PCREDENTIAL_ATTRIBUTEW;
 
-DECL_WINELIB_TYPE_AW(CREDENTIAL_ATTRIBUTE)
-DECL_WINELIB_TYPE_AW(PCREDENTIAL_ATTRIBUTE)
+  __MINGW_TYPEDEF_AW(CREDENTIAL_ATTRIBUTE)
+  __MINGW_TYPEDEF_AW(PCREDENTIAL_ATTRIBUTE)
 
-typedef struct _CREDENTIALA
-{
+#define CRED_SESSION_WILDCARD_NAME_W L"*Session"
+#define CRED_SESSION_WILDCARD_NAME_A "*Session"
+#define CRED_SESSION_WILDCARD_NAME_LENGTH (sizeof(CRED_SESSION_WILDCARD_NAME_A)-1)
+
+#define CRED_SESSION_WILDCARD_NAME __MINGW_NAME_UAW(CRED_SESSION_WILDCARD_NAME)
+
+#define CRED_FLAGS_PASSWORD_FOR_CERT 0x0001
+#define CRED_FLAGS_PROMPT_NOW 0x0002
+#define CRED_FLAGS_USERNAME_TARGET 0x0004
+#define CRED_FLAGS_OWF_CRED_BLOB 0x0008
+#define CRED_FLAGS_VALID_FLAGS 0x000F
+
+#define CRED_TYPE_GENERIC 1
+#define CRED_TYPE_DOMAIN_PASSWORD 2
+#define CRED_TYPE_DOMAIN_CERTIFICATE 3
+#define CRED_TYPE_DOMAIN_VISIBLE_PASSWORD 4
+#define CRED_TYPE_MAXIMUM 5
+#define CRED_TYPE_MAXIMUM_EX (CRED_TYPE_MAXIMUM+1000)
+
+#define CRED_MAX_CREDENTIAL_BLOB_SIZE 512
+
+#define CRED_PERSIST_NONE 0
+#define CRED_PERSIST_SESSION 1
+#define CRED_PERSIST_LOCAL_MACHINE 2
+#define CRED_PERSIST_ENTERPRISE 3
+
+  typedef struct _CREDENTIALA {
     DWORD Flags;
     DWORD Type;
     LPSTR TargetName;
     LPSTR Comment;
     FILETIME LastWritten;
     DWORD CredentialBlobSize;
-    _Field_size_bytes_(CredentialBlobSize) LPBYTE CredentialBlob;
+    LPBYTE CredentialBlob;
     DWORD Persist;
     DWORD AttributeCount;
     PCREDENTIAL_ATTRIBUTEA Attributes;
     LPSTR TargetAlias;
     LPSTR UserName;
-} CREDENTIALA, *PCREDENTIALA;
+  } CREDENTIALA,*PCREDENTIALA;
 
-typedef struct _CREDENTIALW
-{
+  typedef struct _CREDENTIALW {
     DWORD Flags;
     DWORD Type;
     LPWSTR TargetName;
@@ -93,13 +144,20 @@ typedef struct _CREDENTIALW
     PCREDENTIAL_ATTRIBUTEW Attributes;
     LPWSTR TargetAlias;
     LPWSTR UserName;
-} CREDENTIALW, *PCREDENTIALW;
+  } CREDENTIALW,*PCREDENTIALW;
 
-DECL_WINELIB_TYPE_AW(CREDENTIAL)
-DECL_WINELIB_TYPE_AW(PCREDENTIAL)
+  __MINGW_TYPEDEF_AW(CREDENTIAL)
+  __MINGW_TYPEDEF_AW(PCREDENTIAL)
 
-typedef struct _CREDENTIAL_TARGET_INFORMATIONA
-{
+#define CRED_TI_SERVER_FORMAT_UNKNOWN 0x0001
+#define CRED_TI_DOMAIN_FORMAT_UNKNOWN 0x0002
+#define CRED_TI_ONLY_PASSWORD_REQUIRED 0x0004
+#define CRED_TI_USERNAME_TARGET 0x0008
+#define CRED_TI_CREATE_EXPLICIT_CRED 0x0010
+#define CRED_TI_WORKGROUP_MEMBER 0x0020
+#define CRED_TI_VALID_FLAGS 0x003F
+
+  typedef struct _CREDENTIAL_TARGET_INFORMATIONA {
     LPSTR TargetName;
     LPSTR NetbiosServerName;
     LPSTR DnsServerName;
@@ -107,13 +165,12 @@ typedef struct _CREDENTIAL_TARGET_INFORMATIONA
     LPSTR DnsDomainName;
     LPSTR DnsTreeName;
     LPSTR PackageName;
-    DWORD Flags;
+    ULONG Flags;
     DWORD CredTypeCount;
     LPDWORD CredTypes;
-} CREDENTIAL_TARGET_INFORMATIONA, *PCREDENTIAL_TARGET_INFORMATIONA;
+  } CREDENTIAL_TARGET_INFORMATIONA,*PCREDENTIAL_TARGET_INFORMATIONA;
 
-typedef struct _CREDENTIAL_TARGET_INFORMATIONW
-{
+  typedef struct _CREDENTIAL_TARGET_INFORMATIONW {
     LPWSTR TargetName;
     LPWSTR NetbiosServerName;
     LPWSTR DnsServerName;
@@ -121,359 +178,285 @@ typedef struct _CREDENTIAL_TARGET_INFORMATIONW
     LPWSTR DnsDomainName;
     LPWSTR DnsTreeName;
     LPWSTR PackageName;
-    DWORD Flags;
+    ULONG Flags;
     DWORD CredTypeCount;
     LPDWORD CredTypes;
-} CREDENTIAL_TARGET_INFORMATIONW, *PCREDENTIAL_TARGET_INFORMATIONW;
+  } CREDENTIAL_TARGET_INFORMATIONW,*PCREDENTIAL_TARGET_INFORMATIONW;
 
-DECL_WINELIB_TYPE_AW(CREDENTIAL_TARGET_INFORMATION)
-DECL_WINELIB_TYPE_AW(PCREDENTIAL_TARGET_INFORMATION)
+  __MINGW_TYPEDEF_AW(CREDENTIAL_TARGET_INFORMATION)
+  __MINGW_TYPEDEF_AW(PCREDENTIAL_TARGET_INFORMATION)
 
-typedef struct _CREDUI_INFOA
-{
+#define CERT_HASH_LENGTH 20
+
+  typedef struct _CERT_CREDENTIAL_INFO {
+    ULONG cbSize;
+    UCHAR rgbHashOfCert[CERT_HASH_LENGTH];
+  } CERT_CREDENTIAL_INFO,*PCERT_CREDENTIAL_INFO;
+
+  typedef struct _USERNAME_TARGET_CREDENTIAL_INFO {
+    LPWSTR UserName;
+  } USERNAME_TARGET_CREDENTIAL_INFO,*PUSERNAME_TARGET_CREDENTIAL_INFO;
+
+  typedef enum _CRED_MARSHAL_TYPE {
+    CertCredential = 1,UsernameTargetCredential
+  } CRED_MARSHAL_TYPE,*PCRED_MARSHAL_TYPE;
+
+  typedef struct _CREDUI_INFOA {
     DWORD cbSize;
     HWND hwndParent;
     PCSTR pszMessageText;
     PCSTR pszCaptionText;
     HBITMAP hbmBanner;
-} CREDUI_INFOA, *PCREDUI_INFOA;
+  } CREDUI_INFOA,*PCREDUI_INFOA;
 
-typedef struct _CREDUI_INFOW
-{
+  typedef struct _CREDUI_INFOW {
     DWORD cbSize;
     HWND hwndParent;
     PCWSTR pszMessageText;
     PCWSTR pszCaptionText;
     HBITMAP hbmBanner;
-} CREDUI_INFOW, *PCREDUI_INFOW;
+  } CREDUI_INFOW,*PCREDUI_INFOW;
 
-DECL_WINELIB_TYPE_AW(CREDUI_INFO)
-DECL_WINELIB_TYPE_AW(PCREDUI_INFO)
-
-typedef enum _CRED_MARSHAL_TYPE
-{
-    CertCredential = 1,
-    UsernameTargetCredential,
-    BinaryBlobCredential
-} CRED_MARSHAL_TYPE, *PCRED_MARSHAL_TYPE;
-
-#define CERT_HASH_LENGTH    20
-
-typedef struct _CERT_CREDENTIAL_INFO
-{
-    ULONG cbSize;
-    UCHAR rgbHashOfCert[CERT_HASH_LENGTH];
-} CERT_CREDENTIAL_INFO, *PCERT_CREDENTIAL_INFO;
-
-typedef struct _USERNAME_TARGET_CREDENTIAL_INFO
-{
-    LPWSTR UserName;
-} USERNAME_TARGET_CREDENTIAL_INFO;
-
-typedef struct _BINARY_BLOB_CREDENTIAL_INFO
-{
-    ULONG cbBlob;
-    LPBYTE pbBlob;
-} BINARY_BLOB_CREDENTIAL_INFO, *PBINARY_BLOB_CREDENTIAL_INFO;
-
-#define CRED_MAX_STRING_LENGTH              256
-#define CRED_MAX_USERNAME_LENGTH            513
-#define CRED_MAX_GENERIC_TARGET_NAME_LENGTH 32767
-#define CRED_MAX_DOMAIN_TARGET_NAME_LENGTH  337
-#define CRED_MAX_VALUE_SIZE                 256
-#define CRED_MAX_ATTRIBUTES                 64
-
-#define CRED_MAX_BLOB_SIZE                  512
-#define CRED_MAX_CREDENTIAL_BLOB_SIZE       (5 * CRED_MAX_BLOB_SIZE)
+  __MINGW_TYPEDEF_AW(CREDUI_INFO)
+  __MINGW_TYPEDEF_AW(PCREDUI_INFO)
 
 #define CREDUI_MAX_MESSAGE_LENGTH 32767
 #define CREDUI_MAX_CAPTION_LENGTH 128
 #define CREDUI_MAX_GENERIC_TARGET_LENGTH CRED_MAX_GENERIC_TARGET_NAME_LENGTH
-#define CREDUI_MAX_DOMAIN_TARGET_LENGTH CRED_MAX_DOMAIN_TARGET_LENGTH
+#define CREDUI_MAX_DOMAIN_TARGET_LENGTH CRED_MAX_DOMAIN_TARGET_NAME_LENGTH
 #define CREDUI_MAX_USERNAME_LENGTH CRED_MAX_USERNAME_LENGTH
 #define CREDUI_MAX_PASSWORD_LENGTH (CRED_MAX_CREDENTIAL_BLOB_SIZE / 2)
 
-/* flags for CREDENTIAL::Flags */
-#define CRED_FLAGS_PASSWORD_FOR_CERT                0x0001
-#define CRED_FLAGS_PROMPT_NOW                       0x0002
-#define CRED_FLAGS_USERNAME_TARGET                  0x0004
-#define CRED_FLAGS_OWF_CRED_BLOB                    0x0008
-#define CRED_FLAGS_VALID_FLAGS                      0x000f
+#define CREDUI_FLAGS_INCORRECT_PASSWORD 0x00001
+#define CREDUI_FLAGS_DO_NOT_PERSIST 0x00002
+#define CREDUI_FLAGS_REQUEST_ADMINISTRATOR 0x00004
+#define CREDUI_FLAGS_EXCLUDE_CERTIFICATES 0x00008
+#define CREDUI_FLAGS_REQUIRE_CERTIFICATE 0x00010
+#define CREDUI_FLAGS_SHOW_SAVE_CHECK_BOX 0x00040
+#define CREDUI_FLAGS_ALWAYS_SHOW_UI 0x00080
+#define CREDUI_FLAGS_REQUIRE_SMARTCARD 0x00100
+#define CREDUI_FLAGS_PASSWORD_ONLY_OK 0x00200
+#define CREDUI_FLAGS_VALIDATE_USERNAME 0x00400
+#define CREDUI_FLAGS_COMPLETE_USERNAME 0x00800
+#define CREDUI_FLAGS_PERSIST 0x01000
+#define CREDUI_FLAGS_SERVER_CREDENTIAL 0x04000
+#define CREDUI_FLAGS_EXPECT_CONFIRMATION 0x20000
+#define CREDUI_FLAGS_GENERIC_CREDENTIALS 0x40000
+#define CREDUI_FLAGS_USERNAME_TARGET_CREDENTIALS 0x80000
+#define CREDUI_FLAGS_KEEP_USERNAME 0x100000
 
-/* values for CREDENTIAL::Type */
-#define CRED_TYPE_GENERIC                           1
-#define CRED_TYPE_DOMAIN_PASSWORD                   2
-#define CRED_TYPE_DOMAIN_CERTIFICATE                3
-#define CRED_TYPE_DOMAIN_VISIBLE_PASSWORD           4
-#define CRED_TYPE_GENERIC_CERTIFICATE               5
-#define CRED_TYPE_MAXIMUM                           6
-#define CRED_TYPE_MAXIMUM_EX                        (CRED_TYPE_MAXIMUM+1000)
+#define CREDUI_FLAGS_PROMPT_VALID (CREDUI_FLAGS_INCORRECT_PASSWORD | CREDUI_FLAGS_DO_NOT_PERSIST | CREDUI_FLAGS_REQUEST_ADMINISTRATOR | CREDUI_FLAGS_EXCLUDE_CERTIFICATES | CREDUI_FLAGS_REQUIRE_CERTIFICATE | CREDUI_FLAGS_SHOW_SAVE_CHECK_BOX | CREDUI_FLAGS_ALWAYS_SHOW_UI | CREDUI_FLAGS_REQUIRE_SMARTCARD | CREDUI_FLAGS_PASSWORD_ONLY_OK | CREDUI_FLAGS_VALIDATE_USERNAME | CREDUI_FLAGS_COMPLETE_USERNAME | CREDUI_FLAGS_PERSIST | CREDUI_FLAGS_SERVER_CREDENTIAL | CREDUI_FLAGS_EXPECT_CONFIRMATION | CREDUI_FLAGS_GENERIC_CREDENTIALS | CREDUI_FLAGS_USERNAME_TARGET_CREDENTIALS | CREDUI_FLAGS_KEEP_USERNAME)
 
-/* values for CREDENTIAL::Persist */
-#define CRED_PERSIST_NONE                           0
-#define CRED_PERSIST_SESSION                        1
-#define CRED_PERSIST_LOCAL_MACHINE                  2
-#define CRED_PERSIST_ENTERPRISE                     3
+#define CRED_PRESERVE_CREDENTIAL_BLOB 0x1
 
-/* values for CREDENTIAL_TARGET_INFORMATION::Flags */
-#define CRED_TI_SERVER_FORMAT_UNKNOWN               1
-#define CRED_TI_DOMAIN_FORMAT_UNKNOWN               2
-#define CRED_TI_ONLY_PASSWORD_REQUIRED              4
+#define CredWrite __MINGW_NAME_AW(CredWrite)
+#define CredRead __MINGW_NAME_AW(CredRead)
+#define CredEnumerate __MINGW_NAME_AW(CredEnumerate)
+#define CredWriteDomainCredentials __MINGW_NAME_AW(CredWriteDomainCredentials)
+#define CredReadDomainCredentials __MINGW_NAME_AW(CredReadDomainCredentials)
+#define CredDelete __MINGW_NAME_AW(CredDelete)
+#define CredRename __MINGW_NAME_AW(CredRename)
+#define CredGetTargetInfo __MINGW_NAME_AW(CredGetTargetInfo)
+#define CredMarshalCredential __MINGW_NAME_AW(CredMarshalCredential)
+#define CredUnmarshalCredential __MINGW_NAME_AW(CredUnmarshalCredential)
+#define CredIsMarshaledCredential __MINGW_NAME_AW(CredIsMarshaledCredential)
+#define CredUIPromptForCredentials __MINGW_NAME_AW(CredUIPromptForCredentials)
+#define CredUIParseUserName __MINGW_NAME_AW(CredUIParseUserName)
+#define CredUICmdLinePromptForCredentials __MINGW_NAME_AW(CredUICmdLinePromptForCredentials)
+#define CredUIConfirmCredentials __MINGW_NAME_AW(CredUIConfirmCredentials)
 
-#define CREDUI_FLAGS_INCORRECT_PASSWORD             0x00000001
-#define CREDUI_FLAGS_DO_NOT_PERSIST                 0x00000002
-#define CREDUI_FLAGS_REQUEST_ADMINISTRATOR          0x00000004
-#define CREDUI_FLAGS_EXCLUDE_CERTIFICATES           0x00000008
-#define CREDUI_FLAGS_REQUIRE_CERTIFICATE            0x00000010
-#define CREDUI_FLAGS_SHOW_SAVE_CHECK_BOX            0x00000040
-#define CREDUI_FLAGS_ALWAYS_SHOW_UI                 0x00000080
-#define CREDUI_FLAGS_REQUIRE_SMARTCARD              0x00000100
-#define CREDUI_FLAGS_PASSWORD_ONLY_OK               0x00000200
-#define CREDUI_FLAGS_VALIDATE_USERNAME              0x00000400
-#define CREDUI_FLAGS_COMPLETE_USERNAME              0x00000800
-#define CREDUI_FLAGS_PERSIST                        0x00001000
-#define CREDUI_FLAGS_SERVER_CREDENTIAL              0x00004000
-#define CREDUI_FLAGS_EXPECT_CONFIRMATION            0x00020000
-#define CREDUI_FLAGS_GENERIC_CREDENTIALS            0x00040000
-#define CREDUI_FLAGS_USERNAME_TARGET_CREDENTIALS    0x00080000
-#define CREDUI_FLAGS_KEEP_USERNAME                  0x00100000
+  WINADVAPI WINBOOL WINAPI CredWriteW(PCREDENTIALW Credential,DWORD Flags);
+  WINADVAPI WINBOOL WINAPI CredWriteA(PCREDENTIALA Credential,DWORD Flags);
+  WINADVAPI WINBOOL WINAPI CredReadW(LPCWSTR TargetName,DWORD Type,DWORD Flags,PCREDENTIALW *Credential);
+  WINADVAPI WINBOOL WINAPI CredReadA(LPCSTR TargetName,DWORD Type,DWORD Flags,PCREDENTIALA *Credential);
+  WINADVAPI WINBOOL WINAPI CredEnumerateW(LPCWSTR Filter,DWORD Flags,DWORD *Count,PCREDENTIALW **Credential);
+  WINADVAPI WINBOOL WINAPI CredEnumerateA(LPCSTR Filter,DWORD Flags,DWORD *Count,PCREDENTIALA **Credential);
+  WINADVAPI WINBOOL WINAPI CredWriteDomainCredentialsW(PCREDENTIAL_TARGET_INFORMATIONW TargetInfo,PCREDENTIALW Credential,DWORD Flags);
+  WINADVAPI WINBOOL WINAPI CredWriteDomainCredentialsA(PCREDENTIAL_TARGET_INFORMATIONA TargetInfo,PCREDENTIALA Credential,DWORD Flags);
 
-/* flags for CredWrite and CredWriteDomainCredentials */
-#define CRED_PRESERVE_CREDENTIAL_BLOB               0x00000001
+#define CRED_CACHE_TARGET_INFORMATION 0x1
 
-WINADVAPI BOOL WINAPI CredDeleteA(_In_ LPCSTR, _In_ DWORD, _Reserved_ DWORD);
-WINADVAPI BOOL WINAPI CredDeleteW(_In_ LPCWSTR, _In_ DWORD, _Reserved_ DWORD);
-#define CredDelete WINELIB_NAME_AW(CredDelete)
+  WINADVAPI WINBOOL WINAPI CredReadDomainCredentialsW(PCREDENTIAL_TARGET_INFORMATIONW TargetInfo,DWORD Flags,DWORD *Count,PCREDENTIALW **Credential);
+  WINADVAPI WINBOOL WINAPI CredReadDomainCredentialsA(PCREDENTIAL_TARGET_INFORMATIONA TargetInfo,DWORD Flags,DWORD *Count,PCREDENTIALA **Credential);
+  WINADVAPI WINBOOL WINAPI CredDeleteW(LPCWSTR TargetName,DWORD Type,DWORD Flags);
+  WINADVAPI WINBOOL WINAPI CredDeleteA(LPCSTR TargetName,DWORD Type,DWORD Flags);
+  WINADVAPI WINBOOL WINAPI CredRenameW(LPCWSTR OldTargetName,LPCWSTR NewTargetName,DWORD Type,DWORD Flags);
+  WINADVAPI WINBOOL WINAPI CredRenameA(LPCSTR OldTargetName,LPCSTR NewTargetName,DWORD Type,DWORD Flags);
 
-WINADVAPI
-BOOL
-WINAPI
-CredEnumerateA(
-  _In_opt_ LPCSTR,
-  _Reserved_ DWORD,
-  _Out_ DWORD *Count,
-  _Outptr_result_buffer_(*Count) PCREDENTIALA **);
+#define CRED_ALLOW_NAME_RESOLUTION 0x1
 
-WINADVAPI
-BOOL
-WINAPI
-CredEnumerateW(
-  _In_opt_ LPCWSTR,
-  _Reserved_ DWORD,
-  _Out_ DWORD *Count,
-  _Outptr_result_buffer_(*Count) PCREDENTIALW **);
+  WINADVAPI WINBOOL WINAPI CredGetTargetInfoW(LPCWSTR TargetName,DWORD Flags,PCREDENTIAL_TARGET_INFORMATIONW *TargetInfo);
+  WINADVAPI WINBOOL WINAPI CredGetTargetInfoA(LPCSTR TargetName,DWORD Flags,PCREDENTIAL_TARGET_INFORMATIONA *TargetInfo);
+  WINADVAPI WINBOOL WINAPI CredMarshalCredentialW(CRED_MARSHAL_TYPE CredType,PVOID Credential,LPWSTR *MarshaledCredential);
+  WINADVAPI WINBOOL WINAPI CredMarshalCredentialA(CRED_MARSHAL_TYPE CredType,PVOID Credential,LPSTR *MarshaledCredential);
+  WINADVAPI WINBOOL WINAPI CredUnmarshalCredentialW(LPCWSTR MarshaledCredential,PCRED_MARSHAL_TYPE CredType,PVOID *Credential);
+  WINADVAPI WINBOOL WINAPI CredUnmarshalCredentialA(LPCSTR MarshaledCredential,PCRED_MARSHAL_TYPE CredType,PVOID *Credential);
+  WINADVAPI WINBOOL WINAPI CredIsMarshaledCredentialW(LPCWSTR MarshaledCredential);
+  WINADVAPI WINBOOL WINAPI CredIsMarshaledCredentialA(LPCSTR MarshaledCredential);
+  WINADVAPI WINBOOL WINAPI CredGetSessionTypes (DWORD MaximumPersistCount,LPDWORD MaximumPersist);
+  WINADVAPI VOID WINAPI CredFree (PVOID Buffer);
+  CREDUIAPI DWORD WINAPI CredUIPromptForCredentialsW(PCREDUI_INFOW pUiInfo,PCWSTR pszTargetName,PCtxtHandle pContext,DWORD dwAuthError,PWSTR pszUserName,ULONG ulUserNameBufferSize,PWSTR pszPassword,ULONG ulPasswordBufferSize,WINBOOL *save,DWORD dwFlags);
+  CREDUIAPI DWORD WINAPI CredUIPromptForCredentialsA(PCREDUI_INFOA pUiInfo,PCSTR pszTargetName,PCtxtHandle pContext,DWORD dwAuthError,PSTR pszUserName,ULONG ulUserNameBufferSize,PSTR pszPassword,ULONG ulPasswordBufferSize,WINBOOL *save,DWORD dwFlags);
+  CREDUIAPI DWORD WINAPI CredUIParseUserNameW(CONST WCHAR *UserName,WCHAR *user,ULONG userBufferSize,WCHAR *domain,ULONG domainBufferSize);
+  CREDUIAPI DWORD WINAPI CredUIParseUserNameA(CONST CHAR *userName,CHAR *user,ULONG userBufferSize,CHAR *domain,ULONG domainBufferSize);
+  CREDUIAPI DWORD WINAPI CredUICmdLinePromptForCredentialsW(PCWSTR pszTargetName,PCtxtHandle pContext,DWORD dwAuthError,PWSTR UserName,ULONG ulUserBufferSize,PWSTR pszPassword,ULONG ulPasswordBufferSize,PBOOL pfSave,DWORD dwFlags);
+  CREDUIAPI DWORD WINAPI CredUICmdLinePromptForCredentialsA(PCSTR pszTargetName,PCtxtHandle pContext,DWORD dwAuthError,PSTR UserName,ULONG ulUserBufferSize,PSTR pszPassword,ULONG ulPasswordBufferSize,PBOOL pfSave,DWORD dwFlags);
+  CREDUIAPI DWORD WINAPI CredUIConfirmCredentialsW(PCWSTR pszTargetName,WINBOOL bConfirm);
+  CREDUIAPI DWORD WINAPI CredUIConfirmCredentialsA(PCSTR pszTargetName,WINBOOL bConfirm);
+  CREDUIAPI DWORD WINAPI CredUIStoreSSOCredW (PCWSTR pszRealm,PCWSTR pszUsername,PCWSTR pszPassword,WINBOOL bPersist);
+  CREDUIAPI DWORD WINAPI CredUIReadSSOCredW (PCWSTR pszRealm,PWSTR *ppszUsername);
 
-#define CredEnumerate WINELIB_NAME_AW(CredEnumerate)
+#if (_WIN32_WINNT >= 0x0600)
+#define CredFindBestCredential __MINGW_NAME_AW(CredFindBestCredential)
+#define CredIsProtected __MINGW_NAME_AW(CredIsProtected)
+#define CredPackAuthenticationBuffer __MINGW_NAME_AW(CredPackAuthenticationBuffer)
+#define CredProtect __MINGW_NAME_AW(CredProtect)
+#define CredUIPromptForWindowsCredentials __MINGW_NAME_AW(CredUIPromptForWindowsCredentials)
+#define CredUnPackAuthenticationBuffer __MINGW_NAME_AW(CredUnPackAuthenticationBuffer)
+#define CredUnprotect __MINGW_NAME_AW(CredUnprotect)
 
-WINADVAPI VOID WINAPI CredFree(_In_ PVOID);
+#define CREDUIWIN_GENERIC 0x1
+#define CREDUIWIN_CHECKBOX 0x2
+#define CREDUIWIN_AUTHPACKAGE_ONLY 0x10
+#define CREDUIWIN_IN_CRED_ONLY 0x20
+#define CREDUIWIN_ENUMERATE_ADMINS 0x100
+#define CREDUIWIN_ENUMERATE_CURRENT_USER 0x200
+#define CREDUIWIN_SECURE_PROMPT 0x1000
+#define CREDUIWIN_PACK_32_WOW 0x10000000
 
-WINADVAPI
-BOOL
-WINAPI
-CredGetSessionTypes(
-  _In_ DWORD MaximumPersistCount,
-  _Out_writes_(MaximumPersistCount) LPDWORD);
+typedef enum _CRED_PROTECTION_TYPE {
+  CredUnprotected         = 0,
+  CredUserProtection      = 1,
+  CredTrustedProtection   = 2 
+} CRED_PROTECTION_TYPE, *PCRED_PROTECTION_TYPE;
 
-WINADVAPI BOOL WINAPI CredIsMarshaledCredentialA(_In_ LPCSTR);
-WINADVAPI BOOL WINAPI CredIsMarshaledCredentialW(_In_ LPCWSTR);
-#define CredIsMarshaledCredential WINELIB_NAME_AW(CredIsMarshaledCredential)
+WINADVAPI WINBOOL WINAPI CredFindBestCredentialA(
+  LPCSTR TargetName,
+  DWORD Type,
+  DWORD Flags,
+  PCREDENTIALA *Credential
+);
 
-WINADVAPI
-BOOL
-WINAPI
-CredMarshalCredentialA(
-  _In_ CRED_MARSHAL_TYPE,
-  _In_ PVOID,
-  _Out_ LPSTR *);
+WINADVAPI WINBOOL WINAPI CredFindBestCredentialW(
+  LPCWSTR TargetName,
+  DWORD Type,
+  DWORD Flags,
+  PCREDENTIALW *Credential
+);
 
-WINADVAPI
-BOOL
-WINAPI
-CredMarshalCredentialW(
-  _In_ CRED_MARSHAL_TYPE,
-  _In_ PVOID,
-  _Out_ LPWSTR *);
+WINADVAPI WINBOOL WINAPI CredIsProtectedA(
+  LPSTR pszProtectedCredentials,
+  CRED_PROTECTION_TYPE *pProtectionType
+);
 
-#define CredMarshalCredential WINELIB_NAME_AW(CredMarshalCredential)
+WINADVAPI WINBOOL WINAPI CredIsProtectedW(
+  LPWSTR pszProtectedCredentials,
+  CRED_PROTECTION_TYPE *pProtectionType
+);
 
-WINADVAPI
-BOOL
-WINAPI
-CredReadA(
-  _In_ LPCSTR,
-  _In_ DWORD,
-  _Reserved_ DWORD,
-  _Out_ PCREDENTIALA *);
+CREDUIAPI WINBOOL WINAPI CredPackAuthenticationBufferA(
+  DWORD dwFlags,
+  LPSTR pszUserName,
+  LPSTR pszPassword,
+  PBYTE pPackedCredentials,
+  DWORD *pcbPackedCredentials
+);
 
-WINADVAPI
-BOOL
-WINAPI
-CredReadW(
-  _In_ LPCWSTR,
-  _In_ DWORD,
-  _Reserved_ DWORD,
-  _Out_ PCREDENTIALW *);
+CREDUIAPI WINBOOL WINAPI CredPackAuthenticationBufferW(
+  DWORD dwFlags,
+  LPWSTR pszUserName,
+  LPWSTR pszPassword,
+  PBYTE pPackedCredentials,
+  DWORD *pcbPackedCredentials
+);
 
-#define CredRead WINELIB_NAME_AW(CredRead)
+WINADVAPI WINBOOL WINAPI CredProtectW(
+  WINBOOL fAsSelf,
+  LPWSTR pszCredentials,
+  DWORD cchCredentials,
+  LPWSTR pszProtectedCredentials,
+  DWORD *pcchMaxChars,
+  CRED_PROTECTION_TYPE *ProtectionType
+);
 
-WINADVAPI
-BOOL
-WINAPI
-CredReadDomainCredentialsA(
-  _In_ PCREDENTIAL_TARGET_INFORMATIONA,
-  _In_ DWORD,
-  _Out_ DWORD *Count,
-  _Outptr_result_buffer_(*Count) PCREDENTIALA **);
+WINADVAPI WINBOOL WINAPI CredProtectA(
+  WINBOOL fAsSelf,
+  LPSTR pszCredentials,
+  DWORD cchCredentials,
+  LPSTR pszProtectedCredentials,
+  DWORD *pcchMaxChars,
+  CRED_PROTECTION_TYPE *ProtectionType
+);
 
-WINADVAPI
-BOOL
-WINAPI
-CredReadDomainCredentialsW(
-  _In_ PCREDENTIAL_TARGET_INFORMATIONW,
-  _In_ DWORD,
-  _Out_ DWORD *Count,
-  _Outptr_result_buffer_(*Count) PCREDENTIALW **);
+CREDUIAPI DWORD WINAPI CredUIPromptForWindowsCredentialsA(
+  PCREDUI_INFOA pUiInfo,
+  DWORD dwAuthError,
+  ULONG *pulAuthPackage,
+  LPCVOID pvInAuthBuffer,
+  ULONG ulInAuthBufferSize,
+  LPVOID *ppvOutAuthBuffer,
+  ULONG *pulOutAuthBufferSize,
+  WINBOOL *pfSave,
+  DWORD dwFlags
+);
 
-#define CredReadDomainCredentials WINELIB_NAME_AW(CredReadDomainCredentials)
+CREDUIAPI DWORD WINAPI CredUIPromptForWindowsCredentialsW(
+  PCREDUI_INFOW pUiInfo,
+  DWORD dwAuthError,
+  ULONG *pulAuthPackage,
+  LPCVOID pvInAuthBuffer,
+  ULONG ulInAuthBufferSize,
+  LPVOID *ppvOutAuthBuffer,
+  ULONG *pulOutAuthBufferSize,
+  WINBOOL *pfSave,
+  DWORD dwFlags
+);
 
-WINADVAPI
-BOOL
-WINAPI
-CredRenameA(
-  _In_ LPCSTR,
-  _In_ LPCSTR,
-  _In_ DWORD,
-  _Reserved_ DWORD);
+CREDUIAPI WINBOOL WINAPI CredUnPackAuthenticationBufferA(
+  DWORD dwFlags,
+  PVOID pAuthBuffer,
+  DWORD cbAuthBuffer,
+  LPSTR pszUserName,
+  DWORD *pcchMaxUserName,
+  LPSTR pszDomainName,
+  DWORD *pcchMaxDomainame,
+  LPSTR pszPassword,
+  DWORD *pcchMaxPassword
+);
 
-WINADVAPI
-BOOL
-WINAPI
-CredRenameW(
-  _In_ LPCWSTR,
-  _In_ LPCWSTR,
-  _In_ DWORD,
-  _Reserved_ DWORD);
+CREDUIAPI WINBOOL WINAPI CredUnPackAuthenticationBufferW(
+  DWORD dwFlags,
+  PVOID pAuthBuffer,
+  DWORD cbAuthBuffer,
+  LPWSTR pszUserName,
+  DWORD *pcchMaxUserName,
+  LPWSTR pszDomainName,
+  DWORD *pcchMaxDomainame,
+  LPWSTR pszPassword,
+  DWORD *pcchMaxPassword
+);
 
-#define CredRename WINELIB_NAME_AW(CredRename)
+WINADVAPI WINBOOL WINAPI CredUnprotectA(
+  WINBOOL fAsSelf,
+  LPSTR pszProtectedCredentials,
+  DWORD cchCredentials,
+  LPSTR pszCredentials,
+  DWORD *pcchMaxChars
+);
 
-WINADVAPI
-BOOL
-WINAPI
-CredUnmarshalCredentialA(
-  _In_ LPCSTR,
-  _Out_ PCRED_MARSHAL_TYPE,
-  _Out_ PVOID *);
+WINADVAPI WINBOOL WINAPI CredUnprotectW(
+  WINBOOL fAsSelf,
+  LPWSTR pszProtectedCredentials,
+  DWORD cchCredentials,
+  LPWSTR pszCredentials,
+  DWORD *pcchMaxChars
+);
 
-WINADVAPI
-BOOL
-WINAPI
-CredUnmarshalCredentialW(
-  _In_ LPCWSTR,
-  _Out_ PCRED_MARSHAL_TYPE,
-  _Out_ PVOID *);
-
-#define CredUnmarshalCredential WINELIB_NAME_AW(CredUnmarshalCredential)
-
-WINADVAPI BOOL WINAPI CredWriteA(_In_ PCREDENTIALA, _In_ DWORD);
-WINADVAPI BOOL WINAPI CredWriteW(_In_ PCREDENTIALW, _In_ DWORD);
-#define CredWrite WINELIB_NAME_AW(CredWrite)
-
-DWORD
-WINAPI
-CredUICmdLinePromptForCredentialsW(
-  _In_opt_ PCWSTR,
-  _Reserved_ PCtxtHandle,
-  _In_ DWORD,
-  _Inout_updates_(ulUserBufferSize) PWSTR,
-  _In_ ULONG ulUserBufferSize,
-  _Inout_updates_(ulPasswordBufferSize) PWSTR,
-  _In_ ULONG ulPasswordBufferSize,
-  _Inout_opt_ PBOOL,
-  _In_ DWORD);
-
-DWORD
-WINAPI
-CredUICmdLinePromptForCredentialsA(
-  _In_opt_ PCSTR,
-  _Reserved_ PCtxtHandle,
-  _In_ DWORD,
-  _Inout_updates_(ulUserBufferSize) PSTR,
-  _In_ ULONG ulUserBufferSize,
-  _Inout_updates_(ulPasswordBufferSize) PSTR,
-  _In_ ULONG ulPasswordBufferSize,
-  _Inout_opt_ PBOOL,
-  _In_ DWORD);
-
-#define CredUICmdLinePromptForCredentials WINELIB_NAME_AW(CredUICmdLinePromptForCredentials)
-
-DWORD WINAPI CredUIConfirmCredentialsW(_In_ PCWSTR, _In_ BOOL);
-DWORD WINAPI CredUIConfirmCredentialsA(_In_ PCSTR, _In_ BOOL);
-#define CredUIConfirmCredentials WINELIB_NAME_AW(CredUIConfirmCredentials)
-
-DWORD
-WINAPI
-CredUIParseUserNameW(
-  _In_ PCWSTR,
-  _Out_writes_(userBufferSize) PWSTR,
-  _In_ ULONG userBufferSize,
-  _Out_writes_(domainBufferSize) PWSTR,
-  _In_ ULONG domainBufferSize);
-
-DWORD
-WINAPI
-CredUIParseUserNameA(
-  _In_ PCSTR,
-  _Out_writes_(userBufferSize) PSTR,
-  _In_ ULONG userBufferSize,
-  _Out_writes_(domainBufferSize) PSTR,
-  _In_ ULONG domainBufferSize);
-
-#define CredUIParseUserName WINELIB_NAME_AW(CredUIParseUserName)
-
-DWORD
-WINAPI
-CredUIPromptForCredentialsW(
-  _In_opt_ PCREDUI_INFOW,
-  _In_opt_ PCWSTR,
-  _Reserved_ PCtxtHandle,
-  _In_ DWORD,
-  _Inout_updates_(ulUserNameBufferSize) PWSTR,
-  _In_ ULONG ulUserNameBufferSize,
-  _Inout_updates_(ulPasswordBufferSize) PWSTR,
-  _In_ ULONG ulPasswordBufferSize,
-  _Inout_opt_ PBOOL,
-  _In_ DWORD);
-
-DWORD
-WINAPI
-CredUIPromptForCredentialsA(
-  _In_opt_ PCREDUI_INFOA,
-  _In_opt_ PCSTR,
-  _Reserved_ PCtxtHandle,
-  _In_ DWORD,
-  _Inout_updates_(ulUserNameBufferSize) PSTR,
-  _In_ ULONG ulUserNameBufferSize,
-  _Inout_updates_(ulPasswordBufferSize) PSTR,
-  _In_ ULONG ulPasswordBufferSize,
-  _Inout_opt_ PBOOL,
-  _In_ DWORD);
-
-#define CredUIPromptForCredentials WINELIB_NAME_AW(CredUIPromptForCredentials)
-
-DWORD
-WINAPI
-CredUIStoreSSOCredW(
-  _In_opt_ PCWSTR,
-  _In_ PCWSTR,
-  _In_ PCWSTR,
-   _In_ BOOL);
-
-/* Note: no CredUIStoreSSOCredA in PSDK header */
-DWORD WINAPI CredUIReadSSOCredW(_In_opt_ PCWSTR, _Outptr_ PWSTR*);
-/* Note: no CredUIReadSSOCredA in PSDK header */
+#endif /* (_WIN32_WINNT >= 0x0600) */
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* _WINCRED_H_ */
+

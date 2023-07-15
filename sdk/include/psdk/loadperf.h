@@ -1,42 +1,52 @@
-/*
- * Copyright (C) 2009 Andrey Turkin
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
+#ifndef _LOADPERF_H_
+#define _LOADPERF_H_
 
-#ifndef __WINE_LOADPERF_H
-#define __WINE_LOADPERF_H
+#include <_mingw_unicode.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-DWORD WINAPI InstallPerfDllA(LPCSTR, LPCSTR, ULONG_PTR);
-DWORD WINAPI InstallPerfDllW(LPCWSTR, LPCWSTR, ULONG_PTR);
-#define      InstallPerfDll WINELIB_NAME_AW(InstallPerfDll);
+#ifndef WINAPI
+#if defined(_ARM_)
+#define WINAPI
+#else
+#define WINAPI __stdcall
+#endif
+#endif
 
-DWORD WINAPI LoadPerfCounterTextStringsA(LPCSTR, BOOL);
-DWORD WINAPI LoadPerfCounterTextStringsW(LPCWSTR, BOOL);
-#define      LoadPerfCounterTextStrings WINELIB_NAME_AW(LoadPerfCounterTextStrings)
+#define LOADPERF_FUNCTION __declspec(dllimport) DWORD WINAPI
 
-DWORD WINAPI UnloadPerfCounterTextStringsA(LPCSTR, BOOL);
-DWORD WINAPI UnloadPerfCounterTextStringsW(LPCWSTR, BOOL);
-#define      UnloadPerfCounterTextStrings WINELIB_NAME_AW(UnloadPerfCounterTextStrings)
+#define LOADPERF_FLAGS_DELETE_MOF_ON_EXIT ((ULONG_PTR) 1)
+#define LOADPERF_FLAGS_LOAD_REGISTRY_ONLY ((ULONG_PTR) 2)
+#define LOADPERF_FLAGS_CREATE_MOF_ONLY ((ULONG_PTR) 4)
+#define LOADPERF_FLAGS_DISPLAY_USER_MSGS ((ULONG_PTR) 8)
+
+  LOADPERF_FUNCTION InstallPerfDllW(LPCWSTR szComputerName,LPCWSTR lpIniFile,ULONG_PTR dwFlags);
+  LOADPERF_FUNCTION InstallPerfDllA(LPCSTR szComputerName,LPCSTR lpIniFile,ULONG_PTR dwFlags);
+  LOADPERF_FUNCTION LoadPerfCounterTextStringsA(LPSTR lpCommandLine,WINBOOL bQuietModeArg);
+  LOADPERF_FUNCTION LoadPerfCounterTextStringsW(LPWSTR lpCommandLine,WINBOOL bQuietModeArg);
+  LOADPERF_FUNCTION UnloadPerfCounterTextStringsW(LPWSTR lpCommandLine,WINBOOL bQuietModeArg);
+  LOADPERF_FUNCTION UnloadPerfCounterTextStringsA(LPSTR lpCommandLine,WINBOOL bQuietModeArg);
+  LOADPERF_FUNCTION UpdatePerfNameFilesA(LPCSTR szNewCtrFilePath,LPCSTR szNewHlpFilePath,LPSTR szLanguageID,ULONG_PTR dwFlags);
+  LOADPERF_FUNCTION UpdatePerfNameFilesW(LPCWSTR szNewCtrFilePath,LPCWSTR szNewHlpFilePath,LPWSTR szLanguageID,ULONG_PTR dwFlags);
+  LOADPERF_FUNCTION SetServiceAsTrustedA(LPCSTR szReserved,LPCSTR szServiceName);
+  LOADPERF_FUNCTION SetServiceAsTrustedW(LPCWSTR szReserved,LPCWSTR szServiceName);
+  DWORD BackupPerfRegistryToFileW(LPCWSTR szFileName,LPCWSTR szCommentString);
+  DWORD RestorePerfRegistryFromFileW(LPCWSTR szFileName,LPCWSTR szLangId);
+
+#define InstallPerfDll __MINGW_NAME_AW(InstallPerfDll)
+#define LoadPerfCounterTextStrings __MINGW_NAME_AW(LoadPerfCounterTextStrings)
+#define UnloadPerfCounterTextStrings __MINGW_NAME_AW(UnloadPerfCounterTextStrings)
+#define UpdatePerfNameFiles __MINGW_NAME_AW(UpdatePerfNameFiles)
+#define SetServiceAsTrusted __MINGW_NAME_AW(SetServiceAsTrusted)
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* __WINE_LOADPERF_H */
+#endif

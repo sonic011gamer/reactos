@@ -1,3 +1,4 @@
+#undef INTERFACE
 /*
  * Copyright 2011 Dylan Smith
  *
@@ -151,7 +152,7 @@ DECLARE_INTERFACE_IID_(ID3DXFileData,IUnknown,"cef08cfd-7b4f-4429-9624-2a690a933
     STDMETHOD(Lock)(THIS_ SIZE_T *data_size, const void **data) PURE;
     STDMETHOD(Unlock)(THIS) PURE;
     STDMETHOD(GetType)(THIS_ GUID*) PURE;
-    STDMETHOD_(BOOL,IsReference)(THIS) PURE;
+    STDMETHOD_(WINBOOL,IsReference)(THIS) PURE;
     STDMETHOD(GetChildren)(THIS_ SIZE_T*) PURE;
     STDMETHOD(GetChild)(THIS_ SIZE_T id, ID3DXFileData **child) PURE;
 };

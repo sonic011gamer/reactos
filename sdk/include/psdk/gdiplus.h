@@ -1,77 +1,86 @@
 /*
- * Copyright (C) 2007 Google (Evan Stade)
+ * gdiplus.h
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * GDI+ main header
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * This file is part of the w32api package.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ * Contributors:
+ *   Created by Markus Koenig <markus@stber-koenig.de>
+ *
+ * THIS SOFTWARE IS NOT COPYRIGHTED
+ *
+ * This source code is offered for use in the public domain. You may
+ * use, modify or distribute it freely.
+ *
+ * This code is distributed in the hope that it will be useful but
+ * WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
+ * DISCLAIMED. This includes but is not limited to warranties of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
  */
 
-#ifndef _GDIPLUS_H
-#define _GDIPLUS_H
+#ifndef __GDIPLUS_H
+#define __GDIPLUS_H
+#if __GNUC__ >=3
+#pragma GCC system_header
+#endif
+
+#ifndef RC_INVOKED
+
+#include <stddef.h>
+#include <math.h>
+#include <windef.h>
+#include <wingdi.h>
+
+#include <basetyps.h>
+
+#ifndef _COM_interface
+#define _COM_interface struct
+#endif
+
+typedef _COM_interface IStream IStream;
+typedef _COM_interface IDirectDrawSurface7 IDirectDrawSurface7;
 
 #ifdef __cplusplus
+namespace Gdiplus {
+#endif
 
-namespace Gdiplus
-{
-    namespace DllExports
-    {
-#include "gdiplusmem.h"
-    };
+typedef float REAL;
+typedef SHORT INT16;
+typedef WORD UINT16;
 
 #include "gdiplusenums.h"
 #include "gdiplustypes.h"
-#include "gdiplusinit.h"
-#include "gdipluspixelformats.h"
-#include "gdiplusmetaheader.h"
+#include "gdiplusgpstubs.h"
 #include "gdiplusimaging.h"
+#include "gdiplusinit.h"
+#include "gdiplusmem.h"
+#include "gdiplusmetaheader.h"
+#include "gdipluspixelformats.h"
 #include "gdipluscolor.h"
 #include "gdipluscolormatrix.h"
-#include "gdiplusgpstubs.h"
-
-    namespace DllExports
-    {
 #include "gdiplusflat.h"
-    };
+#include "gdipluseffects.h"
+#include "gdiplusimagecodec.h"
 
+#ifdef __cplusplus
 #include "gdiplusbase.h"
-#include "gdiplusmatrix.h"
+#include "gdiplusheaders.h"
 #include "gdiplusimageattributes.h"
+#include "gdiplusmatrix.h"
 #include "gdiplusbrush.h"
+#include "gdiplusmetafile.h"
 #include "gdipluspen.h"
 #include "gdiplusstringformat.h"
 #include "gdipluspath.h"
 #include "gdiplusgraphics.h"
-#include "gdiplusheaders.h"
-#include "gdiplusmetafile.h"
 #include "gdipluslinecaps.h"
-};
+#include "gdiplusimpl.h"
 
-#else /* end c++ includes */
+}  /* namespace Gdiplus */
+#endif /* __cplusplus */
 
-#include "gdiplusmem.h"
+#endif /* !RC_INVOKED */
 
-#include "gdiplusenums.h"
-#include "gdiplustypes.h"
-#include "gdiplusinit.h"
-#include "gdipluspixelformats.h"
-#include "gdiplusmetaheader.h"
-#include "gdiplusimaging.h"
-#include "gdipluscolor.h"
-#include "gdipluscolormatrix.h"
-#include "gdiplusgpstubs.h"
-
-#include "gdiplusflat.h"
-
-#endif /* end c includes */
-
-#endif /* _GDIPLUS_H_ */
+#endif /* __GDIPLUS_H */

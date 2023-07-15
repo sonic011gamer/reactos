@@ -38,7 +38,7 @@ extern "C" {
 
 #if (WINVER >= _WIN32_WINNT_WIN2K)
 
-BOOL
+WINBOOL
 WINAPI
 UpdateDriverForPlugAndPlayDevicesA(
   HWND hwndParent,
@@ -47,7 +47,7 @@ UpdateDriverForPlugAndPlayDevicesA(
   DWORD InstallFlags,
   PBOOL bRebootRequired OPTIONAL);
 
-BOOL
+WINBOOL
 WINAPI
 UpdateDriverForPlugAndPlayDevicesW(
   HWND hwndParent,
@@ -86,7 +86,7 @@ UpdateDriverForPlugAndPlayDevicesW(
 #define ROLLBACK_FLAG_NO_UI               0x00000001
 #define ROLLBACK_BITS                     0x00000001
 
-BOOL
+WINBOOL
 WINAPI
 DiInstallDevice(
   HWND hwndParent OPTIONAL,
@@ -96,7 +96,7 @@ DiInstallDevice(
   DWORD Flags,
   PBOOL NeedReboot OPTIONAL);
 
-BOOL
+WINBOOL
 WINAPI
 DiShowUpdateDevice(
   HWND hwndParent OPTIONAL,
@@ -105,7 +105,7 @@ DiShowUpdateDevice(
   DWORD Flags,
   PBOOL NeedReboot OPTIONAL);
 
-BOOL
+WINBOOL
 WINAPI
 DiRollbackDriver(
   HDEVINFO DeviceInfoSet,
@@ -114,7 +114,7 @@ DiRollbackDriver(
   DWORD Flags,
   PBOOL NeedReboot OPTIONAL);
 
-BOOL
+WINBOOL
 WINAPI
 DiInstallDriverW(
   HWND hwndParent OPTIONAL,
@@ -122,7 +122,7 @@ DiInstallDriverW(
   DWORD Flags,
   PBOOL NeedReboot OPTIONAL);
 
-BOOL
+WINBOOL
 WINAPI
 DiInstallDriverA(
   HWND hwndParent OPTIONAL,
@@ -140,7 +140,7 @@ DiInstallDriverA(
 #endif /* (WINVER >= _WIN32_WINNT_VISTA) */
 
 #if (WINVER >= _WIN32_WINNT_WIN7)
-BOOL
+WINBOOL
 WINAPI
 DiUninstallDevice(
   HWND hwndParent,

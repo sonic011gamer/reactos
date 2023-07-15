@@ -23,6 +23,7 @@ import "oaidl.idl";
 #ifndef __WIDL__
 #define threading(model)
 #define progid(str)
+#define vi_progid(str)
 #endif
 
 [

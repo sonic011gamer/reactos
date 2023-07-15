@@ -1,7 +1,7 @@
 /**
  * This file has no copyright assigned and is placed in the Public Domain.
- * This file is part of the w64 mingw-runtime package.
- * No warranty is given; refer to the file DISCLAIMER within this package.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 
 #include <crtdefs.h>
@@ -13,7 +13,13 @@
 extern "C" {
 #endif
 
-#include <errno.h>
+#ifndef _CRT_ERRNO_DEFINED
+#define _CRT_ERRNO_DEFINED
+  _CRTIMP extern int *__cdecl _errno(void);
+#define errno (*_errno())
+  errno_t __cdecl _set_errno(int _Value);
+  errno_t __cdecl _get_errno(int *_Value);
+#endif /* _CRT_ERRNO_DEFINED */
 
   _CRTIMP extern unsigned long __cdecl __threadid(void);
 #define _threadid (__threadid())
@@ -23,7 +29,7 @@ extern "C" {
 }
 #endif
 
-#endif
+#endif /* _INC_STDDEF */
 
 /*
  * ISO C Standard:  7.17  Common definitions  <stddef.h>
@@ -281,7 +287,7 @@ typedef long ssize_t;
    symbols in the _FOO_T_ family, stays defined even after its
    corresponding type is defined).  If we define wchar_t, then we
    must undef _WCHAR_T_; for BSD/386 1.1 (and perhaps others), if
-   we undef _WCHAR_T_, then we must also define rune_t, since
+   we undef _WCHAR_T_, then we must also define rune_t, since 
    headers like runetype.h assume that if machine/ansi.h is included,
    and _BSD_WCHAR_T_ is not defined, then rune_t is available.
    machine/ansi.h says, "Note that _WCHAR_T_ and _RUNE_T_ must be of
@@ -305,6 +311,7 @@ typedef _BSD_RUNE_T_ rune_t;
 #endif
 
 #ifndef __WCHAR_TYPE__
+/* wchar_t is unsigned short for compatibility with MS runtime */
 #define __WCHAR_TYPE__ unsigned short
 #endif
 #ifndef __cplusplus
@@ -329,6 +336,22 @@ typedef __WCHAR_TYPE__ wchar_t;
 #endif /* __wchar_t__ */
 #undef	__need_wchar_t
 #endif /* _STDDEF_H or __need_wchar_t.  */
+
+#if defined (__need_wint_t)
+#ifndef _WINT_T
+#define _WINT_T
+#ifndef __WINT_TYPE__
+/* wint_t is unsigned short for compatibility with MS runtime */
+#define __WINT_TYPE__ unsigned short
+#endif
+#ifndef _WCTYPE_T_DEFINED
+#define _WCTYPE_T_DEFINED
+  typedef __WINT_TYPE__ wint_t;
+  typedef unsigned short wctype_t;
+#endif
+#endif
+#undef __need_wint_t
+#endif
 
 /*  In 4.3bsd-net2, leave these undefined to indicate that size_t, etc.
     are already defined.  */
@@ -365,28 +388,48 @@ typedef __WCHAR_TYPE__ wchar_t;
 
 #endif /* __sys_stdtypes_h */
 
-#ifndef offsetof
+/* A null pointer constant.  */
+
+#if defined (_STDDEF_H) || defined (__need_NULL)
+#undef NULL		/* in case <stdio.h> has defined it. */
+#if defined(__GNUG__) && __GNUG__ >= 3
+#define NULL __null
+#else   /* G++ */
+#ifndef __cplusplus
+#define NULL ((void *)0)
+#else   /* C++ */
+#ifndef _WIN64
+#define NULL 0
+#else
+#define NULL 0LL
+#endif  /* W64 */
+#endif  /* C++ */
+#endif  /* G++ */
+#endif	/* NULL not defined and <stddef.h> or need NULL.  */
+#undef	__need_NULL
+
+#ifdef _STDDEF_H
 
 /* Offset of member MEMBER in a struct of type TYPE. */
-#if defined(__GNUC__) || defined(__clang__) || defined(_CRT_USE_BUILTIN_OFFSETOF)
-# define offsetof(TYPE,MEMBER) __builtin_offsetof(TYPE,MEMBER)
-#else
-# ifdef __cplusplus
-#  ifdef _WIN64
-#   define offsetof(TYPE,MEMBER) ((::size_t)(ptrdiff_t)&reinterpret_cast<const volatile char&>((((TYPE*)0)->MEMBER)))
-#  else
-#   define offsetof(TYPE,MEMBER) ((::size_t)&reinterpret_cast<const volatile char&>((((TYPE*)0)->MEMBER)))
-#  endif
-# else
-#  ifdef _WIN64
-#   define offsetof(TYPE,MEMBER) ((size_t)(ptrdiff_t)&(((TYPE*)0)->MEMBER))
-#  else
-#   define offsetof(TYPE,MEMBER) ((size_t)&(((TYPE*)0)->MEMBER))
-#  endif
-# endif
-#endif
+#define offsetof(TYPE, MEMBER) __builtin_offsetof (TYPE, MEMBER)
 
-#endif /* !offsetof */
+#if (defined (__STDC_VERSION__) && __STDC_VERSION__ >= 201112L) \
+  || (defined(__cplusplus) && __cplusplus >= 201103L)
+#if !defined(_GCC_MAX_ALIGN_T) && !defined(__CLANG_MAX_ALIGN_T_DEFINED)
+#define _GCC_MAX_ALIGN_T
+#define __CLANG_MAX_ALIGN_T_DEFINED
+/* Type whose alignment is supported in every context and is at least
+   as great as that of any standard type not using alignment
+   specifiers.  */
+typedef struct {
+  long long __max_align_ll __attribute__((__aligned__(__alignof__(long long))));
+  long double __max_align_ld __attribute__((__aligned__(__alignof__(long double))));
+} max_align_t;
+#endif
+#endif /* C11 or C++11.  */
+
+#endif /* _STDDEF_H was defined this time.  */
 
 #endif /* !_STDDEF_H && !_STDDEF_H_ && !_ANSI_STDDEF_H && !__STDDEF_H__
 	  || __need_XXX was not defined before */
+

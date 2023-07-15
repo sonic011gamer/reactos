@@ -30,40 +30,52 @@ extern "C" {
 #if defined(DEFINE_GUID)
 
 DEFINE_GUID(GUID_DEVINTERFACE_DISK,
-  0x53f56307L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+  0x53f56307, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
 
 DEFINE_GUID(GUID_DEVINTERFACE_CDROM,
-  0x53f56308L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+  0x53f56308, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
 
 DEFINE_GUID(GUID_DEVINTERFACE_PARTITION,
-  0x53f5630aL, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+  0x53f5630a, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
 
 DEFINE_GUID(GUID_DEVINTERFACE_TAPE,
-  0x53f5630bL, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+  0x53f5630b, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
 
 DEFINE_GUID(GUID_DEVINTERFACE_WRITEONCEDISK,
-  0x53f5630cL, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+  0x53f5630c, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
 
 DEFINE_GUID(GUID_DEVINTERFACE_VOLUME,
-  0x53f5630dL, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+  0x53f5630d, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
 
 DEFINE_GUID(GUID_DEVINTERFACE_MEDIUMCHANGER,
-  0x53f56310L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+  0x53f56310, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
 
 DEFINE_GUID(GUID_DEVINTERFACE_FLOPPY,
-  0x53f56311L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+  0x53f56311, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
 
 DEFINE_GUID(GUID_DEVINTERFACE_CDCHANGER,
-  0x53f56312L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+  0x53f56312, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
 
 DEFINE_GUID(GUID_DEVINTERFACE_STORAGEPORT,
-  0x2accfe60L, 0xc130, 0x11d2, 0xb0, 0x82, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+  0x2accfe60, 0xc130, 0x11d2, 0xb0, 0x82, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+
+DEFINE_GUID(GUID_DEVINTERFACE_VMLUN,
+  0x6f416619, 0x9f29, 0x42a5, 0xb2, 0x0b, 0x37, 0xe2, 0x19, 0xca, 0x02, 0xb0);
+
+DEFINE_GUID(GUID_DEVINTERFACE_SES,
+  0x1790c9ec, 0x47d5, 0x4df3, 0xb5, 0xaf, 0x9a, 0xdf, 0x3c, 0xf2, 0x3e, 0x48);
 
 DEFINE_GUID(GUID_DEVINTERFACE_HIDDEN_VOLUME,
-  0x7f108a28L, 0x9833, 0x4b3b, 0xb7, 0x80, 0x2c, 0x6b, 0x5f, 0xa5, 0xc0, 0x62);
+  0x7f108a28, 0x9833, 0x4b3b, 0xb7, 0x80, 0x2c, 0x6b, 0x5f, 0xa5, 0xc0, 0x62);
+
+DEFINE_GUID(GUID_DEVICEDUMP_STORAGE_DEVICE,
+  0xd8e2592f, 0x1aab, 0x4d56, 0xa7, 0x46, 0x1f, 0x75, 0x85, 0xdf, 0x40, 0xf4);
+
+DEFINE_GUID(GUID_DEVICEDUMP_DRIVER_STORAGE_PORT,
+  0xda82441d, 0x7142, 0x4bc1, 0xb8, 0x44, 0x08, 0x07, 0xc5, 0xa4, 0xb6, 0x7f);
 
 #define WDI_STORAGE_PREDICT_FAILURE_DPS_GUID \
-  {0xe9f2d03aL, 0x747c, 0x41c2, {0xbb, 0x9a, 0x02, 0xc6, 0x2b, 0x6d, 0x5f, 0xcb}};
+  {0xe9f2d03a, 0x747c, 0x41c2, {0xbb, 0x9a, 0x02, 0xc6, 0x2b, 0x6d, 0x5f, 0xcb}};
 
 /* Aliases for storage guids */
 #define DiskClassGuid               GUID_DEVINTERFACE_DISK
@@ -80,16 +92,18 @@ DEFINE_GUID(GUID_DEVINTERFACE_HIDDEN_VOLUME,
 
 #endif /* defined(DEFINE_GUID) */
 
-#if defined(DEFINE_DEVPROPKEY)
-DEFINE_DEVPROPKEY(DEVPKEY_Storage_Portable,           0x4d1ebee8, 0x803, 0x4774, 0x98, 0x42, 0xb7, 0x7d, 0xb5, 0x2, 0x65, 0xe9, 2);
-DEFINE_DEVPROPKEY(DEVPKEY_Storage_Removable_Media,    0x4d1ebee8, 0x803, 0x4774, 0x98, 0x42, 0xb7, 0x7d, 0xb5, 0x2, 0x65, 0xe9, 3);
-DEFINE_DEVPROPKEY(DEVPKEY_Storage_System_Critical,    0x4d1ebee8, 0x803, 0x4774, 0x98, 0x42, 0xb7, 0x7d, 0xb5, 0x2, 0x65, 0xe9, 4);
-DEFINE_DEVPROPKEY(DEVPKEY_Storage_Disk_Number,        0x4d1ebee8, 0x803, 0x4774, 0x98, 0x42, 0xb7, 0x7d, 0xb5, 0x2, 0x65, 0xe9, 5);
-DEFINE_DEVPROPKEY(DEVPKEY_Storage_Partition_Number,   0x4d1ebee8, 0x803, 0x4774, 0x98, 0x42, 0xb7, 0x7d, 0xb5, 0x2, 0x65, 0xe9, 6);
-DEFINE_DEVPROPKEY(DEVPKEY_Storage_Mbr_Type,           0x4d1ebee8, 0x803, 0x4774, 0x98, 0x42, 0xb7, 0x7d, 0xb5, 0x2, 0x65, 0xe9, 7);
-DEFINE_DEVPROPKEY(DEVPKEY_Storage_Gpt_Type,           0x4d1ebee8, 0x803, 0x4774, 0x98, 0x42, 0xb7, 0x7d, 0xb5, 0x2, 0x65, 0xe9, 8);
-DEFINE_DEVPROPKEY(DEVPKEY_Storage_Gpt_Name,           0x4d1ebee8, 0x803, 0x4774, 0x98, 0x42, 0xb7, 0x7d, 0xb5, 0x2, 0x65, 0xe9, 9);
-#endif
+#ifdef DEFINE_DEVPROPKEY
+
+DEFINE_DEVPROPKEY(DEVPKEY_Storage_Portable,
+  0x4d1ebee8, 0x803, 0x4774, 0x98, 0x42, 0xb7, 0x7d, 0xb5, 0x2, 0x65, 0xe9, 2);
+
+DEFINE_DEVPROPKEY(DEVPKEY_Storage_Removable_Media,
+  0x4d1ebee8, 0x803, 0x4774, 0x98, 0x42, 0xb7, 0x7d, 0xb5, 0x2, 0x65, 0xe9, 3);
+
+DEFINE_DEVPROPKEY(DEVPKEY_Storage_System_Critical,
+  0x4d1ebee8, 0x803, 0x4774, 0x98, 0x42, 0xb7, 0x7d, 0xb5, 0x2, 0x65, 0xe9, 4);
+
+#endif /* #ifdef DEFINE_DEVPROPKEY */
 
 #ifndef _WINIOCTL_
 
@@ -175,6 +189,18 @@ DEFINE_DEVPROPKEY(DEVPKEY_Storage_Gpt_Name,           0x4d1ebee8, 0x803, 0x4774,
 #define IOCTL_STORAGE_READ_CAPACITY \
   CTL_CODE(IOCTL_STORAGE_BASE, 0x0450, METHOD_BUFFERED, FILE_READ_ACCESS)
 
+#define IOCTL_STORAGE_GET_DEVICE_TELEMETRY \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0470, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
+
+#define IOCTL_STORAGE_DEVICE_TELEMETRY_NOTIFY \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0471, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
+
+#define IOCTL_STORAGE_DEVICE_TELEMETRY_QUERY_CAPS \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0472, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
+
+#define IOCTL_STORAGE_GET_DEVICE_TELEMETRY_RAW \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0473, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
+
 #define IOCTL_STORAGE_QUERY_PROPERTY \
   CTL_CODE(IOCTL_STORAGE_BASE, 0x0500, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
@@ -199,17 +225,8 @@ DEFINE_DEVPROPKEY(DEVPKEY_Storage_Gpt_Name,           0x4d1ebee8, 0x803, 0x4774,
 #define IOCTL_STORAGE_START_DATA_INTEGRITY_CHECK \
   CTL_CODE(IOCTL_STORAGE_BASE, 0x0621, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
 
-#define IOCTL_STORAGE_STOP_DATA_INTEGRITY_CHECK  \
+#define IOCTL_STORAGE_STOP_DATA_INTEGRITY_CHECK \
   CTL_CODE(IOCTL_STORAGE_BASE, 0x0622, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
-
-#define IOCTL_STORAGE_FIRMWARE_GET_INFO \
-  CTL_CODE(IOCTL_STORAGE_BASE, 0x0700, METHOD_BUFFERED, FILE_ANY_ACCESS)
-
-#define IOCTL_STORAGE_FIRMWARE_DOWNLOAD \
-  CTL_CODE(IOCTL_STORAGE_BASE, 0x0701, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
-
-#define IOCTL_STORAGE_FIRMWARE_ACTIVATE \
-  CTL_CODE(IOCTL_STORAGE_BASE, 0x0702, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
 
 #define IOCTL_STORAGE_ENABLE_IDLE_POWER \
   CTL_CODE(IOCTL_STORAGE_BASE, 0x0720, METHOD_BUFFERED, FILE_ANY_ACCESS)
@@ -226,27 +243,6 @@ DEFINE_DEVPROPKEY(DEVPKEY_Storage_Gpt_Name,           0x4d1ebee8, 0x803, 0x4774,
 #define IOCTL_STORAGE_EVENT_NOTIFICATION \
   CTL_CODE(IOCTL_STORAGE_BASE, 0x0724, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
-#define IOCTL_STORAGE_DEVICE_POWER_CAP \
-  CTL_CODE(IOCTL_STORAGE_BASE, 0x0725, METHOD_BUFFERED, FILE_ANY_ACCESS)
-
-#define IOCTL_STORAGE_RPMB_COMMAND \
-  CTL_CODE(IOCTL_STORAGE_BASE, 0x0726, METHOD_BUFFERED, FILE_ANY_ACCESS)
-
-#define IOCTL_STORAGE_ATTRIBUTE_MANAGEMENT \
-  CTL_CODE(IOCTL_STORAGE_BASE, 0x0727, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
-
-#define IOCTL_STORAGE_DIAGNOSTIC \
-  CTL_CODE(IOCTL_STORAGE_BASE, 0x0728, METHOD_BUFFERED, FILE_ANY_ACCESS)
-
-#define IOCTL_STORAGE_GET_PHYSICAL_ELEMENT_STATUS \
-  CTL_CODE(IOCTL_STORAGE_BASE, 0x0729, METHOD_BUFFERED, FILE_ANY_ACCESS)
-
-#define IOCTL_STORAGE_REMOVE_ELEMENT_AND_TRUNCATE \
-  CTL_CODE(IOCTL_STORAGE_BASE, 0x0730, METHOD_BUFFERED, FILE_ANY_ACCESS)
-
-#define IOCTL_STORAGE_GET_DEVICE_INTERNAL_LOG \
-  CTL_CODE(IOCTL_STORAGE_BASE, 0x0731, METHOD_BUFFERED, FILE_ANY_ACCESS)
-
 #define RECOVERED_WRITES_VALID         0x00000001
 #define UNRECOVERED_WRITES_VALID       0x00000002
 #define RECOVERED_READS_VALID          0x00000004
@@ -254,9 +250,9 @@ DEFINE_DEVPROPKEY(DEVPKEY_Storage_Gpt_Name,           0x4d1ebee8, 0x803, 0x4774,
 #define WRITE_COMPRESSION_INFO_VALID   0x00000010
 #define READ_COMPRESSION_INFO_VALID    0x00000020
 
-#define TAPE_RETURN_STATISTICS         0L
-#define TAPE_RETURN_ENV_INFO           1L
-#define TAPE_RESET_STATISTICS          2L
+#define TAPE_RETURN_STATISTICS         __MSABI_LONG(0)
+#define TAPE_RETURN_ENV_INFO           __MSABI_LONG(1)
+#define TAPE_RESET_STATISTICS          __MSABI_LONG(2)
 
 /* DEVICE_MEDIA_INFO.DeviceSpecific.DiskInfo.MediaCharacteristics constants */
 #define MEDIA_ERASEABLE                   0x00000001
@@ -272,38 +268,23 @@ DEFINE_DEVPROPKEY(DEVPKEY_Storage_Gpt_Name,           0x4d1ebee8, 0x803, 0x4774,
 
 #define IsDsmActionNonDestructive(_Action) ((BOOLEAN)((_Action & DeviceDsmActionFlag_NonDestructive) != 0))
 
-#define DeviceDsmAction_None                    0x0u
-#define DeviceDsmAction_Trim                    0x1u
-#define DeviceDsmAction_Notification            (0x00000002u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_OffloadRead             (0x00000003u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_OffloadWrite            (0x00000004u)
-#define DeviceDsmAction_Allocation              (0x00000005u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_Repair                  (0x00000006u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_Scrub                   (0x00000007u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_DrtQuery                (0x00000008u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_DrtClear                (0x00000009u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_DrtDisable              (0x0000000Au | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_TieringQuery            (0x0000000Bu | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_Map                     (0x0000000Cu | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_RegenerateParity        (0x0000000Du | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_NvCache_Change_Priority (0x0000000Eu | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_NvCache_Evict           (0x0000000Fu | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_TopologyIdQuery         (0x00000010u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_GetPhysicalAddresses    (0x00000011u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_ScopeRegen              (0x00000012u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_ReportZones             (0x00000013u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_OpenZone                (0x00000014u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_FinishZone              (0x00000015u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_CloseZone               (0x00000016u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_ResetWritePointer       (0x00000017u)
-#define DeviceDsmAction_GetRangeErrorInfo       (0x00000018u | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_WriteZeroes             (0x00000019u)
-#define DeviceDsmAction_LostQuery               (0x0000001Au | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_GetFreeSpace            (0x0000001Bu | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_ConversionQuery         (0x0000001Cu | DeviceDsmActionFlag_NonDestructive)
-#define DeviceDsmAction_VdtSet                  (0x0000001Du)
+#define DeviceDsmAction_None            0
+#define DeviceDsmAction_Trim            1
+#define DeviceDsmAction_Notification   (2 | DeviceDsmActionFlag_NonDestructive)
 
-#define DEVICE_DSM_FLAG_ENTIRE_DATA_SET_RANGE    0x00000001
+#define DeviceDsmAction_OffloadRead    (3 | DeviceDsmActionFlag_NonDestructive)
+#define DeviceDsmAction_OffloadWrite    4
+#define DeviceDsmAction_Allocation     (5 | DeviceDsmActionFlag_NonDestructive)
+#define DeviceDsmAction_Repair         (6 | DeviceDsmActionFlag_NonDestructive)
+#define DeviceDsmAction_Scrub          (7 | DeviceDsmActionFlag_NonDestructive)
+#define DeviceDsmAction_DrtQuery       (8 | DeviceDsmActionFlag_NonDestructive)
+#define DeviceDsmAction_DrtClear       (9 | DeviceDsmActionFlag_NonDestructive)
+#define DeviceDsmAction_DrtDisable    (10 | DeviceDsmActionFlag_NonDestructive)
+
+#define DEVICE_DSM_FLAG_ENTIRE_DATA_SET_RANGE             0x00000001
+#define DEVICE_DSM_FLAG_SCRUB_SKIP_IN_SYNC                0x10000000
+#define DEVICE_DSM_FLAG_ALLOCATION_CONSOLIDATEABLE_ONLY   0x40000000
+#define DEVICE_DSM_FLAG_TRIM_NOT_FS_ALLOCATED             0x80000000
 
 #define DEVICE_DSM_NOTIFY_FLAG_BEGIN             0x00000001
 #define DEVICE_DSM_NOTIFY_FLAG_END               0x00000002
@@ -451,9 +432,13 @@ typedef enum _STORAGE_BUS_TYPE {
   BusTypeMmc,
   BusTypeVirtual,
   BusTypeFileBackedVirtual,
+  BusTypeSpaces,
   BusTypeMax,
   BusTypeMaxReserved = 0x7F
 } STORAGE_BUS_TYPE, *PSTORAGE_BUS_TYPE;
+
+#define SupportsDeviceSharing(type) (type == BusTypeScsi || type == BusTypeFibre ||type == BusTypeiScsi || \
+                                     type == BusTypeSas || type == BusTypeSpaces)
 
 typedef struct _DEVICE_MEDIA_INFO {
   union {
@@ -523,29 +508,7 @@ typedef enum _STORAGE_PROPERTY_ID {
   StorageDeviceLBProvisioningProperty,
   StorageDevicePowerProperty,
   StorageDeviceCopyOffloadProperty,
-  StorageDeviceResiliencyProperty,
-  StorageDeviceMediumProductType,
-  StorageAdapterRpmbProperty,
-  StorageAdapterCryptoProperty,
-  StorageDeviceTieringProperty,
-  StorageDeviceFaultDomainProperty,
-  StorageDeviceClusportProperty,
-  StorageDeviceDependantDevicesProperty,
-  StorageDeviceIoCapabilityProperty = 48,
-  StorageAdapterProtocolSpecificProperty,
-  StorageDeviceProtocolSpecificProperty,
-  StorageAdapterTemperatureProperty,
-  StorageDeviceTemperatureProperty,
-  StorageAdapterPhysicalTopologyProperty,
-  StorageDevicePhysicalTopologyProperty,
-  StorageDeviceAttributesProperty,
-  StorageDeviceManagementStatus,
-  StorageAdapterSerialNumberProperty,
-  StorageDeviceLocationProperty,
-  StorageDeviceNumaProperty,
-  StorageDeviceZonedDeviceProperty,
-  StorageDeviceUnsafeShutdownCount,
-  StorageDeviceEnduranceProperty,
+  StorageDeviceResiliencyProperty
 } STORAGE_PROPERTY_ID, *PSTORAGE_PROPERTY_ID;
 
 typedef struct _STORAGE_PROPERTY_QUERY {
@@ -554,12 +517,12 @@ typedef struct _STORAGE_PROPERTY_QUERY {
   UCHAR AdditionalParameters[1];
 } STORAGE_PROPERTY_QUERY, *PSTORAGE_PROPERTY_QUERY;
 
-typedef _Struct_size_bytes_(Size) struct _STORAGE_DESCRIPTOR_HEADER {
+typedef struct _STORAGE_DESCRIPTOR_HEADER {
   ULONG Version;
   ULONG Size;
 } STORAGE_DESCRIPTOR_HEADER, *PSTORAGE_DESCRIPTOR_HEADER;
 
-typedef _Struct_size_bytes_(Size) struct _STORAGE_DEVICE_DESCRIPTOR {
+typedef struct _STORAGE_DEVICE_DESCRIPTOR {
   ULONG Version;
   ULONG Size;
   UCHAR DeviceType;
@@ -575,7 +538,7 @@ typedef _Struct_size_bytes_(Size) struct _STORAGE_DEVICE_DESCRIPTOR {
   UCHAR RawDeviceProperties[1];
 } STORAGE_DEVICE_DESCRIPTOR, *PSTORAGE_DEVICE_DESCRIPTOR;
 
-typedef _Struct_size_bytes_(Size) struct _STORAGE_ADAPTER_DESCRIPTOR {
+typedef struct _STORAGE_ADAPTER_DESCRIPTOR {
   ULONG Version;
   ULONG Size;
   ULONG MaximumTransferLength;
@@ -598,7 +561,7 @@ typedef _Struct_size_bytes_(Size) struct _STORAGE_ADAPTER_DESCRIPTOR {
 #endif
 } STORAGE_ADAPTER_DESCRIPTOR, *PSTORAGE_ADAPTER_DESCRIPTOR;
 
-typedef _Struct_size_bytes_(Size) struct _STORAGE_ACCESS_ALIGNMENT_DESCRIPTOR {
+typedef struct _STORAGE_ACCESS_ALIGNMENT_DESCRIPTOR {
   ULONG Version;
   ULONG Size;
   ULONG BytesPerCacheLine;
@@ -608,21 +571,15 @@ typedef _Struct_size_bytes_(Size) struct _STORAGE_ACCESS_ALIGNMENT_DESCRIPTOR {
   ULONG BytesOffsetForSectorAlignment;
 } STORAGE_ACCESS_ALIGNMENT_DESCRIPTOR, *PSTORAGE_ACCESS_ALIGNMENT_DESCRIPTOR;
 
-typedef _Struct_size_bytes_(Size) struct _STORAGE_MEDIUM_PRODUCT_TYPE_DESCRIPTOR {
-  ULONG Version;
-  ULONG Size;
-  ULONG MediumProductType;
-} STORAGE_MEDIUM_PRODUCT_TYPE_DESCRIPTOR, *PSTORAGE_MEDIUM_PRODUCT_TYPE_DESCRIPTOR;
-
 typedef enum _STORAGE_PORT_CODE_SET {
   StoragePortCodeSetReserved = 0,
   StoragePortCodeSetStorport = 1,
   StoragePortCodeSetSCSIport = 2,
-  StoragePortCodeSetSpaceport= 3,
-  StoragePortCodeSetATAport  = 4,
-  StoragePortCodeSetUSBport  = 5,
+  StoragePortCodeSetSpaceport = 3,
+  StoragePortCodeSetATAport = 4,
+  StoragePortCodeSetUSBport = 5,
   StoragePortCodeSetSBP2port = 6,
-  StoragePortCodeSetSDport   = 7
+  StoragePortCodeSetSDport = 7
 } STORAGE_PORT_CODE_SET, *PSTORAGE_PORT_CODE_SET;
 
 typedef struct _STORAGE_MINIPORT_DESCRIPTOR {
@@ -634,65 +591,7 @@ typedef struct _STORAGE_MINIPORT_DESCRIPTOR {
 #if (NTDDI_VERSION >= NTDDI_WIN8)
   USHORT IoTimeoutValue;
 #endif
-#if (NTDDI_VERSION >= NTDDI_WINBLUE)
-  BOOLEAN ExtraIoInfoSupported;
-  UCHAR Reserved0[3];
-  ULONG Reserved1;
-#endif
 } STORAGE_MINIPORT_DESCRIPTOR, *PSTORAGE_MINIPORT_DESCRIPTOR;
-
-typedef struct _DEVICE_LB_PROVISIONING_DESCRIPTOR {
-  ULONG Version;
-  ULONG Size;
-  UCHAR ThinProvisioningEnabled:1;
-  UCHAR ThinProvisioningReadZeros:1;
-  UCHAR AnchorSupported:3;
-  UCHAR UnmapGranularityAlignmentValid:1;
-  UCHAR Reserved0:2;
-  UCHAR Reserved1[7];
-  ULONGLONG OptimalUnmapGranularity;
-  ULONGLONG UnmapGranularityAlignment;
-#if (NTDDI_VERSION >= NTDDI_WINBLUE)
-  ULONG MaxUnmapLbaCount;
-  ULONG MaxUnmapBlockDescriptorCount;
-#endif
-} DEVICE_LB_PROVISIONING_DESCRIPTOR, *PDEVICE_LB_PROVISIONING_DESCRIPTOR;
-
-#define DEVICE_LB_PROVISIONING_DESCRIPTOR_V1_SIZE RTL_SIZEOF_THROUGH_FIELD(DEVICE_LB_PROVISIONING_DESCRIPTOR, UnmapGranularityAlignment)
-
-typedef struct _DEVICE_POWER_DESCRIPTOR {
-  ULONG Version;
-  ULONG Size;
-  BOOLEAN DeviceAttentionSupported;
-  BOOLEAN AsynchronousNotificationSupported;
-  BOOLEAN IdlePowerManagementEnabled;
-  BOOLEAN D3ColdEnabled;
-  BOOLEAN D3ColdSupported;
-  BOOLEAN NoVerifyDuringIdlePower;
-  UCHAR Reserved[2];
-  ULONG IdleTimeoutInMS;
-} DEVICE_POWER_DESCRIPTOR, *PDEVICE_POWER_DESCRIPTOR;
-
-typedef struct _DEVICE_COPY_OFFLOAD_DESCRIPTOR {
-  ULONG Version;
-  ULONG Size;
-  ULONG MaximumTokenLifetime;
-  ULONG DefaultTokenLifetime;
-  ULONGLONG MaximumTransferSize;
-  ULONGLONG OptimalTransferCount;
-  ULONG MaximumDataDescriptors;
-  ULONG MaximumTransferLengthPerDescriptor;
-  ULONG OptimalTransferLengthPerDescriptor;
-  USHORT OptimalTransferLengthGranularity;
-  UCHAR Reserved[2];
-} DEVICE_COPY_OFFLOAD_DESCRIPTOR, *PDEVICE_COPY_OFFLOAD_DESCRIPTOR;
-
-typedef _Struct_size_bytes_(Size) struct _STORAGE_DEVICE_IO_CAPABILITY_DESCRIPTOR {
-  ULONG Version;
-  ULONG Size;
-  ULONG LunMaxIoCount;
-  ULONG AdapterMaxIoCount;
-} STORAGE_DEVICE_IO_CAPABILITY_DESCRIPTOR, *PSTORAGE_DEVICE_IO_CAPABILITY_DESCRIPTOR;
 
 typedef enum _STORAGE_IDENTIFIER_CODE_SET {
   StorageIdCodeSetReserved = 0,
@@ -734,7 +633,7 @@ typedef struct _STORAGE_IDENTIFIER {
   UCHAR Identifier[1];
 } STORAGE_IDENTIFIER, *PSTORAGE_IDENTIFIER;
 
-typedef _Struct_size_bytes_(Size) struct _STORAGE_DEVICE_ID_DESCRIPTOR {
+typedef struct _STORAGE_DEVICE_ID_DESCRIPTOR {
   ULONG Version;
   ULONG Size;
   ULONG NumberOfIdentifiers;
@@ -760,8 +659,6 @@ typedef struct _DEVICE_TRIM_DESCRIPTOR {
 } DEVICE_TRIM_DESCRIPTOR, *PDEVICE_TRIM_DESCRIPTOR;
 
 typedef ULONG DEVICE_DATA_MANAGEMENT_SET_ACTION;
-
-#define DEVICE_DSM_FLAG_TRIM_NOT_FS_ALLOCATED 0x80000000
 
 typedef struct _DEVICE_DATA_SET_RANGE {
   LONGLONG StartingOffset;
@@ -814,12 +711,7 @@ typedef struct _STORAGE_PRIORITY_HINT_SUPPORT {
   ULONG SupportFlags;
 } STORAGE_PRIORITY_HINT_SUPPORT, *PSTORAGE_PRIORITY_HINT_SUPPORT;
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable:4200)
-#endif
-
-// #if defined(_MSC_EXTENSIONS)
+#if defined(_MSC_EXTENSIONS) || defined(__GNUC__)
 
 typedef struct _STORAGE_MEDIA_SERIAL_NUMBER_DATA {
   USHORT Reserved;
@@ -830,7 +722,7 @@ typedef struct _STORAGE_MEDIA_SERIAL_NUMBER_DATA {
 typedef struct _PERSISTENT_RESERVE_COMMAND {
   ULONG Version;
   ULONG Size;
-  __MINGW_EXTENSION union {
+  __C89_NAMELESS union {
     struct {
       UCHAR ServiceAction:5;
       UCHAR Reserved1:3;
@@ -846,13 +738,9 @@ typedef struct _PERSISTENT_RESERVE_COMMAND {
   } DUMMYUNIONNAME;
 } PERSISTENT_RESERVE_COMMAND, *PPERSISTENT_RESERVE_COMMAND;
 
-// #endif /* defined(_MSC_EXTENSIONS) */
+#endif /* defined(_MSC_EXTENSIONS) */
 
-#ifdef _MSC_VER
-#pragma warning(pop) /* disable:4200 */
-#endif
-
-typedef _Struct_size_bytes_(Size) struct _STORAGE_READ_CAPACITY {
+typedef struct _STORAGE_READ_CAPACITY {
   ULONG Version;
   ULONG Size;
   ULONG BlockLength;
@@ -885,7 +773,7 @@ typedef enum _WRITE_THROUGH {
   WriteThroughSupported
 } WRITE_THROUGH;
 
-typedef _Struct_size_bytes_(Size) struct _STORAGE_WRITE_CACHE_PROPERTY {
+typedef struct _STORAGE_WRITE_CACHE_PROPERTY {
   ULONG Version;
   ULONG Size;
   WRITE_CACHE_TYPE WriteCacheType;
@@ -897,20 +785,305 @@ typedef _Struct_size_bytes_(Size) struct _STORAGE_WRITE_CACHE_PROPERTY {
   BOOLEAN NVCacheEnabled;
 } STORAGE_WRITE_CACHE_PROPERTY, *PSTORAGE_WRITE_CACHE_PROPERTY;
 
+#define STORAGE_OFFLOAD_MAX_TOKEN_LENGTH         0x200
+#define STORAGE_OFFLOAD_TOKEN_ID_LENGTH          0x1f8
+#define STORAGE_OFFLOAD_TOKEN_TYPE_ZERO_DATA     0xffff0001
+
+#if defined(_MSC_EXTENSIONS) || defined(__GNUC__)
+
+typedef struct _STORAGE_OFFLOAD_TOKEN {
+  UCHAR TokenType[4];
+  UCHAR Reserved[2];
+  UCHAR TokenIdLength[2];
+  __C89_NAMELESS union {
+    struct {
+      UCHAR Reserved2[STORAGE_OFFLOAD_TOKEN_ID_LENGTH];
+    } StorageOffloadZeroDataToken;
+    UCHAR Token[STORAGE_OFFLOAD_TOKEN_ID_LENGTH];
+  };
+} STORAGE_OFFLOAD_TOKEN, *PSTORAGE_OFFLOAD_TOKEN;
+
+#endif /* defined(_MSC_EXTENSIONS) */
+
+#define MAKE_ZERO_TOKEN(T) (((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[0] = 0xff, \
+                            ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[1] = 0xff, \
+                            ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[2] = 0x00, \
+                            ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[3] = 0x01, \
+                            ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenIdLength[0] = 0x01, \
+                            ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenIdLength[1] = 0xf8)
+
+#define IS_ZERO_TOKEN(T) (((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[0] == 0xff && \
+                          ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[1] == 0xff && \
+                          ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[2] == 0x00 && \
+                          ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[3] == 0x01 && \
+                          ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenIdLength[0] == 0x01 && \
+                          ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenIdLength[1] == 0xf8)
+
+typedef struct _STORAGE_OFFLOAD_READ_OUTPUT {
+  ULONG OffloadReadFlags;
+  ULONG Reserved;
+  ULONGLONG LengthProtected;
+  ULONG TokenLength;
+  STORAGE_OFFLOAD_TOKEN Token;
+} STORAGE_OFFLOAD_READ_OUTPUT, *PSTORAGE_OFFLOAD_READ_OUTPUT;
+
+#define STORAGE_OFFLOAD_READ_RANGE_TRUNCATED    0x0001
+
+typedef struct _STORAGE_OFFLOAD_WRITE_OUTPUT {
+  ULONG OffloadWriteFlags;
+  ULONG Reserved;
+  ULONGLONG LengthCopied;
+} STORAGE_OFFLOAD_WRITE_OUTPUT, *PSTORAGE_OFFLOAD_WRITE_OUTPUT;
+
+#define STORAGE_OFFLOAD_WRITE_RANGE_TRUNCATED   0x0001
+#define STORAGE_OFFLOAD_TOKEN_INVALID           0x0002
+
+#define STORAGE_CRASH_TELEMETRY_REGKEY          L"\\Registry\\Machine\\System\\CurrentControlSet\\Control\\CrashControl\\StorageTelemetry"
+#define STORAGE_DEVICE_TELEMETRY_REGKEY         L"\\Registry\\Machine\\System\\CurrentControlSet\\Control\\Storage\\StorageTelemetry"
+#define DDUMP_FLAG_DATA_READ_FROM_DEVICE        0x0001
+#define FW_ISSUEID_NO_ISSUE                     0x00000000
+#define FW_ISSUEID_UNKNOWN                      0xffffffff
+#define TC_PUBLIC_DEVICEDUMP_CONTENT_SMART      1
+#define TC_PUBLIC_DEVICEDUMP_CONTENT_GPLOG      2
+#define TC_PUBLIC_DATA_TYPE_ATAGP               "ATAGPLogPages"
+#define TC_PUBLIC_DATA_TYPE_ATASMART            "ATASMARTPages"
+#define DEVICEDUMP_CAP_PRIVATE_SECTION          0x00000001
+#define DEVICEDUMP_CAP_RESTRICTED_SECTION       0x00000002
+
+#define TCRecordStorportSrbFunction             Command[0]
+
+typedef enum _DEVICEDUMP_COLLECTION_TYPE {
+  TCCollectionBugCheck = 1,
+  TCCollectionApplicationRequested,
+  TCCollectionDeviceRequested
+} DEVICEDUMP_COLLECTION_TYPEIDE_NOTIFICATION_TYPE, *PDEVICEDUMP_COLLECTION_TYPE;
+
+typedef struct _DEVICEDUMP_SUBSECTION_POINTER {
+  ULONG dwSize;
+  ULONG dwFlags;
+  ULONG dwOffset;
+} DEVICEDUMP_SUBSECTION_POINTER, *PDEVICEDUMP_SUBSECTION_POINTER;
+
+#define DEVICEDUMP_STRUCTURE_VERSION_V1         1
+
+typedef struct _DEVICEDUMP_STRUCTURE_VERSION {
+  ULONG dwSignature;
+  ULONG dwVersion;
+  ULONG dwSize;
+} DEVICEDUMP_STRUCTURE_VERSION, *PDEVICEDUMP_STRUCTURE_VERSION;
+
+#define DEVICEDUMP_MAX_IDSTRING                 32
+#define MAX_FW_BUCKET_ID_LENGTH                 132
+
+typedef struct _DEVICEDUMP_SECTION_HEADER {
+  GUID guidDeviceDataId;
+  UCHAR sOrganizationID[16];
+  ULONG dwFirmwareRevision;
+  UCHAR sModelNumber[DEVICEDUMP_MAX_IDSTRING];
+  UCHAR szDeviceManufacturingID[DEVICEDUMP_MAX_IDSTRING];
+  ULONG dwFlags;
+  ULONG bRestrictedPrivateDataVersion;
+  ULONG dwFirmwareIssueId;
+  UCHAR szIssueDescriptionString[MAX_FW_BUCKET_ID_LENGTH];
+} DEVICEDUMP_SECTION_HEADER, *PDEVICEDUMP_SECTION_HEADER;
+
+#define TC_PUBLIC_DEVICEDUMP_CONTENT_GPLOG_MAX  16
+#define TC_DEVICEDUMP_SUBSECTION_DESC_LENGTH    16
+
+typedef struct _GP_LOG_PAGE_DESCRIPTOR {
+  USHORT LogAddress;
+  USHORT LogSectors;
+} GP_LOG_PAGE_DESCRIPTOR, *PGP_LOG_PAGE_DESCRIPTOR;
+
+typedef struct _DEVICEDUMP_PUBLIC_SUBSECTION {
+  ULONG dwFlags;
+  GP_LOG_PAGE_DESCRIPTOR GPLogTable[TC_PUBLIC_DEVICEDUMP_CONTENT_GPLOG_MAX];
+  CHAR szDescription[TC_DEVICEDUMP_SUBSECTION_DESC_LENGTH];
+  UCHAR bData[1];
+} DEVICEDUMP_PUBLIC_SUBSECTION, *PDEVICEDUMP_PUBLIC_SUBSECTION;
+
+typedef struct _DEVICEDUMP_PRIVATE_SUBSECTION {
+  ULONG dwFlags;
+  GP_LOG_PAGE_DESCRIPTOR GPLogId;
+  UCHAR bData[1];
+} DEVICEDUMP_PRIVATE_SUBSECTION, *PDEVICEDUMP_PRIVATE_SUBSECTION;
+
+#define CDB_SIZE                                16
+#define TELEMETRY_COMMAND_SIZE                  16
+
+typedef struct _DEVICEDUMP_STORAGESTACK_PUBLIC_STATE_RECORD {
+  UCHAR Cdb[CDB_SIZE];
+  UCHAR Command[TELEMETRY_COMMAND_SIZE];
+  ULONGLONG StartTime;
+  ULONGLONG EndTime;
+  ULONG OperationStatus;
+  ULONG OperationError;
+
+  union {
+    struct {
+      ULONG dwReserved;
+    } ExternalStack;
+
+    struct {
+      ULONG dwAtaPortSpecific;
+    } AtaPort;
+
+    struct {
+      ULONG SrbTag;
+    } StorPort;
+  } StackSpecific;
+} DEVICEDUMP_STORAGESTACK_PUBLIC_STATE_RECORD, *PDEVICEDUMP_STORAGESTACK_PUBLIC_STATE_RECORD;
+
+typedef struct _DEVICEDUMP_RESTRICTED_SUBSECTION {
+  UCHAR bData[1];
+} DEVICEDUMP_RESTRICTED_SUBSECTION, *PDEVICEDUMP_RESTRICTED_SUBSECTION;
+
+typedef struct _DEVICEDUMP_STORAGEDEVICE_DATA {
+  DEVICEDUMP_STRUCTURE_VERSION Descriptor;
+  DEVICEDUMP_SECTION_HEADER SectionHeader;
+  ULONG dwBufferSize;
+  ULONG dwReasonForCollection;
+  DEVICEDUMP_SUBSECTION_POINTER PublicData;
+  DEVICEDUMP_SUBSECTION_POINTER RestrictedData;
+  DEVICEDUMP_SUBSECTION_POINTER PrivateData;
+} DEVICEDUMP_STORAGEDEVICE_DATA, *PDEVICEDUMP_STORAGEDEVICE_DATA;
+
+typedef struct _DEVICEDUMP_STORAGESTACK_PUBLIC_DUMP {
+  DEVICEDUMP_STRUCTURE_VERSION Descriptor;
+  ULONG dwReasonForCollection;
+  UCHAR cDriverName[16];
+  ULONG uiNumRecords;
+  DEVICEDUMP_STORAGESTACK_PUBLIC_STATE_RECORD RecordArray[1];
+} DEVICEDUMP_STORAGESTACK_PUBLIC_DUMP, *PDEVICEDUMP_STORAGESTACK_PUBLIC_DUMP;
+
+typedef struct _DEVICE_LB_PROVISIONING_DESCRIPTOR {
+  ULONG Version;
+  ULONG Size;
+  UCHAR ThinProvisioningEnabled : 1;
+  UCHAR ThinProvisioningReadZeros : 1;
+  UCHAR AnchorSupported : 3;
+  UCHAR UnmapGranularityAlignmentValid : 1;
+  UCHAR Reserved0 : 2;
+  UCHAR Reserved1[7];
+  ULONGLONG OptimalUnmapGranularity;
+  ULONGLONG UnmapGranularityAlignment;
+} DEVICE_LB_PROVISIONING_DESCRIPTOR, *PDEVICE_LB_PROVISIONING_DESCRIPTOR;
+
 typedef struct _STORAGE_LB_PROVISIONING_MAP_RESOURCES {
   ULONG Size;
   ULONG Version;
-  UCHAR AvailableMappingResourcesValid:1;
-  UCHAR UsedMappingResourcesValid:1;
-  UCHAR Reserved0:6;
+  UCHAR AvailableMappingResourcesValid : 1;
+  UCHAR UsedMappingResourcesValid : 1;
+  UCHAR Reserved0 : 6;
   UCHAR Reserved1[3];
-  UCHAR AvailableMappingResourcesScope:2;
-  UCHAR UsedMappingResourcesScope:2;
-  UCHAR Reserved2:4;
+  UCHAR MappingResourcesScope : 2;
+  UCHAR UsedMappingResourcesScope : 2;
+  UCHAR Reserved2 : 4;
   UCHAR Reserved3[3];
   ULONGLONG AvailableMappingResources;
   ULONGLONG UsedMappingResources;
 } STORAGE_LB_PROVISIONING_MAP_RESOURCES, *PSTORAGE_LB_PROVISIONING_MAP_RESOURCES;
+
+typedef struct _DEVICE_POWER_DESCRIPTOR {
+  ULONG Version;
+  ULONG Size;
+  BOOLEAN DeviceAttentionSupported;
+  BOOLEAN AsynchronousNotificationSupported;
+  BOOLEAN IdlePowerManagementEnabled;
+  BOOLEAN D3ColdEnabled;
+  BOOLEAN D3ColdSupported;
+  BOOLEAN NoVerifyDuringIdlePower;
+  UCHAR Reserved[2];
+  ULONG IdleTimeoutInMS;
+} DEVICE_POWER_DESCRIPTOR, *PDEVICE_POWER_DESCRIPTOR;
+
+typedef struct _DEVICE_COPY_OFFLOAD_DESCRIPTOR {
+  ULONG Version;
+  ULONG Size;
+  ULONG MaximumTokenLifetime;
+  ULONG DefaultTokenLifetime;
+  ULONGLONG MaximumTransferSize;
+  ULONGLONG OptimalTransferCount;
+  ULONG MaximumDataDescriptors;
+  ULONG MaximumTransferLengthPerDescriptor;
+  ULONG OptimalTransferLengthPerDescriptor;
+  USHORT OptimalTransferLengthGranularity;
+  UCHAR Reserved[2];
+} DEVICE_COPY_OFFLOAD_DESCRIPTOR, *PDEVICE_COPY_OFFLOAD_DESCRIPTOR;
+
+typedef struct _STORAGE_DEVICE_RESILIENCY_DESCRIPTOR {
+  ULONG Version;
+  ULONG Size;
+  ULONG NameOffset;
+  ULONG NumberOfLogicalCopies;
+  ULONG NumberOfPhysicalCopies;
+  ULONG PhysicalDiskRedundancy;
+  ULONG NumberOfColumns;
+  ULONG Interleave;
+} STORAGE_DEVICE_RESILIENCY_DESCRIPTOR, *PSTORAGE_DEVICE_RESILIENCY_DESCRIPTOR;
+
+typedef struct _STORAGE_IDLE_POWER {
+  ULONG Version;
+  ULONG Size;
+  ULONG WakeCapableHint : 1;
+  ULONG D3ColdSupported : 1;
+  ULONG Reserved : 30;
+  ULONG D3IdleTimeout;
+} STORAGE_IDLE_POWER, *PSTORAGE_IDLE_POWER;
+
+typedef enum _STORAGE_POWERUP_REASON_TYPE {
+  StoragePowerupUnknown,
+  StoragePowerupIO,
+  StoragePowerupDeviceAttention
+} STORAGE_POWERUP_REASON_TYPE, *PSTORAGE_POWERUP_REASON_TYPE;
+
+typedef struct _STORAGE_IDLE_POWERUP_REASON {
+  ULONG Version;
+  ULONG Size;
+  STORAGE_POWERUP_REASON_TYPE PowerupReason;
+} STORAGE_IDLE_POWERUP_REASON, *PSTORAGE_IDLE_POWERUP_REASON;
+
+#define STORAGE_IDLE_POWERUP_REASON_VERSION_V1    1
+
+typedef struct _STORAGE_EVENT_NOTIFICATION {
+  ULONG Version;
+  ULONG Size;
+  ULONGLONG Events;
+} STORAGE_EVENT_NOTIFICATION, *PSTORAGE_EVENT_NOTIFICATION;
+
+#define STORAGE_EVENT_NOTIFICATION_VERSION_V1     1
+
+#define STORAGE_EVENT_MEDIA_STATUS                1
+#define STORAGE_EVENT_DEVICE_STATUS               2
+#define STORAGE_EVENT_DEVICE_OPERATION            4
+
+#define STORAGE_EVENT_ALL \
+  (STORAGE_EVENT_MEDIA_STATUS | STORAGE_EVENT_DEVICE_STATUS | STORAGE_EVENT_DEVICE_OPERATION)
+
+#define READ_COPY_NUMBER_KEY                      0x52434e00
+
+#define IsKeyReadCopyNumber(k)                 (((k) & 0xffffff00) == READ_COPY_NUMBER_KEY)
+#define ReadCopyNumberToKey(c)                 (READ_COPY_NUMBER_KEY | (UCHAR)(c))
+#define ReadCopyNumberFromKey(k)               (UCHAR)((k) & 0x000000ff)
+
+typedef struct _DEVICE_DSM_OFFLOAD_READ_PARAMETERS {
+  ULONG Flags;
+  ULONG TimeToLive;
+  ULONG Reserved[2];
+} DEVICE_DSM_OFFLOAD_READ_PARAMETERS, *PDEVICE_DSM_OFFLOAD_READ_PARAMETERS;
+
+typedef struct _DEVICE_DSM_OFFLOAD_WRITE_PARAMETERS {
+  ULONG Flags;
+  ULONG Reserved;
+  ULONGLONG TokenOffset;
+  STORAGE_OFFLOAD_TOKEN Token;
+} DEVICE_DSM_OFFLOAD_WRITE_PARAMETERS, *PDEVICE_DSM_OFFLOAD_WRITE_PARAMETERS;
+
+typedef struct _DEVICE_DATA_SET_REPAIR_PARAMETERS {
+  ULONG NumberOfRepairCopies;
+  ULONG SourceCopy;
+  ULONG RepairCopies[1];
+} DEVICE_DATA_SET_REPAIR_PARAMETERS, *PDEVICE_DATA_SET_REPAIR_PARAMETERS;
 
 typedef struct _DEVICE_MANAGE_DATA_SET_ATTRIBUTES_OUTPUT {
   ULONG Size;
@@ -931,178 +1104,32 @@ typedef struct _DEVICE_DATA_SET_LB_PROVISIONING_STATE {
   ULONG SlabOffsetDeltaInBytes;
   ULONG SlabAllocationBitMapBitCount;
   ULONG SlabAllocationBitMapLength;
-  ULONG SlabAllocationBitMap[ANYSIZE_ARRAY];
-} DEVICE_DATA_SET_LB_PROVISIONING_STATE, *PDEVICE_DATA_SET_LB_PROVISIONING_STATE,
-  DEVICE_DSM_ALLOCATION_OUTPUT, *PDEVICE_DSM_ALLOCATION_OUTPUT;
+  ULONG SlabAllocationBitMap[1];
+} DEVICE_DATA_SET_LB_PROVISIONING_STATE, *PDEVICE_DATA_SET_LB_PROVISIONING_STATE;
 
-#define DEVICE_DSM_ALLOCATION_OUTPUT_V1 (sizeof(DEVICE_DSM_ALLOCATION_OUTPUT))
-#define DEVICE_DATA_SET_LB_PROVISIONING_STATE_VERSION_V1 DEVICE_DSM_ALLOCATION_OUTPUT_V1
+typedef struct _DEVICE_DATA_SET_SCRUB_OUTPUT {
+  ULONGLONG BytesProcessed;
+  ULONGLONG BytesRepaired;
+  ULONGLONG BytesFailed;
+} DEVICE_DATA_SET_SCRUB_OUTPUT, *PDEVICE_DATA_SET_SCRUB_OUTPUT;
 
-typedef struct _DEVICE_DATA_SET_LB_PROVISIONING_STATE_V2 {
-  ULONG Size;
-  ULONG Version;
-  ULONGLONG SlabSizeInBytes;
-  ULONGLONG SlabOffsetDeltaInBytes;
-  ULONG SlabAllocationBitMapBitCount;
-  ULONG SlabAllocationBitMapLength;
-  ULONG SlabAllocationBitMap[ANYSIZE_ARRAY];
-} DEVICE_DATA_SET_LB_PROVISIONING_STATE_V2, *PDEVICE_DATA_SET_LB_PROVISIONING_STATE_V2,
-  DEVICE_DSM_ALLOCATION_OUTPUT2, *PDEVICE_DSM_ALLOCATION_OUTPUT2;
+#if NTDDI_VERSION >= NTDDI_WIN8
 
-#define DEVICE_DSM_ALLOCATION_OUTPUT_V2 (sizeof(DEVICE_DSM_ALLOCATION_OUTPUT2))
-#define DEVICE_DATA_SET_LB_PROVISIONING_STATE_VERSION_V2 DEVICE_DSM_ALLOCATION_OUTPUT_V2
+#define NO_SRBTYPE_ADAPTER_DESCRIPTOR_SIZE FIELD_OFFSET(STORAGE_ADAPTER_DESCRIPTOR, SrbType)
 
-#define DeviceDsmDefinition_Allocation {DeviceDsmAction_Allocation,                  \
-                                        TRUE,                                        \
-                                        __alignof(DEVICE_DSM_ALLOCATION_PARAMETERS), \
-                                        sizeof(DEVICE_DSM_ALLOCATION_PARAMETERS),    \
-                                        TRUE,                                        \
-                                        __alignof(DEVICE_DSM_ALLOCATION_OUTPUT2),    \
-                                        sizeof(DEVICE_DSM_ALLOCATION_OUTPUT2)}
+#ifndef SRB_TYPE_SCSI_REQUEST_BLOCK
+#define SRB_TYPE_SCSI_REQUEST_BLOCK         0
+#endif
 
-#define DEVICE_DSM_FLAG_ALLOCATION_CONSOLIDATEABLE_ONLY 0x40000000
+#ifndef SRB_TYPE_STORAGE_REQUEST_BLOCK
+#define SRB_TYPE_STORAGE_REQUEST_BLOCK      1
+#endif
 
-typedef struct _DEVICE_DATA_SET_LBP_STATE_PARAMETERS {
-  ULONG Version;
-  ULONG Size;
-  ULONG Flags;
-  ULONG OutputVersion;
-} DEVICE_DATA_SET_LBP_STATE_PARAMETERS, *PDEVICE_DATA_SET_LBP_STATE_PARAMETERS,
-  DEVICE_DSM_ALLOCATION_PARAMETERS, *PDEVICE_DSM_ALLOCATION_PARAMETERS;
+#ifndef STORAGE_ADDRESS_TYPE_BTL8
+#define STORAGE_ADDRESS_TYPE_BTL8           0
+#endif
 
-typedef struct _STORAGE_EVENT_NOTIFICATION {
-  ULONG Version;
-  ULONG Size;
-  ULONGLONG Events;
-} STORAGE_EVENT_NOTIFICATION, *PSTORAGE_EVENT_NOTIFICATION;
-
-#define STORAGE_EVENT_NOTIFICATION_VERSION_V1 1
-
-#define STORAGE_EVENT_MEDIA_STATUS     0x0000000000000001
-#define STORAGE_EVENT_DEVICE_STATUS    0x0000000000000002
-#define STORAGE_EVENT_DEVICE_OPERATION 0x0000000000000004
-#define STORAGE_EVENT_ALL (STORAGE_EVENT_MEDIA_STATUS | STORAGE_EVENT_DEVICE_STATUS | STORAGE_EVENT_DEVICE_OPERATION)
-
-#define STORAGE_OFFLOAD_MAX_TOKEN_LENGTH        512
-#define STORAGE_OFFLOAD_TOKEN_ID_LENGTH         0x1F8
-#define STORAGE_OFFLOAD_TOKEN_TYPE_ZERO_DATA    0xFFFF0001
-
-typedef struct _STORAGE_OFFLOAD_TOKEN {
-  UCHAR TokenType[4];
-  UCHAR Reserved[2];
-  UCHAR TokenIdLength[2];
-  union {
-      struct {
-          UCHAR Reserved2[STORAGE_OFFLOAD_TOKEN_ID_LENGTH];
-      } StorageOffloadZeroDataToken;
-      UCHAR Token[STORAGE_OFFLOAD_TOKEN_ID_LENGTH];
-  } DUMMYUNIONNAME;
-} STORAGE_OFFLOAD_TOKEN, *PSTORAGE_OFFLOAD_TOKEN;
-
-#define MAKE_ZERO_TOKEN(T) (                                  \
-    ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[0] = 0xFF,         \
-    ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[1] = 0xFF,         \
-    ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[2] = 0x00,         \
-    ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[3] = 0x01,         \
-    ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenIdLength[0] = 0x01,     \
-    ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenIdLength[1] = 0xF8      \
-)
-
-#define IS_ZERO_TOKEN(T) (                                    \
-    (((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[0] == 0xFF     && \
-     ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[1] == 0xFF     && \
-     ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[2] == 0x00     && \
-     ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenType[3] == 0x01     && \
-     ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenIdLength[0] == 0x01 && \
-     ((PSTORAGE_OFFLOAD_TOKEN)T)->TokenIdLength[1] == 0xF8)   \
-)
-
-typedef struct _DEVICE_DSM_OFFLOAD_READ_PARAMETERS {
-  ULONG Flags;
-  ULONG TimeToLive;
-  ULONG Reserved[2];
-} DEVICE_DSM_OFFLOAD_READ_PARAMETERS, *PDEVICE_DSM_OFFLOAD_READ_PARAMETERS;
-
-#define STORAGE_OFFLOAD_READ_RANGE_TRUNCATED 0x00000001
-
-typedef struct _STORAGE_OFFLOAD_READ_OUTPUT {
-  ULONG OffloadReadFlags;
-  ULONG Reserved;
-  ULONGLONG LengthProtected;
-  ULONG TokenLength;
-  STORAGE_OFFLOAD_TOKEN Token;
-} STORAGE_OFFLOAD_READ_OUTPUT, *PSTORAGE_OFFLOAD_READ_OUTPUT;
-
-#define DeviceDsmDefinition_OffloadRead {DeviceDsmAction_OffloadRead,                   \
-                                         FALSE,                                         \
-                                         __alignof(DEVICE_DSM_OFFLOAD_READ_PARAMETERS), \
-                                         sizeof(DEVICE_DSM_OFFLOAD_READ_PARAMETERS),    \
-                                         FALSE,                                         \
-                                         __alignof(STORAGE_OFFLOAD_READ_OUTPUT),        \
-                                         sizeof(STORAGE_OFFLOAD_READ_OUTPUT)}
-
-typedef struct _DEVICE_DSM_OFFLOAD_WRITE_PARAMETERS {
-  ULONG Flags;
-  ULONG Reserved;
-  ULONGLONG TokenOffset;
-  STORAGE_OFFLOAD_TOKEN Token;
-} DEVICE_DSM_OFFLOAD_WRITE_PARAMETERS, *PDEVICE_DSM_OFFLOAD_WRITE_PARAMETERS;
-
-#define STORAGE_OFFLOAD_WRITE_RANGE_TRUNCATED   0x0001
-#define STORAGE_OFFLOAD_TOKEN_INVALID           0x0002
-
-typedef struct _STORAGE_OFFLOAD_WRITE_OUTPUT {
-  ULONG OffloadWriteFlags;
-  ULONG Reserved;
-  ULONGLONG LengthCopied;
-} STORAGE_OFFLOAD_WRITE_OUTPUT, *PSTORAGE_OFFLOAD_WRITE_OUTPUT;
-
-#define DeviceDsmDefinition_OffloadWrite {DeviceDsmAction_OffloadWrite,                   \
-                                          FALSE,                                          \
-                                          __alignof(DEVICE_DSM_OFFLOAD_WRITE_PARAMETERS), \
-                                          sizeof(DEVICE_DSM_OFFLOAD_WRITE_PARAMETERS),    \
-                                          FALSE,                                          \
-                                          __alignof(STORAGE_OFFLOAD_WRITE_OUTPUT),        \
-                                          sizeof(STORAGE_OFFLOAD_WRITE_OUTPUT)}
-
-
-#define READ_COPY_NUMBER_KEY                    0x52434e00  //'RCN'
-#define READ_COPY_NUMBER_BYPASS_CACHE_FLAG      0x00000100
-
-#define IsKeyReadCopyNumber(_k)                 (((_k) & 0xFFFFFE00) == READ_COPY_NUMBER_KEY)
-
-#define IsKeyReadCopyNumberBypassCache(_k)      ((_k) & READ_COPY_NUMBER_BYPASS_CACHE_FLAG)
-#define SetReadCopyNumberBypassCacheToKey(_k)   ((_k) |= READ_COPY_NUMBER_BYPASS_CACHE_FLAG)
-
-#define ReadCopyNumberToKey(_c)                 (READ_COPY_NUMBER_KEY | (UCHAR)(_c))
-#define ReadCopyNumberFromKey(_k)               (UCHAR)((_k) & 0x000000FF)
-
-typedef struct _STORAGE_IDLE_POWER {
-  ULONG Version;
-  ULONG Size;
-  ULONG WakeCapableHint:1;
-  ULONG D3ColdSupported:1;
-  ULONG Reserved:30;
-  ULONG D3IdleTimeout;
-} STORAGE_IDLE_POWER, *PSTORAGE_IDLE_POWER;
-
-
-// for IOCTL_STORAGE_GET_IDLE_POWERUP_REASON
-
-typedef enum _STORAGE_POWERUP_REASON_TYPE {
-  StoragePowerupUnknown = 0,
-  StoragePowerupIO,
-  StoragePowerupDeviceAttention
-} STORAGE_POWERUP_REASON_TYPE, *PSTORAGE_POWERUP_REASON_TYPE;
-
-typedef struct _STORAGE_IDLE_POWERUP_REASON
-{
-  ULONG Version;
-  ULONG Size;
-  STORAGE_POWERUP_REASON_TYPE PowerupReason;
-} STORAGE_IDLE_POWERUP_REASON, *PSTORAGE_IDLE_POWERUP_REASON;
-
-#define STORAGE_IDLE_POWERUP_REASON_VERSION_V1 1
+#endif
 
 #ifdef __cplusplus
 }

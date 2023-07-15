@@ -1,65 +1,65 @@
-/*
- * PROJECT:         ReactOS
- * LICENSE:         GPL - See COPYING in the top level directory
- * FILE:            include/psdk/common.ver
- * PURPOSE:         Common Version File.
- * PROGRAMMERS:     Alex Ionescu (alex.ionescu@reactos.org)
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
-//
-// Copyright Year
-//
 #ifndef VER_LEGALCOPYRIGHT_YEARS
-#define VER_LEGALCOPYRIGHT_YEARS    "2007"
+#define VER_LEGALCOPYRIGHT_YEARS "1985-2005"
 #endif
 
-//
-// Copyright String
-//
 #ifndef VER_LEGALCOPYRIGHT_STR
-#if defined(RC_INVOKED) && !defined(WIN16)
-#define VER_LEGALCOPYRIGHT_STR L"\251 ReactOS Project. All rights reserved."
+#ifdef RC_INVOKED
+#define VER_LEGALCOPYRIGHT_STR L"\251 Microsoft Corporation. All rights reserved."
 #else
-#define VER_LEGALCOPYRIGHT_STR "Copyright (c) ReactOS Project. All rights reserved."
+#define VER_LEGALCOPYRIGHT_STR "Copyright (c) Microsoft Corporation. All rights reserved."
 #endif
 #endif
 
-//
-// Product Name String
-//
 #ifndef VER_PRODUCTNAME_STR
 #ifdef RC_INVOKED
-#define VER_PRODUCTNAME_STR L"ReactOS Operating System"
+#define VER_PRODUCTNAME_STR L"Microsoft\256 Windows\256 Operating System"
 #else
-#define VER_PRODUCTNAME_STR "ReactOS Operating System"
+#define VER_PRODUCTNAME_STR "Microsoft (R) Windows (R) Operating System"
 #endif
 #endif
 
-//
-// The File Version is the same as the Product Version
-//
+#ifndef VER_PRODUCTVERSION
+#define VER_PRODUCTVERSION 5,00,01,001
+#endif
+
 #ifndef VER_FILEVERSION
 #define VER_FILEVERSION VER_PRODUCTVERSION
 #endif
+
+#ifndef VER_PRODUCTVERSION_STR
+#define VER_PRODUCTVERSION_STR "5.00"
+#endif
+
 #ifndef VER_FILEVERSION_STR
 #define VER_FILEVERSION_STR VER_PRODUCTVERSION_STR
 #endif
 
-//
-// If no Original Name was given, use the Internal NAme
-//
 #ifndef VER_ORIGINALFILENAME_STR
 #define VER_ORIGINALFILENAME_STR VER_INTERNALNAME_STR
 #endif
 
-//
-// Allow tagging a Build by Machine/Date
-//
+#ifdef EXPORT_CONTROLLED
+
+#ifdef EXPORT
+#define EXPORT_TAG " (Export Version)"
+#else
+#define EXPORT_TAG " (US/Canada Only, Not for Export)"
+#endif
+#else
+
+#define EXPORT_TAG
+#endif
+
 #if defined(__BUILDMACHINE__)
 #if defined(__BUILDDATE__)
 #define B2(x,y) " (" #x "." #y ")"
-#define B1(x,y) B2(x, y)
-#define BUILD_MACHINE_TAG B1(__BUILDMACHINE__, __BUILDDATE__)
+#define B1(x,y) B2(x,y)
+#define BUILD_MACHINE_TAG B1(__BUILDMACHINE__,__BUILDDATE__)
 #else
 #define B2(x) " built by: " #x
 #define B1(x) B2(x)
@@ -127,72 +127,69 @@
 #define BUILD_MACHINE_TAG_PADDED
 #endif
 
-//
-// Set default neutral Unicode Language ID
-//
+#ifdef VER_LANGNEUTRAL
 #ifndef VER_VERSION_UNICODE_LANG
-#define VER_VERSION_UNICODE_LANG  "000004B0"
+#define VER_VERSION_UNICODE_LANG "000004B0"
 #endif
-
-//
-// Set default netural ANSI Language ID
-//
 #ifndef VER_VERSION_ANSI_LANG
-#define VER_VERSION_ANSI_LANG     "000004E4"
+#define VER_VERSION_ANSI_LANG "000004E4"
 #endif
-
-//
-// Set default netural translation ID
-//
 #ifndef VER_VERSION_TRANSLATION
-#define VER_VERSION_TRANSLATION   0x0000, 0x04B0
+#define VER_VERSION_TRANSLATION 0x0000,0x04B0
+#endif
+#else
+#ifndef VER_VERSION_UNICODE_LANG
+#define VER_VERSION_UNICODE_LANG "040904B0"
+#endif
+#ifndef VER_VERSION_ANSI_LANG
+#define VER_VERSION_ANSI_LANG "0c0904E4"
+#endif
+#ifndef VER_VERSION_TRANSLATION
+#define VER_VERSION_TRANSLATION 0x0409,0x04B0
+#endif
 #endif
 
-//
-// Make sure the Resource Compiler called us.
-// If so, then build the actual version resource.
-//
 #ifdef RC_INVOKED
 
 VS_VERSION_INFO VERSIONINFO
-FILEVERSION    VER_FILEVERSION
+FILEVERSION VER_FILEVERSION
 PRODUCTVERSION VER_PRODUCTVERSION
-FILEFLAGSMASK  VER_FILEFLAGSMASK
-FILEFLAGS      VER_FILEFLAGS
-FILEOS         VER_FILEOS
-FILETYPE       VER_FILETYPE
-FILESUBTYPE    VER_FILESUBTYPE
+FILEFLAGSMASK VER_FILEFLAGSMASK
+FILEFLAGS VER_FILEFLAGS
+FILEOS VER_FILEOS
+FILETYPE VER_FILETYPE
+FILESUBTYPE VER_FILESUBTYPE
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
         BLOCK VER_VERSION_UNICODE_LANG
         BEGIN
-            VALUE "CompanyName",     VER_COMPANYNAME_STR
-            VALUE "FileDescription", VER_FILEDESCRIPTION_STR
-            VALUE "FileVersion",     VER_FILEVERSION_STR BUILD_MACHINE_TAG_PADDED
-            VALUE "InternalName",    VER_INTERNALNAME_STR
-            VALUE "LegalCopyright",  VER_LEGALCOPYRIGHT_STR
+            VALUE "CompanyName",VER_COMPANYNAME_STR
+            VALUE "FileDescription",VER_FILEDESCRIPTION_STR EXPORT_TAG
+            VALUE "FileVersion",VER_FILEVERSION_STR BUILD_MACHINE_TAG_PADDED
+            VALUE "InternalName",VER_INTERNALNAME_STR
+            VALUE "LegalCopyright",VER_LEGALCOPYRIGHT_STR
             VALUE "OriginalFilename",VER_ORIGINALFILENAME_STR
-            VALUE "ProductName",     VER_PRODUCTNAME_STR
-            VALUE "ProductVersion",  VER_PRODUCTVERSION_STR
+            VALUE "ProductName",VER_PRODUCTNAME_STR
+            VALUE "ProductVersion",VER_PRODUCTVERSION_STR
 #ifdef VER_OLESELFREGISTER
-            VALUE "OleSelfRegister", "\0"
+            VALUE "OleSelfRegister","\0"
 #endif
         END
 
 #ifdef VER_ANSICP
-    BLOCK VER_VERSION_ANSI_LANG
+	BLOCK VER_VERSION_ANSI_LANG
         BEGIN
-            VALUE "CompanyName",     VER_COMPANYNAME_STR
-            VALUE "FileDescription", VER_FILEDESCRIPTION_STR EXPORT_TAG
-            VALUE "FileVersion",     VER_FILEVERSION_STR
-            VALUE "InternalName",    VER_INTERNALNAME_STR
-            VALUE "LegalCopyright",  VER_LEGALCOPYRIGHT_STR
+            VALUE "CompanyName",VER_COMPANYNAME_STR
+            VALUE "FileDescription",VER_FILEDESCRIPTION_STR EXPORT_TAG
+            VALUE "FileVersion",VER_FILEVERSION_STR
+            VALUE "InternalName",VER_INTERNALNAME_STR
+            VALUE "LegalCopyright",VER_LEGALCOPYRIGHT_STR
             VALUE "OriginalFilename",VER_ORIGINALFILENAME_STR
-            VALUE "ProductName",     VER_PRODUCTNAME_STR
-            VALUE "ProductVersion",  VER_PRODUCTVERSION_STR
+            VALUE "ProductName",VER_PRODUCTNAME_STR
+            VALUE "ProductVersion",VER_PRODUCTVERSION_STR
 #ifdef VER_OLESELFREGISTER
-            VALUE "OleSelfRegister", "\0"
+            VALUE "OleSelfRegister","\0"
 #endif
         END
 #endif
@@ -200,8 +197,7 @@ BEGIN
 
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", VER_VERSION_TRANSLATION
+        VALUE "Translation",VER_VERSION_TRANSLATION
     END
 END
-
 #endif

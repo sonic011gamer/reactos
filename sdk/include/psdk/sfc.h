@@ -1,46 +1,49 @@
-/*
- * Definitions for the System File Checker (Windows File Protection)
- *
- * Copyright 2006 Detlef Riekenberg
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
-#ifndef __WINE_SFC_H
-#define __WINE_SFC_H
+#ifndef _SFC_
+#define _SFC_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* Types */
+#define SFC_DISABLE_NORMAL 0
+#define SFC_DISABLE_ASK 1
+#define SFC_DISABLE_ONCE 2
+#define SFC_DISABLE_SETUP 3
+#define SFC_DISABLE_NOPOPUPS 4
 
-typedef struct _PROTECTED_FILE_DATA {
- WCHAR FileName[MAX_PATH];
- DWORD FileNumber;
-} PROTECTED_FILE_DATA, *PPROTECTED_FILE_DATA;
+#define SFC_SCAN_NORMAL 0
+#define SFC_SCAN_ALWAYS 1
+#define SFC_SCAN_ONCE 2
+#define SFC_SCAN_IMMEDIATE 3
 
-/* Functions */
+#define SFC_QUOTA_DEFAULT 50
+#define SFC_QUOTA_ALL_FILES ((ULONG)-1)
 
-BOOL WINAPI SfcGetNextProtectedFile(HANDLE, PPROTECTED_FILE_DATA);
-BOOL WINAPI SfcIsFileProtected(HANDLE, LPCWSTR);
-BOOL WINAPI SfcIsKeyProtected(HKEY, LPCWSTR, REGSAM);
-BOOL WINAPI SfpVerifyFile(LPCSTR, LPSTR, DWORD);
+#define SFC_IDLE_TRIGGER L"WFP_IDLE_TRIGGER"
+
+  typedef struct _PROTECTED_FILE_DATA {
+    WCHAR FileName[MAX_PATH];
+    DWORD FileNumber;
+  } PROTECTED_FILE_DATA,*PPROTECTED_FILE_DATA;
+
+  WINBOOL WINAPI SfcGetNextProtectedFile(HANDLE RpcHandle,PPROTECTED_FILE_DATA ProtFileData);
+  WINBOOL WINAPI SfcIsFileProtected(HANDLE RpcHandle,LPCWSTR ProtFileName);
+  WINBOOL WINAPI SfpVerifyFile(LPCSTR pszFileName,LPSTR pszError,DWORD dwErrSize);
+
+#if (_WIN32_WINNT >= 0x0600)
+WINBOOL WINAPI SfcIsKeyProtected(
+  HKEY hKey,
+  LPCWSTR lpSubKey,
+  REGSAM samDesired
+);
+#endif /*(_WIN32_WINNT >= 0x0600)*/
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif

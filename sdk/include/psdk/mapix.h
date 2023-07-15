@@ -1,21 +1,8 @@
-/*
- * Copyright 2004 Jon Griffiths
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
 #ifndef MAPIX_H
 #define MAPIX_H
 
@@ -28,160 +15,137 @@
 extern "C" {
 #endif
 
-typedef struct IProfAdmin IProfAdmin;
-typedef IProfAdmin *LPPROFADMIN;
-typedef struct IMsgServiceAdmin IMsgServiceAdmin;
-typedef IMsgServiceAdmin *LPSERVICEADMIN;
-typedef struct IMAPISession *LPMAPISESSION;
-
-#ifndef WINE_FLAGS_DEFINED
-#define WINE_FLAGS_DEFINED
-typedef ULONG                   FLAGS;
+#ifndef BEGIN_INTERFACE
+#define BEGIN_INTERFACE
 #endif
 
-/* Flags for MAPILogon and MAPILogonEx */
-#ifndef MAPI_LOGON_UI
-#define MAPI_LOGON_UI           0x00000001
-#endif
-#ifndef MAPI_NEW_SESSION
-#define MAPI_NEW_SESSION        0x00000002
-#endif
-#define MAPI_ALLOW_OTHERS       0x00000008
-#define MAPI_EXPLICIT_PROFILE   0x00000010
-#ifndef MAPI_EXTENDED
-#define MAPI_EXTENDED           0x00000020
-#endif
-#ifndef MAPI_FORCE_DOWNLOAD
-#define MAPI_FORCE_DOWNLOAD     0x00001000
-#endif
+  DECLARE_MAPI_INTERFACE_PTR(IProfAdmin,LPPROFADMIN);
+  DECLARE_MAPI_INTERFACE_PTR(IMsgServiceAdmin,LPSERVICEADMIN);
+  DECLARE_MAPI_INTERFACE_PTR(IMAPISession,LPMAPISESSION);
+
+  typedef ULONG FLAGS;
+
+#define MAPI_LOGON_UI 0x00000001
+#define MAPI_NEW_SESSION 0x00000002
+#define MAPI_ALLOW_OTHERS 0x00000008
+#define MAPI_EXPLICIT_PROFILE 0x00000010
+#define MAPI_EXTENDED 0x00000020
+#define MAPI_FORCE_DOWNLOAD 0x00001000
+#define MAPI_SERVICE_UI_ALWAYS 0x00002000
+#define MAPI_NO_MAIL 0x00008000
+
 #ifndef MAPI_PASSWORD_UI
-#define MAPI_PASSWORD_UI        0x00020000
+#define MAPI_PASSWORD_UI 0x00020000
 #endif
-#define MAPI_SERVICE_UI_ALWAYS  0x00002000
-#define MAPI_NO_MAIL            0x00008000
-#define MAPI_NT_SERVICE         0x00010000
-#define MAPI_TIMEOUT_SHORT      0x00100000
+#define MAPI_TIMEOUT_SHORT 0x00100000
 
-#define MAPI_SIMPLE_DEFAULT  (MAPI_LOGON_UI|MAPI_ALLOW_OTHERS|MAPI_FORCE_DOWNLOAD)
-#define MAPI_SIMPLE_EXPLICIT (MAPI_NEW_SESSION|MAPI_EXPLICIT_PROFILE|MAPI_FORCE_DOWNLOAD)
+#define MAPI_SIMPLE_DEFAULT (MAPI_LOGON_UI | MAPI_FORCE_DOWNLOAD | MAPI_ALLOW_OTHERS)
+#define MAPI_SIMPLE_EXPLICIT (MAPI_NEW_SESSION | MAPI_FORCE_DOWNLOAD | MAPI_EXPLICIT_PROFILE)
 
-typedef struct tagMAPIINIT_0
-{
+  typedef struct {
     ULONG ulVersion;
     ULONG ulFlags;
-} MAPIINIT_0, *LPMAPIINIT_0;
+  } MAPIINIT_0,*LPMAPIINIT_0;
 
-typedef MAPIINIT_0 MAPIINIT, *LPMAPIINIT;
+  typedef MAPIINIT_0 MAPIINIT;
+  typedef MAPIINIT *LPMAPIINIT;
 
-#define MAPI_INIT_VERSION 0U
+#define MAPI_INIT_VERSION 0
 
-typedef HRESULT (WINAPI MAPIINITIALIZE)(void*);
-typedef MAPIINITIALIZE *LPMAPIINITIALIZE;
-MAPIINITIALIZE MAPIInitialize;
+#define MAPI_MULTITHREAD_NOTIFICATIONS 0x00000001
 
-typedef void (WINAPI MAPIUNINITIALIZE)(void);
-typedef MAPIUNINITIALIZE *LPMAPIUNINITIALIZE;
-MAPIUNINITIALIZE MAPIUninitialize;
+  typedef HRESULT (WINAPI MAPIINITIALIZE)(LPVOID lpMapiInit);
+  typedef MAPIINITIALIZE *LPMAPIINITIALIZE;
+  typedef void (WINAPI MAPIUNINITIALIZE)(void);
+  typedef MAPIUNINITIALIZE *LPMAPIUNINITIALIZE;
 
-#if defined (UNICODE) || defined (__WINESRC__)
-typedef HRESULT (STDMETHODCALLTYPE MAPILOGONEX)(ULONG_PTR,LPWSTR,LPWSTR,ULONG,LPMAPISESSION*);
-#else
-typedef HRESULT (STDMETHODCALLTYPE MAPILOGONEX)(ULONG_PTR,LPSTR,LPSTR,ULONG,LPMAPISESSION *);
-#endif
-typedef MAPILOGONEX *LPMAPILOGONEX;
-MAPILOGONEX MAPILogonEx;
+  MAPIINITIALIZE MAPIInitialize;
+  MAPIUNINITIALIZE MAPIUninitialize;
 
-typedef SCODE (WINAPI MAPIALLOCATEBUFFER)(ULONG,LPVOID*);
-typedef MAPIALLOCATEBUFFER *LPMAPIALLOCATEBUFFER;
-MAPIALLOCATEBUFFER MAPIAllocateBuffer;
+  typedef HRESULT (WINAPI MAPILOGONEX)(ULONG_PTR ulUIParam,LPTSTR lpszProfileName,LPTSTR lpszPassword,ULONG ulFlags,LPMAPISESSION *lppSession);
+  typedef MAPILOGONEX *LPMAPILOGONEX;
 
-typedef SCODE (WINAPI MAPIALLOCATEMORE)(ULONG,LPVOID,LPVOID*);
-typedef MAPIALLOCATEMORE *LPMAPIALLOCATEMORE;
-MAPIALLOCATEMORE MAPIAllocateMore;
+  MAPILOGONEX MAPILogonEx;
 
-#ifndef MAPIFREEBUFFER_DEFINED
-#define MAPIFREEBUFFER_DEFINED
-typedef ULONG (WINAPI MAPIFREEBUFFER)(LPVOID);
-typedef MAPIFREEBUFFER *LPMAPIFREEBUFFER;
-MAPIFREEBUFFER MAPIFreeBuffer;
-#endif
+  typedef SCODE (WINAPI MAPIALLOCATEBUFFER)(ULONG cbSize,LPVOID *lppBuffer);
+  typedef SCODE (WINAPI MAPIALLOCATEMORE)(ULONG cbSize,LPVOID lpObject,LPVOID *lppBuffer);
+  typedef ULONG (WINAPI MAPIFREEBUFFER)(LPVOID lpBuffer);
+  typedef MAPIALLOCATEBUFFER *LPMAPIALLOCATEBUFFER;
+  typedef MAPIALLOCATEMORE *LPMAPIALLOCATEMORE;
+  typedef MAPIFREEBUFFER *LPMAPIFREEBUFFER;
 
-typedef HRESULT (WINAPI MAPIADMINPROFILES)(ULONG,LPPROFADMIN*);
-typedef MAPIADMINPROFILES *LPMAPIADMINPROFILES;
-MAPIADMINPROFILES MAPIAdminProfiles;
+  MAPIALLOCATEBUFFER MAPIAllocateBuffer;
+  MAPIALLOCATEMORE MAPIAllocateMore;
+  MAPIFREEBUFFER MAPIFreeBuffer;
 
-/*****************************************************************************
- * IMAPISession interface
- */
-#define INTERFACE IMAPISession
-DECLARE_INTERFACE_(IMAPISession,IUnknown)
-{
-    /*** IUnknown methods ***/
-    STDMETHOD_(HRESULT,QueryInterface)(THIS_ REFIID riid, void** ppvObject) PURE;
-    STDMETHOD_(ULONG,AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG,Release)(THIS) PURE;
-    /*** IMAPISession methods ***/
-    STDMETHOD(GetLastError)(THIS_ HRESULT hResult, ULONG ulFlags, LPMAPIERROR *lppMAPIError) PURE;
-    STDMETHOD(GetMsgStoresTable)(THIS_ ULONG ulFlags, LPMAPITABLE *lppTable) PURE;
-    STDMETHOD(OpenMsgStore)(THIS_ ULONG_PTR ulUIParam, ULONG cbId,
-                            LPENTRYID lpId, LPCIID lpIFace, ULONG ulFlags, LPMDB *lppMDB) PURE;
-    STDMETHOD(OpenAddressBook)(THIS_ ULONG_PTR ulUIParam, LPCIID iid, ULONG ulFlags, LPADRBOOK *lppAdrBook) PURE;
-    STDMETHOD(OpenProfileSection)(THIS_ LPMAPIUID lpUID, LPCIID iid, ULONG ulFlags, LPPROFSECT *lppProf) PURE;
-    STDMETHOD(GetStatusTable)(THIS_ ULONG ulFlags, LPMAPITABLE *lppTable) PURE;
-    STDMETHOD(OpenEntry)(THIS_ ULONG cbId, LPENTRYID lpId, LPCIID iid,
-                         ULONG ulFlags, ULONG *lpType, LPUNKNOWN *lppUnk) PURE;
-    STDMETHOD(CompareEntryIDs)(THIS_ ULONG cbLID, LPENTRYID lpLID, ULONG cbRID,
-                               LPENTRYID lpRID, ULONG ulFlags, ULONG *lpRes) PURE;
-    STDMETHOD(Advise)(THIS_ ULONG cbId, LPENTRYID lpId, ULONG ulMask,
-                      LPMAPIADVISESINK lpSink, ULONG *lpCxn) PURE;
-    STDMETHOD(Unadvise)(THIS_ ULONG ulConnection) PURE;
-    STDMETHOD(MessageOptions)(THIS_ ULONG_PTR ulUIParam, ULONG ulFlags, LPSTR lpszAddr, LPMESSAGE lpMsg) PURE;
-    STDMETHOD(QueryDefaultMessageOpt)(THIS_ LPSTR lpszAddr, ULONG ulFlags,
-                                      ULONG *lpcVals, LPSPropValue *lppOpts) PURE;
-    STDMETHOD(EnumAdrTypes)(THIS_ ULONG ulFlags, ULONG *lpcTypes, LPSTR **lpppszTypes) PURE;
-    STDMETHOD(QueryIdentity)(THIS_ ULONG *lpcbId, LPENTRYID *lppEntryID) PURE;
-    STDMETHOD(Logoff)(THIS_ ULONG_PTR ulUIParam, ULONG ulFlags, ULONG ulReserved) PURE;
-    STDMETHOD(SetDefaultStore)(THIS_ ULONG ulFlags, ULONG cbId, LPENTRYID lpId) PURE;
-    STDMETHOD(AdminServices)(THIS_ ULONG ulFlags, LPSERVICEADMIN *lppAdmin) PURE;
-    STDMETHOD(ShowForm)(THIS_ ULONG_PTR ulUIParam, LPMDB lpStore,
-                        LPMAPIFOLDER lpParent, LPCIID iid, ULONG ulToken,
-                        LPMESSAGE lpSent, ULONG ulFlags, ULONG ulStatus,
-                        ULONG ulMsgFlags, ULONG ulAccess, LPSTR lpszClass) PURE;
-    STDMETHOD(PrepareForm)(THIS_ LPCIID lpIFace, LPMESSAGE lpMsg, ULONG *lpToken) PURE;
-};
+  typedef HRESULT (WINAPI MAPIADMINPROFILES)(ULONG ulFlags,LPPROFADMIN *lppProfAdmin);
+  typedef MAPIADMINPROFILES *LPMAPIADMINPROFILES;
+
+  MAPIADMINPROFILES MAPIAdminProfiles;
+
+#define MAPI_LOGOFF_SHARED 0x00000001
+#define MAPI_LOGOFF_UI 0x00000002
+
+#define MAPI_DEFAULT_STORE 0x00000001
+#define MAPI_SIMPLE_STORE_TEMPORARY 0x00000002
+#define MAPI_SIMPLE_STORE_PERMANENT 0x00000003
+#define MAPI_PRIMARY_STORE 0x00000004
+#define MAPI_SECONDARY_STORE 0x00000005
+
+#define MAPI_POST_MESSAGE 0x00000001
+#define MAPI_NEW_MESSAGE 0x00000002
+
+#define MAPI_IMAPISESSION_METHODS(IPURE) MAPIMETHOD(GetLastError) (THIS_ HRESULT hResult,ULONG ulFlags,LPMAPIERROR *lppMAPIError) IPURE; MAPIMETHOD(GetMsgStoresTable) (THIS_ ULONG ulFlags,LPMAPITABLE *lppTable) IPURE; MAPIMETHOD(OpenMsgStore) (THIS_ ULONG_PTR ulUIParam,ULONG cbEntryID,LPENTRYID lpEntryID,LPCIID lpInterface,ULONG ulFlags,LPMDB *lppMDB) IPURE; MAPIMETHOD(OpenAddressBook) (THIS_ ULONG_PTR ulUIParam,LPCIID lpInterface,ULONG ulFlags,LPADRBOOK *lppAdrBook) IPURE; MAPIMETHOD(OpenProfileSection) (THIS_ LPMAPIUID lpUID,LPCIID lpInterface,ULONG ulFlags,LPPROFSECT *lppProfSect) IPURE; MAPIMETHOD(GetStatusTable) (THIS_ ULONG ulFlags,LPMAPITABLE *lppTable) IPURE; MAPIMETHOD(OpenEntry) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,LPCIID lpInterface,ULONG ulFlags,ULONG *lpulObjType,LPUNKNOWN *lppUnk) IPURE; MAPIMETHOD(CompareEntryIDs) (THIS_ ULONG cbEntryID1,LPENTRYID lpEntryID1,ULONG cbEntryID2,LPENTRYID lpEntryID2,ULONG ulFlags,ULONG *lpulResult) IPURE; MAPIMETHOD(Advise) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,ULONG ulEventMask,LPMAPIADVISESINK lpAdviseSink,ULONG *lpulConnection) IPURE; MAPIMETHOD(Unadvise) (THIS_ ULONG ulConnection) IPURE; MAPIMETHOD(MessageOptions) (THIS_ ULONG_PTR ulUIParam,ULONG ulFlags,LPTSTR lpszAdrType,LPMESSAGE lpMessage) IPURE; MAPIMETHOD(QueryDefaultMessageOpt) (THIS_ LPTSTR lpszAdrType,ULONG ulFlags,ULONG *lpcValues,LPSPropValue *lppOptions) IPURE; MAPIMETHOD(EnumAdrTypes) (THIS_ ULONG ulFlags,ULONG *lpcAdrTypes,LPTSTR **lpppszAdrTypes) IPURE; MAPIMETHOD(QueryIdentity) (THIS_ ULONG *lpcbEntryID,LPENTRYID *lppEntryID) IPURE; MAPIMETHOD(Logoff) (THIS_ ULONG_PTR ulUIParam,ULONG ulFlags,ULONG ulReserved) IPURE; MAPIMETHOD(SetDefaultStore) (THIS_ ULONG ulFlags,ULONG cbEntryID,LPENTRYID lpEntryID) IPURE; MAPIMETHOD(AdminServices) (THIS_ ULONG ulFlags,LPSERVICEADMIN *lppServiceAdmin) IPURE; MAPIMETHOD(ShowForm) (THIS_ ULONG_PTR ulUIParam,LPMDB lpMsgStore,LPMAPIFOLDER lpParentFolder,LPCIID lpInterface,ULONG ulMessageToken,LPMESSAGE lpMessageSent,ULONG ulFlags,ULONG ulMessageStatus,ULONG ulMessageFlags,ULONG ulAccess,LPSTR lpszMessageClass) IPURE; MAPIMETHOD(PrepareForm) (THIS_ LPCIID lpInterface,LPMESSAGE lpMessage,ULONG *lpulMessageToken) IPURE;
+
 #undef INTERFACE
+#define INTERFACE IMAPISession
+  DECLARE_MAPI_INTERFACE_(IMAPISession,IUnknown) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPISESSION_METHODS(PURE)
+  };
 
-#if !defined(__cplusplus) || defined(CINTERFACE)
-        /*** IUnknown methods ***/
-#define IMAPISession_QueryInterface(p,a,b)          (p)->lpVtbl->QueryInterface(p,a,b)
-#define IMAPISession_AddRef(p)                      (p)->lpVtbl->AddRef(p)
-#define IMAPISession_Release(p)                     (p)->lpVtbl->Release(p)
-        /*** IMAPISession methods ***/
-#define IMAPISession_GetLastError(p,a,b,c)          (p)->lpVtbl->GetLastError(p,a,b,c)
-#define IMAPISession_GetMsgStoresTable(p,a,b)       (p)->lpVtbl->GetMsgStoresTable(p,a,b)
-#define IMAPISession_OpenMsgStore(p,a,b,c,d,e,f)    (p)->lpVtbl->OpenMsgStore(p,a,b,c,d,e,f)
-#define IMAPISession_OpenAddressBook(p,a,b,c,d)     (p)->lpVtbl->OpenAddressBook(p,a,b,c,d)
-#define IMAPISession_OpenProfileSection(p,a,b,c,d)  (p)->lpVtbl->OpenProfileSection(p,a,b,c,d)
-#define IMAPISession_GetStatusTable(p,a,b)          (p)->lpVtbl->GetStatusTable(p,a,b)
-#define IMAPISession_OpenEntry(p,a,b,c,d,e,f)       (p)->lpVtbl->OpenEntry(p,a,b,c,d,e,f)
-#define IMAPISession_CompareEntryIDs(p,a,b,c,d,e,f) (p)->lpVtbl->CompareEntryIDs(p,a,b,c,d,e,f)
-#define IMAPISession_Advise(p,a,b,c,d,e)            (p)->lpVtbl->Advise(p,a,b,c,d,e)
-#define IMAPISession_Unadvise(p,a)                  (p)->lpVtbl->Unadvise(p,a)
-#define IMAPISession_MessageOptions(p,a,b,c,d)      (p)->lpVtbl->MessageOptions)(p,a,b,c,d)
-#define IMAPISession_QueryDefaultMessageOpt(p,a,b,c,d) \
-                                                    (p)->lpVtbl->QueryDefaultMessageOpt(p,a,b,c,d)
-#define IMAPISession_EnumAdrTypes(p,a,b,c)          (p)->lpVtbl->EnumAdrTypes(p,a,b,c)
-#define IMAPISession_QueryIdentity(p,a,b)           (p)->lpVtbl->QueryIdentity(p,a,b)
-#define IMAPISession_Logoff(p,a,b,c)                (p)->lpVtbl->Logoff(p,a,b,c)
-#define IMAPISession_SetDefaultStore(p,a,b,c)       (p)->lpVtbl->SetDefaultStore(p,a,b,c)
-#define IMAPISession_AdminServices(p,a,b)           (p)->lpVtbl->AdminServices(p,a,b)
-#define IMAPISession_ShowForm(p,a,b,c,d,e,f,g,h,i,j,k) \
-                                                    (p)->lpVtbl->ShowForm(p,a,b,c,d,e,f,g,h,i,j,k)
-#define IMAPISession_PrepareForm(p,a,b,c)           (p)->lpVtbl->PrepareForm(p,a,b,c)
-#endif
+#define MAPI_IADDRBOOK_METHODS(IPURE) MAPIMETHOD(OpenEntry) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,LPCIID lpInterface,ULONG ulFlags,ULONG *lpulObjType,LPUNKNOWN *lppUnk) IPURE; MAPIMETHOD(CompareEntryIDs) (THIS_ ULONG cbEntryID1,LPENTRYID lpEntryID1,ULONG cbEntryID2,LPENTRYID lpEntryID2,ULONG ulFlags,ULONG *lpulResult) IPURE; MAPIMETHOD(Advise) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID,ULONG ulEventMask,LPMAPIADVISESINK lpAdviseSink,ULONG *lpulConnection) IPURE; MAPIMETHOD(Unadvise) (THIS_ ULONG ulConnection) IPURE; MAPIMETHOD(CreateOneOff) (THIS_ LPTSTR lpszName,LPTSTR lpszAdrType,LPTSTR lpszAddress,ULONG ulFlags,ULONG *lpcbEntryID,LPENTRYID *lppEntryID) IPURE; MAPIMETHOD(NewEntry) (THIS_ ULONG_PTR ulUIParam,ULONG ulFlags,ULONG cbEIDContainer,LPENTRYID lpEIDContainer,ULONG cbEIDNewEntryTpl,LPENTRYID lpEIDNewEntryTpl,ULONG *lpcbEIDNewEntry,LPENTRYID *lppEIDNewEntry) IPURE; MAPIMETHOD(ResolveName) (THIS_ ULONG_PTR ulUIParam,ULONG ulFlags,LPTSTR lpszNewEntryTitle,LPADRLIST lpAdrList) IPURE; MAPIMETHOD(Address) (THIS_ ULONG_PTR *lpulUIParam,LPADRPARM lpAdrParms,LPADRLIST *lppAdrList) IPURE; MAPIMETHOD(Details) (THIS_ ULONG *lpulUIParam,LPFNDISMISS lpfnDismiss,LPVOID lpvDismissContext,ULONG cbEntryID,LPENTRYID lpEntryID,LPFNBUTTON lpfButtonCallback,LPVOID lpvButtonContext,LPTSTR lpszButtonText,ULONG ulFlags) IPURE; MAPIMETHOD(RecipOptions) (THIS_ ULONG_PTR ulUIParam,ULONG ulFlags,LPADRENTRY lpRecip) IPURE; MAPIMETHOD(QueryDefaultRecipOpt) (THIS_ LPTSTR lpszAdrType,ULONG ulFlags,ULONG *lpcValues,LPSPropValue *lppOptions) IPURE; MAPIMETHOD(GetPAB) (THIS_ ULONG *lpcbEntryID,LPENTRYID *lppEntryID) IPURE; MAPIMETHOD(SetPAB) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID) IPURE; MAPIMETHOD(GetDefaultDir) (THIS_ ULONG *lpcbEntryID,LPENTRYID *lppEntryID) IPURE; MAPIMETHOD(SetDefaultDir) (THIS_ ULONG cbEntryID,LPENTRYID lpEntryID) IPURE; MAPIMETHOD(GetSearchPath) (THIS_ ULONG ulFlags,LPSRowSet *lppSearchPath) IPURE; MAPIMETHOD(SetSearchPath) (THIS_ ULONG ulFlags,LPSRowSet lpSearchPath) IPURE; MAPIMETHOD(PrepareRecips) (THIS_ ULONG ulFlags,LPSPropTagArray lpPropTagArray,LPADRLIST lpRecipList) IPURE;
+#undef INTERFACE
+#define INTERFACE IAddrBook
+  DECLARE_MAPI_INTERFACE_(IAddrBook,IMAPIProp) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMAPIPROP_METHODS(PURE)
+      MAPI_IADDRBOOK_METHODS(PURE)
+  };
+
+  DECLARE_MAPI_INTERFACE_PTR(IAddrBook,LPADRBOOK);
+
+#define MAPI_DEFAULT_SERVICES 0x00000001
+
+#define MAPI_IPROFADMIN_METHODS(IPURE) MAPIMETHOD(GetLastError) (THIS_ HRESULT hResult,ULONG ulFlags,LPMAPIERROR *lppMAPIError) IPURE; MAPIMETHOD(GetProfileTable) (THIS_ ULONG ulFlags,LPMAPITABLE *lppTable) IPURE; MAPIMETHOD(CreateProfile) (THIS_ LPTSTR lpszProfileName,LPTSTR lpszPassword,ULONG_PTR ulUIParam,ULONG ulFlags) IPURE; MAPIMETHOD(DeleteProfile) (THIS_ LPTSTR lpszProfileName,ULONG ulFlags) IPURE; MAPIMETHOD(ChangeProfilePassword) (THIS_ LPTSTR lpszProfileName,LPTSTR lpszOldPassword,LPTSTR lpszNewPassword,ULONG ulFlags) IPURE; MAPIMETHOD(CopyProfile) (THIS_ LPTSTR lpszOldProfileName,LPTSTR lpszOldPassword,LPTSTR lpszNewProfileName,ULONG_PTR ulUIParam,ULONG ulFlags) IPURE; MAPIMETHOD(RenameProfile) (THIS_ LPTSTR lpszOldProfileName,LPTSTR lpszOldPassword,LPTSTR lpszNewProfileName,ULONG_PTR ulUIParam,ULONG ulFlags) IPURE; MAPIMETHOD(SetDefaultProfile) (THIS_ LPTSTR lpszProfileName,ULONG ulFlags) IPURE; MAPIMETHOD(AdminServices) (THIS_ LPTSTR lpszProfileName,LPTSTR lpszPassword,ULONG_PTR ulUIParam,ULONG ulFlags,LPSERVICEADMIN *lppServiceAdmin) IPURE;
+
+#undef INTERFACE
+#define INTERFACE IProfAdmin
+  DECLARE_MAPI_INTERFACE_(IProfAdmin,IUnknown) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IPROFADMIN_METHODS(PURE)
+  };
+
+#define SERVICE_DEFAULT_STORE 0x00000001
+#define SERVICE_SINGLE_COPY 0x00000002
+#define SERVICE_CREATE_WITH_STORE 0x00000004
+#define SERVICE_PRIMARY_IDENTITY 0x00000008
+#define SERVICE_NO_PRIMARY_IDENTITY 0x00000020
+
+#define MAPI_IMSGSERVICEADMIN_METHODS(IPURE) MAPIMETHOD(GetLastError) (THIS_ HRESULT hResult,ULONG ulFlags,LPMAPIERROR *lppMAPIError) IPURE; MAPIMETHOD(GetMsgServiceTable) (THIS_ ULONG ulFlags,LPMAPITABLE *lppTable) IPURE; MAPIMETHOD(CreateMsgService) (THIS_ LPTSTR lpszService,LPTSTR lpszDisplayName,ULONG_PTR ulUIParam,ULONG ulFlags) IPURE; MAPIMETHOD(DeleteMsgService) (THIS_ LPMAPIUID lpUID) IPURE; MAPIMETHOD(CopyMsgService) (THIS_ LPMAPIUID lpUID,LPTSTR lpszDisplayName,LPCIID lpInterfaceToCopy,LPCIID lpInterfaceDst,LPVOID lpObjectDst,ULONG_PTR ulUIParam,ULONG ulFlags) IPURE; MAPIMETHOD(RenameMsgService) (THIS_ LPMAPIUID lpUID,ULONG ulFlags,LPTSTR lpszDisplayName) IPURE; MAPIMETHOD(ConfigureMsgService) (THIS_ LPMAPIUID lpUID,ULONG_PTR ulUIParam,ULONG ulFlags,ULONG cValues,LPSPropValue lpProps) IPURE; MAPIMETHOD(OpenProfileSection) (THIS_ LPMAPIUID lpUID,LPCIID lpInterface,ULONG ulFlags,LPPROFSECT *lppProfSect) IPURE; MAPIMETHOD(MsgServiceTransportOrder) (THIS_ ULONG cUID,LPMAPIUID lpUIDList,ULONG ulFlags) IPURE; MAPIMETHOD(AdminProviders) (THIS_ LPMAPIUID lpUID,ULONG ulFlags,LPPROVIDERADMIN *lppProviderAdmin) IPURE; MAPIMETHOD(SetPrimaryIdentity) (THIS_ LPMAPIUID lpUID,ULONG ulFlags) IPURE; MAPIMETHOD(GetProviderTable) (THIS_ ULONG ulFlags,LPMAPITABLE *lppTable) IPURE;
+
+#undef INTERFACE
+#define INTERFACE IMsgServiceAdmin
+  DECLARE_MAPI_INTERFACE_(IMsgServiceAdmin,IUnknown) {
+    BEGIN_INTERFACE
+      MAPI_IUNKNOWN_METHODS(PURE)
+      MAPI_IMSGSERVICEADMIN_METHODS(PURE)
+  };
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* MAPIX_H */
+#endif

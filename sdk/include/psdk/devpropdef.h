@@ -18,6 +18,10 @@
  *
  */
 
+#include <winapifamily.h>
+
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+
 #ifndef _DEVPROPDEF_H_
 #define _DEVPROPDEF_H_
 
@@ -77,10 +81,9 @@ typedef struct _DEVPROPKEY {
   DEVPROPID pid;
 } DEVPROPKEY, *PDEVPROPKEY;
 
+#endif /* DEVPROPKEY_DEFINED */
 
 #define DEVPROPID_FIRST_USABLE 2
-
-#endif /* DEVPROPKEY_DEFINED */
 
 #endif /* _DEVPROPDEF_H_ */
 
@@ -89,20 +92,12 @@ typedef struct _DEVPROPKEY {
 #endif
 #ifdef INITGUID
 #ifdef __cplusplus
-#define DEFINE_DEVPROPKEY(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8, pid) \
-        EXTERN_C const DEVPROPKEY DECLSPEC_SELECTANY name = { { l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } }, pid }
+#define DEFINE_DEVPROPKEY(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8, pid) EXTERN_C const DEVPROPKEY DECLSPEC_SELECTANY name = {{ l, w1, w2, {b1, b2, b3, b4, b5, b6, b7, b8}}, pid}
 #else
-#define DEFINE_DEVPROPKEY(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8, pid) \
-        const DEVPROPKEY DECLSPEC_SELECTANY name = { { l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } }, pid }
+#define DEFINE_DEVPROPKEY(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8, pid) const DEVPROPKEY DECLSPEC_SELECTANY name = {{ l, w1, w2, {b1, b2, b3, b4, b5, b6, b7, b8}}, pid}
 #endif
 #else
-#ifdef __GNUC__
-#define DEFINE_DEVPROPKEY(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8, pid) \
-    EXTERN_C const DEVPROPKEY name
-#else
-#define DEFINE_DEVPROPKEY(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8, pid) \
-    EXTERN_C const DEVPROPKEY DECLSPEC_SELECTANY name
-#endif
+#define DEFINE_DEVPROPKEY(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8, pid) EXTERN_C const DEVPROPKEY name
 #endif /* INITGUID */
 
 #ifndef IsEqualDevPropKey
@@ -115,3 +110,4 @@ typedef struct _DEVPROPKEY {
 
 #endif /* !IsEqualDevPropKey */
 
+#endif /* WINAPI_PARTION_DESKTOP.  */

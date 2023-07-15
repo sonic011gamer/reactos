@@ -4,63 +4,72 @@ add_definitions(-D_MIDL_USE_GUIDDEF_)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 list(APPEND SOURCE
-    #   access.idl
+    activation.idl
     activaut.idl
     activdbg.idl
+    activdbg100.idl
+    activprof.idl
     activscp.idl
-    asptlb.idl
-    #   asynot.idl
-    #   asysta.idl
-    atliface.idl
+    adhoc.idl
+    alg.idl
+    asyncinfo.idl
     audioclient.idl
+    audioendpoints.idl
     audiopolicy.idl
     bdaiface.idl
-    #   binres.idl
     bits.idl
     bits1_5.idl
     bits2_0.idl
     bits2_5.idl
     bits3_0.idl
-    #   cmdbas.idl
-    #   cmdtxt.idl
+    bits5_0.idl
+    comadmin.idl
     comcat.idl
     commoncontrols.idl
     control.idl
-    cor.idl
-    cordebug.idl
-    #   crtrow.idl
+    credentialprovider.idl
+    ctfutb.idl
     ctxtcall.idl
-    #   dbccmd.idl
-    #   dbcses.idl
-    #   dbdsad.idl
-    #   dbinit.idl
-    #   dbprop.idl
-    #   dbs.idl
-    devenum.idl
-    devicetopology.idl
-    dimm.idl
-    dispex.idl
-    docobj.idl
-    docobjectservice.idl
-    downloadmgr.idl
-    drmexternals.idl
     d2d1.idl
+    d2d1effectauthor.idl
+    d2d1effects.idl
+    d2d1effects_1.idl
+    d2d1effects_2.idl
     d2d1_1.idl
     d2d1_2.idl
+    d2d1_3.idl
     d3d10.idl
-    d3d10_1.idl
     d3d10sdklayers.idl
+    d3d10_1.idl
     d3d11.idl
+    d3d11on12.idl
+    d3d11sdklayers.idl
     d3d11_1.idl
     d3d11_2.idl
     d3d11_3.idl
     d3d11_4.idl
-    d3d11sdklayers.idl
-    #    d3d12.idl
-    #    d3d12sdklayers.idl
-    #    d3d12shader.idl
-    dcommon.idl
+    d3d12.idl
+    d3d12sdklayers.idl
+    d3d12shader.idl
     d3dcommon.idl
+    dbgprop.idl
+    dcommon.idl
+    dcompanimation.idl
+    devicetopology.idl
+    dimm.idl
+    dinputd.idl
+    directmanipulation.idl
+    dispex.idl
+    docobj.idl
+    docobjectservice.idl
+    documenttarget.idl
+    downloadmgr.idl
+    drmexternals.idl
+    dvdif.idl
+    dwrite.idl
+    dwrite_1.idl
+    dwrite_2.idl
+    dwrite_3.idl
     dxgi.idl
     dxgi1_2.idl
     dxgi1_3.idl
@@ -71,119 +80,197 @@ list(APPEND SOURCE
     dxgidebug.idl
     dxgiformat.idl
     dxgitype.idl
-    dwrite.idl
-    dwrite_1.idl
-    dwrite_2.idl
-    dwrite_3.idl
-#   dyngraph.idl
+    dxgi_internal.idl
+    dxva2api.idl
+    dxvahd.idl
     endpointvolume.idl
+    eventtoken.idl
+    evr.idl
+    evr9.idl
     exdisp.idl
+    filter.idl
+    fsrm.idl
+    fsrmenums.idl
+    fsrmquota.idl
+    fsrmreports.idl
+    fsrmscreen.idl
     fusion.idl
-    hlink.idl
-    htiface.idl
-    htiframe.idl
-    httprequest.idl
-    iads.idl
+    fwptypes.idl
+    hstring.idl
     icftypes.idl
-    ieautomation.idl
-    imnact.idl
-    imnxport.idl
-    indexsrv.idl
+    icodecapi.idl
+    iketypes.idl
     inputscope.idl
-    inseng.idl
-    mediaobj.idl
-    metahost.idl
+    inspectable.idl
+    ivectorchangedeventargs.idl
+    locationapi.idl
+    mfcaptureengine.idl
+    mfd3d12.idl
     mfidl.idl
+    mfmediacapture.idl
     mfobjects.idl
+    mfplay.idl
+    mfreadwrite.idl
     mftransform.idl
-    mimeinfo.idl
-    mimeole.idl
-    mlang.idl
     mmdeviceapi.idl
     mscoree.idl
     msctf.idl
-    msdadc.idl
     mshtmhst.idl
     mshtml.idl
     msinkaut.idl
-    mstask.idl
+    msopc.idl
     msxml.idl
     msxml2.idl
     msxml6.idl
-    natupnp.idl
-    netcon.idl
+    mulres.idl
+    napcertrelyingparty.idl
+    napcommon.idl
+    napenforcementclient.idl
+    napmanagement.idl
+    napprotocol.idl
+    napservermanagement.idl
+    napsystemhealthagent.idl
+    napsystemhealthvalidator.idl
+    naptypes.idl
+    netcfgn.idl
+    netcfgx.idl
     netfw.idl
+    netlistmgr.idl
     oaidl.idl
     objectarray.idl
     objidl.idl
-    objsafe.idl
+    objidlbase.idl
     ocidl.idl
-    ocmm.idl
     oleacc.idl
-    oledb.idl
     oleidl.idl
-#   opnrst.idl
     optary.idl
-    perhist.idl
+    portabledevicetypes.idl
+    proofofpossessioncookieinfo.idl
     propidl.idl
     propsys.idl
-    pstore.idl
-    richole.idl
-#   row.idl
-#   rowchg.idl
-#   rstbas.idl
-#   rstinf.idl
-#   rstloc.idl
-    sensevts.idl
+    prsht.idl
+    qnetwork.idl
+    rdpencomapi.idl
+    relogger.idl
+    robuffer.idl
+    rtworkq.idl
+    sapi51.idl
+    sapi53.idl
+    sapi54.idl
+    sensorsapi.idl
     servprov.idl
-#   sesprp.idl
-    shdeprecated.idl
     shldisp.idl
     shobjidl.idl
     shtypes.idl
-#   stdole2.idl
+    spatialaudioclient.idl
+    spellcheck.idl
     strmif.idl
     structuredquerycondition.idl
+    systemmediatransportcontrolsinterop.idl
     taskschd.idl
     textstor.idl
+    thumbcache.idl
+    tlbref.idl
     tlogstg.idl
-    tom.idl
-    transact.idl
+    tpcshrd.idl
+    tsvirtualchannels.idl
     tuner.idl
-    txcoord.idl
-    txdtc.idl
+    uianimation.idl
+    uiautomationclient.idl
+    uiautomationcore.idl
+    uiviewsettingsinterop.idl
     unknwn.idl
+    unknwnbase.idl
     urlhist.idl
     urlmon.idl
-    uianimation.idl
-	uiautomationclient.idl
-	uiautomationcore.idl
-	uiribbon.idl
+    vdslun.idl
     vmr9.idl
-#   vmrender.idl
+    vsadmin.idl
     vsbackup.idl
+    vsmgmt.idl
+    vsprov.idl
     vss.idl
     vswriter.idl
+    wbemads.idl
     wbemcli.idl
     wbemdisp.idl
     wbemprov.idl
-    wia_lh.idl
-    wia_xp.idl
+    wbemtran.idl
+    wdstptmgmt.idl
     wincodec.idl
     wincodecsdk.idl
-
-    winsxs.idl
+    wincrypt.idl
+    windows.devices.enumeration.idl
+    windows.devices.haptics.idl
+    windows.devices.power.idl
+    windows.foundation.collections.idl
+    windows.foundation.idl
+    windows.foundation.metadata.idl
+    windows.foundation.numerics.idl
+    windows.gaming.input.custom.idl
+    windows.gaming.input.forcefeedback.idl
+    windows.gaming.input.idl
+    windows.gaming.ui.idl
+    windows.globalization.idl
+    windows.graphics.capture.idl
+    windows.graphics.directx.direct3d11.idl
+    windows.graphics.directx.idl
+    windows.graphics.effects.idl
+    windows.graphics.holographic.idl
+    windows.media.closedcaptioning.idl
+    windows.media.devices.idl
+    windows.media.idl
+    windows.media.speechrecognition.idl
+    windows.media.speechsynthesis.idl
+    windows.perception.spatial.idl
+    windows.perception.spatial.surfaces.idl
+    windows.security.credentials.idl
+    windows.security.cryptography.idl
+    windows.storage.idl
+    windows.storage.streams.idl
+    windows.system.idl
+    windows.system.power.idl
+    windows.system.profile.systemmanufacturers.idl
+    windows.system.threading.idl
+    windows.system.userprofile.idl
+    windows.ui.composition.idl
+    windows.ui.composition.interop.idl
+    windows.ui.core.idl
+    windows.ui.idl
+    windows.ui.viewmanagement.idl
+    windowscontracts.idl
+    wmcodecdsp.idl
+    wmcontainer.idl
     wmdrmsdk.idl
-    wmiutils.idl
+    wmp.idl
+    wmprealestate.idl
+    wmpservices.idl
     wmsbuffer.idl
     wmsdkidl.idl
+    wmsecure.idl
+    wpcapi.idl
+    wsdattachment.idl
+    wsdbase.idl
+    wsdclient.idl
+    wsddisco.idl
+    wsdhost.idl
+    wsdxml.idl
+    wsmandisp.idl
     wtypes.idl
+    wtypesbase.idl
     wuapi.idl
+    xapo.idl
+    xaudio2.idl
+    xaudio2fx.idl
     xmldom.idl
     xmldso.idl
-    ctfutb.idl
-    winedxgi.idl
-    xmllite.idl)
+    xmllite.idl
+    xpsdigitalsignature.idl
+    xpsobjectmodel.idl
+    xpsobjectmodel_1.idl
+    xpsprint.idl
+    xpsrassvc.idl
+)
 
 add_idl_headers(psdk ${SOURCE})
 add_dependencies(psdk xdk)
@@ -191,12 +278,12 @@ add_typelib(stdole2.idl)
 add_custom_target(stdole2 DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/stdole2.tlb)
 
 add_idl_headers(d3d_idl_headers d3dcommon.idl)
-add_iid_library(dxgi_uuids dxgi.idl dxgi1_2.idl dxgi1_3.idl dxgi1_4.idl dxgi1_5.idl dxgi1_6.idl dxgi_internal.idl)
-add_iid_library(d2d1_uuids d2d1.idl d2d1_1.idl d2d1_2.idl)
+add_iid_library(dxgi_uuids dxgicommon.idl dxgidebug.idl dxgitype.idl dxgiformat.idl dxgi.idl dxgi1_2.idl dxgi1_3.idl dxgi1_4.idl dxgi1_5.idl dxgi1_6.idl dxgi_internal.idl)
+add_iid_library(d2d1_uuids d2d1.idl d2d1_1.idl d2d1_2.idl d1d1effectauthor.idl d2d1effects.idl d2d1effects_1.idl d2d1effects_2.idl)
 add_iid_library(d3d10_uuids d3d10.idl d3d10_1.idl d3d10sdklayers.idl)
 add_iid_library(d3d10_1_uuids d3d10_1.idl)
-add_iid_library(d3d11_uuids d3d11.idl d3d11_1.idl d3d11_2.idl d3d11_3.idl d3d11_4.idl d3d11sdklayers.idl)
-#add_iid_library(d3d12_uuids d3d12.idl d3d12sdklayers.idl d3d12shader.idl)
+add_iid_library(d3d11_uuids d3d11.idl d3d11_1.idl d3d11_2.idl d3d11_3.idl d3d11_4.idl d3d11sdklayers.idl d3d11on12.idl)
+add_iid_library(d3d12_uuids d3d12.idl d3d12sdklayers.idl d3d12shader.idl)
 add_iid_library(dwrite_uuids dwrite.idl dwrite_1.idl dwrite_2.idl dwrite_3.idl)
 
 add_iid_library(adsiid iads.idl transact.idl)

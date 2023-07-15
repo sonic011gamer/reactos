@@ -1,7 +1,7 @@
 /**
  * This file has no copyright assigned and is placed in the Public Domain.
- * This file is part of the w64 mingw-runtime package.
- * No warranty is given; refer to the file DISCLAIMER within this package.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 #ifndef _INC_WCTYPE
 #define _INC_WCTYPE
@@ -18,6 +18,23 @@
 extern "C" {
 #endif
 
+#ifndef _CRTIMP
+#define _CRTIMP __declspec(dllimport)
+#endif
+
+#ifndef _WCHAR_T_DEFINED
+#define _WCHAR_T_DEFINED
+#ifndef __cplusplus
+  typedef unsigned short wchar_t;
+#endif /* C++ */
+#endif /* _WCHAR_T_DEFINED */
+
+#ifndef _WCTYPE_T_DEFINED
+#define _WCTYPE_T_DEFINED
+  typedef unsigned short wint_t;
+  typedef unsigned short wctype_t;
+#endif /* _WCTYPE_T_DEFINED */
+
 #ifndef WEOF
 #define WEOF (wint_t)(0xFFFF)
 #endif
@@ -31,7 +48,11 @@ extern "C" {
 #ifdef _MSVCRT_
 #define __pctype_func() (_pctype)
 #else
-#define __pctype_func() (*_imp___pctype)
+#ifdef _UCRT
+  _CRTIMP unsigned short* __pctype_func(void);
+#else
+#define __pctype_func() (* __MINGW_IMP_SYMBOL(_pctype))
+#endif
 #endif
 #endif
 
@@ -39,8 +60,12 @@ extern "C" {
 #ifdef _MSVCRT_
   extern unsigned short *_pctype;
 #else
-  extern unsigned short **_imp___pctype;
-#define _pctype (*_imp___pctype)
+#ifdef _UCRT
+#define _pctype (__pctype_func())
+#else
+  extern unsigned short ** __MINGW_IMP_SYMBOL(_pctype);
+#define _pctype (* __MINGW_IMP_SYMBOL(_pctype))
+#endif
 #endif
 #endif
 
@@ -50,12 +75,12 @@ extern "C" {
 #ifndef _CRT_WCTYPEDATA_DEFINED
 #define _CRT_WCTYPEDATA_DEFINED
 #ifndef _CTYPE_DISABLE_MACROS
-#ifndef _wctype
+#if !defined(_wctype) && defined(_CRT_USE_WINAPI_FAMILY_DESKTOP_APP)
 #ifdef _MSVCRT_
   extern unsigned short *_wctype;
 #else
-  extern unsigned short **_imp___wctype;
-#define _wctype (*_imp___wctype)
+  extern unsigned short ** __MINGW_IMP_SYMBOL(_wctype);
+#define _wctype (* __MINGW_IMP_SYMBOL(_wctype))
 #endif
 #endif
 
@@ -63,9 +88,9 @@ extern "C" {
 #ifdef _MSVCRT_
   extern unsigned short *_pwctype;
 #else
-  extern unsigned short **_imp___pwctype;
-#define _pwctype (*_imp___pwctype)
-#define __pwctype_func() (*_imp___pwctype)
+  extern unsigned short ** __MINGW_IMP_SYMBOL(_pwctype);
+#define _pwctype (* __MINGW_IMP_SYMBOL(_pwctype))
+#define __pwctype_func() (* __MINGW_IMP_SYMBOL(_pwctype))
 #endif
 #endif
 #endif
@@ -103,11 +128,13 @@ extern "C" {
   wint_t __cdecl towupper(wint_t);
   wint_t __cdecl towlower(wint_t);
   int __cdecl iswctype(wint_t,wctype_t);
+#if __MSVCRT_VERSION__ >= 0x800
   _CRTIMP int __cdecl __iswcsymf(wint_t);
   _CRTIMP int __cdecl __iswcsym(wint_t);
+#endif
   int __cdecl is_wctype(wint_t,wctype_t);
-#if (defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || !defined (NO_OLDNAMES)
- _CRTIMP int __cdecl iswblank(wint_t _C);
+#if (defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || !defined (NO_OLDNAMES) || defined (__cplusplus)
+int __cdecl iswblank(wint_t _C);
 #endif
 #endif
 
@@ -128,6 +155,7 @@ extern "C" {
 #define iswascii(_c) ((unsigned)(_c) < 0x80)
 #define isleadbyte(c) (__pctype_func()[(unsigned char)(c)] & _LEADBYTE)
 #else
+#ifndef __CRT__NO_INLINE
   __CRT_INLINE int __cdecl iswalpha(wint_t _C) {return (iswctype(_C,_ALPHA)); }
   __CRT_INLINE int __cdecl iswupper(wint_t _C) {return (iswctype(_C,_UPPER)); }
   __CRT_INLINE int __cdecl iswlower(wint_t _C) {return (iswctype(_C,_LOWER)); }
@@ -141,7 +169,8 @@ extern "C" {
   __CRT_INLINE int __cdecl iswcntrl(wint_t _C) {return (iswctype(_C,_CONTROL)); }
   __CRT_INLINE int __cdecl iswascii(wint_t _C) {return ((unsigned)(_C) < 0x80); }
   __CRT_INLINE int __cdecl isleadbyte(int _C) {return (__pctype_func()[(unsigned char)(_C)] & _LEADBYTE); }
-#endif
+#endif /* !__CRT__NO_INLINE */
+#endif /* __cplusplus */
 #endif
 
   typedef wchar_t wctrans_t;

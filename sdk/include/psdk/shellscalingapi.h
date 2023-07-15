@@ -1,74 +1,80 @@
-/*
- * Copyright 2016 Sebastian Lackner
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 
-#ifndef __WINE_SHELLSCALINGAPI_H
-#define __WINE_SHELLSCALINGAPI_H
+#ifndef _SHELLSCALINGAPI_H_
+#define _SHELLSCALINGAPI_H_
 
 #include <shtypes.h>
+#include <winapifamily.h>
 
-typedef enum MONITOR_DPI_TYPE
-{
-    MDT_EFFECTIVE_DPI   = 0,
-    MDT_ANGULAR_DPI     = 1,
-    MDT_RAW_DPI         = 2,
-    MDT_DEFAULT         = MDT_EFFECTIVE_DPI,
-} MONITOR_DPI_TYPE;
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 
-typedef enum PROCESS_DPI_AWARENESS
-{
-    PROCESS_DPI_UNAWARE,
-    PROCESS_SYSTEM_DPI_AWARE,
-    PROCESS_PER_MONITOR_DPI_AWARE
-} PROCESS_DPI_AWARENESS;
+#ifndef SCALING_ENUMS_DECLARED
+typedef enum {
+  SCF_VALUE_NONE = 0x00,
+  SCF_SCALE = 0x01,
+  SCF_PHYSICAL = 0x02
+} SCALE_CHANGE_FLAGS;
+DEFINE_ENUM_FLAG_OPERATORS(SCALE_CHANGE_FLAGS);
 
-typedef enum
-{
-    DEVICE_PRIMARY   = 0,
-    DEVICE_IMMERSIVE = 1,
+typedef enum {
+  DEVICE_PRIMARY = 0,
+  DEVICE_IMMERSIVE = 1
 } DISPLAY_DEVICE_TYPE;
 
+#define SCALING_ENUMS_DECLARED
+#endif /* SCALING_ENUMS_DECLARED */
 
-typedef /* [v1_enum] */
-enum DEVICE_SCALE_FACTOR
-    {
-        DEVICE_SCALE_FACTOR_INVALID	= 0,
-        SCALE_100_PERCENT	= 100,
-        SCALE_120_PERCENT	= 120,
-        SCALE_125_PERCENT	= 125,
-        SCALE_140_PERCENT	= 140,
-        SCALE_150_PERCENT	= 150,
-        SCALE_160_PERCENT	= 160,
-        SCALE_175_PERCENT	= 175,
-        SCALE_180_PERCENT	= 180,
-        SCALE_200_PERCENT	= 200,
-        SCALE_225_PERCENT	= 225,
-        SCALE_250_PERCENT	= 250,
-        SCALE_300_PERCENT	= 300,
-        SCALE_350_PERCENT	= 350,
-        SCALE_400_PERCENT	= 400,
-        SCALE_450_PERCENT	= 450,
-        SCALE_500_PERCENT	= 500
-    } 	DEVICE_SCALE_FACTOR;
+#if NTDDI_VERSION >= NTDDI_WIN8
+STDAPI_(DEVICE_SCALE_FACTOR) GetScaleFactorForDevice(DISPLAY_DEVICE_TYPE deviceType);
+STDAPI RegisterScaleChangeNotifications(DISPLAY_DEVICE_TYPE displayDevice, HWND hwndNotify, UINT uMsgNotify,
+  DWORD *pdwCookie);
+STDAPI RevokeScaleChangeNotifications(DISPLAY_DEVICE_TYPE displayDevice, DWORD dwCookie);
+#endif /* NTDDI_VERSION >= NTDDI_WIN8 */
 
-HRESULT WINAPI GetDpiForMonitor(HMONITOR,MONITOR_DPI_TYPE,UINT*,UINT*);
-HRESULT WINAPI GetProcessDpiAwareness(HANDLE,PROCESS_DPI_AWARENESS*);
-DEVICE_SCALE_FACTOR WINAPI GetScaleFactorForDevice(DISPLAY_DEVICE_TYPE device_type);
-HRESULT WINAPI GetScaleFactorForMonitor(HMONITOR,DEVICE_SCALE_FACTOR*);
-HRESULT WINAPI SetProcessDpiAwareness(PROCESS_DPI_AWARENESS);
+#ifndef DPI_ENUMS_DECLARED
+typedef enum MONITOR_DPI_TYPE {
+  MDT_EFFECTIVE_DPI = 0,
+  MDT_ANGULAR_DPI = 1,
+  MDT_RAW_DPI = 2,
+  MDT_DEFAULT = MDT_EFFECTIVE_DPI
+} MONITOR_DPI_TYPE;
 
-#endif /* __WINE_SHELLSCALINGAPI_H */
+typedef enum PROCESS_DPI_AWARENESS {
+  PROCESS_DPI_UNAWARE = 0,
+  PROCESS_SYSTEM_DPI_AWARE = 1,
+  PROCESS_PER_MONITOR_DPI_AWARE = 2
+} PROCESS_DPI_AWARENESS;
+
+#define DPI_ENUMS_DECLARED
+#endif /* DPI_ENUMS_DECLARED */
+
+#if NTDDI_VERSION >= NTDDI_WINBLUE
+STDAPI GetScaleFactorForMonitor(HMONITOR hMon, DEVICE_SCALE_FACTOR *pScale);
+STDAPI RegisterScaleChangeEvent(HANDLE hEvent, DWORD_PTR *pdwCookie);
+STDAPI UnregisterScaleChangeEvent(DWORD_PTR dwCookie);
+
+STDAPI GetDpiForMonitor(HMONITOR hmonitor, MONITOR_DPI_TYPE dpiType, UINT *dpiX, UINT *dpiY);
+STDAPI GetProcessDpiAwareness(HANDLE hprocess, PROCESS_DPI_AWARENESS *value);
+STDAPI SetProcessDpiAwareness(PROCESS_DPI_AWARENESS value);
+#endif /* NTDDI_VERSION >= NTDDI_WINBLUE */
+
+#if NTDDI_VERSION >= NTDDI_WINTHRESHOLD
+#ifndef SHELL_UI_COMPONENT_ENUMS_DECLARED
+typedef enum {
+  SHELL_UI_COMPONENT_TASKBARS = 0,
+  SHELL_UI_COMPONENT_NOTIFICATIONAREA = 1,
+  SHELL_UI_COMPONENT_DESKBAND = 2
+} SHELL_UI_COMPONENT;
+
+#define SHELL_UI_COMPONENT_ENUMS_DECLARED
+#endif /* SHELL_UI_COMPONENT_ENUMS_DECLARED */
+
+UINT WINAPI GetDpiForShellUIComponent(SHELL_UI_COMPONENT component);
+#endif /* NTDDI_VERSION >= NTDDI_WINTHRESHOLD */
+
+#endif /* WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) */
+#endif /* _SHELLSCALINGAPI_H_ */

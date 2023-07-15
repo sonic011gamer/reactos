@@ -1,17 +1,33 @@
 /**
  * This file has no copyright assigned and is placed in the Public Domain.
- * This file is part of the w64 mingw-runtime package.
- * No warranty is given; refer to the file DISCLAIMER within this package.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 #ifndef _INC_LOCALE
 #define _INC_LOCALE
 
 #include <crtdefs.h>
 
+#ifdef __cplusplus
+#include <stdio.h>
+#endif
+
 #pragma pack(push,_CRT_PACKING)
 
 #ifdef __cplusplus
 extern "C" {
+#endif
+
+#ifndef NULL
+#ifdef __cplusplus
+#ifndef _WIN64
+#define NULL 0
+#else
+#define NULL 0LL
+#endif  /* W64 */
+#else
+#define NULL ((void *)0)
+#endif
 #endif
 
 #define LC_ALL 0
@@ -45,6 +61,16 @@ extern "C" {
     char n_sep_by_space;
     char p_sign_posn;
     char n_sign_posn;
+#if __MSVCRT_VERSION__ >= 0xA00 || _WIN32_WINNT >= 0x601
+    wchar_t* _W_decimal_point;
+    wchar_t* _W_thousands_sep;
+    wchar_t* _W_int_curr_symbol;
+    wchar_t* _W_currency_symbol;
+    wchar_t* _W_mon_decimal_point;
+    wchar_t* _W_mon_thousands_sep;
+    wchar_t* _W_positive_sign;
+    wchar_t* _W_negative_sign;
+#endif
   };
 #endif
 
@@ -60,78 +86,27 @@ extern "C" {
 
 #endif
 
-  _Check_return_opt_
-  int
-  __cdecl
-  _configthreadlocale(
-    _In_ int _Flag);
+  int __cdecl _configthreadlocale(int _Flag);
+  char *__cdecl setlocale(int _Category,const char *_Locale);
+  _CRTIMP struct lconv *__cdecl localeconv(void);
+  _CRTIMP _locale_t __cdecl _get_current_locale(void);
+  _CRTIMP _locale_t __cdecl _create_locale(int _Category,const char *_Locale);
+  _CRTIMP void __cdecl _free_locale(_locale_t _Locale);
+  _locale_t __cdecl __get_current_locale(void);
+  _locale_t __cdecl __create_locale(int _Category,const char *_Locale);
+  void __cdecl __free_locale(_locale_t _Locale);
 
-  _Check_return_opt_
-  char*
-  __cdecl
-  setlocale(
-    _In_ int _Category,
-    _In_opt_z_ const char *_Locale);
-
-  _Check_return_opt_
-  _CRTIMP
-  struct lconv*
-  __cdecl
-  localeconv(void);
-
-  _Check_return_opt_
-  _locale_t
-  __cdecl
-  _get_current_locale(void);
-
-  _Check_return_opt_
-  _locale_t
-  __cdecl
-  _create_locale(
-    _In_ int _Category,
-    _In_z_ const char *_Locale);
-
-  void
-  __cdecl
-  _free_locale(
-    _In_opt_ _locale_t _Locale);
-
-  _Check_return_
-  _locale_t
-  __cdecl
-  __get_current_locale(void);
-
-  _Check_return_
-  _locale_t
-  __cdecl
-  __create_locale(
-    _In_ int _Category,
-    _In_z_ const char *_Locale);
-
-  void
-  __cdecl
-  __free_locale(
-    _In_opt_ _locale_t _Locale);
-
-_CRTIMP
-unsigned int
-__cdecl
-___lc_collate_cp_func(void);
-
-_CRTIMP
-unsigned int
-__cdecl
-___lc_codepage_func(void);
+  _CRTIMP unsigned int __cdecl ___lc_codepage_func(void);
 
 #ifndef _WLOCALE_DEFINED
 #define _WLOCALE_DEFINED
-  _Check_return_opt_
-  _CRTIMP
-  wchar_t*
-  __cdecl
-  _wsetlocale(
-    _In_ int _Category,
-    _In_opt_z_ const wchar_t *_Locale);
+  _CRTIMP wchar_t *__cdecl _wsetlocale(int _Category,const wchar_t *_Locale);
+#endif
+
+#ifdef __CHAR_UNSIGNED__
+/* Pull in the constructor from 'charmax.c'.  */
+extern int __mingw_initcharmax;
+__MINGW_SELECTANY int* __mingw_reference_charmax = &__mingw_initcharmax;
 #endif
 
 #ifdef __cplusplus

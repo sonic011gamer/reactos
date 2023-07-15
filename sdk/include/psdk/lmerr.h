@@ -1,9 +1,17 @@
-#ifndef _LMERR_H
-#define _LMERR_H
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
+ */
+#ifndef NETERR_INCLUDED
+#define NETERR_INCLUDED
+
+#define NERR_Success 0
 
 #include <winerror.h>
-#define NERR_Success 0
+
 #define NERR_BASE 2100
+
 #define NERR_NetNotStarted (NERR_BASE+2)
 #define NERR_UnknownServer (NERR_BASE+3)
 #define NERR_ShareMem (NERR_BASE+4)
@@ -308,10 +316,10 @@
 #define NERR_NameUsesIncompatibleCodePage (NERR_BASE+596)
 #define NERR_ComputerAccountNotFound (NERR_BASE+597)
 #define NERR_PersonalSku (NERR_BASE+598)
-#define NERR_PasswordMustChange (NERR_BASE+601)
-#define NERR_AccountLockedOut (NERR_BASE+602)
-#define NERR_PasswordTooLong (NERR_BASE+603)
-#define NERR_PasswordNotComplexEnough (NERR_BASE+604)
-#define NERR_PasswordFilterError (NERR_BASE+605)
+#define NERR_PasswordMustChange (NERR_BASE + 601)
+#define NERR_AccountLockedOut (NERR_BASE + 602)
+#define NERR_PasswordTooLong (NERR_BASE + 603)
+#define NERR_PasswordNotComplexEnough (NERR_BASE + 604)
+#define NERR_PasswordFilterError (NERR_BASE + 605)
 #define MAX_NERR (NERR_BASE+899)
 #endif

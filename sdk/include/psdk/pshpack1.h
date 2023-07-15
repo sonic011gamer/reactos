@@ -1,15 +1,8 @@
-/*
- * PROJECT:     ReactOS PSDK Headers
- * LICENSE:     CC0-1.0 (https://spdx.org/licenses/CC0-1.0)
- * PURPOSE:     Sets structure packing alignment to 1 byte
- * COPYRIGHT:   Copyright 2017 Colin Finck (colin@reactos.org)
+/**
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is part of the mingw-w64 runtime package.
+ * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
-
-#if !defined(RC_INVOKED)
-
-#if defined(_MSC_VER)
-#pragma warning(disable: 4103)
-#endif
-
-#pragma pack(push, 1)
+#if !(defined(lint) || defined(RC_INVOKED))
+#pragma pack(push,1)
 #endif

@@ -1,158 +1,55 @@
-#ifndef __T2EMBED_API_H
-#define __T2EMBED_API_H
+/*
+ * Copyright (c) 2009 Andrew Nguyen
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ */
 
-#ifndef CHARSET_UNICODE
-#define CHARSET_UNICODE    1
-#define CHARSET_DEFAULT    1
-#define CHARSET_SYMBOL     2
-#define CHARSET_GLYPHIDX   3
-#endif
-
-#ifndef EMBED_PREVIEWPRINT
-#define EMBED_PREVIEWPRINT 1
-#define EMBED_EDITABLE     2
-#define EMBED_INSTALLABLE  3
-#define EMBED_NOEMBEDDING  4
-#endif
-
-#ifndef LICENSE_INSTALLABLE
-#define LICENSE_INSTALLABLE   0x0
-#define LICENSE_DEFAULT       0x0
-#define LICENSE_NOEMBEDDING   0x2
-#define LICENSE_PREVIEWPRINT  0x4
-#define LICENSE_EDITABLE      0x8
-#endif
-
-#ifndef TTEMBED_RAW
-#define TTEMBED_RAW                       0x0
-#define TTEMBED_SUBSET                    0x1
-#define TTEMBED_TTCOMPRESSED              0x4
-#define TTEMBED_FAILIFVARIATIONSIMULATED  0x10
-#define TTEMBED_EMBEDEUDC                 0x20
-#define TTEMBED_VALIDATIONTESTS           0x40
-#define TTEMBED_WEBOBJECT                 0x80
-#define TTEMBED_ENCRYPTDATA               0x10000000
-#endif
-
-#ifndef E_NONE
-#define E_NONE 0x0
-#endif
-
-#define E_API_NOTIMPL 0x0001L
-
-#ifndef E_CHARCODECOUNTINVALID
-#define E_CHARCODECOUNTINVALID     0x2
-#define E_CHARCODESETINVALID       0x3
-#define E_DEVICETRUETYPEFONT       0x4
-#define E_HDCINVALID               0x6
-#define E_NOFREEMEMORY             0x7
-#define E_FONTREFERENCEINVALID     0x8
-#define E_NOTATRUETYPEFONT         0xA
-#define E_ERRORACCESSINGFONTDATA   0xC
-#define E_ERRORACCESSINGFACENAME   0xD
-#define E_ERRORUNICODECONVERSION   0x11
-#define E_ERRORCONVERTINGCHARS     0x12
-#define E_EXCEPTION                0x13
-#define E_RESERVEDPARAMNOTNULL     0x14
-#define E_CHARSETINVALID           0x15
-#define E_WIN32S_NOTSUPPORTED      0x16
-#define E_FILE_NOT_FOUND           0x17
-#define E_TTC_INDEX_OUT_OF_RANGE   0x18
-#define E_INPUTPARAMINVALID        0x19
-#endif
-
-#ifndef E_ERRORCOMPRESSINGFONTDATA
-#define E_ERRORCOMPRESSINGFONTDATA    0x100
-#define E_FONTDATAINVALID             0x102
-#define E_NAMECHANGEFAILED            0x103
-#define E_FONTNOTEMBEDDABLE           0x104
-#define E_PRIVSINVALID                0x105
-#define E_SUBSETTINGFAILED            0x106
-#define E_READFROMSTREAMFAILED        0x107
-#define E_SAVETOSTREAMFAILED          0x108
-#define E_NOOS2                       0x109
-#define E_T2NOFREEMEMORY              0x10A
-#define E_ERRORREADINGFONTDATA        0x10B
-#define E_FLAGSINVALID                0x10C
-#define E_ERRORCREATINGFONTFILE       0x10D
-#define E_FONTALREADYEXISTS           0x10E
-#define E_FONTNAMEALREADYEXISTS       0x10F
-#define E_FONTINSTALLFAILED           0x110
-#define E_ERRORDECOMPRESSINGFONTDATA  0x111
-#define E_ERRORACCESSINGEXCLUDELIST   0x112
-#define E_FACENAMEINVALID             0x113
-#define E_STREAMINVALID               0x114
-#define E_STATUSINVALID               0x115
-#define E_PRIVSTATUSINVALID           0x116
-#define E_PERMISSIONSINVALID          0x117
-#define E_PBENABLEDINVALID            0x118
-#define E_SUBSETTINGEXCEPTION         0x119
-#define E_SUBSTRING_TEST_FAIL         0x11A
-#define E_FONTVARIATIONSIMULATED      0x11B
-#define E_FONTVALIDATEFAIL            0x11C
-#define E_FONTFAMILYNAMENOTINFULL     0x11D
-#endif
-
-#ifndef E_ADDFONTFAILED
-#define E_ADDFONTFAILED             0x200
-#define E_COULDNTCREATETEMPFILE     0x201
-#define E_FONTFILECREATEFAILED      0x203
-#define E_WINDOWSAPI                0x204
-#define E_FONTFILENOTFOUND          0x205
-#define E_RESOURCEFILECREATEFAILED  0x206
-#define E_ERROREXPANDINGFONTDATA    0x207
-#define E_ERRORGETTINGDC            0x208
-#define E_EXCEPTIONINDECOMPRESSION  0x209
-#define E_EXCEPTIONINCOMPRESSION    0x20A
-#endif
+#ifndef __WINE_T2EMBAPI_H
+#define __WINE_T2EMBAPI_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef unsigned long(WINAPIV *WRITEEMBEDPROC)
-(
-    void* lpvWriteStream,
-    const void* lpvBuffer,
-    const unsigned long cbBuffer
-);
+#define CHARSET_UNICODE   1
+#define CHARSET_DEFAULT   1
+#define CHARSET_SYMBOL    2
+#define CHARSET_GLYPHIDX  3
 
-typedef unsigned long(WINAPIV *READEMBEDPROC)
-(
-    void* lpvReadStream,
-    void* lpvBuffer,
-    const unsigned long cbBuffer
-);
+#define LICENSE_INSTALLABLE   0x0000
+#define LICENSE_DEFAULT       0x0000
+#define LICENSE_NOEMBEDDING   0x0002
+#define LICENSE_PREVIEWPRINT  0x0004
+#define LICENSE_EDITABLE      0x0008
 
+#define TTLOAD_PRIVATE  0x0001
 
-typedef struct
-{
-    unsigned long ulStructSize;
-    long lTestFromSize;
-    long lTestToSize;
-    unsigned long ulCharSet;
-    unsigned short usReserved1;
-    unsigned short usCharCodeCount;
-    unsigned short* pusCharCodeSet;
-} TTVALIDATIONTESTPARAMS;
+/* Possible return values. */
+#define E_NONE                              __MSABI_LONG(0x0000)
+#define E_API_NOTIMPL                       __MSABI_LONG(0x0001)
+#define E_HDCINVALID                        __MSABI_LONG(0x0006)
+#define E_NOFREEMEMORY                      __MSABI_LONG(0x0007)
+#define E_NOTATRUETYPEFONT                  __MSABI_LONG(0x000a)
+#define E_ERRORACCESSINGFONTDATA            __MSABI_LONG(0x000c)
+#define E_ERRORACCESSINGFACENAME            __MSABI_LONG(0x000d)
+#define E_FACENAMEINVALID                   __MSABI_LONG(0x0113)
+#define E_PERMISSIONSINVALID                __MSABI_LONG(0x0117)
+#define E_PBENABLEDINVALID                  __MSABI_LONG(0x0118)
 
-typedef struct
-{
-    unsigned long ulStructSize;
-    long lTestFromSize;
-    long lTestToSize;
-    unsigned long ulCharSet;
-    unsigned short usReserved1;
-    unsigned short usCharCodeCount;
-    unsigned long* pulCharCodeSet;
-} TTVALIDATIONTESTPARAMSEX;
-
-typedef struct
-{
-    unsigned short usStructSize;
-    unsigned short usRootStrSize;
-    unsigned short *pusRootStr;
-} TTEMBEDINFO;
+typedef ULONG (WINAPIV * READEMBEDPROC)(void*,void*,ULONG);
+typedef ULONG (WINAPIV * WRITEEMBEDPROC)(void*,void*,ULONG);
 
 typedef struct
 {
@@ -161,128 +58,29 @@ typedef struct
     unsigned short *pusRefStr;
 } TTLOADINFO;
 
-LONG
-WINAPI
-TTCharToUnicode(HDC hDC,
-                UCHAR* pucCharCodes,
-                ULONG ulCharCodeSize,
-                USHORT* pusShortCodes,
-                ULONG ulShortCodeSize,
-                ULONG ulFlags);
+typedef struct
+{
+    unsigned short usStructSize;
+    unsigned short usRootStrSize;
+    unsigned short *pusRootStr;
+} TTEMBEDINFO;
 
-LONG
-WINAPI
-TTDeleteEmbeddedFont(HANDLE hFontReference,
-                     ULONG ulFlags,
-                     ULONG* pulStatus);
+LONG WINAPI TTLoadEmbeddedFont(HANDLE*,ULONG,ULONG*,ULONG,ULONG*,READEMBEDPROC,
+                               LPVOID,LPWSTR,LPSTR,TTLOADINFO*);
+LONG WINAPI TTDeleteEmbeddedFont(HANDLE,ULONG,ULONG*);
 
-LONG
-WINAPI
-TTEmbedFont(HDC hDC,
-            ULONG ulFlags,
-            ULONG ulCharSet,
-            ULONG* pulPrivStatus,
-            ULONG* pulStatus,
-            WRITEEMBEDPROC lpfnWriteToStream,
-            LPVOID lpvWriteStream,
-            USHORT* pusCharCodeSet,
-            USHORT usCharCodeCount,
-            USHORT usLanguage,
-            TTEMBEDINFO* pTTEmbedInfo);
+/* embedding privileges */
+#define EMBED_PREVIEWPRINT  1
+#define EMBED_EDITABLE      2
+#define EMBED_INSTALLABLE   3
+#define EMBED_NOEMBEDDING   4
 
-LONG
-WINAPI
-TTEmbedFontFromFileA(HDC hDC,
-                     LPCSTR szFontFileName,
-                     USHORT usTTCIndex,
-                     ULONG ulFlags,
-                     ULONG ulCharSet,
-                     ULONG* pulPrivStatus,
-                     ULONG* pulStatus,
-                     WRITEEMBEDPROC lpfnWriteToStream,
-                     LPVOID lpvWriteStream,
-                     USHORT* pusCharCodeSet,
-                     USHORT usCharCodeCount,
-                     USHORT usLanguage,
-                     TTEMBEDINFO* pTTEmbedInfo);
-
-LONG
-WINAPI
-TTEnableEmbeddingForFacename(LPSTR lpszFacename,
-                             BOOL bEnable);
-
-LONG
-WINAPI
-TTGetEmbeddedFontInfo(ULONG ulFlags,
-                      ULONG* pulPrivStatus,
-                      ULONG ulPrivs,
-                      ULONG* pulStatus,
-                      READEMBEDPROC lpfnReadFromStream,
-                      LPVOID lpvReadStream,
-                      TTLOADINFO* pTTLoadInfo);
-
-LONG
-WINAPI
-TTGetEmbeddingType(HDC hDC,
-                   ULONG* pulPrivStatus);
-
-LONG
-WINAPI
-TTIsEmbeddingEnabled(HDC hDC,
-                     BOOL* pbEnabled);
-
-LONG
-WINAPI
-TTIsEmbeddingEnabledForFacename(LPCSTR lpszFacename,
-                                BOOL* pbEnabled);
-
-LONG
-WINAPI
-TTLoadEmbeddedFont(HANDLE *phFontReference,
-                   ULONG ulFlags,
-                   ULONG* pulPrivStatus,
-                   ULONG ulPrivs,
-                   ULONG* pulStatus,
-                   READEMBEDPROC lpfnReadFromStream,
-                   LPVOID lpvReadStream,
-                   LPWSTR szWinFamilyName,
-                   LPSTR szMacFamilyName,
-                   TTLOADINFO* pTTLoadInfo);
-
-LONG
-WINAPI
-TTRunValidationTests(HDC hDC,
-                     TTVALIDATIONTESTPARAMS* pTestParam);
-
-LONG
-WINAPI
-TTEmbedFontEx(HDC hDC,
-              ULONG ulFlags,
-              ULONG ulCharSet,
-              ULONG* pulPrivStatus,
-              ULONG* pulStatus,
-              WRITEEMBEDPROC lpfnWriteToStream,
-              LPVOID lpvWriteStream,
-              ULONG* pulCharCodeSet,
-              USHORT usCharCodeCount,
-              USHORT usLanguage,
-              TTEMBEDINFO* pTTEmbedInfo);
-
-LONG
-WINAPI
-TTRunValidationTestsEx(HDC hDC,
-                       TTVALIDATIONTESTPARAMSEX* pTestParam);
-
-LONG
-WINAPI
-TTGetNewFontName(HANDLE* phFontReference,
-                 LPWSTR szWinFamilyName,
-                 long cchMaxWinName,
-                 LPSTR szMacFamilyName,
-                 long cchMaxMacName);
+LONG WINAPI TTGetEmbeddingType(HDC, ULONG*);
+LONG WINAPI TTIsEmbeddingEnabledForFacename(LPCSTR facename, WINBOOL *enabled);
+LONG WINAPI TTIsEmbeddingEnabled(HDC hdc, WINBOOL *enabled);
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
-#endif /* __T2EMBED_API_H */
+#endif

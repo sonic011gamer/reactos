@@ -24,7 +24,6 @@
 #include <ddrawint.h>
 #include <d3dtypes.h>
 #include <d3dcaps.h>
-#include <d3dkmthk.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -108,28 +107,28 @@ typedef DWORD (APIENTRY *LPD3DNTHAL_TEXTURESWAPCB)(LPD3DNTHAL_TEXTURESWAPDATA);
 typedef DWORD (APIENTRY *LPD3DNTHAL_TEXTUREGETSURFCB)(LPD3DNTHAL_TEXTUREGETSURFDATA);
 
 typedef struct _D3DNTHALDeviceDesc_V1 {
-  DWORD dwSize;
-  DWORD dwFlags;
-  D3DCOLORMODEL dcmColorModel;
-  DWORD dwDevCaps;
-  D3DTRANSFORMCAPS dtcTransformCaps;
-  BOOL bClipping;
-  D3DLIGHTINGCAPS dlcLightingCaps;
-  D3DPRIMCAPS dpcLineCaps;
-  D3DPRIMCAPS dpcTriCaps;
-  DWORD dwDeviceRenderBitDepth;
-  DWORD dwDeviceZBufferBitDepth;
-  DWORD dwMaxBufferSize;
-  DWORD dwMaxVertexCount;
+	DWORD            dwSize;
+	DWORD            dwFlags;
+	D3DCOLORMODEL    dcmColorModel;
+	DWORD            dwDevCaps;
+	D3DTRANSFORMCAPS dtcTransformCaps;
+	WINBOOL          bClipping;
+	D3DLIGHTINGCAPS  dlcLightingCaps;
+	D3DPRIMCAPS      dpcLineCaps;
+	D3DPRIMCAPS      dpcTriCaps;
+	DWORD            dwDeviceRenderBitDepth;
+	DWORD            dwDeviceZBufferBitDepth;
+	DWORD            dwMaxBufferSize;
+	DWORD            dwMaxVertexCount;
 } D3DNTHALDEVICEDESC_V1, *LPD3DNTHALDEVICEDESC_V1;
 
 typedef struct _D3DNTHAL_GLOBALDRIVERDATA {
-  DWORD dwSize;
-  D3DNTHALDEVICEDESC_V1 hwCaps;
-  DWORD dwNumVertices;
-  DWORD dwNumClipVertices;
-  DWORD dwNumTextureFormats;
-  LPDDSURFACEDESC lpTextureFormats;
+	DWORD               dwSize;
+	D3DNTHALDEVICEDESC_V1 hwCaps;
+	DWORD               dwNumVertices;
+	DWORD               dwNumClipVertices;
+	DWORD               dwNumTextureFormats;
+	LPDDSURFACEDESC     lpTextureFormats;
 } D3DNTHAL_GLOBALDRIVERDATA, *LPD3DNTHAL_GLOBALDRIVERDATA;
 
 typedef struct _D3DNTHAL_CALLBACKS {
@@ -170,24 +169,29 @@ typedef struct _D3DNTHAL_CALLBACKS {
   ULONG_PTR dwReserved9;
 } D3DNTHAL_CALLBACKS, *LPD3DNTHAL_CALLBACKS;
 
+
 typedef struct _D3DNTHAL_SETRENDERTARGETDATA {
   ULONG_PTR dwhContext;
   PDD_SURFACE_LOCAL lpDDS;
   PDD_SURFACE_LOCAL lpDDSZ;
   HRESULT ddrval;
-} D3DNTHAL_SETRENDERTARGETDATA, *LPD3DNTHAL_SETRENDERTARGETDATA;
+} D3DNTHAL_SETRENDERTARGETDATA;
+typedef D3DNTHAL_SETRENDERTARGETDATA *LPD3DNTHAL_SETRENDERTARGETDATA;
 
 typedef DWORD (APIENTRY *LPD3DNTHAL_SETRENDERTARGETCB)(LPD3DNTHAL_SETRENDERTARGETDATA);
+
 
 typedef struct _D3DNTHAL_CALLBACKS2 {
   DWORD dwSize;
   DWORD dwFlags;
+
   LPD3DNTHAL_SETRENDERTARGETCB SetRenderTarget;
   LPVOID dwReserved1;
   LPVOID dwReserved2;
   LPVOID dwReserved3;
   LPVOID dwReserved4;
 } D3DNTHAL_CALLBACKS2, *LPD3DNTHAL_CALLBACKS2;
+
 
 typedef struct _D3DNTHAL_CLEAR2DATA {
   ULONG_PTR dwhContext;
@@ -198,7 +202,8 @@ typedef struct _D3DNTHAL_CLEAR2DATA {
   LPD3DRECT lpRects;
   DWORD dwNumRects;
   HRESULT ddrval;
-} D3DNTHAL_CLEAR2DATA, FAR *LPD3DNTHAL_CLEAR2DATA;
+} D3DNTHAL_CLEAR2DATA;
+typedef D3DNTHAL_CLEAR2DATA FAR *LPD3DNTHAL_CLEAR2DATA;
 
 typedef struct _D3DNTHAL_VALIDATETEXTURESTAGESTATEDATA {
   ULONG_PTR dwhContext;
@@ -236,8 +241,9 @@ typedef DWORD (APIENTRY *LPD3DNTHAL_VALIDATETEXTURESTAGESTATECB)(LPD3DNTHAL_VALI
 typedef DWORD (APIENTRY *LPD3DNTHAL_DRAWPRIMITIVES2CB)(LPD3DNTHAL_DRAWPRIMITIVES2DATA);
 
 typedef struct _D3DNTHAL_CALLBACKS3 {
-  DWORD dwSize;
+  DWORD dwSize; 
   DWORD dwFlags;
+
   LPD3DNTHAL_CLEAR2CB Clear2;
   LPVOID lpvReserved;
   LPD3DNTHAL_VALIDATETEXTURESTAGESTATECB ValidateTextureStageState;
@@ -249,3 +255,4 @@ typedef struct _D3DNTHAL_CALLBACKS3 {
 #endif
 
 #endif /* __DDK_D3DNTHAL_H */
+

@@ -15,7 +15,7 @@ function(add_typelib)
         if(${FILE} STREQUAL "std_ole_v1.idl")
             set(IDL_FLAGS ${IDL_FLAGS} --oldtlb)
         endif()
-        get_filename_component(NAME ${FILE} NAME_WE)
+        get_filename_component(NAME ${FILE} NAME_WLE)
         add_custom_command(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.tlb
             COMMAND native-widl ${INCLUDES} ${DEFINES} ${IDL_FLAGS} -t -o ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.tlb ${CMAKE_CURRENT_SOURCE_DIR}/${FILE}
@@ -28,7 +28,7 @@ function(add_idl_headers TARGET)
     get_includes(INCLUDES)
     get_defines(DEFINES)
     foreach(FILE ${ARGN})
-        get_filename_component(NAME ${FILE} NAME_WE)
+        get_filename_component(NAME ${FILE} NAME_WLE)
         set(HEADER ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.h)
         add_custom_command(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${NAME}.h
@@ -45,7 +45,7 @@ function(add_rpcproxy_files)
     get_defines(DEFINES)
 
     foreach(FILE ${ARGN})
-        get_filename_component(NAME ${FILE} NAME_WE)
+        get_filename_component(NAME ${FILE} NAME_WLE)
         # Most proxy idl's have names like <proxyname>_<original>.idl
         # We use this to create a dependency from the proxy to the original idl
         string(REPLACE "_" ";" SPLIT_FILE ${FILE})
@@ -91,7 +91,7 @@ function(add_rpc_files __type)
         message(FATAL_ERROR "Please pass either server or client as argument to add_rpc_files")
     endif()
     foreach(FILE ${ARGN})
-        get_filename_component(__name ${FILE} NAME_WE)
+        get_filename_component(__name ${FILE} NAME_WLE)
         set(__name ${__name}${__suffix})
         add_custom_command(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${__name}.c ${CMAKE_CURRENT_BINARY_DIR}/${__name}.h
@@ -108,7 +108,7 @@ function(generate_idl_iids)
         get_filename_component(FILE ${IDL_FILE} NAME)
         get_includes(INCLUDES)
         get_defines(DEFINES)
-        get_filename_component(NAME ${IDL_FILE} NAME_WE)
+        get_filename_component(NAME ${IDL_FILE} NAME_WLE)
         add_custom_command(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_i.c
             COMMAND native-widl ${INCLUDES} ${DEFINES} ${IDL_FLAGS} -u -o ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_i.c ${IDL_FILE}
@@ -119,7 +119,7 @@ endfunction()
 
 function(add_iid_library TARGET)
     foreach(IDL_FILE ${ARGN})
-        get_filename_component(NAME ${IDL_FILE} NAME_WE)
+        get_filename_component(NAME ${IDL_FILE} NAME_WLE)
         generate_idl_iids(${IDL_FILE})
         list(APPEND IID_SOURCES ${NAME}_i.c)
     endforeach()
@@ -131,7 +131,7 @@ endfunction()
 function(add_idl_reg_script IDL_FILE)
     get_includes(INCLUDES)
     get_defines(DEFINES)
-    get_filename_component(NAME ${IDL_FILE} NAME_WE)
+    get_filename_component(NAME ${IDL_FILE} NAME_WLE)
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_r.res
         COMMAND native-widl ${INCLUDES} ${DEFINES} ${IDL_FLAGS} -r -o ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_r.res ${IDL_FILE}

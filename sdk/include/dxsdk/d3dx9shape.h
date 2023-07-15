@@ -1,3 +1,4 @@
+#include <_mingw_unicode.h>
 /*
  * Copyright 2010 Christian Costa
  *
@@ -41,7 +42,7 @@ HRESULT WINAPI D3DXCreateTextW(struct IDirect3DDevice9 *device, HDC hdc, const W
         FLOAT extrusion, struct ID3DXMesh **mesh, struct ID3DXBuffer **adjacency, GLYPHMETRICSFLOAT *glyphmetrics);
 HRESULT WINAPI D3DXCreateTorus(struct IDirect3DDevice9 *device,
         float innerradius, float outerradius, UINT sides, UINT rings, struct ID3DXMesh **mesh, ID3DXBuffer **adjacency);
-#define D3DXCreateText WINELIB_NAME_AW(D3DXCreateText)
+#define D3DXCreateText __MINGW_NAME_AW(D3DXCreateText)
 
 #ifdef __cplusplus
 }

@@ -1,3 +1,4 @@
+#undef INTERFACE
 /*
  * Copyright 2010 Matteo Bruni for CodeWeavers
  *
@@ -212,7 +213,7 @@ DECLARE_INTERFACE_(ID3D11ShaderReflection, IUnknown)
     STDMETHOD_(UINT, GetConversionInstructionCount)(THIS) PURE;
     STDMETHOD_(UINT, GetBitwiseInstructionCount)(THIS) PURE;
     STDMETHOD_(D3D_PRIMITIVE, GetGSInputPrimitive)(THIS) PURE;
-    STDMETHOD_(BOOL, IsSampleFrequencyShader)(THIS) PURE;
+    STDMETHOD_(WINBOOL, IsSampleFrequencyShader)(THIS) PURE;
     STDMETHOD_(UINT, GetNumInterfaceSlots)(THIS) PURE;
     STDMETHOD(GetMinFeatureLevel)(THIS_ enum D3D_FEATURE_LEVEL *level) PURE;
     STDMETHOD_(UINT, GetThreadGroupSize)(THIS_ UINT *sizex, UINT *sizey, UINT *sizez) PURE;

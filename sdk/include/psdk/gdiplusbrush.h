@@ -1,9 +1,12 @@
 /*
- * GdiPlusBrush.h
+ * gdiplusbrush.h
  *
- * Windows GDI+
+ * GDI+ brush classes
  *
  * This file is part of the w32api package.
+ *
+ * Contributors:
+ *   Created by Markus Koenig <markus@stber-koenig.de>
  *
  * THIS SOFTWARE IS NOT COPYRIGHTED
  *
@@ -14,630 +17,590 @@
  * WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
  * DISCLAIMED. This includes but is not limited to warranties of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
  */
 
-#ifndef _GDIPLUSBRUSH_H
-#define _GDIPLUSBRUSH_H
-
-class Brush : public GdiplusBase
-{
-  public:
-    friend class Graphics;
-    friend class Pen;
-
-    virtual ~Brush()
-    {
-        DllExports::GdipDeleteBrush(nativeBrush);
-    }
-
-    Brush *
-    Clone() const
-    {
-        GpBrush *brush = NULL;
-        SetStatus(DllExports::GdipCloneBrush(nativeBrush, &brush));
-        if (lastStatus != Ok)
-            return NULL;
-
-        Brush *newBrush = new Brush(brush, lastStatus);
-        if (newBrush == NULL)
-        {
-            DllExports::GdipDeleteBrush(brush);
-        }
-        return newBrush;
-    }
-
-    Status
-    GetLastStatus() const
-    {
-        return lastStatus;
-    }
-
-    BrushType
-    GetType() const
-    {
-        BrushType type;
-        SetStatus(DllExports::GdipGetBrushType(nativeBrush, &type));
-        return type;
-    }
-
-  protected:
-    GpBrush *nativeBrush;
-    mutable Status lastStatus;
-
-    Brush()
-    {
-    }
-
-    Brush(GpBrush *brush, Status status) : nativeBrush(brush), lastStatus(status)
-    {
-    }
-
-    Status
-    SetStatus(Status status) const
-    {
-        if (status != Ok)
-            lastStatus = status;
-        return status;
-    }
-
-    void
-    SetNativeBrush(GpBrush *brush)
-    {
-        nativeBrush = brush;
-    }
-
-  private:
-    // Brush is not copyable
-    Brush(const Brush &);
-    Brush &
-    operator=(const Brush &);
-
-    // get native
-    friend inline GpBrush *&
-    getNat(const Brush *brush)
-    {
-        return const_cast<Brush *>(brush)->nativeBrush;
-    }
-};
-
-class HatchBrush : public Brush
-{
-  public:
-    friend class Pen;
-
-    HatchBrush(HatchStyle hatchStyle, const Color &foreColor, const Color &backColor)
-    {
-        GpHatch *brush = NULL;
-        lastStatus = DllExports::GdipCreateHatchBrush(hatchStyle, foreColor.GetValue(), backColor.GetValue(), &brush);
-        SetNativeBrush(brush);
-    }
-
-    Status
-    GetBackgroundColor(Color *color) const
-    {
-        if (!color)
-            return SetStatus(InvalidParameter);
-
-        ARGB argb;
-        GpHatch *hatch = GetNativeHatch();
-        SetStatus(DllExports::GdipGetHatchBackgroundColor(hatch, &argb));
-
-        color->SetValue(argb);
-        return lastStatus;
-    }
-
-    Status
-    GetForegroundColor(Color *color) const
-    {
-        if (!color)
-            return SetStatus(InvalidParameter);
-
-        ARGB argb;
-        GpHatch *hatch = GetNativeHatch();
-        SetStatus(DllExports::GdipGetHatchForegroundColor(hatch, &argb));
-
-        color->SetValue(argb);
-        return lastStatus;
-    }
-
-    HatchStyle
-    GetHatchStyle() const
-    {
-        HatchStyle hatchStyle;
-        GpHatch *hatch = GetNativeHatch();
-        SetStatus(DllExports::GdipGetHatchStyle(hatch, &hatchStyle));
-        return hatchStyle;
-    }
-
-  protected:
-    HatchBrush()
-    {
-    }
-
-    GpHatch *
-    GetNativeHatch() const
-    {
-        return static_cast<GpHatch *>(nativeBrush);
-    }
-};
-
-class LinearGradientBrush : public Brush
-{
-  public:
-    friend class Pen;
-
-    LinearGradientBrush(const PointF &point1, const PointF &point2, const Color &color1, const Color &color2)
-    {
-        GpLineGradient *brush = NULL;
-        lastStatus = DllExports::GdipCreateLineBrush(
-            &point1, &point2, color1.GetValue(), color2.GetValue(), WrapModeTile, &brush);
-        SetNativeBrush(brush);
-    }
-
-    LinearGradientBrush(
-        const Rect &rect,
-        const Color &color1,
-        const Color &color2,
-        REAL angle,
-        BOOL isAngleScalable = FALSE)
-    {
-        GpLineGradient *brush = NULL;
-        lastStatus = DllExports::GdipCreateLineBrushFromRectWithAngleI(
-            &rect, color1.GetValue(), color2.GetValue(), angle, isAngleScalable, WrapModeTile, &brush);
-        SetNativeBrush(brush);
-    }
-
-    LinearGradientBrush(const Rect &rect, const Color &color1, const Color &color2, LinearGradientMode mode)
-    {
-        GpLineGradient *brush = NULL;
-        lastStatus = DllExports::GdipCreateLineBrushFromRectI(
-            &rect, color1.GetValue(), color2.GetValue(), mode, WrapModeTile, &brush);
-        SetNativeBrush(brush);
-    }
-
-    LinearGradientBrush(const Point &point1, const Point &point2, const Color &color1, const Color &color2)
-    {
-        GpLineGradient *brush = NULL;
-        lastStatus = DllExports::GdipCreateLineBrushI(
-            &point1, &point2, color1.GetValue(), color2.GetValue(), WrapModeTile, &brush);
-        SetNativeBrush(brush);
-    }
-
-    LinearGradientBrush(
-        const RectF &rect,
-        const Color &color1,
-        const Color &color2,
-        REAL angle,
-        BOOL isAngleScalable = FALSE)
-    {
-        GpLineGradient *brush = NULL;
-        lastStatus = DllExports::GdipCreateLineBrushFromRectWithAngle(
-            &rect, color1.GetValue(), color2.GetValue(), angle, isAngleScalable, WrapModeTile, &brush);
-        SetNativeBrush(brush);
-    }
-
-    LinearGradientBrush(const RectF &rect, const Color &color1, const Color &color2, LinearGradientMode mode)
-    {
-        GpLineGradient *brush = NULL;
-        lastStatus = DllExports::GdipCreateLineBrushFromRect(
-            &rect, color1.GetValue(), color2.GetValue(), mode, WrapModeTile, &brush);
-        SetNativeBrush(brush);
-    }
-
-    Status
-    GetBlend(REAL *blendFactors, REAL *blendPositions, INT count)
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipGetLineBlend(gradient, blendFactors, blendPositions, count));
-    }
-
-    INT
-    GetBlendCount() const
-    {
-        INT count = 0;
-        GpLineGradient *gradient = GetNativeGradient();
-        SetStatus(DllExports::GdipGetLineBlendCount(gradient, &count));
-        return count;
-    }
-
-    BOOL
-    GetGammaCorrection() const
-    {
-        BOOL useGammaCorrection;
-        GpLineGradient *gradient = GetNativeGradient();
-        SetStatus(DllExports::GdipGetLineGammaCorrection(gradient, &useGammaCorrection));
-        return useGammaCorrection;
-    }
-
-    INT
-    GetInterpolationColorCount() const
-    {
-        INT count = 0;
-        GpLineGradient *gradient = GetNativeGradient();
-        SetStatus(DllExports::GdipGetLinePresetBlendCount(gradient, &count));
-        return count;
-    }
-
-    Status
-    GetInterpolationColors(Color *presetColors, REAL *blendPositions, INT count) const
-    {
-        return SetStatus(NotImplemented);
-    }
-
-    Status
-    GetLinearColors(Color *colors) const
-    {
-        if (!colors)
-            return SetStatus(InvalidParameter);
-
-        GpLineGradient *gradient = GetNativeGradient();
-
-        ARGB argb[2];
-        SetStatus(DllExports::GdipGetLineColors(gradient, argb));
-        if (lastStatus == Ok)
-        {
-            colors[0] = Color(argb[0]);
-            colors[1] = Color(argb[1]);
-        }
-        return lastStatus;
-    }
-
-    Status
-    GetRectangle(Rect *rect) const
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipGetLineRectI(gradient, rect));
-    }
-
-    Status
-    GetRectangle(RectF *rect) const
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipGetLineRect(gradient, rect));
-    }
-
-    Status
-    GetTransform(Matrix *matrix) const
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipGetLineTransform(gradient, getNat(matrix)));
-    }
-
-    WrapMode
-    GetWrapMode() const
-    {
-
-        WrapMode wrapMode;
-        GpLineGradient *gradient = GetNativeGradient();
-        SetStatus(DllExports::GdipGetLineWrapMode(gradient, &wrapMode));
-        return wrapMode;
-    }
-
-    Status
-    MultiplyTransform(const Matrix *matrix, MatrixOrder order)
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipMultiplyLineTransform(gradient, getNat(matrix), order));
-    }
-
-    Status
-    ResetTransform()
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipResetLineTransform(gradient));
-    }
-
-    Status
-    RotateTransform(REAL angle, MatrixOrder order)
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipRotateLineTransform(gradient, angle, order));
-    }
-
-    Status
-    ScaleTransform(REAL sx, REAL sy, MatrixOrder order = MatrixOrderPrepend)
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipScaleLineTransform(gradient, sx, sy, order));
-    }
-
-    Status
-    SetBlend(const REAL *blendFactors, const REAL *blendPositions, INT count)
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipSetLineBlend(gradient, blendFactors, blendPositions, count));
-    }
-
-    Status
-    SetBlendBellShape(REAL focus, REAL scale)
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipSetLineSigmaBlend(gradient, focus, scale));
-    }
-
-    Status
-    SetBlendTriangularShape(REAL focus, REAL scale = 1.0f)
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipSetLineLinearBlend(gradient, focus, scale));
-    }
-
-    Status
-    SetGammaCorrection(BOOL useGammaCorrection)
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipSetLineGammaCorrection(gradient, useGammaCorrection));
-    }
-
-    Status
-    SetInterpolationColors(const Color *presetColors, const REAL *blendPositions, INT count)
-    {
-        return SetStatus(NotImplemented);
-    }
-
-    Status
-    SetLinearColors(const Color &color1, const Color &color2)
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipSetLineColors(gradient, color1.GetValue(), color2.GetValue()));
-    }
-
-    Status
-    SetTransform(const Matrix *matrix)
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipSetLineTransform(gradient, getNat(matrix)));
-    }
-
-    Status
-    SetWrapMode(WrapMode wrapMode)
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipSetLineWrapMode(gradient, wrapMode));
-    }
-
-    Status
-    TranslateTransform(REAL dx, REAL dy, MatrixOrder order = MatrixOrderPrepend)
-    {
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipTranslateLineTransform(gradient, dx, dy, order));
-    }
-
-    Status
-    SetLinearPoints(const PointF &point1, const PointF &point2)
-    {
-#if 1
-        return SetStatus(NotImplemented);
-#else
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipSetLinePoints(gradient, &point1, &point2));
+#ifndef __GDIPLUS_BRUSH_H
+#define __GDIPLUS_BRUSH_H
+#if __GNUC__ >=3
+#pragma GCC system_header
 #endif
-    }
 
-    Status
-    GetLinearPoints(PointF *points) const
-    {
-#if 1
-        return SetStatus(NotImplemented);
-#else
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipGetLinePoints(gradient, points));
+#ifndef __cplusplus
+#error "A C++ compiler is required to include gdiplusbrush.h."
 #endif
-    }
 
-    Status
-    SetLinearPoints(const Point &point1, const Point &point2)
-    {
-#if 1
-        return SetStatus(NotImplemented);
-#else
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipSetLinePointsI(gradient, &point1, &point2));
-#endif
-    }
-
-    Status
-    GetLinearPoints(Point *points) const
-    {
-#if 1
-        return SetStatus(NotImplemented);
-#else
-        GpLineGradient *gradient = GetNativeGradient();
-        return SetStatus(DllExports::GdipGetLinePointsI(gradient, points));
-#endif
-    }
-
-  protected:
-    GpLineGradient *
-    GetNativeGradient() const
-    {
-        return static_cast<GpLineGradient *>(nativeBrush);
-    }
-};
-
-class SolidBrush : Brush
+class Brush: public GdiplusBase
 {
-  public:
-    friend class Pen;
+	friend class HatchBrush;
+	friend class LinearGradientBrush;
+	friend class PathGradientBrush;
+	friend class SolidBrush;
+	friend class TextureBrush;
+	friend class Graphics;
+	friend class Pen;
 
-    SolidBrush(const Color &color)
-    {
-        GpSolidFill *brush = NULL;
-        lastStatus = DllExports::GdipCreateSolidFill(color.GetValue(), &brush);
-        SetNativeBrush(brush);
-    }
+public:
+	virtual ~Brush()
+	{
+		DllExports::GdipDeleteBrush(nativeBrush);
+	}
+	virtual Brush* Clone() const  // each subclass must implement this
+	{
+		lastStatus = NotImplemented;
+		return NULL;
+	}
 
-    Status
-    GetColor(Color *color) const
-    {
-        if (!color)
-            return SetStatus(InvalidParameter);
+	Status GetLastStatus() const
+	{
+		Status result = lastStatus;
+		lastStatus = Ok;
+		return result;
+	}
+	BrushType GetType() const
+	{
+		BrushType result = BrushTypeSolidColor;
+		updateStatus(DllExports::GdipGetBrushType(nativeBrush, &result));
+		return result;  
+	}
 
-        ARGB argb;
-        GpSolidFill *fill = GetNativeFill();
-        SetStatus(DllExports::GdipGetSolidFillColor(fill, &argb));
+private:
+	Brush(): nativeBrush(NULL), lastStatus(Ok) {}
+	Brush(GpBrush *brush, Status status):
+		nativeBrush(brush), lastStatus(status) {}
+	Brush(const Brush& brush);
+	Brush& operator=(const Brush&);
 
-        *color = Color(argb);
-        return lastStatus;
-    }
+	Status updateStatus(Status newStatus) const
+	{
+		if (newStatus != Ok) lastStatus = newStatus;
+		return newStatus;
+	}
 
-    Status
-    SetColor(const Color &color)
-    {
-        GpSolidFill *fill = GetNativeFill();
-        return SetStatus(DllExports::GdipSetSolidFillColor(fill, color.GetValue()));
-    }
-
-  protected:
-    SolidBrush()
-    {
-    }
-
-    GpSolidFill *
-    GetNativeFill() const
-    {
-        return static_cast<GpSolidFill *>(nativeBrush);
-    }
+	GpBrush *nativeBrush;
+	mutable Status lastStatus;
 };
 
-class TextureBrush : Brush
+class HatchBrush: public Brush
 {
-  public:
-    TextureBrush(Image *image, WrapMode wrapMode, const RectF &dstRect)
-    {
-        GpTexture *texture = NULL;
-        lastStatus = DllExports::GdipCreateTexture2(
-            getNat(image), wrapMode, dstRect.X, dstRect.Y, dstRect.Width, dstRect.Height, &texture);
-        SetNativeBrush(texture);
-    }
+public:
+	HatchBrush(HatchStyle hatchStyle,
+			const Color& foreColor,
+			const Color& backColor = Color())
+	{
+		GpHatch *nativeHatch = NULL;
+		lastStatus = DllExports::GdipCreateHatchBrush(hatchStyle,
+				foreColor.GetValue(), backColor.GetValue(),
+				&nativeHatch);
+		nativeBrush = nativeHatch; 
+	}
+	virtual HatchBrush* Clone() const
+	{
+		GpBrush *cloneBrush = NULL;
+		Status status = updateStatus(DllExports::GdipCloneBrush(
+				nativeBrush, &cloneBrush));
+		if (status == Ok) {
+			HatchBrush *result =
+				new HatchBrush(cloneBrush, lastStatus);
+			if (!result) {
+				DllExports::GdipDeleteBrush(cloneBrush);
+				updateStatus(OutOfMemory);
+			}
+			return result;
+		} else {
+			return NULL;
+		}
+	}
 
-    TextureBrush(Image *image, Rect &dstRect, ImageAttributes *imageAttributes)
-    {
-        GpTexture *texture = NULL;
-        GpImageAttributes *attrs = imageAttributes ? getNat(imageAttributes) : NULL;
-        lastStatus = DllExports::GdipCreateTextureIA(
-            getNat(image), attrs, dstRect.X, dstRect.Y, dstRect.Width, dstRect.Height, &texture);
-        SetNativeBrush(texture);
-    }
+	Status GetBackgroundColor(Color *color) const
+	{
+		return updateStatus(DllExports::GdipGetHatchBackgroundColor(
+				(GpHatch*) nativeBrush,
+				color ? &color->Value : NULL));
+	}
+	Status GetForegroundColor(Color *color) const
+	{
+		return updateStatus(DllExports::GdipGetHatchForegroundColor(
+				(GpHatch*) nativeBrush,
+				color ? &color->Value : NULL));
+	}
+	HatchStyle GetHatchStyle() const
+	{
+		HatchStyle result;
+		updateStatus(DllExports::GdipGetHatchStyle(
+				(GpHatch*) nativeBrush, &result));
+		return result;
+	}
 
-    TextureBrush(Image *image, WrapMode wrapMode, INT dstX, INT dstY, INT dstWidth, INT dstHeight)
-    {
-        GpTexture *texture = NULL;
-        lastStatus =
-            DllExports::GdipCreateTexture2I(getNat(image), wrapMode, dstX, dstY, dstWidth, dstHeight, &texture);
-        SetNativeBrush(texture);
-    }
-
-    TextureBrush(Image *image, WrapMode wrapMode, REAL dstX, REAL dstY, REAL dstWidth, REAL dstHeight)
-    {
-        GpTexture *texture = NULL;
-        lastStatus = DllExports::GdipCreateTexture2(getNat(image), wrapMode, dstX, dstY, dstWidth, dstHeight, &texture);
-        SetNativeBrush(texture);
-    }
-
-    TextureBrush(Image *image, RectF &dstRect, ImageAttributes *imageAttributes)
-    {
-        GpTexture *texture = NULL;
-        GpImageAttributes *attrs = imageAttributes ? getNat(imageAttributes) : NULL;
-        lastStatus = DllExports::GdipCreateTextureIA(
-            getNat(image), attrs, dstRect.X, dstRect.Y, dstRect.Width, dstRect.Height, &texture);
-        SetNativeBrush(texture);
-    }
-
-    TextureBrush(Image *image, WrapMode wrapMode)
-    {
-        GpTexture *texture = NULL;
-        lastStatus = DllExports::GdipCreateTexture(getNat(image), wrapMode, &texture);
-        SetNativeBrush(texture);
-    }
-
-    TextureBrush(Image *image, WrapMode wrapMode, const Rect &dstRect)
-    {
-        GpTexture *texture = NULL;
-        lastStatus = DllExports::GdipCreateTexture2I(
-            getNat(image), wrapMode, dstRect.X, dstRect.Y, dstRect.Width, dstRect.Height, &texture);
-        SetNativeBrush(texture);
-    }
-
-    // Defined in "gdiplusheaders.h":
-    Image *
-    GetImage() const;
-
-    Status
-    GetTransform(Matrix *matrix) const
-    {
-        GpTexture *texture = GetNativeTexture();
-        return SetStatus(DllExports::GdipGetTextureTransform(texture, getNat(matrix)));
-    }
-
-    WrapMode
-    GetWrapMode() const
-    {
-        WrapMode wrapMode;
-        GpTexture *texture = GetNativeTexture();
-        SetStatus(DllExports::GdipGetTextureWrapMode(texture, &wrapMode));
-        return wrapMode;
-    }
-
-    Status
-    MultiplyTransform(Matrix *matrix, MatrixOrder order = MatrixOrderPrepend)
-    {
-        GpTexture *texture = GetNativeTexture();
-        return SetStatus(DllExports::GdipMultiplyTextureTransform(texture, getNat(matrix), order));
-    }
-
-    Status
-    ResetTransform()
-    {
-        GpTexture *texture = GetNativeTexture();
-        return SetStatus(DllExports::GdipResetTextureTransform(texture));
-    }
-
-    Status
-    RotateTransform(REAL angle, MatrixOrder order)
-    {
-        GpTexture *texture = GetNativeTexture();
-        return SetStatus(DllExports::GdipRotateTextureTransform(texture, angle, order));
-    }
-
-    Status
-    ScaleTransform(REAL sx, REAL sy, MatrixOrder order)
-    {
-        GpTexture *texture = GetNativeTexture();
-        return SetStatus(DllExports::GdipScaleTextureTransform(texture, sx, sy, order));
-    }
-
-    Status
-    SetTransform(const Matrix *matrix)
-    {
-        GpTexture *texture = GetNativeTexture();
-        return SetStatus(DllExports::GdipSetTextureTransform(texture, getNat(matrix)));
-    }
-
-    Status
-    SetWrapMode(WrapMode wrapMode)
-    {
-        GpTexture *texture = GetNativeTexture();
-        return SetStatus(DllExports::GdipSetTextureWrapMode(texture, wrapMode));
-    }
-
-    Status
-    TranslateTransform(REAL dx, REAL dy, MatrixOrder order)
-    {
-        GpTexture *texture = GetNativeTexture();
-        return SetStatus(DllExports::GdipTranslateTextureTransform(texture, dx, dy, order));
-    }
-
-  protected:
-    GpTexture *
-    GetNativeTexture() const
-    {
-        return static_cast<GpTexture *>(nativeBrush);
-    }
-
-    TextureBrush()
-    {
-    }
+private:
+	HatchBrush(GpBrush *brush, Status status): Brush(brush, status) {}
+	HatchBrush(const HatchBrush& brush);
+	HatchBrush& operator=(const HatchBrush&);
 };
 
-#endif /* _GDIPLUSBRUSH_H */
+class LinearGradientBrush: public Brush
+{
+public:
+	LinearGradientBrush(const PointF& point1, const PointF& point2,
+			const Color& color1, const Color& color2)
+	{
+		GpLineGradient *nativeLineGradient = NULL;
+		lastStatus = DllExports::GdipCreateLineBrush(
+				&point1, &point2,
+				color1.GetValue(), color2.GetValue(),
+				WrapModeTile, &nativeLineGradient);
+		nativeBrush = nativeLineGradient;
+	}
+	LinearGradientBrush(const Point& point1, const Point& point2,
+			const Color& color1, const Color& color2)
+	{
+		GpLineGradient *nativeLineGradient = NULL;
+		lastStatus = DllExports::GdipCreateLineBrushI(
+				&point1, &point2,
+				color1.GetValue(), color2.GetValue(),
+				WrapModeTile, &nativeLineGradient);
+		nativeBrush = nativeLineGradient;
+	}
+	LinearGradientBrush(const RectF& rect, const Color& color1,
+			const Color& color2, LinearGradientMode mode)
+	{
+		GpLineGradient *nativeLineGradient = NULL;
+		lastStatus = DllExports::GdipCreateLineBrushFromRect(
+				&rect, color1.GetValue(), color2.GetValue(),
+				mode, WrapModeTile, &nativeLineGradient);
+		nativeBrush = nativeLineGradient;
+	}
+	LinearGradientBrush(const Rect& rect, const Color& color1,
+			const Color& color2, LinearGradientMode mode)
+	{
+		GpLineGradient *nativeLineGradient = NULL;
+		lastStatus = DllExports::GdipCreateLineBrushFromRectI(
+				&rect, color1.GetValue(), color2.GetValue(),
+				mode, WrapModeTile, &nativeLineGradient);
+		nativeBrush = nativeLineGradient;
+	}
+	LinearGradientBrush(const RectF& rect, const Color& color1,
+			const Color& color2, REAL angle,
+			BOOL isAngleScalable = FALSE)
+	{
+		GpLineGradient *nativeLineGradient = NULL;
+		lastStatus = DllExports::GdipCreateLineBrushFromRectWithAngle(
+				&rect, color1.GetValue(), color2.GetValue(),
+				angle, isAngleScalable, WrapModeTile,
+				&nativeLineGradient);
+		nativeBrush = nativeLineGradient;
+	}
+	LinearGradientBrush(const Rect& rect, const Color& color1,
+			const Color& color2, REAL angle,
+			BOOL isAngleScalable = FALSE)
+	{
+		GpLineGradient *nativeLineGradient = NULL;
+		lastStatus = DllExports::GdipCreateLineBrushFromRectWithAngleI(
+				&rect, color1.GetValue(), color2.GetValue(),
+				angle, isAngleScalable, WrapModeTile,
+				&nativeLineGradient);
+		nativeBrush = nativeLineGradient;
+	}
+	virtual LinearGradientBrush* Clone() const
+	{
+		GpBrush *cloneBrush = NULL;
+		Status status = updateStatus(DllExports::GdipCloneBrush(
+				nativeBrush, &cloneBrush));
+		if (status == Ok) {
+			LinearGradientBrush *result =
+				new LinearGradientBrush(cloneBrush, lastStatus);
+			if (!result) {
+				DllExports::GdipDeleteBrush(cloneBrush);
+				updateStatus(OutOfMemory);
+			}
+			return result;
+		} else {
+			return NULL;
+		}
+	}
+
+	Status GetBlend(REAL *blendFactors, REAL *blendPositions,
+			INT count) const
+	{
+		return updateStatus(DllExports::GdipGetLineBlend(
+				(GpLineGradient*) nativeBrush,
+				blendFactors, blendPositions, count));
+	}
+	INT GetBlendCount() const
+	{
+		INT result = 0;
+		updateStatus(DllExports::GdipGetLineBlendCount(
+				(GpLineGradient*) nativeBrush, &result));
+		return result;
+	}
+	BOOL GetGammaCorrection() const
+	{
+		BOOL result = FALSE;
+		updateStatus(DllExports::GdipGetLineGammaCorrection(
+				(GpLineGradient*) nativeBrush, &result));
+		return result;
+	}
+	INT GetInterpolationColorCount() const
+	{
+		INT result = 0;
+		updateStatus(DllExports::GdipGetLinePresetBlendCount(
+				(GpLineGradient*) nativeBrush, &result));
+		return result;
+	}
+	Status GetInterpolationColors(Color *presetColors,
+			REAL *blendPositions, INT count) const
+	{
+		if (!presetColors || count <= 0)
+			return lastStatus = InvalidParameter;
+
+		ARGB *presetArgb =
+			(ARGB*) DllExports::GdipAlloc(count * sizeof(ARGB));
+		if (!presetArgb)
+			return lastStatus = OutOfMemory;
+
+		Status status = updateStatus(DllExports::GdipGetLinePresetBlend(
+				(GpLineGradient*) nativeBrush, presetArgb,
+				blendPositions, count));
+		for (INT i = 0; i < count; ++i) {
+			presetColors[i].SetValue(presetArgb[i]);
+		}
+		DllExports::GdipFree((void*) presetArgb);
+		return status;
+	}
+	Status GetLinearColors(Color *colors) const
+	{
+		if (!colors) return lastStatus = InvalidParameter;
+
+		ARGB colorsArgb[2];
+		Status status = updateStatus(DllExports::GdipGetLineColors(
+				(GpLineGradient*) nativeBrush, colorsArgb));
+		colors[0].SetValue(colorsArgb[0]);
+		colors[1].SetValue(colorsArgb[1]);
+		return status;
+	}
+	Status GetRectangle(RectF *rect) const
+	{
+		return updateStatus(DllExports::GdipGetLineRect(
+				(GpLineGradient*) nativeBrush, rect));
+	}
+	Status GetRectangle(Rect *rect) const
+	{
+		return updateStatus(DllExports::GdipGetLineRectI(
+				(GpLineGradient*) nativeBrush, rect));
+	}
+	Status GetTransform(Matrix *matrix) const
+	{
+		return updateStatus(DllExports::GdipGetLineTransform(
+				(GpLineGradient*) nativeBrush,
+				matrix ? matrix->nativeMatrix : NULL));
+	}
+	WrapMode GetWrapMode() const
+	{
+		WrapMode wrapMode = WrapModeTile;
+		updateStatus(DllExports::GdipGetLineWrapMode(
+				(GpLineGradient*) nativeBrush, &wrapMode));
+		return wrapMode;
+	}
+	Status MultiplyTransform(const Matrix *matrix,
+			MatrixOrder order = MatrixOrderPrepend)
+	{
+		return updateStatus(DllExports::GdipMultiplyLineTransform(
+				(GpLineGradient*) nativeBrush,
+				matrix ? matrix->nativeMatrix : NULL, order));
+	}
+	Status ResetTransform()
+	{
+		return updateStatus(DllExports::GdipResetLineTransform(
+				(GpLineGradient*) nativeBrush));
+	}
+	Status RotateTranform(REAL angle, MatrixOrder order = MatrixOrderPrepend)
+	{
+		return updateStatus(DllExports::GdipRotateLineTransform(
+				(GpLineGradient*) nativeBrush, angle, order));
+	}
+	Status ScaleTransform(REAL sx, REAL sy,
+			MatrixOrder order = MatrixOrderPrepend)
+	{
+		return updateStatus(DllExports::GdipScaleLineTransform(
+				(GpLineGradient*) nativeBrush, sx, sy, order));
+	}
+	Status SetBlend(const REAL *blendFactors,
+			const REAL *blendPositions, INT count)
+	{
+		return updateStatus(DllExports::GdipSetLineBlend(
+				(GpLineGradient*) nativeBrush,
+				blendFactors, blendPositions, count));
+	}
+	Status SetBlendBellShape(REAL focus, REAL scale = 1.0f)
+	{
+		return updateStatus(DllExports::GdipSetLineSigmaBlend(
+				(GpLineGradient*) nativeBrush,
+				focus, scale));
+	}
+	Status SetBlendTriangularShape(REAL focus, REAL scale = 1.0f)
+	{
+		return updateStatus(DllExports::GdipSetLineLinearBlend(
+				(GpLineGradient*) nativeBrush,
+				focus, scale));
+	}
+	Status SetGammaCorrection(BOOL useGammaCorrection)
+	{
+		return updateStatus(DllExports::GdipSetLineGammaCorrection(
+				(GpLineGradient*) nativeBrush,
+				useGammaCorrection));
+	}
+	Status SetInterpolationColors(const Color *presetColors,
+			const REAL *blendPositions, INT count)
+	{
+		if (!presetColors || count < 0)
+			return lastStatus = InvalidParameter;
+
+		ARGB *presetArgb =
+			(ARGB*) DllExports::GdipAlloc(count * sizeof(ARGB));
+		if (!presetArgb)
+			return lastStatus = OutOfMemory;
+		for (INT i = 0; i < count; ++i) {
+			presetArgb[i] = presetColors[i].GetValue();
+		}
+
+		Status status = updateStatus(DllExports::GdipSetLinePresetBlend(
+				(GpLineGradient*) nativeBrush,
+				presetArgb, blendPositions, count));
+		DllExports::GdipFree((void*) presetArgb);
+		return status;
+	}
+	Status SetLinearColors(const Color& color1, const Color& color2)
+	{
+		return updateStatus(DllExports::GdipSetLineColors(
+				(GpLineGradient*) nativeBrush,
+				color1.GetValue(), color2.GetValue()));
+	}
+	Status SetTransform(const Matrix *matrix)
+	{
+		return updateStatus(DllExports::GdipSetLineTransform(
+				(GpLineGradient*) nativeBrush,
+				matrix ? matrix->nativeMatrix : NULL));
+	}
+	Status SetWrapMode(WrapMode wrapMode)
+	{
+		return updateStatus(DllExports::GdipSetLineWrapMode(
+				(GpLineGradient*) nativeBrush, wrapMode));
+	}
+	Status TranslateTransform(REAL dx, REAL dy,
+			MatrixOrder order = MatrixOrderPrepend)
+	{
+		return updateStatus(DllExports::GdipTranslateLineTransform(
+				(GpLineGradient*) nativeBrush, dx, dy, order));
+	}
+
+private:
+	LinearGradientBrush(GpBrush *brush, Status status): Brush(brush, status) {}
+	LinearGradientBrush(const LinearGradientBrush& brush);
+	LinearGradientBrush& operator=(const LinearGradientBrush&);
+};
+
+class SolidBrush: public Brush
+{
+public:
+	SolidBrush(const Color& color)
+	{
+		GpSolidFill *nativeSolidFill = NULL;
+		lastStatus = DllExports::GdipCreateSolidFill(
+				color.GetValue(), &nativeSolidFill);
+		nativeBrush = nativeSolidFill; 
+	}
+	virtual SolidBrush* Clone() const
+	{
+		GpBrush *cloneBrush = NULL;
+		Status status = updateStatus(DllExports::GdipCloneBrush(
+				nativeBrush, &cloneBrush));
+		if (status == Ok) {
+			SolidBrush *result =
+				new SolidBrush(cloneBrush, lastStatus);
+			if (!result) {
+				DllExports::GdipDeleteBrush(cloneBrush);
+				updateStatus(OutOfMemory);
+			}
+			return result;
+		} else {
+			return NULL;
+		}
+	}
+
+	Status GetColor(Color *color) const
+	{
+		return updateStatus(DllExports::GdipGetSolidFillColor(
+				(GpSolidFill*) nativeBrush,
+				color ? &color->Value : NULL));
+	}
+	Status SetColor(const Color& color)
+	{
+		return updateStatus(DllExports::GdipSetSolidFillColor(
+				(GpSolidFill*) nativeBrush, color.GetValue()));
+	}
+
+private:
+	SolidBrush(GpBrush *brush, Status status): Brush(brush, status) {}
+	SolidBrush(const SolidBrush&);
+	SolidBrush& operator=(const SolidBrush&);
+};
+
+class TextureBrush: public Brush
+{
+public:
+	TextureBrush(Image *image, WrapMode wrapMode = WrapModeTile)
+	{
+		GpTexture *nativeTexture = NULL;
+		lastStatus = DllExports::GdipCreateTexture(
+				image ? image->nativeImage : NULL,
+				wrapMode, &nativeTexture);
+		nativeBrush = nativeTexture;
+	}
+	TextureBrush(Image *image, WrapMode wrapMode,
+			REAL dstX, REAL dstY, REAL dstWidth, REAL dstHeight)
+	{
+		GpTexture *nativeTexture = NULL;
+		lastStatus = DllExports::GdipCreateTexture2(
+				image ? image->nativeImage : NULL,
+				wrapMode, dstX, dstY, dstWidth, dstHeight,
+				&nativeTexture);
+		nativeBrush = nativeTexture;
+	}
+	TextureBrush(Image *image, WrapMode wrapMode,
+			INT dstX, INT dstY, INT dstWidth, INT dstHeight)
+	{
+		GpTexture *nativeTexture = NULL;
+		lastStatus = DllExports::GdipCreateTexture2I(
+				image ? image->nativeImage : NULL,
+				wrapMode, dstX, dstY, dstWidth, dstHeight,
+				&nativeTexture);
+		nativeBrush = nativeTexture;
+	}
+	TextureBrush(Image *image, WrapMode wrapMode, const RectF& dstRect)
+	{
+		GpTexture *nativeTexture = NULL;
+		lastStatus = DllExports::GdipCreateTexture2(
+				image ? image->nativeImage : NULL, wrapMode,
+				dstRect.X, dstRect.Y,
+				dstRect.Width, dstRect.Height, &nativeTexture);
+		nativeBrush = nativeTexture;
+	}
+	TextureBrush(Image *image, WrapMode wrapMode, const Rect& dstRect)
+	{
+		GpTexture *nativeTexture = NULL;
+		lastStatus = DllExports::GdipCreateTexture2I(
+				image ? image->nativeImage : NULL, wrapMode,
+				dstRect.X, dstRect.Y,
+				dstRect.Width, dstRect.Height, &nativeTexture);
+		nativeBrush = nativeTexture;
+	}
+	TextureBrush(Image *image, const RectF& dstRect,
+			ImageAttributes *imageAttributes = NULL)
+	{
+		GpTexture *nativeTexture = NULL;
+		lastStatus = DllExports::GdipCreateTextureIA(
+				image ? image->nativeImage : NULL,
+				imageAttributes ? imageAttributes->nativeImageAttributes : NULL,
+				dstRect.X, dstRect.Y,
+				dstRect.Width, dstRect.Height, &nativeTexture);
+		nativeBrush = nativeTexture;
+	}
+	TextureBrush(Image *image, const Rect& dstRect,
+			ImageAttributes *imageAttributes = NULL)
+	{
+		GpTexture *nativeTexture = NULL;
+		lastStatus = DllExports::GdipCreateTextureIAI(
+				image ? image->nativeImage : NULL,
+				imageAttributes ? imageAttributes->nativeImageAttributes : NULL,
+				dstRect.X, dstRect.Y,
+				dstRect.Width, dstRect.Height, &nativeTexture);
+		nativeBrush = nativeTexture;
+	}
+	virtual TextureBrush* Clone() const
+	{
+		GpBrush *cloneBrush = NULL;
+		Status status = updateStatus(DllExports::GdipCloneBrush(
+				nativeBrush, &cloneBrush));
+		if (status == Ok) {
+			TextureBrush *result =
+				new TextureBrush(cloneBrush, lastStatus);
+			if (!result) {
+				DllExports::GdipDeleteBrush(cloneBrush);
+				updateStatus(OutOfMemory);
+			}
+			return result;
+		} else {
+			return NULL;
+		}
+	}
+
+	//TODO: implement TextureBrush::GetImage()
+	//Image *GetImage() const
+	//{
+	//	// where is the Image allocated (static,member,new,other)?
+	//	// GdipGetTextureImage just returns a GpImage*
+	//	updateStatus(NotImplemented);
+	//	return NULL;
+	//}
+	Status GetTransfrom(Matrix *matrix) const
+	{
+		return updateStatus(DllExports::GdipGetTextureTransform(
+				(GpTexture*) nativeBrush,
+				matrix ? matrix->nativeMatrix : NULL));
+	}
+	WrapMode GetWrapMode() const
+	{
+		WrapMode result = WrapModeTile;
+		updateStatus(DllExports::GdipGetTextureWrapMode(
+				(GpTexture*) nativeBrush, &result));
+		return result;
+	}
+	Status MultiplyTransform(const Matrix *matrix,
+			MatrixOrder order = MatrixOrderPrepend)
+	{
+		return updateStatus(DllExports::GdipMultiplyTextureTransform(
+				(GpTexture*) nativeBrush,
+				matrix ? matrix->nativeMatrix : NULL, order));
+	}
+	Status ResetTransform()
+	{
+		return updateStatus(DllExports::GdipResetTextureTransform(
+				(GpTexture*) nativeBrush));
+	}
+	Status RotateTransform(REAL angle,
+			MatrixOrder order = MatrixOrderPrepend)
+	{
+		return updateStatus(DllExports::GdipRotateTextureTransform(
+				(GpTexture*) nativeBrush, angle, order));
+	}
+	Status ScaleTransform(REAL sx, REAL sy,
+			MatrixOrder order = MatrixOrderPrepend)
+	{
+		return updateStatus(DllExports::GdipScaleTextureTransform(
+				(GpTexture*) nativeBrush, sx, sy, order));
+	}
+	Status SetTransform(const Matrix *matrix)
+	{
+		return updateStatus(DllExports::GdipSetTextureTransform(
+				(GpTexture*) nativeBrush,
+				matrix ? matrix->nativeMatrix : NULL));
+	}
+	Status SetWrapMode(WrapMode wrapMode)
+	{
+		return updateStatus(DllExports::GdipSetTextureWrapMode(
+				(GpTexture*) nativeBrush, wrapMode));
+	}
+	Status TranslateTransform(REAL dx, REAL dy,
+			MatrixOrder order = MatrixOrderPrepend)
+	{
+		return updateStatus(DllExports::GdipTranslateTextureTransform(
+				(GpTexture*) nativeBrush, dx, dy, order));
+	}
+
+private:
+	TextureBrush(GpBrush *brush, Status status): Brush(brush, status) {}
+	TextureBrush(const TextureBrush&);
+	TextureBrush& operator=(const TextureBrush&);
+};
+
+#endif /* __GDIPLUS_BRUSH_H */

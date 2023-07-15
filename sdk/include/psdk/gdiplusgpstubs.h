@@ -1,148 +1,139 @@
 /*
- * Copyright (C) 2007 Google (Evan Stade)
+ * gdiplusgpstubs.h
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
+ * GDI+ Gp* type declarations
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
+ * This file is part of the w32api package.
  *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ * Contributors:
+ *   Created by Markus Koenig <markus@stber-koenig.de>
+ *
+ * THIS SOFTWARE IS NOT COPYRIGHTED
+ *
+ * This source code is offered for use in the public domain. You may
+ * use, modify or distribute it freely.
+ *
+ * This code is distributed in the hope that it will be useful but
+ * WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
+ * DISCLAIMED. This includes but is not limited to warranties of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *
  */
 
-#ifndef _GDIPLUSGPSTUBS_H
-#define _GDIPLUSGPSTUBS_H
+#ifndef __GDIPLUS_GPSTUBS_H
+#define __GDIPLUS_GPSTUBS_H
+#if __GNUC__ >=3
+#pragma GCC system_header
+#endif
+
+typedef Point GpPoint;
+typedef PointF GpPointF;
+typedef Rect GpRect;
+typedef RectF GpRectF;
+typedef Size GpSize;
+typedef SizeF GpSizeF;
+
+typedef enum BrushType GpBrushType;
+typedef enum CombineMode GpCombineMode;
+typedef enum CompositingMode GpCompositingMode;
+typedef enum CompositingQuality GpCompositingQuality;
+typedef enum CoordinateSpace GpCoordinateSpace;
+typedef enum CustomLineCapType GpCustomLineCapType;
+typedef enum DashCap GpDashCap;
+typedef enum DashStyle GpDashStyle;
+typedef enum DitherType GpDitherType;
+typedef enum DriverStringOptions GpDriverStringOptions;
+typedef enum EmfPlusRecordType GpEmfPlusRecordType;
+typedef enum EmfToWmfBitsFlags GpEmfToWmfBitsFlags;
+typedef enum EmfType GpEmfType;
+typedef enum EncoderParameterValueType GpEncoderParameterValueType;
+typedef enum EncoderValue GpEncoderValue;
+typedef enum FillMode GpFillMode;
+typedef enum FlushIntention GpFlushIntention;
+typedef enum FontStyle GpFontStyle;
+typedef enum HatchStyle GpHatchStyle;
+typedef enum HotkeyPrefix GpHotkeyPrefix;
+typedef enum ImageType GpImageType;
+typedef enum InterpolationMode GpInterpolationMode;
+typedef enum LinearGradientMode GpLinearGradientMode;
+typedef enum LineCap GpLineCap;
+typedef enum LineJoin GpLineJoin;
+typedef enum MatrixOrder GpMatrixOrder;
+typedef enum MetafileFrameUnit GpMetafileFrameUnit;
+typedef enum MetafileType GpMetafileType;
+typedef enum ObjectType GpObjectType;
+typedef enum PathPointType GpPathPointType;
+typedef enum PenAlignment GpPenAlignment;
+typedef enum PenType GpPenType;
+typedef enum PixelOffsetMode GpPixelOffsetMode;
+typedef enum QualityMode GpQualityMode;
+typedef enum SmoothingMode GpSmoothingMode;
+typedef enum StringAlignment GpStringAlignment;
+typedef enum StringDigitSubstitute GpStringDigitSubstitute;
+typedef enum StringFormatFlags GpStringFormatFlags;
+typedef enum StringTrimming GpStringTrimming;
+typedef enum TextRenderingHint GpTextRenderingHint;
+typedef enum Unit GpUnit;
+typedef enum WarpMode GpWarpMode;
+typedef enum WrapMode GpWrapMode;
 
 #ifdef __cplusplus
 
-class GpGraphics
-{
-};
-class GpPen
-{
-};
-class GpBrush
-{
-};
-class GpHatch : public GpBrush
-{
-};
-class GpSolidFill : public GpBrush
-{
-};
-class GpPath
-{
-};
-class GpMatrix
-{
-};
-class GpPathIterator
-{
-};
-class GpCustomLineCap
-{
-};
-class GpAdjustableArrowCap : public GpCustomLineCap
-{
-};
-class GpImage
-{
-};
-class GpMetafile : public GpImage
-{
-};
-class GpImageAttributes
-{
-};
-class GpCachedBitmap
-{
-};
-class GpBitmap : public GpImage
-{
-};
-class GpPathGradient : public GpBrush
-{
-};
-class GpLineGradient : public GpBrush
-{
-};
-class GpTexture : public GpBrush
-{
-};
-class GpFont
-{
-};
-class GpFontCollection
-{
-};
-class GpFontFamily
-{
-};
-class GpStringFormat
-{
-};
-class GpRegion
-{
-};
-class CGpEffect
-{
-};
+class CGpEffect {}; 
+class GpCustomLineCap {};
+class GpImage {};
 
-#else /* end of c++ declarations */
+class GpAdjustableArrowCap: public GpCustomLineCap {};
+class GpBitmap: public GpImage {};
+class GpBrush {};
+class GpCachedBitmap {};
+class GpFont {};
+class GpFontCollection {};
+class GpFontFamily {};
+class GpGraphics {};
+class GpHatch: public GpBrush {};         /* HatchBrush */
+class GpImageAttributes {};
+class GpLineGradient: public GpBrush {};  /* LinearGradientBrush */
+class GpMatrix {};
+class GpMetafile: public GpImage {};
+class GpPath {};                          /* GraphicsPath */
+class GpPathData {};
+class GpPathGradient: public GpBrush {};  /* PathGradientBrush */
+class GpPathIterator {};                  /* GraphicsPathIterator */
+class GpPen {};
+class GpRegion {};
+class GpSolidFill: public GpBrush {};     /* SolidBrush */
+class GpStringFormat {};
+class GpTexture: public GpBrush {};       /* TextureBrush */
 
-typedef struct GpGraphics GpGraphics;
-typedef struct GpPen GpPen;
-typedef struct GpBrush GpBrush;
-typedef struct GpHatch GpHatch;
-typedef struct GpSolidFill GpSolidFill;
-typedef struct GpPath GpPath;
-typedef struct GpMatrix GpMatrix;
-typedef struct GpPathIterator GpPathIterator;
-typedef struct GpCustomLineCap GpCustomLineCap;
-typedef struct GpAdjustableArrowCap GpAdjustableArrowCap;
-typedef struct GpImage GpImage;
-typedef struct GpMetafile GpMetafile;
-typedef struct GpImageAttributes GpImageAttributes;
-typedef struct GpCachedBitmap GpCachedBitmap;
-typedef struct GpBitmap GpBitmap;
-typedef struct GpPathGradient GpPathGradient;
-typedef struct GpLineGradient GpLineGradient;
-typedef struct GpTexture GpTexture;
-typedef struct GpFont GpFont;
-typedef struct GpFontCollection GpFontCollection;
-typedef struct GpFontFamily GpFontFamily;
-typedef struct GpStringFormat GpStringFormat;
-typedef struct GpRegion GpRegion;
-typedef struct CGpEffect CGpEffect;
+#else /* !__cplusplus */
 
-#endif /* end of c declarations */
+typedef void CGpEffect;
+typedef void GpAdjustableArrowCap;
+typedef void GpBitmap;
+typedef void GpBrush;
+typedef void GpCachedBitmap;
+typedef void GpCustomLineCap;
+typedef void GpFont;
+typedef void GpFontFamily;
+typedef void GpFontCollection;
+typedef void GpGraphics;
+typedef void GpHatch;
+typedef void GpImage;
+typedef void GpImageAttributes;
+typedef void GpLineGradient;
+typedef void GpMatrix;
+typedef void GpMetafile;
+typedef void GpPath;
+typedef void GpPathData;
+typedef void GpPathGradient;
+typedef void GpPathIterator;
+typedef void GpPen;
+typedef void GpRegion;
+typedef void GpSolidFill;
+typedef void GpStringFormat;
+typedef void GpTexture;
 
-typedef Status GpStatus;
-typedef Unit GpUnit;
-typedef BrushType GpBrushType;
-typedef PointF GpPointF;
-typedef FillMode GpFillMode;
-typedef PathData GpPathData;
-typedef LineCap GpLineCap;
-typedef RectF GpRectF;
-typedef Rect GpRect;
-typedef LineJoin GpLineJoin;
-typedef DashCap GpDashCap;
-typedef DashStyle GpDashStyle;
-typedef MatrixOrder GpMatrixOrder;
-typedef Point GpPoint;
-typedef WrapMode GpWrapMode;
-typedef Color GpColor;
-typedef FlushIntention GpFlushIntention;
-typedef CoordinateSpace GpCoordinateSpace;
-typedef PenAlignment GpPenAlignment;
-typedef PenType GpPenType;
-typedef HatchStyle GpHatchStyle;
+#endif /* !__cplusplus */
 
-#endif
+#endif /* __GDIPLUS_GPSTUBS_H */
