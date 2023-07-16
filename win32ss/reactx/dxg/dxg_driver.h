@@ -169,9 +169,9 @@ D3dLockSurfaces(DWORD dwCount, D3D_SURFACE **pD3dSurf)
 DWORD
 NTAPI
 DxD3dContextCreate(
-    HANDLE hDdLocal,
-    HANDLE Obj1,
-    HANDLE Obj2,
+    EDD_DIRECTDRAW_GLOBAL* peDdGlobal,
+    EDD_SURFACE* peDdSurf1,
+    EDD_SURFACE* peDdSurf2,
     ULONG_PTR RegionSize)
 {
     TRACE();
@@ -210,7 +210,7 @@ DxD3dContextCreate(
         RegionSize = 0x10000;
     }
 
-    PEDD_DIRECTDRAW_LOCAL peDdL = (PEDD_DIRECTDRAW_LOCAL)DdHmgLock(hDdLocal, ObjType_DDLOCAL_TYPE, FALSE);
+    PEDD_DIRECTDRAW_LOCAL peDdL = (PEDD_DIRECTDRAW_LOCAL)DdHmgLock(peDdGlobal, ObjType_DDLOCAL_TYPE, FALSE);
 
     if(!peDdL)
     {
@@ -219,9 +219,9 @@ DxD3dContextCreate(
 
     PEDD_DIRECTDRAW_GLOBAL peDdGl = peDdL->peDirectDrawGlobal2;
 
-    d3dSurfaces[0].peDdSurf = (PEDD_SURFACE)Obj1;
+    d3dSurfaces[0].peDdSurf = peDdSurf1;
     d3dSurfaces[0].bMandatory = FALSE;
-    d3dSurfaces[1].peDdSurf = (PEDD_SURFACE)Obj2;
+    d3dSurfaces[1].peDdSurf = peDdSurf2;
     d3dSurfaces[1].bMandatory = TRUE;
 
     DdHmgAcquireHmgrSemaphore();
@@ -257,6 +257,7 @@ DxD3dContextCreate(
 
                             if(result && !(RegionSize + 20))
                             {
+                                // Unsure but we are assigning something to the 0x140u DDCONTEXT
                             }
 
                             //InterlockedDecrement(v10 + 2);
@@ -1819,6 +1820,7 @@ DxDdGetDirectDrawBound(HDEV hDev, LPRECT lpRect)
         lpRect->right = peDdGl->rcbounds.right;
         lpRect->bottom = peDdGl->rcbounds.bottom;
 
+        // Reset the flag UINT_MAX - 4
         peDdGl->fl = peDdGl->fl & 0xfffffffb;
     }
 
@@ -1832,7 +1834,7 @@ DxDdEnableDirectDrawRedirection(PVOID p1, PVOID p2)
 {
     TRACE();
 
-    // Not Implemented In Vista
+    // No Implementation
     return 0;
 }
 
@@ -1845,10 +1847,10 @@ DxDdAllocPrivateUserMem(PEDD_SURFACE pEDDSurface, SIZE_T cjMemSize, ULONG ulTag)
 
     PVOID pvUserMem = NULL;
 
-    HANDLE hProcess = PsGetCurrentProcess();
+    PEPROCESS peProcess = PsGetCurrentProcess();
 
     // Check owning process?
-    if(pEDDSurface != NULL && pEDDSurface->peDirectDrawLocal->Process == hProcess)
+    if(pEDDSurface != NULL && pEDDSurface->peDirectDrawLocal->Process == peProcess)
     {
         pvUserMem = EngAllocUserMem(cjMemSize, ulTag);
     }
@@ -1880,22 +1882,23 @@ VOID
 NTAPI
 DeferMemoryFree(PVOID pvMem, EDD_SURFACE *pEDDSurface)
 {
-  PVOID* ppvMem;
+    PVOID *ppvMem;
 
-  ppvMem = (PVOID*)EngAllocMem(FL_ZERO_MEMORY, 0xc, TAG_GDDP);
+    ppvMem = (PVOID *)EngAllocMem(FL_ZERO_MEMORY, 0xc, TAG_GDDP);
 
-  if (ppvMem != NULL) {
-    ppvMem[0] = pvMem;
+    if (ppvMem != NULL)
+    {
+        ppvMem[0] = pvMem;
 
-    ppvMem[1] = pEDDSurface;
+        ppvMem[1] = pEDDSurface;
 
-    ppvMem[2] = (PVOID)pEDDSurface->peDirectDrawLocal->peDirectDrawGlobal2->unk_608;
+        ppvMem[2] = (PVOID)pEDDSurface->peDirectDrawLocal->peDirectDrawGlobal2->unk_608;
 
-    // *(void ***)(*(int *)(*(int *)(param_2 + 0xcc) + 0x24) + 0x608) = ppvVar1;
-    pEDDSurface->peDirectDrawLocal->peDirectDrawGlobal2->unk_608 = (ULONG_PTR)ppvMem;
+        // *(void ***)(*(int *)(*(int *)(param_2 + 0xcc) + 0x24) + 0x608) = ppvVar1;
+        pEDDSurface->peDirectDrawLocal->peDirectDrawGlobal2->unk_608 = (ULONG_PTR)ppvMem;
 
-    pEDDSurface->cLocks |= 0x1000;
-  }
+        pEDDSurface->cLocks |= 0x1000;
+    }
 }
 
 VOID
