@@ -32,25 +32,22 @@ NTAPI
 KiFreezeTargetExecution(_In_ PKTRAP_FRAME TrapFrame,
                         _In_ PKEXCEPTION_FRAME ExceptionFrame)
 {
-    _disable();
-    KiSaveProcessorState(TrapFrame, NULL);
- //   KdpDprintf("CPU %d entering FROZEN state\n", KeGetCurrentProcessorNumber());
+    ULONG OldValue;
+   // KiSaveProcessorState(TrapFrame, NULL);
+    //KdpDprintf("CPU %d entering FROZEN state\n", KeGetCurrentProcessorNumber());
+        KeStallExecutionProcessor(1000);
     PKPRCB Prcb;
-    ULONG IpiFreezeState;
     Prcb = KeGetCurrentPrcb();
-
-    Prcb->IpiFrozen = IPI_FROZEN_HALTED;
-    IpiFreezeState = Prcb->IpiFrozen;
-    while (IpiFreezeState != IPI_FROZEN_THAWING)
+    OldValue = _InterlockedExchange(&Prcb->IpiFrozen, IPI_FROZEN_HALTED);
+    while (Prcb->IpiFrozen != IPI_FROZEN_THAWING)
     {
-        KeStallExecutionProcessor(100);
-        IpiFreezeState = Prcb->IpiFrozen;
+        KeStallExecutionProcessor(10);
+
+        //KdpDprintf("CPU Is Frozen\n");
     }
-  //  KdpDprintf("CPU %d returning to RUNNING state\n", KeGetCurrentProcessorNumber());
+    KeStallExecutionProcessor(1000);
+   // KdpDprintf("CPU %d returning to RUNNING state\n", KeGetCurrentProcessorNumber());
     Prcb->IpiFrozen = IPI_FROZEN_RUNNING;
-    //InterlockedBitTestAndReset((PLONG)&Prcb->IpiFrozen, IPI_FROZEN_RUNNING);
-    //KiRestoreProcessorState(TrapFrame, NULL);
-     _enable();
 }
 
 /* FUNCTIONS ******************************************************************/
@@ -62,7 +59,9 @@ KeFreezeExecution(IN PKTRAP_FRAME TrapFrame,
 {
 #ifdef CONFIG_SMP
     KAFFINITY TargetAffinity;
-   // KAFFINITY Current;
+    PKPRCB TargetPrcb;
+    KAFFINITY Current;
+    ULONG i;
     PKPRCB Prcb = KeGetCurrentPrcb();
 #endif
     BOOLEAN Enable;
@@ -91,13 +90,28 @@ KeFreezeExecution(IN PKTRAP_FRAME TrapFrame,
     //KdpDprintf("Freezing CPUs\n");
     TargetAffinity = KeActiveProcessors;
     TargetAffinity &= ~Prcb->SetMember;
-
-        /* Make sure this is MP */
     if (TargetAffinity)
     {
-        //KdpDprintf("Shooting out IPIs\n");
-        KiIpiSend(TargetAffinity, IPI_FREEZE);
-        //KdpDprintf("Success\n");
+        for (i = 0, Current = 1; i < KeNumberProcessors; i++, Current <<= 1)
+        {
+            if (TargetAffinity & Current)
+            {
+                if (i != KeGetCurrentProcessorNumber())
+                {
+                   // KdpDprintf("freezing Processor %d\n", i);
+                    /* Incrementaly stop all processors */
+                    KiIpiSend(Current, IPI_FREEZE);
+                    KeStallExecutionProcessor(100000);
+                    TargetPrcb = KiProcessorBlock[i];
+                    while (TargetPrcb->IpiFrozen != IPI_FROZEN_HALTED)
+                    {
+                        /* Do nothing, we're trying to synch */
+                    }
+                    //KdpDprintf("Froze Processor %d\n", i);
+                    KeStallExecutionProcessor(100000);
+                }
+            }
+        }
     }
 #endif
 
@@ -121,21 +135,23 @@ KeThawExecution(IN BOOLEAN Enable)
     PKPRCB Prcb = KeGetCurrentPrcb();
     TargetAffinity = KeActiveProcessors;
     TargetAffinity &= ~Prcb->SetMember;
-
     for (i = 0, Current = 1; i < KeNumberProcessors; i++, Current <<= 1)
     {
         if (TargetAffinity & Current)
         {
-            //KdpDprintf("Unfreezing Processor %d\n", i);
+           // KdpDprintf("Unfreezing Processor %d\n", i);
+            KeStallExecutionProcessor(100000);
             TargetPrcb = KiProcessorBlock[i];
-            TargetPrcb->IpiFrozen = IPI_FROZEN_THAWING;
+            _InterlockedExchange(&TargetPrcb->IpiFrozen, IPI_FROZEN_THAWING);
+            KeStallExecutionProcessor(100000);
             while (Prcb->IpiFrozen != IPI_FROZEN_RUNNING)
             {
-                KeStallExecutionProcessor(100);
+                KeStallExecutionProcessor(10000);
                // KdpDprintf("Waiting for processor: %d\n", i);
             }
 
-           // KdpDprintf("thawed processor: %d\n", i);
+        //    KdpDprintf("CPU %d returning to RUNNING state\n", i);
+            KeStallExecutionProcessor(100000);
         }
     }
 #endif

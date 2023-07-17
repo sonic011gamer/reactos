@@ -53,7 +53,7 @@ KiInitMachineDependent(VOID)
     {
         /* Do an IPI to enable it on all CPUs */
         if (Ki386CreateIdentityMap(&IdentityMap, Ki386EnableCurrentLargePage, 2))
-            KeIpiGenericCall(Ki386EnableTargetLargePage, (ULONG_PTR)&IdentityMap);
+           // KeIpiGenericCall(Ki386EnableTargetLargePage, (ULONG_PTR)&IdentityMap);
 
         /* Free the pages allocated for identity map */
         Ki386FreeIdentityMap(&IdentityMap);
@@ -64,7 +64,7 @@ KiInitMachineDependent(VOID)
     {
         /* Do an IPI to enable it on all CPUs */
         CpuCount = KeNumberProcessors;
-        KeIpiGenericCall(Ki386EnableGlobalPage, (ULONG_PTR)&CpuCount);
+        //KeIpiGenericCall(Ki386EnableGlobalPage, (ULONG_PTR)&CpuCount);
     }
 
     /* Check for PAT and/or MTRR support */
@@ -90,7 +90,7 @@ KiInitMachineDependent(VOID)
     {
         /* Do an IPI call to enable the Debug Exceptions */
         CpuCount = KeNumberProcessors;
-        KeIpiGenericCall(Ki386EnableDE, (ULONG_PTR)&CpuCount);
+     //   KeIpiGenericCall(Ki386EnableDE, (ULONG_PTR)&CpuCount);
     }
 
     /* Check if FXSR was found */
@@ -98,14 +98,14 @@ KiInitMachineDependent(VOID)
     {
         /* Do an IPI call to enable the FXSR */
         CpuCount = KeNumberProcessors;
-        KeIpiGenericCall(Ki386EnableFxsr, (ULONG_PTR)&CpuCount);
+      //  KeIpiGenericCall(Ki386EnableFxsr, (ULONG_PTR)&CpuCount);
 
         /* Check if XMM was found too */
         if (KeFeatureBits & KF_XMMI)
         {
             /* Do an IPI call to enable XMMI exceptions */
             CpuCount = KeNumberProcessors;
-            KeIpiGenericCall(Ki386EnableXMMIExceptions, (ULONG_PTR)&CpuCount);
+         //   KeIpiGenericCall(Ki386EnableXMMIExceptions, (ULONG_PTR)&CpuCount);
 
             /* FIXME: Implement and enable XMM Page Zeroing for Mm */
 
@@ -116,7 +116,8 @@ KiInitMachineDependent(VOID)
 
     /* Check for, and enable SYSENTER support */
     KiRestoreFastSyscallReturnState();
-
+    goto Test;
+    __debugbreak();
     /* Loop every CPU */
     i = KeActiveProcessors;
     for (Affinity = 1; i; Affinity <<= 1)
@@ -266,7 +267,7 @@ KiInitMachineDependent(VOID)
 
     /* Return affinity back to where it was */
     KeRevertToUserAffinityThread();
-
+Test:
     /* NT allows limiting the duration of an ISR with a registry key */
     if (KiTimeLimitIsrMicroseconds)
     {
@@ -276,6 +277,7 @@ KiInitMachineDependent(VOID)
 
     /* Set CR0 features based on detected CPU */
     KiSetCR0Bits();
+
 }
 
 CODE_SEG("INIT")
@@ -529,7 +531,6 @@ KiInitializeKernel(IN PKPROCESS InitProcess,
     }
     else
     {
-        DPRINT1("Starting a new CPU\n");
         KeLowerIrql(DISPATCH_LEVEL);
     }
 
@@ -804,6 +805,8 @@ KiSystemStartup(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
     RtlCopyMemory(&Idt[2], &NmiEntry, sizeof(KIDTENTRY));
     RtlCopyMemory(&Idt[8], &DoubleFaultEntry, sizeof(KIDTENTRY));
 
+AppCpuInit:
+
     /* Loop until we can release the freeze lock */
     do
     {
@@ -811,7 +814,6 @@ KiSystemStartup(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
         while (*(volatile PKSPIN_LOCK*)&KiFreezeExecutionLock == (PVOID)1);
     } while(InterlockedBitTestAndSet((PLONG)&KiFreezeExecutionLock, 0));
 
-AppCpuInit:
     /* Setup CPU-related fields */
     __writefsdword(KPCR_NUMBER, Cpu);
     __writefsdword(KPCR_SET_MEMBER, 1 << Cpu);

@@ -648,6 +648,7 @@ VOID
 FASTCALL
 HalpIpiInterruptHandler(IN PKTRAP_FRAME TrapFrame)
 {
+    _disable();
     KIRQL Irql;
 
     /* Enter trap */
@@ -666,9 +667,10 @@ HalpIpiInterruptHandler(IN PKTRAP_FRAME TrapFrame)
 
     /* Restore the old IRQL */
     ApicLowerIrql(Irql);
-
+    _enable();
     /* Exit the interrupt */
     KiEoiHelper(TrapFrame);
+
 }
 
 #endif

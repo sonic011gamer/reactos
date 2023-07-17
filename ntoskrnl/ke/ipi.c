@@ -183,8 +183,6 @@ KiIpiServiceRoutine(IN PKTRAP_FRAME TrapFrame, IN PKEXCEPTION_FRAME ExceptionFra
     /* DPC level! Trigger an DPC interrupt */
     if (InterlockedBitTestAndReset((PLONG)&Prcb->RequestSummary, IPI_DPC))
     {
-        DPRINT1("DPC PUSH\b");
-                Prcb->DpcInterruptRequested = TRUE;
         HalRequestSoftwareInterrupt(DISPATCH_LEVEL);
     }
 
@@ -228,7 +226,8 @@ ULONG_PTR
 NTAPI
 KeIpiGenericCall(IN PKIPI_BROADCAST_WORKER Function, IN ULONG_PTR Argument)
 {
-    //DPRINT1("entering generic call\n");
+
+    DPRINT1("entering generic call\n");
     ULONG_PTR Status;
     KIRQL OldIrql, OldIrql2;
 #ifdef CONFIG_SMP
@@ -259,7 +258,7 @@ KeIpiGenericCall(IN PKIPI_BROADCAST_WORKER Function, IN ULONG_PTR Argument)
     {
            // DPRINT1("Sending packet\n");
         /* Send an IPI */
-      //  KiIpiSendPacket(Affinity, KiIpiGenericCallTarget, Function, Argument, &Count);
+       KiIpiSendPacket(Affinity, KiIpiGenericCallTarget, Function, Argument, &Count);
 
     }
 
