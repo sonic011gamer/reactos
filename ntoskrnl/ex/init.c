@@ -1618,7 +1618,7 @@ Phase1InitializationDiscard(IN PVOID Context)
 
     /* Update the progress bar */
     InbvUpdateProgressBar(5);
-  //  __debugbreak();
+
     /* Call OB initialization again */
     if (!ObInitSystem()) KeBugCheck(OBJECT1_INITIALIZATION_FAILED);
 
@@ -1634,9 +1634,15 @@ Phase1InitializationDiscard(IN PVOID Context)
         /* Failed, bugcheck */
         KeBugCheckEx(PHASE1_INITIALIZATION_FAILED, 0, 0, 3, 0);
     }
-    __debugbreak();
+
+    DPRINT1("Got passed: Initialize the later stages of the kernel\n");
+    for(;;)
+    {
+
+    }
+
     /* Initialize the SRM in Phase 1 */
-    //if (!SeInitSystem()) KeBugCheck(SECURITY1_INITIALIZATION_FAILED);
+    if (!SeInitSystem()) KeBugCheck(SECURITY1_INITIALIZATION_FAILED);
 
     /* Update the progress bar */
     InbvUpdateProgressBar(10);
@@ -1648,7 +1654,7 @@ Phase1InitializationDiscard(IN PVOID Context)
         /* Failed to create the system root link */
         KeBugCheckEx(SYMBOLIC_INITIALIZATION_FAILED, Status, 0, 0, 0);
     }
-    __debugbreak();
+
     /* Set up Region Maps, Sections and the Paging File */
     if (!MmInitSystem(1, LoaderBlock)) KeBugCheck(MEMORY1_INITIALIZATION_FAILED);
 

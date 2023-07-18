@@ -513,7 +513,7 @@ KeStartThread(IN OUT PKTHREAD Thread)
 #endif
     Thread->Quantum = Process->QuantumReset;
     Thread->QuantumReset = Process->QuantumReset;
-    Thread->SystemAffinityActive = FALSE;
+    Thread->SystemAffinityActive = TRUE;
 
     /* Lock the process */
     KiAcquireProcessLockRaiseToSynch(Process, &LockHandle);
@@ -1033,7 +1033,6 @@ KeRevertToUserAffinityThread(VOID)
     PKPRCB Prcb;
     PKTHREAD NextThread, CurrentThread = KeGetCurrentThread();
     ASSERT_IRQL_LESS_OR_EQUAL(DISPATCH_LEVEL);
-    CurrentThread->SystemAffinityActive = FALSE;
 
     /* Lock the Dispatcher Database */
     OldIrql = KiAcquireDispatcherLock();
@@ -1041,7 +1040,7 @@ KeRevertToUserAffinityThread(VOID)
     /* Set the user affinity and processor and disable system affinity */
     CurrentThread->Affinity = CurrentThread->UserAffinity;
     CurrentThread->IdealProcessor = CurrentThread->UserIdealProcessor;
-    CurrentThread->SystemAffinityActive = FALSE;
+    CurrentThread->SystemAffinityActive = TRUE;
 
     /* Get the current PRCB and check if it doesn't match this affinity */
     Prcb = KeGetCurrentPrcb();
