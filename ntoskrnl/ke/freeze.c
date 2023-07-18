@@ -33,20 +33,13 @@ KiFreezeTargetExecution(_In_ PKTRAP_FRAME TrapFrame,
                         _In_ PKEXCEPTION_FRAME ExceptionFrame)
 {
     ULONG OldValue;
-   // KiSaveProcessorState(TrapFrame, NULL);
-    //KdpDprintf("CPU %d entering FROZEN state\n", KeGetCurrentProcessorNumber());
-        KeStallExecutionProcessor(1000);
     PKPRCB Prcb;
     Prcb = KeGetCurrentPrcb();
     OldValue = _InterlockedExchange(&Prcb->IpiFrozen, IPI_FROZEN_HALTED);
     while (Prcb->IpiFrozen != IPI_FROZEN_THAWING)
     {
         KeStallExecutionProcessor(10);
-
-        //KdpDprintf("CPU Is Frozen\n");
     }
-    KeStallExecutionProcessor(1000);
-   // KdpDprintf("CPU %d returning to RUNNING state\n", KeGetCurrentProcessorNumber());
     Prcb->IpiFrozen = IPI_FROZEN_RUNNING;
 }
 
@@ -98,17 +91,13 @@ KeFreezeExecution(IN PKTRAP_FRAME TrapFrame,
             {
                 if (i != KeGetCurrentProcessorNumber())
                 {
-                   // KdpDprintf("freezing Processor %d\n", i);
                     /* Incrementaly stop all processors */
                     KiIpiSend(Current, IPI_FREEZE);
-                    KeStallExecutionProcessor(100000);
                     TargetPrcb = KiProcessorBlock[i];
                     while (TargetPrcb->IpiFrozen != IPI_FROZEN_HALTED)
                     {
                         /* Do nothing, we're trying to synch */
                     }
-                    //KdpDprintf("Froze Processor %d\n", i);
-                    KeStallExecutionProcessor(100000);
                 }
             }
         }
@@ -139,19 +128,11 @@ KeThawExecution(IN BOOLEAN Enable)
     {
         if (TargetAffinity & Current)
         {
-           // KdpDprintf("Unfreezing Processor %d\n", i);
-            KeStallExecutionProcessor(100000);
             TargetPrcb = KiProcessorBlock[i];
             _InterlockedExchange(&TargetPrcb->IpiFrozen, IPI_FROZEN_THAWING);
-            KeStallExecutionProcessor(100000);
             while (Prcb->IpiFrozen != IPI_FROZEN_RUNNING)
             {
-                KeStallExecutionProcessor(10000);
-               // KdpDprintf("Waiting for processor: %d\n", i);
             }
-
-        //    KdpDprintf("CPU %d returning to RUNNING state\n", i);
-            KeStallExecutionProcessor(100000);
         }
     }
 #endif

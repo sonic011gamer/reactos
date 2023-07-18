@@ -1627,18 +1627,12 @@ Phase1InitializationDiscard(IN PVOID Context)
 
     /* Initialize the later stages of the kernel */
     if (!KeInitSystem()) KeBugCheckEx(PHASE1_INITIALIZATION_FAILED, 0, 0, 2, 0);
-    //__debugbreak();
+
     /* Call KD Providers at Phase 1 */
     if (!KdInitSystem(ExpInitializationPhase, KeLoaderBlock))
     {
         /* Failed, bugcheck */
         KeBugCheckEx(PHASE1_INITIALIZATION_FAILED, 0, 0, 3, 0);
-    }
-
-    DPRINT1("Got passed: Initialize the later stages of the kernel\n");
-    for(;;)
-    {
-
     }
 
     /* Initialize the SRM in Phase 1 */

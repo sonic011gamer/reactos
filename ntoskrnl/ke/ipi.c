@@ -226,6 +226,8 @@ ULONG_PTR
 NTAPI
 KeIpiGenericCall(IN PKIPI_BROADCAST_WORKER Function, IN ULONG_PTR Argument)
 {
+    DPRINT1("KeIpiGenericCall:\n");
+    __debugbreak();
 #if 0
     //DPRINT1("entering generic call\n");
     ULONG_PTR Status;
