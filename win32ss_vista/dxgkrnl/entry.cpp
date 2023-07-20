@@ -23,7 +23,7 @@
  */
 NTSTATUS
 NTAPI /* In Windows this is called DpiInitialize, But i don't care. */
-RdPort_InitializeMiniport(PDRIVER_OBJECT DriverObject, PUNICODE_STRING SourceString, DRIVER_INITIALIZATION_DATA *DriverInitData)
+RdPortInitializeMiniport(PDRIVER_OBJECT DriverObject, PUNICODE_STRING SourceString, DRIVER_INITIALIZATION_DATA *DriverInitData)
 {
     /*
      *  @ IMPLEMENTED
@@ -36,18 +36,18 @@ RdPort_InitializeMiniport(PDRIVER_OBJECT DriverObject, PUNICODE_STRING SourceStr
 
     /* A new WDDM Miniport has been added to the system, let's see it! */
     PAGED_CODE();
-    DPRINT("RdPort_InitializeMiniport: Entry point\n");
-    DPRINT("RdPort_InitializeMiniport: WDDM Miniport driver Reports version: 0x%X\n", DriverInitData->Version);
+    DPRINT("RdPortInitializeMiniport: Entry point\n");
+    DPRINT("RdPortInitializeMiniport: WDDM Miniport driver Reports version: 0x%X\n", DriverInitData->Version);
     if (!DriverObject || !SourceString)
     {
         return STATUS_INVALID_PARAMETER;
     }
 
     /* Setup Global state for Miniport handling */
-    Status = RdPort_SetupGlobalState();
+    Status = RdPortSetupGlobalState();
     if (Status != STATUS_SUCCESS)
     {
-        DPRINT1("RdPort_InitializeMiniport: Couldn't setup global state status: 0x%X", Status);
+        DPRINT1("RdPortInitializeMiniport: Couldn't setup global state status: 0x%X", Status);
         return Status;
     }
 
@@ -55,7 +55,7 @@ RdPort_InitializeMiniport(PDRIVER_OBJECT DriverObject, PUNICODE_STRING SourceStr
     Status = IoAllocateDriverObjectExtension(DriverObject, DriverObject, sizeof(DXGKRNL_PRIVATE_EXTENSION), (PVOID*)&DriverObjectExtension);
     if (Status != STATUS_SUCCESS)
     {
-        DPRINT1("RdPort_InitializeMiniport: Couldn't allocate object extension status: 0x%X", Status);
+        DPRINT1("RdPortInitializeMiniport: Couldn't allocate object extension status: 0x%X", Status);
         return STATUS_INSUFFICIENT_RESOURCES;
     }
 
@@ -65,17 +65,17 @@ RdPort_InitializeMiniport(PDRIVER_OBJECT DriverObject, PUNICODE_STRING SourceStr
 
     /* Fill out the public dispatch routines */
     DriverExtend = DriverObject->DriverExtension;
-    DriverObject->MajorFunction[IRP_MJ_CREATE] = (PDRIVER_DISPATCH)RdPort_DispatchCreateDevice;
-    DriverObject->MajorFunction[IRP_MJ_PNP] = (PDRIVER_DISPATCH)RdPort_DispatchPnp;
-    DriverObject->MajorFunction[IRP_MJ_POWER] = (PDRIVER_DISPATCH)RdPort_DispatchPower;
-    DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = (PDRIVER_DISPATCH)RdPort_DispatchIoctl;
-    DriverObject->MajorFunction[IRP_MJ_INTERNAL_DEVICE_CONTROL] = (PDRIVER_DISPATCH)RdPort_DispatchInternalIoctl;
-    DriverObject->MajorFunction[IRP_MJ_SYSTEM_CONTROL] = (PDRIVER_DISPATCH)RdPort_DispatchSystemControl;
-    DriverObject->MajorFunction[IRP_MJ_CLOSE] = (PDRIVER_DISPATCH)RdPort_DispatchCloseDevice;
+    DriverObject->MajorFunction[IRP_MJ_CREATE] = (PDRIVER_DISPATCH)RdPortDispatchCreateDevice;
+    DriverObject->MajorFunction[IRP_MJ_PNP] = (PDRIVER_DISPATCH)RdPortDispatchPnp;
+    DriverObject->MajorFunction[IRP_MJ_POWER] = (PDRIVER_DISPATCH)RdPortDispatchPower;
+    DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = (PDRIVER_DISPATCH)RdPortDispatchIoctl;
+    DriverObject->MajorFunction[IRP_MJ_INTERNAL_DEVICE_CONTROL] = (PDRIVER_DISPATCH)RdPortDispatchInternalIoctl;
+    DriverObject->MajorFunction[IRP_MJ_SYSTEM_CONTROL] = (PDRIVER_DISPATCH)RdPortDispatchSystemControl;
+    DriverObject->MajorFunction[IRP_MJ_CLOSE] = (PDRIVER_DISPATCH)RdPortDispatchCloseDevice;
 
-    DriverExtend->AddDevice = RdPort_AddDevice;
-    DriverObject->DriverUnload = (PDRIVER_UNLOAD)RdPort_DriverUnload;
-    DPRINT("RdPort_InitializeMiniport: Finished\n");
+    DriverExtend->AddDevice = RdPortAddDevice;
+    DriverObject->DriverUnload = (PDRIVER_UNLOAD)RdPortDriverUnload;
+    DPRINT("RdPortInitializeMiniport: Finished\n");
     return STATUS_SUCCESS;
 }
 
@@ -108,7 +108,7 @@ DxgkInternalDeviceControl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
             OutputBuffer = (PVOID*)Irp->UserBuffer;
             Irp->IoStatus.Information = 0;
             Irp->IoStatus.Status = STATUS_SUCCESS;
-            *OutputBuffer = (PVOID)RdPort_InitializeMiniport;
+            *OutputBuffer = (PVOID)RdPortInitializeMiniport;
             DPRINT("IOCTL_VIDEO_DDI_FUNC_REGISTER - Queued RDDM_InitializeMiniport up\n");
             break;
         case IOCTL_VIDEO_I_AM_REACTOS:
@@ -116,7 +116,7 @@ DxgkInternalDeviceControl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
             Irp->IoStatus.Status = STATUS_SUCCESS;
             break;
         default:
-            DPRINT("RdPort_InternalIoctl: unknown IOCTRL Code: %X\n", IoControlCode);
+            DPRINT("RdPortInternalIoctl: unknown IOCTRL Code: %X\n", IoControlCode);
             break;
     }
 

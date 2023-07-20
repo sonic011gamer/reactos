@@ -16,7 +16,7 @@ PDXGKRNL_PRIVATE_EXTENSION Extension;
  */
 NTSTATUS
 NTAPI
-RdPort_DispatchCreateDevice(_In_    PDEVICE_OBJECT DeviceObject,
+RdPortDispatchCreateDevice(_In_    PDEVICE_OBJECT DeviceObject,
                             _Inout_ PIRP Irp)
 {
     UNIMPLEMENTED;
@@ -29,7 +29,7 @@ RdPort_DispatchCreateDevice(_In_    PDEVICE_OBJECT DeviceObject,
  */
 NTSTATUS
 NTAPI
-RdPort_DispatchPnp(_In_ PDEVICE_OBJECT DeviceObject,
+RdPortDispatchPnp(_In_ PDEVICE_OBJECT DeviceObject,
                    _In_ PVOID Tag)
 {
     UNIMPLEMENTED;
@@ -42,7 +42,7 @@ RdPort_DispatchPnp(_In_ PDEVICE_OBJECT DeviceObject,
  */
 PSTR
 NTAPI
-RdPort_DispatchPower(_In_ PDEVICE_OBJECT DeviceObject,
+RdPortDispatchPower(_In_ PDEVICE_OBJECT DeviceObject,
                      _In_ PSTR MutableMessage)
 {
     UNIMPLEMENTED;
@@ -55,7 +55,7 @@ RdPort_DispatchPower(_In_ PDEVICE_OBJECT DeviceObject,
  */
 NTSTATUS
 NTAPI
-RdPort_DispatchIoctl(_In_    PDEVICE_OBJECT DeviceObject,
+RdPortDispatchIoctl(_In_    PDEVICE_OBJECT DeviceObject,
                      _Inout_ IRP *Irp)
 {
     UNIMPLEMENTED;
@@ -68,7 +68,7 @@ RdPort_DispatchIoctl(_In_    PDEVICE_OBJECT DeviceObject,
  */
 NTSTATUS
 NTAPI
-RdPort_DispatchInternalIoctl(_In_ PDEVICE_OBJECT DeviceObject,
+RdPortDispatchInternalIoctl(_In_ PDEVICE_OBJECT DeviceObject,
                                      _Inout_ IRP *Irp)
 {
     UNIMPLEMENTED;
@@ -81,7 +81,7 @@ RdPort_DispatchInternalIoctl(_In_ PDEVICE_OBJECT DeviceObject,
  */
 NTSTATUS
 NTAPI
-RdPort_DispatchSystemControl(_In_ PDEVICE_OBJECT DeviceObject,
+RdPortDispatchSystemControl(_In_ PDEVICE_OBJECT DeviceObject,
                                      _In_ PVOID Tag)
 {
     UNIMPLEMENTED;
@@ -94,7 +94,7 @@ RdPort_DispatchSystemControl(_In_ PDEVICE_OBJECT DeviceObject,
  */
 NTSTATUS
 NTAPI
-RdPort_DispatchCloseDevice(_In_ PDEVICE_OBJECT DeviceObject)
+RdPortDispatchCloseDevice(_In_ PDEVICE_OBJECT DeviceObject)
 {
     UNIMPLEMENTED;
     __debugbreak();
@@ -112,7 +112,7 @@ RdPort_DispatchCloseDevice(_In_ PDEVICE_OBJECT DeviceObject)
  */
 NTSTATUS
 NTAPI
-RdPort_AddDevice(_In_    DRIVER_OBJECT *DriverObject,
+RdPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
                  _Inout_ DEVICE_OBJECT *PhysicalDeviceObject)
 {
     NTSTATUS Status;
@@ -169,7 +169,7 @@ RdPort_AddDevice(_In_    DRIVER_OBJECT *DriverObject,
 
     Extension->MiniportFdo = Fdo;
     Extension->MiniportPdo = PhysicalDeviceObject;
-    DPRINT1("RdPort_AddDevice: Created Device\n");
+    DPRINT1("RdPortAddDevice: Created Device\n");
     __debugbreak();
     return 0;
 }
@@ -179,7 +179,7 @@ RdPort_AddDevice(_In_    DRIVER_OBJECT *DriverObject,
  */
 NTSTATUS
 NTAPI
-RdPort_DriverUnload(_In_ PDRIVER_OBJECT DriverObject)
+RdPortDriverUnload(_In_ PDRIVER_OBJECT DriverObject)
 {
     UNIMPLEMENTED;
     __debugbreak();

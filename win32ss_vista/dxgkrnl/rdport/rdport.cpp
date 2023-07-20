@@ -14,7 +14,7 @@
  */
 NTSTATUS
 NTAPI
-RdPort_SetupGlobalState()
+RdPortSetupGlobalState()
 {
     /**
      * FIXME: Windows seems to dedicate an entire routine to setting up the gloal
