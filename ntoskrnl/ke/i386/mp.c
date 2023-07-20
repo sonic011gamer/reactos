@@ -77,9 +77,10 @@ KeStartAllProcessors()
     PVOID KernelStack, DPCStack;
     SIZE_T ProcessorCount = 0;
     PAPINFO APInfo;
-
+#if 0
     while (TRUE)
     {
+#endif
         ProcessorCount++;
         KernelStack = NULL;
         DPCStack = NULL;
@@ -89,17 +90,17 @@ KeStartAllProcessors()
         if (!APInfo)
         {
 
-            break;
+           // break;
         }
         KernelStack = MmCreateKernelStack(FALSE, 0);
         if (!KernelStack)
         {
-            break;
+            //break;
         }
         DPCStack = MmCreateKernelStack(FALSE, 0);
         if (!DPCStack)
         {
-            break;
+           // break;
         }
 
         /* Initalize a new PCR for the specific AP */
@@ -171,18 +172,19 @@ KeStartAllProcessors()
         // Start the CPU
         if (!HalStartNextProcessor(KeLoaderBlock, ProcessorState))
         {
-            break;
+         //   break;
         }
 
-        DPRINT("Waiting for init confirmation from AP CPU: #%u\n", ProcessorCount);
-        while (KeNumberProcessors < (ProcessorCount + 1))
+       // DPRINT("Waiting for init confirmation from AP CPU: #%u\n", ProcessorCount);
+        while (KeLoaderBlock->Prcb != 0)
         {
             KeMemoryBarrier();
             YieldProcessor();
         }
-        DPRINT("CPU Startup sucessfull!\n");
-    }
 
+       // DPRINT("CPU Startup sucessfull!\n");
+  //  }
+#if 0
     // The last CPU didn't start - clean the data
     ProcessorCount--;
 
@@ -192,6 +194,6 @@ KeStartAllProcessors()
         MmDeleteKernelStack(KernelStack, FALSE);
     if (DPCStack)
         MmDeleteKernelStack(DPCStack, FALSE);
-
+#endif
     DPRINT1("KeStartAllProcessors: Sucessful AP startup count is %u\n", ProcessorCount);
 }
