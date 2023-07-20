@@ -156,6 +156,7 @@ DxgkCreateClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     return STATUS_SUCCESS;
 }
 
+EXTERN_C
 NTSTATUS
 NTAPI 
 DriverEntry(
