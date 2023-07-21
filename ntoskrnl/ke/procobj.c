@@ -971,12 +971,19 @@ KeRemoveSystemServiceTable(IN ULONG Index)
 /* UNIMPLEMENTED */
 ULONG
 NTAPI
-KeQueryActiveProcessorCount(_In_ PKAFFINITY ActiveProcessors)
+KeQueryActiveProcessorCount(OUT PKAFFINITY ActiveProcessors OPTIONAL)
 {
-    //HACK: Return one to make drivers happy
-    return 1;
-}
+    RTL_BITMAP Bitmap;
+    KAFFINITY ActiveMap = KeQueryActiveProcessors();
 
+    if (ActiveProcessors != NULL)
+    {
+        *ActiveProcessors = ActiveMap;
+    }
+
+    RtlInitializeBitMap(&Bitmap, (PULONG)&ActiveMap,  sizeof(ActiveMap) * 8);
+    return RtlNumberOfSetBits(&Bitmap);
+}
 /* UNIMPLEMENTED */
 ULONG
 NTAPI
