@@ -1130,7 +1130,7 @@ NTAPI
 KeRevertToUserAffinityThreadEx(
   _In_ KAFFINITY Affinity);
 
-NTKRNLVISTAAPI
+NTKERNELAPI
 ULONG
 NTAPI
 KeQueryActiveProcessorCount(
@@ -1142,7 +1142,7 @@ NTAPI
 KeQueryMaximumProcessorCount(VOID);
 $endif (_WDMDDK_)
 $if (_NTDDK_)
-NTKRNLVISTAAPI
+NTKERNELAPI
 ULONG
 NTAPI
 KeQueryActiveProcessorCount(
@@ -1251,12 +1251,12 @@ NTAPI
 KeQueryNodeMaximumProcessorCount(
   _In_ USHORT NodeNumber);
 
-NTKRNLVISTAAPI
+NTKERNELAPI
 USHORT
 NTAPI
 KeQueryHighestNodeNumber(VOID);
 
-NTKRNLVISTAAPI
+NTKERNELAPI
 USHORT
 NTAPI
 KeGetCurrentNodeNumber(VOID);
@@ -1318,7 +1318,7 @@ KeRevertToUserGroupAffinityThread(
   _In_ PGROUP_AFFINITY PreviousAffinity);
 
 _IRQL_requires_max_(DISPATCH_LEVEL)
-NTKRNLVISTAAPI
+NTKERNELAPI
 BOOLEAN
 NTAPI
 KeSetCoalescableTimer(

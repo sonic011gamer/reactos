@@ -435,6 +435,7 @@
 @ stdcall IoGetDriverObjectExtension(ptr ptr)
 @ stdcall IoGetFileObjectGenericMapping()
 @ stdcall IoGetInitialStack()
+@ stdcall -version=0x600+ IoGetIoPriorityHint(ptr)
 @ stdcall IoGetLowerDeviceObject(ptr)
 @ fastcall IoGetPagingIoPriority(ptr)
 @ stdcall -version=0x600+ IoGetDevicePropertyData(ptr ptr long long long ptr ptr ptr)
@@ -503,8 +504,10 @@
 @ stdcall IoSetInformation(ptr ptr long ptr)
 @ stdcall IoSetIoCompletion(ptr ptr ptr long ptr long)
 @ stdcall -stub -version=0x600+ IoSetIoCompletionEx()
+@ stdcall -version=0x600+ IoSetMasterIrpStatus(ptr long)
 @ fastcall IoSetPartitionInformation(ptr long long long)
 @ stdcall IoSetPartitionInformationEx(ptr long ptr)
+@ stdcall -version=0x600+ IoSetDeviceInterfacePropertyData(ptr ptr ptr long ptr long ptr)
 @ stdcall -version=0x600+ IoSetDevicePropertyData(ptr ptr long long long long ptr)
 @ stdcall IoSetShareAccess(long long ptr ptr)
 @ stdcall IoSetStartIoAttributes(ptr long long)
@@ -608,6 +611,7 @@
 @ stdcall -arch=arm KeFlushIoBuffers(ptr long long)
 @ stdcall KeFlushQueuedDpcs()
 @ stdcall KeGenericCallDpc(ptr ptr)
+@ stdcall -version=0x600+ KeGetCurrentNodeNumber()
 @ stdcall -stub -version=0x600+ KeGetCurrentProcessorNumberEx(ptr)
 @ stdcall KeGetCurrentThread()
 @ stdcall KeGetPreviousMode()
@@ -662,6 +666,7 @@
 @ stdcall -version=0x600+ KeQueryActiveProcessorCountEx(long)
 @ stdcall KeQueryActiveProcessors()
 @ stdcall -stub -version=0x600+ KeQueryDpcWatchdogInformation(ptr)
+@ stdcall -version=0x600+ KeQueryHighestNodeNumber()
 @ stdcall -arch=i386,arm KeQueryInterruptTime()
 ;@ cdecl -arch=x86_64 KeQueryMultiThreadProcessorSet
 ;@ cdecl -arch=x86_64 KeQueryPrcbAddress
@@ -712,6 +717,7 @@
 @ extern KeServiceDescriptorTable
 @ stdcall -version=0x600+ -stub KeSetActualBasePriorityThread(ptr long) ;ehhh wrong!!!
 @ stdcall KeSetAffinityThread(ptr long)
+@ stdcall -version=0x600+ KeSetCoalescableTimer(ptr int64 long long ptr)
 @ stdcall KeSetBasePriorityThread(ptr long)
 @ stdcall KeSetDmaIoCoherency(long)
 @ stdcall KeSetEvent(ptr long long)
@@ -982,6 +988,7 @@
 @ stdcall PoCallDriver(ptr ptr)
 @ stdcall PoCancelDeviceNotify(ptr)
 @ stdcall -stub -version=0x600+ PoDisableSleepStates()
+@ stdcall -version=0x600+ PoQueryWatchdogTime(ptr ptr)
 @ stdcall PoQueueShutdownWorkItem(ptr)
 @ stdcall -stub -version=0x600+ PoReenableSleepStates()
 @ stdcall PoRegisterDeviceForIdleDetection(ptr long long long)

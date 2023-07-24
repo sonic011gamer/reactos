@@ -136,7 +136,12 @@ typedef VOID
   _Inout_ PVOID EcpContext,
   _In_ LPCGUID EcpType);
 
-typedef struct _ECP_LIST ECP_LIST, *PECP_LIST;
+typedef struct _ECP_LIST
+{
+    ULONG Signature;
+    ULONG Flags;
+    LIST_ENTRY EcpList;
+} ECP_LIST, *PECP_LIST;
 
 typedef ULONG FSRTL_ALLOCATE_ECPLIST_FLAGS;
 typedef ULONG FSRTL_ALLOCATE_ECP_FLAGS;
@@ -284,7 +289,25 @@ DEFINE_GUID(GUID_ECP_OPLOCK_KEY, 0x48850596, 0x3050, 0x4be7, 0x98, 0x63, 0xfe, 0
 typedef PVOID PNOTIFY_SYNC;
 
 #if (NTDDI_VERSION >= NTDDI_WIN7)
-typedef struct _ECP_HEADER ECP_HEADER, *PECP_HEADER;
+typedef ULONG ECP_HEADER_FLAGS;
+
+typedef struct _ECP_HEADER
+{
+    ULONG Signature;
+    ULONG Spare;
+    LIST_ENTRY ListEntry;
+    GUID EcpType;
+    PFSRTL_EXTRA_CREATE_PARAMETER_CLEANUP_CALLBACK CleanupCallback;
+    ECP_HEADER_FLAGS Flags;
+    ULONG Size;
+    PVOID ListAllocatedFrom;
+    PVOID Filter;
+} ECP_HEADER, *PECP_HEADER;
+
+#define ECP_HEADER_SIZE (sizeof(ECP_HEADER))
+
+#define ECP_HEADER_TO_CONTEXT(H) ((PVOID)((ULONG_PTR)H + ECP_HEADER_SIZE))
+#define ECP_CONTEXT_TO_HEADER(C) ((PECP_HEADER)((ULONG_PTR)C - ECP_HEADER_SIZE))
 #endif
 
 typedef BOOLEAN
