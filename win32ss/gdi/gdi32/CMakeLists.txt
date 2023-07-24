@@ -16,6 +16,7 @@ endif()
 
 list(APPEND SOURCE
     main/dllmain.c
+    misc/dwm.c
     misc/heap.c
     misc/gdientry.c
     misc/historic.c
@@ -27,6 +28,7 @@ list(APPEND SOURCE
     objects/clientobj.c
     objects/colorspace.c
     objects/coord.c
+    objects/d3dkmt.c
     objects/dc.c
     objects/eng.c
     objects/enhmfile.c
