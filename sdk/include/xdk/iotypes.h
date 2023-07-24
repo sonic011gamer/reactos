@@ -521,6 +521,13 @@ typedef VOID
   _In_ PIO_WORKITEM IoWorkItem);
 typedef IO_WORKITEM_ROUTINE_EX *PIO_WORKITEM_ROUTINE_EX;
 
+typedef struct _EX_WORKITEM_CONTEXT
+{
+    PIO_WORKITEM WorkItem;
+    PIO_WORKITEM_ROUTINE_EX WorkItemRoutineEx;
+    PVOID Context;
+} EX_WORKITEM_CONTEXT, *PEX_WORKITEM_CONTEXT;
+
 typedef struct _SHARE_ACCESS {
   ULONG OpenCount;
   ULONG Readers;

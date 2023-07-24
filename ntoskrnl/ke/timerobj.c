@@ -340,3 +340,15 @@ KeSetTimerEx(IN OUT PKTIMER Timer,
     return Inserted;
 }
 
+_IRQL_requires_max_(DISPATCH_LEVEL)
+BOOLEAN
+NTAPI
+KeSetCoalescableTimer(
+    _Inout_ PKTIMER Timer,
+    _In_ LARGE_INTEGER DueTime,
+    _In_ ULONG Period,
+    _In_ ULONG TolerableDelay,
+    _In_opt_ PKDPC Dpc)
+{
+    return KeSetTimerEx(Timer, DueTime, Period, Dpc);
+}

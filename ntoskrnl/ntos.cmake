@@ -102,6 +102,7 @@ list(APPEND SOURCE
     ${REACTOS_SOURCE_DIR}/ntoskrnl/ex/xipdisp.c
     ${REACTOS_SOURCE_DIR}/ntoskrnl/ex/zone.c
     ${REACTOS_SOURCE_DIR}/ntoskrnl/fsrtl/dbcsname.c
+    ${REACTOS_SOURCE_DIR}/ntoskrnl/fsrtl/extparam.c
     ${REACTOS_SOURCE_DIR}/ntoskrnl/fsrtl/fastio.c
     ${REACTOS_SOURCE_DIR}/ntoskrnl/fsrtl/faulttol.c
     ${REACTOS_SOURCE_DIR}/ntoskrnl/fsrtl/filelock.c
@@ -144,6 +145,7 @@ list(APPEND SOURCE
     ${REACTOS_SOURCE_DIR}/ntoskrnl/io/iomgr/iowork.c
     ${REACTOS_SOURCE_DIR}/ntoskrnl/io/iomgr/irp.c
     ${REACTOS_SOURCE_DIR}/ntoskrnl/io/iomgr/irq.c
+    ${REACTOS_SOURCE_DIR}/ntoskrnl/io/iomgr/misc.c
     ${REACTOS_SOURCE_DIR}/ntoskrnl/io/iomgr/ramdisk.c
     ${REACTOS_SOURCE_DIR}/ntoskrnl/io/iomgr/rawfs.c
     ${REACTOS_SOURCE_DIR}/ntoskrnl/io/iomgr/remlock.c
