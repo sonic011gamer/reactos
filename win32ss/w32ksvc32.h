@@ -709,6 +709,7 @@
     SVC_(GdiDdDDIDestroyOverlay, 1)
     SVC_(GdiDdDDIDestroySynchronizationObject, 1)
     SVC_(GdiDdDDIEscape, 1)
+    #if 0
     SVC_(, 1)
     SVC_(, 1)
     SVC_(, 1)
@@ -768,3 +769,4 @@
     SVC_(, 1)
     SVC_(, 1)
     SVC_(, 1)
+    #endif
