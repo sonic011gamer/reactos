@@ -30,8 +30,8 @@
     NESTED_ENTRY KiEnableMmu
     PROLOG_END KiEnableMmu
     /* Disable MMU - If we haven't already*/
-    mrs	x1, sctlr_el1
-	bic	x1, x1, #1
+    //mrs	x1, sctlr_el1
+	//bic	x1, x1, #1
     //TODO: fix this fuckery
 	msr	sctlr_el1, x1
     adrp x0, PgdBase
@@ -43,15 +43,13 @@
     isb
     bl KiTestUART
 
-    /* Fire up MMU - Paging is now enabled  */
-    mrs X0, SCTLR_EL1
-    orr X0, X0, #0x1 // The M bit (MMU).
-    msr SCTLR_EL1, X0
-    isb
-    /* Call a test func */
+   // /* Fire up MMU - Paging is now enabled  */
+   //mrs X0, SCTLR_EL1
+   //orr X0, X0, #0x1 // The M bit (MMU).
+   //msr SCTLR_EL1, X0
     bl KiTestUART
-infinite
-    b infinite
+    bl KiTestUART
+    /* Call a test func */
     bl ARM64IsAwesome
     NESTED_END KiEnableMmu
 
@@ -60,7 +58,7 @@ infinite
     mov x1, 0x09000000
     mov X2, 'C'
     str x2, [x1]
-    ret
+    bl ARM64IsAwesome
     NESTED_END KiTestUART
 
     /* void KiDisableMmu(void) */

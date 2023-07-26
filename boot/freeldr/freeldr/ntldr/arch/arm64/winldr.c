@@ -270,6 +270,7 @@ MempSetupPaging(IN PFN_NUMBER StartPage,
     /* Kernel mapping */
     if (KernelMapping)
     {
+        TRACE("ATTEMPTING KERNEL MAP\n");
         if (MempMapRangeOfPages(StartPage * PAGE_SIZE + KSEG0_BASE,
                                 StartPage * PAGE_SIZE,
                                 NumberOfPages) != NumberOfPages)
@@ -308,7 +309,7 @@ MempAllocatePageTables(VOID)
         return FALSE;
     }
 
-    /* Zero the PML4 */
+    /* Zero the PGD */
     RtlZeroMemory((PVOID)PgdBase, PAGE_SIZE);
     PgdBase[VAtoPGD(PGD_BASE)].Valid = 1;
     PgdBase[VAtoPGD(PGD_BASE)].Writable = 1;
@@ -380,23 +381,20 @@ void KiDisableMmu(void);
 VOID
 WinLdrSetProcessorContext(VOID)
 {
+
     TRACE("WinLdrSetProcessorContext: Entry\n");
+    TRACE("Kernel paged Status is %d\n", MempIsPageMapped((PVOID)PubKiSystemStartup));
+    TRACE("Freeloader Paged status is %d\n", MempIsPageMapped(OsLoaderBase));
     KiEnableMmu();
-
-    TRACE("Enabled MMU\n");
-    //TODO: Enable paging
-    //ARM_CONTROL_REGISTER ControlRegister
 }
-
+void KiTestUART();
 VOID
 ARM64IsAwesome()
 {
-    TRACE("Jumping to kernel\n");
-    TRACE("Kernel paged Status is %d\n", MempIsPageMapped(PubLoaderBlockVA));
-    TRACE("Freeloader Paged status is %d\n", MempIsPageMapped(OsLoaderBase));
-    TRACE("Hello from paged mode, KiSystemStartup %p, LoaderBlockVA %p!\n",
-          PubKiSystemStartup, PubLoaderBlockVA);
 
+   TRACE("Hello from paged mode, KiSystemStartup %p, LoaderBlockVA %p!\n",
+          PubKiSystemStartup, PubLoaderBlockVA);
+    TRACE("Jumping to kernel\n");
     (*PubKiSystemStartup)(PubLoaderBlockVA);
     for(;;)
     {
@@ -426,7 +424,13 @@ WinLdrSetupMachineDependent(
         BugCheck("MempAllocatePageTables failed!\n");
     }
 
-  //  WinLdrMapSpecialPages(PcrBasePage);
+     WinLdrMapSpecialPages(PcrBasePage);
+         MempMapSinglePage((ULONG64)0xFFFFF8004213A000,(ULONG64)0x00000000400038E8);
+       MempMapSinglePage((ULONG64)0xFFFFF8004213B000,(ULONG64)0x00000000400048E8);
+          MempMapSinglePage((ULONG64)0xFFFFF8004213C000,(ULONG64)0x00000000400058E8);
+             MempMapSinglePage((ULONG64)0xFFFFF8004213D000,(ULONG64)0x00000000400068E8);
+                MempMapSinglePage((ULONG64)0xFFFFF8004213E000,(ULONG64)0x00000000400078E8);
+                               MempMapSinglePage((ULONG64)0xFFFFF8004213F000,(ULONG64)0x00000000400088E8);
 }
 
 VOID
@@ -448,7 +452,6 @@ VOID
 WinldrFinalizeBoot(PLOADER_PARAMETER_BLOCK LoaderBlockVA,
                    KERNEL_ENTRY_POINT KiSystemStartup)
 {
-    TRACE("Preparing to jump to kernel\n");
     PubLoaderBlockVA = LoaderBlockVA;
     PubKiSystemStartup = KiSystemStartup;
     _ChangeStack();
@@ -463,14 +466,4 @@ Arm64MegaEnter()
     /* Actually start kernel */
     TRACE("ARM64 CPU Stack space has changed\n");
     WinLdrSetProcessorContext();
-    TRACE("Paging should be enabled, passing to kernel\n");
-
-    TRACE("Stack test\n");
-    TRACE("Current exception level is: %d\n", KiGetCurrentExceptionLevel());
-    /* Pass control */
-    (*PubKiSystemStartup)(PubLoaderBlockVA);
-    for(;;)
-    {
-
-    }
 }

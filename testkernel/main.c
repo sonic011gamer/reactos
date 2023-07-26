@@ -120,7 +120,7 @@ VOID
 NTAPI
 KiSystemStartup(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
 {
-    Rs232PortPutByte('C');
+    //Rs232PortPutByte('C');
     for(;;)
     {
 

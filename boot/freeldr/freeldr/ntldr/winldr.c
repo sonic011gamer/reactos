@@ -751,7 +751,7 @@ LoadWindowsCore(IN USHORT OperatingSystemVersion,
         UiMessageBox("Could not load %s", KernelFileName);
         return FALSE;
     }
-
+    goto success;
     /* Load the HAL */
     HalBase = LoadModule(LoaderBlock, DirPath, HalFileName,
                          "hal.dll", LoaderHalCode, &HalDTE, 35);
@@ -853,7 +853,7 @@ LoadWindowsCore(IN USHORT OperatingSystemVersion,
             }
         }
     }
-
+success:
     /* Load all referenced DLLs for Kernel, HAL and Kernel Debugger Transport DLL */
     Success = PeLdrScanImportDescriptorTable(&LoaderBlock->LoadOrderListHead, DirPath, *KernelDTE);
     if (!Success)
@@ -861,6 +861,7 @@ LoadWindowsCore(IN USHORT OperatingSystemVersion,
         UiMessageBox("Could not load %s", KernelFileName);
         goto Quit;
     }
+    return TRUE;
     Success = PeLdrScanImportDescriptorTable(&LoaderBlock->LoadOrderListHead, DirPath, HalDTE);
     if (!Success)
     {
@@ -886,8 +887,8 @@ Quit:
         if (KdDllBase) // Optional
             MmFreeMemory(KdDllBase);
 
-        PeLdrFreeDataTableEntry(HalDTE);
-        MmFreeMemory(HalBase);
+      //  PeLdrFreeDataTableEntry(HalDTE);
+      //  MmFreeMemory(HalBase);
 
         PeLdrFreeDataTableEntry(*KernelDTE);
         MmFreeMemory(KernelBase);
@@ -1190,8 +1191,8 @@ LoadAndBootWindowsCommon(
         /* Reset the PE loader import-DLL callback */
         PeLdrImportDllLoadCallback = NULL;
 
-//UiMessageBox("Error loading NTOS core.");
-       // return ENOEXEC;
+        //UiMessageBox("Error loading NTOS core.");
+        // return ENOEXEC;
     }
 
     /* Cleanup INI file */
@@ -1224,6 +1225,8 @@ LoadAndBootWindowsCommon(
 
     /* Save entry-point pointer and Loader block VAs */
     KiSystemStartup = (KERNEL_ENTRY_POINT)KernelDTE->EntryPoint;
+    TRACE("KiSystemStartup: %X\n", KernelDTE->EntryPoint);
+
     LoaderBlockVA = PaToVa(LoaderBlock);
 
     /* "Stop all motors", change videomode */
