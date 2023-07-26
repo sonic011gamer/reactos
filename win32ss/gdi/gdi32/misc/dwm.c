@@ -6,7 +6,7 @@
  */
 
 #include <precomp.h>
-#include "../../../win32ss_vista/include/locd3d.h"
+
 #include <debug.h>
 /* Legacy */
 

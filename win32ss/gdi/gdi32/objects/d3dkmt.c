@@ -5,9 +5,11 @@
  * COPYRIGHT:   Copyright 2023 Justin Miller <justin.miller@reactos.org>
  */
 
-#include <precomp.h>
+#include <ntddk.h>
+#include <ntstatus.h>
+
 #include "../../../win32ss_vista/include/locd3d.h"
-#include <debug.h>
+
 
 /* Windows Vista *************************************************************************************/
 

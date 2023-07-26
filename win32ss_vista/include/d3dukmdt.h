@@ -663,7 +663,7 @@ typedef struct _D3DDDI_SEGMENTPREFERENCE
                 ((DWORD)(BYTE)(ch0) | ((DWORD)(BYTE)(ch1) << 8) |       \
                 ((DWORD)(BYTE)(ch2) << 16) | ((DWORD)(BYTE)(ch3) << 24 ))
 #endif /* defined(MAKEFOURCC) */
-
+#if 0
 
 typedef enum _D3DDDIFORMAT
 {
@@ -806,7 +806,7 @@ typedef enum _D3DDDIFORMAT
 
     D3DDDIFMT_FORCE_UINT        =0x7fffffff
 } D3DDDIFORMAT;
-
+#endif
 typedef enum D3DDDI_COLOR_SPACE_TYPE
 {
     D3DDDI_COLOR_SPACE_RGB_FULL_G22_NONE_P709             = 0,
