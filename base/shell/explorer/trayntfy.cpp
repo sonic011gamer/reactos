@@ -87,10 +87,18 @@ public:
         {
             SetWindowExStyle(m_hWnd, WS_EX_STATICEDGE, WS_EX_STATICEDGE);
 
+            BOOL showDesktopButton = IsShowDesktopButtonNeeded();
+
             ContentMargin.cxLeftWidth = 2;
-            ContentMargin.cxRightWidth = 2;
+            ContentMargin.cxRightWidth = (IsHorizontal && showDesktopButton)
+                ? 24
+                : 2
+            ;
             ContentMargin.cyTopHeight = 2;
-            ContentMargin.cyBottomHeight = 2;
+            ContentMargin.cyBottomHeight = ((!IsHorizontal) && showDesktopButton)
+                ? 24
+                : 2
+            ;
         }
 
         return TRUE;

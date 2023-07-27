@@ -113,6 +113,16 @@ BOOL CanBeMinimized(HWND hwnd)
     return FALSE;
 }
 
+BOOL IsShowDesktopButtonNeeded() // Read the registry value
+{
+    return SHRegGetBoolUSValueW(
+        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        L"TaskbarSd",
+        FALSE,
+        TRUE);
+}
+
+
 struct EFFECTIVE_INFO
 {
     HWND hwndFound;
@@ -327,28 +337,58 @@ class CTrayShowDesktopButton :
 {
     LONG m_nClickedTime;
     BOOL m_bHovering;
+    BOOL m_bPressed;
     HTHEME m_hTheme;
+    BOOL m_imageresLoaded;
+    HICON m_classicIcon;
 
 public:
+    DWORD m_abEdge;
+    BOOL m_horizontal;
+
     DECLARE_WND_CLASS_EX(szTrayShowDesktopButton, CS_HREDRAW | CS_VREDRAW, COLOR_3DFACE)
 
-    CTrayShowDesktopButton() : m_nClickedTime(0), m_bHovering(FALSE)
+    CTrayShowDesktopButton() : m_nClickedTime(0), m_bHovering(FALSE), m_bPressed(FALSE), m_imageresLoaded(TRUE), m_classicIcon(NULL), m_abEdge(ABE_BOTTOM), m_horizontal(TRUE)
     {
+    }
+
+    BOOL IsThemed() const
+    {
+        return m_hTheme ? TRUE : FALSE;
     }
 
     INT WidthOrHeight() const
     {
 #define SHOW_DESKTOP_MINIMUM_WIDTH 3
+        if (!m_hTheme)
+            return 24;
+        
         INT cxy = 2 * ::GetSystemMetrics(SM_CXEDGE);
         return max(cxy, SHOW_DESKTOP_MINIMUM_WIDTH);
     }
 
     HRESULT DoCreate(HWND hwndParent)
     {
-        DWORD style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS;
+        DWORD style = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | BS_FLAT;
         Create(hwndParent, NULL, NULL, style);
         if (!m_hWnd)
             return E_FAIL;
+
+        HMODULE mImageres = LoadLibraryExW(L"imageres.dll", NULL, LOAD_LIBRARY_AS_DATAFILE);
+        
+        if (mImageres)
+        {
+            m_classicIcon = 
+                LoadIconW
+                //static_cast<HICON>(LoadImageW
+                (
+                    mImageres
+                    , MAKEINTRESOURCEW(110) // Why 110? Refer to `dll/win32_vista/imageres/imageres.h`.
+                //, IMAGE_ICON, 16, 16, 0)
+            );
+        }
+        else
+            m_imageresLoaded = FALSE;
 
         ::SetWindowTheme(m_hWnd, L"TaskBar", NULL);
         return S_OK;
@@ -378,19 +418,33 @@ public:
         PostMessage(TSDB_CLICK, 0, 0);
     }
 
+    LRESULT OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+    {
+        m_bPressed = TRUE;
+        return 0;
+    }
+
     LRESULT OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
+        m_bPressed = FALSE;
         Click(); // Left-click
         return 0;
     }
 
     LRESULT OnSettingChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
-        if (m_hTheme)
-            ::CloseThemeData(m_hTheme);
-
-        m_hTheme = ::OpenThemeData(m_hWnd, L"TaskBar");
-        InvalidateRect(NULL, TRUE);
+        if (IsWindow())
+        {
+            if (m_hTheme)
+                ::CloseThemeData(m_hTheme);
+            
+            if (IsAppThemed())
+                m_hTheme = ::OpenThemeData(m_hWnd, L"TaskBar");
+            else
+                m_hTheme = NULL;
+            
+            InvalidateRect(NULL, TRUE);
+        }
         return 0;
     }
 
@@ -417,23 +471,52 @@ public:
         GetWindowRect(&rc);
         INT cxEdge = ::GetSystemMetrics(SM_CXEDGE), cyEdge = ::GetSystemMetrics(SM_CYEDGE);
         ::InflateRect(&rc, max(cxEdge, 1), max(cyEdge, 1));
+        
+        //Compensate for button edge which faces "upstream" along taskbar
+        if (m_horizontal)
+            rc.left += cxEdge;
+        else
+            rc.top += cyEdge;
+
         return ::PtInRect(&rc, pt);
     }
 
 #define SHOW_DESKTOP_TIMER_ID 999
 #define SHOW_DESKTOP_TIMER_INTERVAL 200
 
+    VOID ToggleHovering()
+    {
+        InvalidateRect(NULL, TRUE);
+        GetParent().PostMessage(WM_PAINT, 0, 0);
+        GetParent().PostMessage(WM_NCPAINT, 0, 0);
+    }
+
     VOID StartHovering()
     {
+        ToggleHovering();
         if (m_bHovering)
             return;
 
         m_bHovering = TRUE;
         SetTimer(SHOW_DESKTOP_TIMER_ID, SHOW_DESKTOP_TIMER_INTERVAL, NULL);
-        InvalidateRect(NULL, TRUE);
-        GetParent().PostMessage(WM_NCPAINT, 0, 0);
     }
 
+    VOID EndHovering()
+    {
+        ToggleHovering();
+        if (!m_bHovering)
+            return;
+        
+        m_bHovering = FALSE;
+        KillTimer(SHOW_DESKTOP_TIMER_ID);
+    }
+
+    LRESULT OnMouseLeave(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+    {
+        EndHovering();
+        return 0;
+    }
+    
     LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
     {
         StartHovering();
@@ -448,12 +531,7 @@ public:
         POINT pt;
         ::GetCursorPos(&pt);
         if (!PtInButton(pt)) // The end of hovering?
-        {
-            m_bHovering = FALSE;
-            KillTimer(SHOW_DESKTOP_TIMER_ID);
-            InvalidateRect(NULL, TRUE);
-            GetParent().PostMessage(WM_NCPAINT, 0, 0);
-        }
+            EndHovering();
 
         return 0;
     }
@@ -469,12 +547,14 @@ public:
     }
 
     BEGIN_MSG_MAP(CTrayShowDesktopButton)
+        MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
         MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
         MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChanged)
         MESSAGE_HANDLER(WM_THEMECHANGED, OnSettingChanged)
         MESSAGE_HANDLER(WM_PAINT, OnPaint)
         MESSAGE_HANDLER(WM_TIMER, OnTimer)
         MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
+        MESSAGE_HANDLER(WM_MOUSELEAVE, OnMouseLeave)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MESSAGE_HANDLER(TSDB_CLICK, OnClick)
     END_MSG_MAP()
@@ -482,35 +562,100 @@ public:
 
 VOID CTrayShowDesktopButton::OnDraw(HDC hdc, LPRECT prc)
 {
+    if (!IsWindow())
+        return;
+    
     if (m_hTheme)
     {
-        if (m_bHovering) // Draw a hot button
+        int part = TBP_BACKGROUNDBOTTOM;
+        
+        if (m_abEdge == ABE_LEFT)
+            part = TBP_BACKGROUNDLEFT;
+        else if (m_abEdge == ABE_TOP)
+            part = TBP_BACKGROUNDTOP;
+        else if (m_abEdge == ABE_RIGHT)
+            part = TBP_BACKGROUNDRIGHT;
+        
+        ::DrawThemeBackground(m_hTheme, hdc, part, 0, prc, prc); // Draw taskbar background first
+
+
+        if (m_bHovering || m_bPressed) // Draw a hot or pressed button
         {
             HTHEME hButtonTheme = ::OpenThemeData(m_hWnd, L"Button");
-            ::DrawThemeBackground(hButtonTheme, hdc, BP_PUSHBUTTON, PBS_NORMAL, prc, prc);
+            ::DrawThemeBackground(hButtonTheme, hdc, BP_PUSHBUTTON, m_bPressed ? PBS_PRESSED : PBS_HOT, prc, prc);
             ::CloseThemeData(hButtonTheme);
-        }
-        else // Draw a taskbar background
-        {
-            ::DrawThemeBackground(m_hTheme, hdc, TBP_BACKGROUNDTOP, 0, prc, prc);
         }
     }
     else
     {
-        RECT rc = *prc;
-        if (m_bHovering) // Draw a hot button
+        // Button fill brush
+        HBRUSH bkbrush = ::GetSysColorBrush(COLOR_3DFACE);
+        
+        //TEMPORARY: allows to discern why the icon isn't available
+        if (!m_imageresLoaded)
+            bkbrush = ::GetSysColorBrush(COLOR_ACTIVECAPTION);
+        else if (!m_classicIcon)
+            bkbrush = ::GetSysColorBrush(COLOR_INACTIVECAPTION);
+
+
+        RECT rcVis = { prc->left + 2, prc->top + 2, prc->right - 2, prc->bottom - 2 };
+        
+        /*
+         * Draw 3D bevelled edge when button is being interacted with
+         * TODO: Should this be done like a "toolbar button"? (whatever that means...)
+         */
+        if (m_bHovering || m_bPressed)
         {
-            ::DrawFrameControl(hdc, &rc, DFC_BUTTON, DFCS_BUTTONPUSH | DFCS_ADJUSTRECT);
-            HBRUSH hbrHot = ::CreateSolidBrush(RGB(255, 255, 191));
-            ::FillRect(hdc, &rc, hbrHot);
-            ::DeleteObject(hbrHot);
+            UINT btnFrameFlags = DFCS_BUTTONPUSH | DFCS_ADJUSTRECT;
+            
+            if (m_bPressed)
+                btnFrameFlags |= DFCS_PUSHED;
+            else if (m_bHovering)
+                btnFrameFlags |= DFCS_HOT;
+            
+            // Draws border with two layers, totalling to 2px in width (at least at 100% display scaling?)
+            DrawFrameControl(hdc, &rcVis, DFC_BUTTON, btnFrameFlags);
+            
+            // Increase size of rect by 1 so FillRect call below wipes out the inner border (see above)
+            ::InflateRect(&rcVis, 1, 1);
         }
-        else // Draw a flattish button
-        {
-            ::DrawFrameControl(hdc, &rc, DFC_BUTTON, DFCS_BUTTONPUSH);
-            ::InflateRect(&rc, -1, -1);
-            ::FillRect(hdc, &rc, ::GetSysColorBrush(COLOR_3DFACE));
-        }
+        
+        // Button fill
+        ::FillRect(hdc, &rcVis, bkbrush);
+        
+
+        
+        /* Prepare to draw icon */
+
+        int iconSize = 16;
+        // Used for icon centering further down
+        int iconHalfSize = iconSize / 2;
+        
+
+        // Determine X-position of icon's top-left corner
+        int iconX = prc->left;
+        int width = (prc->right - iconX);
+        iconX += (width / 2);
+        iconX -= iconHalfSize;
+
+        // Determine Y-position of icon's top-left corner
+        int iconY = prc->top;
+        int height = (prc->bottom - iconY);
+        iconY += (height / 2);
+        iconY -= iconHalfSize;
+
+        // Ok, now actually draw the icon lol
+        DrawIconEx(
+            hdc
+            , iconX
+            , iconY
+            , m_classicIcon
+            , iconSize
+            , iconSize
+            , 0
+            , bkbrush
+            , DI_NORMAL
+        );
     }
 }
 
@@ -1934,18 +2079,24 @@ ChangePos:
 
         if (m_ShowDesktopButton.m_hWnd)
         {
+            m_ShowDesktopButton.m_abEdge = m_Position;
+            m_ShowDesktopButton.m_horizontal = Horizontal;
             // Get rectangle from rcClient
             RECT rc = rcClient;
             INT cxyShowDesktop = m_ShowDesktopButton.WidthOrHeight();
+
+            BOOL isThemed = m_ShowDesktopButton.IsThemed();
             if (Horizontal)
             {
                 rc.left = rc.right - cxyShowDesktop;
-                rc.right += 5; // excessive
+                if (isThemed)
+                    rc.right += 5; // excessive
             }
             else
             {
                 rc.top = rc.bottom - cxyShowDesktop;
-                rc.bottom += 5; // excessive
+                if (isThemed)
+                    rc.bottom += 5; // excessive
             }
 
             /* Resize and reposition the button */
@@ -1953,12 +2104,22 @@ ChangePos:
                                                      rc.left, rc.top,
                                                      rc.right - rc.left, rc.bottom - rc.top,
                                                      SWP_NOZORDER | SWP_NOACTIVATE);
-
-            // Adjust rcClient
-            if (Horizontal)
-                rcClient.right -= cxyShowDesktop + ::GetSystemMetrics(SM_CXEDGE);
-            else
-                rcClient.bottom -= cxyShowDesktop + ::GetSystemMetrics(SM_CYEDGE);
+            if (isThemed)
+            {
+                // Adjust rcClient
+                if (Horizontal)
+                {
+                    rcClient.right -= cxyShowDesktop;
+                    if (isThemed)
+                        rcClient.right -= ::GetSystemMetrics(SM_CXEDGE);
+                }
+                else
+                {
+                    rcClient.bottom -= cxyShowDesktop;
+                    if (isThemed)
+                        rcClient.bottom -= ::GetSystemMetrics(SM_CYEDGE);
+                }
+            }
         }
 
         /* Determine the size that the tray notification window needs */
@@ -2531,15 +2692,6 @@ ChangePos:
         return m_ContextMenu->GetCommandString(idCmd, uType, pwReserved, pszName, cchMax);
     }
 
-    BOOL IsShowDesktopButtonNeeded() // Read the registry value
-    {
-        return SHRegGetBoolUSValueW(
-            L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-            L"TaskbarSd",
-            FALSE,
-            TRUE);
-    }
-
     /**********************************************************
      *    ##### message handling #####
      */
@@ -2554,10 +2706,6 @@ ChangePos:
 
         /* Create the Start button */
         m_StartButton.Create(m_hWnd);
-
-        /* Create the 'Show Desktop' button if necessary */
-        if (IsShowDesktopButtonNeeded())
-            m_ShowDesktopButton.DoCreate(m_hWnd);
 
         /* Load the saved tray window settings */
         RegLoadSettings();
@@ -2595,6 +2743,10 @@ ChangePos:
         hRet = IUnknown_GetWindow(m_TrayNotifyInstance, &m_TrayNotify);
         if (FAILED_UNEXPECTEDLY(hRet))
             return FALSE;
+
+        /* Create the 'Show Desktop' button if necessary */
+        if (IsShowDesktopButtonNeeded())
+            m_ShowDesktopButton.DoCreate(m_hWnd);
 
         SetWindowTheme(m_Rebar, L"TaskBar", NULL);
 
@@ -3341,8 +3493,14 @@ HandleTrayContextMenu:
     {
         POINT pt;
         ::GetCursorPos(&pt);
-        if (m_ShowDesktopButton.PtInButton(pt))
-            m_ShowDesktopButton.StartHovering();
+        
+        if (m_ShowDesktopButton.IsWindow())
+        {
+            if (m_ShowDesktopButton.PtInButton(pt))
+                m_ShowDesktopButton.StartHovering();
+            else
+                m_ShowDesktopButton.EndHovering();
+        }
 
         if (g_TaskbarSettings.sr.AutoHide)
         {
