@@ -8,6 +8,7 @@ add_definitions(-D_IMAGERES_)
 spec2def(imageres.dll imageres.spec ADD_IMPORTLIB)
 
 list(APPEND SOURCE
+    imageres.cpp
     imageres.h)
 
 

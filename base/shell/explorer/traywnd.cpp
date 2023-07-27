@@ -374,21 +374,19 @@ public:
         if (!m_hWnd)
             return E_FAIL;
 
-        HMODULE mImageres = LoadLibraryExW(L"imageres.dll", NULL, LOAD_LIBRARY_AS_DATAFILE);
+        HMODULE mImageres = LoadLibraryExW(L"imageres.dll", NULL, 0); //LOAD_LIBRARY_AS_DATAFILE);
         
-        if (mImageres)
-        {
-            m_classicIcon = 
-                LoadIconW
-                //static_cast<HICON>(LoadImageW
-                (
-                    mImageres
-                    , MAKEINTRESOURCEW(110) // Why 110? Refer to `dll/win32_vista/imageres/imageres.h`.
-                //, IMAGE_ICON, 16, 16, 0)
-            );
-        }
-        else
+        if (!mImageres)
             m_imageresLoaded = FALSE;
+        
+        m_classicIcon = 
+            //LoadIconW
+            static_cast<HICON>(LoadImageW
+            (
+                mImageres
+                , L"#110" //MAKEINTRESOURCEW(110) // Why 110? Refer to `dll/win32_vista/imageres/imageres.h`.
+                , IMAGE_ICON, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR | LR_SHARED)
+        );
 
         ::SetWindowTheme(m_hWnd, L"TaskBar", NULL);
         return S_OK;
@@ -591,11 +589,10 @@ VOID CTrayShowDesktopButton::OnDraw(HDC hdc, LPRECT prc)
         // Button fill brush
         HBRUSH bkbrush = ::GetSysColorBrush(COLOR_3DFACE);
         
-        //TEMPORARY: allows to discern why the icon isn't available
         if (!m_imageresLoaded)
-            bkbrush = ::GetSysColorBrush(COLOR_ACTIVECAPTION);
+            ERR("!m_imageresLoaded\n");
         else if (!m_classicIcon)
-            bkbrush = ::GetSysColorBrush(COLOR_INACTIVECAPTION);
+            ERR("!m_classicIcon\n");
 
 
         RECT rcVis = { prc->left + 2, prc->top + 2, prc->right - 2, prc->bottom - 2 };
@@ -643,6 +640,10 @@ VOID CTrayShowDesktopButton::OnDraw(HDC hdc, LPRECT prc)
         int height = (prc->bottom - iconY);
         iconY += (height / 2);
         iconY -= iconHalfSize;
+
+        // Test
+        /*RECT rcIconBounds = { iconX, iconY, iconX + iconSize, iconY + iconSize };
+        ::FillRect(hdc, &rcIconBounds, ::GetSysColorBrush(m_imageresLoaded ? COLOR_ACTIVECAPTION : COLOR_GRADIENTACTIVECAPTION));*/
 
         // Ok, now actually draw the icon lol
         DrawIconEx(
