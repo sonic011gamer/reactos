@@ -1249,82 +1249,7 @@ SetUserLocaleName(HWND hwnd)
 static VOID
 SetKeyboardLayoutName(HWND hwnd)
 {
-    HKL hkl;
-    BOOL LayoutSpecial = FALSE;
-    WCHAR LayoutPath[256];
-    WCHAR LocaleName[32];
-    WCHAR SpecialId[5] = L"";
-    WCHAR ResText[256] = L"";
-    DWORD dwValueSize;
-    HKEY hKey;
-    UINT i;
 
-    /* Get the default input language and method */
-    if (!SystemParametersInfoW(SPI_GETDEFAULTINPUTLANG, 0, (LPDWORD)&hkl, 0))
-    {
-        hkl = GetKeyboardLayout(0);
-    }
-
-    if ((HIWORD(hkl) & 0xF000) == 0xF000)
-    {
-        /* Process keyboard layout with special id */
-        StringCchPrintfW(SpecialId, ARRAYSIZE(SpecialId), L"%04x", (HIWORD(hkl) & 0x0FFF));
-        LayoutSpecial = TRUE;
-    }
-
-#define MAX_LAYOUTS_PER_LANGID 0x10000
-    for (i = 0; i < (LayoutSpecial ? MAX_LAYOUTS_PER_LANGID : 1); i++)
-    {
-        /* Generate a hexadecimal identifier for keyboard layout registry key */
-        StringCchPrintfW(LocaleName, ARRAYSIZE(LocaleName), L"%08lx", (i << 16) | LOWORD(hkl));
-
-        StringCchCopyW(LayoutPath, ARRAYSIZE(LayoutPath), L"SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts\\");
-        StringCchCatW(LayoutPath, ARRAYSIZE(LayoutPath), LocaleName);
-        *LocaleName = UNICODE_NULL;
-
-        if (RegOpenKeyExW(HKEY_LOCAL_MACHINE,
-                          LayoutPath,
-                          0,
-                          KEY_ALL_ACCESS,
-                          &hKey) == ERROR_SUCCESS)
-        {
-            /* Make sure the keyboard layout key we opened is the one we need.
-             * If the layout has no special id, just pass this check. */
-            dwValueSize = sizeof(LocaleName);
-            if (!LayoutSpecial ||
-                ((RegQueryValueExW(hKey,
-                                   L"Layout Id",
-                                   NULL,
-                                   NULL,
-                                   (PVOID)&LocaleName,
-                                   &dwValueSize) == ERROR_SUCCESS) &&
-                (wcscmp(LocaleName, SpecialId) == 0)))
-            {
-                *LocaleName = UNICODE_NULL;
-                dwValueSize = sizeof(LocaleName);
-                RegQueryValueExW(hKey,
-                                 L"Layout Text",
-                                 NULL,
-                                 NULL,
-                                 (PVOID)&LocaleName,
-                                 &dwValueSize);
-                /* Let the loop know where to stop */
-                i = MAX_LAYOUTS_PER_LANGID;
-            }
-            RegCloseKey(hKey);
-        }
-        else
-        {
-            /* Keyboard layout registry keys are expected to go in order without gaps */
-            break;
-        }
-    }
-#undef MAX_LAYOUTS_PER_LANGID
-
-    LoadStringW(hDllInstance, IDS_LAYOUTTEXT, ResText, ARRAYSIZE(ResText));
-    StringCchPrintfW(LayoutPath, ARRAYSIZE(LayoutPath), ResText, LocaleName);
-
-    SetWindowTextW(hwnd, LayoutPath);
 }
 
 
@@ -1431,7 +1356,7 @@ LocalePageDlgProc(HWND hwndDlg,
             WriteUserLocale();
 
             SetUserLocaleName(GetDlgItem(hwndDlg, IDC_LOCALETEXT));
-            SetKeyboardLayoutName(GetDlgItem(hwndDlg, IDC_LAYOUTTEXT));
+          //  SetKeyboardLayoutName(GetDlgItem(hwndDlg, IDC_LAYOUTTEXT));
         }
         break;
 
@@ -1441,13 +1366,13 @@ LocalePageDlgProc(HWND hwndDlg,
                 switch (LOWORD(wParam))
                 {
                     case IDC_CUSTOMLOCALE:
-                        RunControlPanelApplet(hwndDlg, L"intl.cpl,,5");
-                        SetUserLocaleName(GetDlgItem(hwndDlg, IDC_LOCALETEXT));
+                      //  RunControlPanelApplet(hwndDlg, L"intl.cpl,,5");
+                       // SetUserLocaleName(GetDlgItem(hwndDlg, IDC_LOCALETEXT));
                         break;
 
                     case IDC_CUSTOMLAYOUT:
-                        RunControlPanelApplet(hwndDlg, L"input.dll,@1");
-                        SetKeyboardLayoutName(GetDlgItem(hwndDlg, IDC_LAYOUTTEXT));
+                       // RunControlPanelApplet(hwndDlg, L"input.dll,@1");
+                      //  SetKeyboardLayoutName(GetDlgItem(hwndDlg, IDC_LAYOUTTEXT));
                         break;
                 }
             }
@@ -3217,22 +3142,6 @@ InstallWizard(VOID)
     psp.pszHeaderSubTitle = MAKEINTRESOURCE(IDS_ACKSUBTITLE);
     psp.pszTemplate = MAKEINTRESOURCE(IDD_ACKPAGE);
     psp.pfnDlgProc = AckPageDlgProc;
-    phpage[nPages++] = CreatePropertySheetPage(&psp);
-
-    /* Create the Product page */
-    psp.dwFlags = PSP_DEFAULT | PSP_USEHEADERTITLE | PSP_USEHEADERSUBTITLE;
-    psp.pszHeaderTitle = MAKEINTRESOURCE(IDS_PRODUCTTITLE);
-    psp.pszHeaderSubTitle = MAKEINTRESOURCE(IDS_PRODUCTSUBTITLE);
-    psp.pszTemplate = MAKEINTRESOURCE(IDD_PRODUCT);
-    psp.pfnDlgProc = ProductPageDlgProc;
-    phpage[nPages++] = CreatePropertySheetPage(&psp);
-
-    /* Create the Locale page */
-    psp.dwFlags = PSP_DEFAULT | PSP_USEHEADERTITLE | PSP_USEHEADERSUBTITLE;
-    psp.pszHeaderTitle = MAKEINTRESOURCE(IDS_LOCALETITLE);
-    psp.pszHeaderSubTitle = MAKEINTRESOURCE(IDS_LOCALESUBTITLE);
-    psp.pfnDlgProc = LocalePageDlgProc;
-    psp.pszTemplate = MAKEINTRESOURCE(IDD_LOCALEPAGE);
     phpage[nPages++] = CreatePropertySheetPage(&psp);
 
     /* Create the Owner page */

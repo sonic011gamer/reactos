@@ -49,3 +49,15 @@ DllMain(HINSTANCE hinstDLL,
 
     return TRUE;
 }
+
+NTSTATUS
+ApplyGroupPolicy(DWORD X1)
+{
+    return 0;
+}
+
+NTSTATUS
+IsSyncForegroundPolicyRefresh(DWORD* x1)
+{
+    return 0;
+}

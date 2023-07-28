@@ -14,6 +14,3 @@
 @ stdcall RtlRunOnceBeginInitialize(ptr long ptr)
 @ stdcall RtlRunOnceComplete(ptr long ptr)
 @ stdcall RtlRunOnceExecuteOnce(ptr ptr ptr ptr)
-
-@ stdcall RtlConnectToSm(ptr ptr long ptr) SmConnectToSm
-@ stdcall RtlSendMsgToSm(ptr ptr) SmSendMsgToSm

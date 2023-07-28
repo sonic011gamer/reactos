@@ -67,8 +67,6 @@ static BOOL ScrollMovingThumb = FALSE;
 
 HBRUSH DefWndControlColor(HDC hDC, UINT ctlType);
 
-UINT_PTR WINAPI SetSystemTimer(HWND,UINT_PTR,UINT,TIMERPROC);
-BOOL WINAPI KillSystemTimer(HWND,UINT_PTR);
 
 /*********************************************************************
  * scrollbar class descriptor
@@ -901,9 +899,7 @@ IntScrollHandleScrollEvent(HWND Wnd, INT SBType, UINT Msg, POINT Pt)
                 SendMessageW(WndOwner, Vertical ? WM_VSCROLL : WM_HSCROLL,
                              SB_LINEUP, (LPARAM) WndCtl);
               }
-	    SetSystemTimer(Wnd, SCROLL_TIMER, (WM_LBUTTONDOWN == Msg) ?
-                           SCROLL_FIRST_DELAY : SCROLL_REPEAT_DELAY,
-                           (TIMERPROC) NULL);
+
             if (ScrollBarInfo.rgstate[ScrollTrackHitTest] != STATE_SYSTEM_UNAVAILABLE)
             {
                if (!(ScrollBarInfo.rgstate[ScrollTrackHitTest] &= STATE_SYSTEM_PRESSED))
@@ -915,7 +911,7 @@ IntScrollHandleScrollEvent(HWND Wnd, INT SBType, UINT Msg, POINT Pt)
         else
           {
             IntUpdateScrollArrows (Wnd, Dc, &ScrollBarInfo, &NewInfo, SBType, ScrollTrackHitTest, Vertical, FALSE);
-            KillSystemTimer(Wnd, SCROLL_TIMER);
+         //   KillSystemTimer(Wnd, SCROLL_TIMER);
           }
         break;
 
@@ -927,13 +923,11 @@ IntScrollHandleScrollEvent(HWND Wnd, INT SBType, UINT Msg, POINT Pt)
                 SendMessageW(WndOwner, Vertical ? WM_VSCROLL : WM_HSCROLL,
                              SB_PAGEUP, (LPARAM) WndCtl);
               }
-            SetSystemTimer(Wnd, SCROLL_TIMER, (WM_LBUTTONDOWN == Msg) ?
-                           SCROLL_FIRST_DELAY : SCROLL_REPEAT_DELAY,
-                           (TIMERPROC) NULL);
+
           }
         else
           {
-            KillSystemTimer(Wnd, SCROLL_TIMER);
+          //  KillSystemTimer(Wnd, SCROLL_TIMER);
           }
         break;
 
@@ -993,13 +987,11 @@ IntScrollHandleScrollEvent(HWND Wnd, INT SBType, UINT Msg, POINT Pt)
                 SendMessageW(WndOwner, Vertical ? WM_VSCROLL : WM_HSCROLL,
                              SB_PAGEDOWN, (LPARAM) WndCtl);
               }
-            SetSystemTimer(Wnd, SCROLL_TIMER, (WM_LBUTTONDOWN == Msg) ?
-                           SCROLL_FIRST_DELAY : SCROLL_REPEAT_DELAY,
-                           (TIMERPROC) NULL);
+
           }
         else
           {
-            KillSystemTimer(Wnd, SCROLL_TIMER);
+           // KillSystemTimer(Wnd, SCROLL_TIMER);
           }
         break;
 
@@ -1011,9 +1003,7 @@ IntScrollHandleScrollEvent(HWND Wnd, INT SBType, UINT Msg, POINT Pt)
                 SendMessageW(WndOwner, Vertical ? WM_VSCROLL : WM_HSCROLL,
                              SB_LINEDOWN, (LPARAM) WndCtl);
               }
-	    SetSystemTimer(Wnd, SCROLL_TIMER, (WM_LBUTTONDOWN == Msg) ?
-                           SCROLL_FIRST_DELAY : SCROLL_REPEAT_DELAY,
-                           (TIMERPROC) NULL);
+
             if (ScrollBarInfo.rgstate[ScrollTrackHitTest] != STATE_SYSTEM_UNAVAILABLE)
             {
                if (!(ScrollBarInfo.rgstate[ScrollTrackHitTest] &= STATE_SYSTEM_PRESSED))
@@ -1026,7 +1016,7 @@ IntScrollHandleScrollEvent(HWND Wnd, INT SBType, UINT Msg, POINT Pt)
         else
         {
             IntUpdateScrollArrows (Wnd, Dc, &ScrollBarInfo, &NewInfo, SBType, ScrollTrackHitTest, Vertical, FALSE);
-            KillSystemTimer(Wnd, SCROLL_TIMER);
+         //   KillSystemTimer(Wnd, SCROLL_TIMER);
         }
         break;
     }

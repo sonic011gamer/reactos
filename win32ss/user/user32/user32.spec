@@ -795,3 +795,5 @@
 @ stub DwmStopRedirection
 @ stub DwmStartRedirection
 @ stub GetWindowRgnEx
+@ stub SetWindowRgnEx
+@ stub UpdateWindowTransform

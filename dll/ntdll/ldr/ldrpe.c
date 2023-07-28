@@ -1235,5 +1235,3 @@ FailurePath:
     /* Return status */
     return Status;
 }
-
-/* EOF */

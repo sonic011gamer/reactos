@@ -665,7 +665,7 @@
 @ stdcall -stub -arch=i386 RtlCaptureStackContext(ptr ptr ptr)
 @ stdcall RtlCharToInteger(ptr long ptr)
 @ stdcall RtlCheckForOrphanedCriticalSections(ptr)
-@ stdcall -stub -version=0x502+ RtlCheckProcessParameters(ptr ptr ptr ptr)
+@ stdcall -version=0x502+ RtlCheckProcessParameters(ptr ptr ptr ptr)
 @ stdcall RtlCheckRegistryKey(long ptr)
 @ stdcall -stub -version=0x600+ RtlCleanUpTEBLangLists()
 @ stdcall RtlClearAllBits(ptr)
