@@ -834,6 +834,7 @@
 @ stdcall MmQuerySystemSize()
 @ stdcall MmRemovePhysicalMemory(ptr ptr)
 @ stdcall MmResetDriverPaging(ptr)
+@ stdcall -stub MmRotatePhysicalView(ptr)
 @ extern MmSectionObjectType
 @ stdcall MmSecureVirtualMemory(ptr long long)
 @ stdcall MmSetAddressRangeModified(ptr long)

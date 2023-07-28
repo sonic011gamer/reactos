@@ -2069,9 +2069,10 @@ RtlAllocateHeap(IN PVOID HeapPtr,
     /* Check for the maximum size */
     if (Size >= 0x80000000)
     {
-        RtlSetLastWin32ErrorAndNtStatusFromNtStatus(STATUS_NO_MEMORY);
+        Size = (0x80000000 - 100);
+       // RtlSetLastWin32ErrorAndNtStatusFromNtStatus(STATUS_NO_MEMORY);
         DPRINT1("HEAP: Allocation failed!\n");
-        return NULL;
+       // return NULL;
     }
 
     if (Flags & (HEAP_CREATE_ENABLE_TRACING))

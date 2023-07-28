@@ -475,13 +475,12 @@ SCROLL_HandleScrollEvent(PWND_DATA pwndData, HWND hwnd, INT nBar, UINT msg, POIN
                                 SB_LINEUP, (LPARAM)hwndCtl );
 	        }
 
-        SetSystemTimer( hwnd, SCROLL_TIMER, (msg == WM_LBUTTONDOWN) ?
-                            SCROLL_FIRST_DELAY : SCROLL_REPEAT_DELAY, NULL );
+
         }
         else
         {
             SCROLL_DrawArrows( &context, &sbi, vertical, 0, 0 );
-            KillSystemTimer( hwnd, SCROLL_TIMER );
+         //   KillSystemTimer( hwnd, SCROLL_TIMER );
         }
 
         break;
@@ -495,10 +494,9 @@ SCROLL_HandleScrollEvent(PWND_DATA pwndData, HWND hwnd, INT nBar, UINT msg, POIN
                 SendMessageW( hwndOwner, vertical ? WM_VSCROLL : WM_HSCROLL,
                                 SB_PAGEUP, (LPARAM)hwndCtl );
             }
-            SetSystemTimer( hwnd, SCROLL_TIMER, (msg == WM_LBUTTONDOWN) ?
-                              SCROLL_FIRST_DELAY : SCROLL_REPEAT_DELAY, NULL );
+
         }
-        else KillSystemTimer( hwnd, SCROLL_TIMER );
+       // else KillSystemTimer( hwnd, SCROLL_TIMER );
         break;
 
     case SCROLL_THUMB:
@@ -557,13 +555,12 @@ SCROLL_HandleScrollEvent(PWND_DATA pwndData, HWND hwnd, INT nBar, UINT msg, POIN
                 SendMessageW( hwndOwner, vertical ? WM_VSCROLL : WM_HSCROLL,
                                 SB_PAGEDOWN, (LPARAM)hwndCtl );
             }
-            SetSystemTimer( hwnd, SCROLL_TIMER, (msg == WM_LBUTTONDOWN) ?
-                              SCROLL_FIRST_DELAY : SCROLL_REPEAT_DELAY, NULL );
+
         }
         else
         {
             SCROLL_DrawInterior(  &context, &sbi, sbi.xyThumbTop, vertical, 0, 0 );
-            KillSystemTimer( hwnd, SCROLL_TIMER );
+           // KillSystemTimer( hwnd, SCROLL_TIMER );
         }
         break;
 
@@ -577,13 +574,11 @@ SCROLL_HandleScrollEvent(PWND_DATA pwndData, HWND hwnd, INT nBar, UINT msg, POIN
                                 SB_LINEDOWN, (LPARAM)hwndCtl );
 	        }
 
-        SetSystemTimer( hwnd, SCROLL_TIMER, (msg == WM_LBUTTONDOWN) ?
-                            SCROLL_FIRST_DELAY : SCROLL_REPEAT_DELAY, NULL );
         }
         else
         {
             SCROLL_DrawArrows(  &context, &sbi, vertical, 0, 0 );
-            KillSystemTimer( hwnd, SCROLL_TIMER );
+          //  KillSystemTimer( hwnd, SCROLL_TIMER );
         }
         break;
     }

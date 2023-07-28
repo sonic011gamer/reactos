@@ -1654,7 +1654,14 @@ NTAPI
 LdrFlushAlternateResourceModules(VOID)
 {
     UNIMPLEMENTED;
-    return FALSE;
+    return TRUE;
+}
+
+NTSTATUS
+NTAPI
+RtlCheckProcessParameters(DWORD* x1, DWORD* x2, DWORD x3, DWORD x4)
+{
+return 0;
 }
 
 /*
