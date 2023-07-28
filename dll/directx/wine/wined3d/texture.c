@@ -1254,16 +1254,16 @@ HRESULT CDECL wined3d_texture_set_color_key(struct wined3d_texture *texture,
 
 static void texture2d_create_dc(void *object)
 {
+    __debugbreak();
     struct wined3d_surface *surface = object;
     struct wined3d_context *context = NULL;
     const struct wined3d_format *format;
     unsigned int row_pitch, slice_pitch;
     struct wined3d_texture *texture;
     struct wined3d_bo_address data;
-    D3DKMT_CREATEDCFROMMEMORY desc;
+    D3DKMT_CREATEDCFROMMEMORY desc = {0};
     unsigned int sub_resource_idx;
     struct wined3d_device *device;
-    NTSTATUS status;
 
     TRACE("surface %p.\n", surface);
 
@@ -1299,13 +1299,6 @@ static void texture2d_create_dc(void *object)
     desc.hDeviceDc = CreateCompatibleDC(NULL);
     desc.pColorTable = NULL;
 
-    status = D3DKMTCreateDCFromMemory(&desc);
-    DeleteDC(desc.hDeviceDc);
-    if (status)
-    {
-        WARN("Failed to create DC, status %#x.\n", status);
-        return;
-    }
 
     surface->dc = desc.hDc;
     surface->bitmap = desc.hBitmap;
@@ -1322,7 +1315,6 @@ static void texture2d_destroy_dc(void *object)
     struct wined3d_bo_address data;
     unsigned int sub_resource_idx;
     struct wined3d_device *device;
-    NTSTATUS status;
 
     texture = surface->container;
     sub_resource_idx = surface_get_sub_resource_idx(surface);
@@ -1338,8 +1330,7 @@ static void texture2d_destroy_dc(void *object)
 
     destroy_desc.hDc = surface->dc;
     destroy_desc.hBitmap = surface->bitmap;
-    if ((status = D3DKMTDestroyDCFromMemory(&destroy_desc)))
-        ERR("Failed to destroy dc, status %#x.\n", status);
+
     surface->dc = NULL;
     surface->bitmap = NULL;
 

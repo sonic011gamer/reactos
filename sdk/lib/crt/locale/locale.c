@@ -568,6 +568,19 @@ int CDECL __crtGetLocaleInfoW( LCID lcid, LCTYPE type, wchar_t *buffer, int len 
 /*********************************************************************
  *              btowc(MSVCRT.@)
  */
+
+wint_t CDECL btowc(int c)
+{
+    unsigned char letter = c;
+    wchar_t ret;
+
+    if(!MultiByteToWideChar(get_locinfo()->lc_handle[LC_CTYPE],
+                0, (LPCSTR)&letter, 1, &ret, 1))
+        return 0;
+
+    return ret;
+}
+
 wint_t CDECL MSVCRT_btowc(int c)
 {
     unsigned char letter = c;

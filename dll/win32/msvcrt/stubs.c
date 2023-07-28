@@ -20,6 +20,7 @@ __p__fileinfo()
 
 unsigned char _mbcasemap[1];
 
+
 void *
 __p__mbcasemap()
 {

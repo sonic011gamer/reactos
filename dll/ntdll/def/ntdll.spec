@@ -347,7 +347,7 @@
 @ stdcall NtImpersonateAnonymousToken(ptr)
 @ stdcall NtImpersonateClientOfPort(ptr ptr)
 @ stdcall NtImpersonateThread(ptr ptr ptr)
-@ stdcall -stub -version=0x600+ NtInitializeNlsFiles(ptr ptr)
+@ stdcall -stub -version=0x600+ NtInitializeNlsFiles(ptr ptr ptr)
 @ stdcall NtInitializeRegistry(long)
 @ stdcall NtInitiatePowerAction (long long long long)
 @ stdcall NtIsProcessInJob(long long)
@@ -1915,3 +1915,12 @@
 @ stdcall -arch=arm __rt_udiv()
 @ stdcall -arch=arm __rt_udiv64()
 @ stdcall -arch=arm __rt_srsh()
+@ stub NtRemoveIoCompletionEx
+@ stub NtAddIoCompletionEx
+@ stub NtCancelIoFileEx
+@ stub NtCancelSynchronousIoFile
+@ stub RtlInitializeCriticalSectionAndSpinCountEx
+@ stub RtlpIsValidUILanguage
+@ stub RtlpFreeCultureMap
+@ stub RtlpInitializeOSCultureMap
+@ stub NtGetNlsSectionPtr

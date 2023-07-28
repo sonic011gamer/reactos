@@ -150,16 +150,13 @@ PspSystemThreadStartup(IN PKSTART_ROUTINE StartRoutine,
     /* Make sure the thread isn't gone */
     _SEH2_TRY
     {
-        if (!(Thread->Terminated) && !(Thread->DeadThread))
-        {
-            /* Call the Start Routine */
-            StartRoutine(StartContext);
-        }
+        /* Call the Start Routine */
+        StartRoutine(StartContext);
     }
     _SEH2_EXCEPT(PspUnhandledExceptionInSystemThread(_SEH2_GetExceptionInformation()))
     {
         /* Bugcheck if we got here */
-        KeBugCheck(KMODE_EXCEPTION_NOT_HANDLED);
+        //KeBugCheck(KMODE_EXCEPTION_NOT_HANDLED);
     }
     _SEH2_END;
 

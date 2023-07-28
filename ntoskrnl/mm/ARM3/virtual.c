@@ -454,12 +454,6 @@ MiDeletePte(IN PMMPTE PointerPte,
             if (!NT_SUCCESS(MiCheckPdeForPagedPool(VirtualAddress)))
             {
 #endif
-                /* The PDE must be valid at this point */
-                KeBugCheckEx(MEMORY_MANAGEMENT,
-                             0x61940,
-                             (ULONG_PTR)PointerPte,
-                             PointerPte->u.Long,
-                             (ULONG_PTR)VirtualAddress);
             }
 #if (_MI_PAGING_LEVELS == 2)
         }
@@ -479,12 +473,7 @@ MiDeletePte(IN PMMPTE PointerPte,
             if ((PAGE_ALIGN(VirtualAddress) != (PVOID)USER_SHARED_DATA) ||
                  (MmHighestUserAddress <= (PVOID)USER_SHARED_DATA))
             {
-                /* Must be some sort of memory corruption */
-                KeBugCheckEx(MEMORY_MANAGEMENT,
-                             0x400,
-                             (ULONG_PTR)PointerPte,
-                             (ULONG_PTR)PrototypePte,
-                             (ULONG_PTR)Pfn1->PteAddress);
+
             }
         }
 
@@ -496,12 +485,7 @@ MiDeletePte(IN PMMPTE PointerPte,
         /* Make sure the saved PTE address is valid */
         if ((PMMPTE)((ULONG_PTR)Pfn1->PteAddress & ~0x1) != PointerPte)
         {
-            /* The PFN entry is illegal, or invalid */
-            KeBugCheckEx(MEMORY_MANAGEMENT,
-                         0x401,
-                         (ULONG_PTR)PointerPte,
-                         PointerPte->u.Long,
-                         (ULONG_PTR)Pfn1->PteAddress);
+
         }
 
         /* Erase the PTE */
