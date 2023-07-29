@@ -18,7 +18,7 @@ RdPort_DispatchCreateDevice(_In_    PDEVICE_OBJECT DeviceObject,
                             _Inout_ PIRP Irp)
 {
     UNIMPLEMENTED;
-    __debugbreak();
+    //__debugbreak();
     return 0;
 }
 
@@ -31,7 +31,7 @@ RdPort_DispatchPnp(_In_ PDEVICE_OBJECT DeviceObject,
                    _In_ PVOID Tag)
 {
     UNIMPLEMENTED;
-    __debugbreak();
+    //__debugbreak();
     return 0;
 }
 
@@ -44,7 +44,7 @@ RdPort_DispatchPower(_In_ PDEVICE_OBJECT DeviceObject,
                      _In_ PSTR MutableMessage)
 {
     UNIMPLEMENTED;
-    __debugbreak();
+    //__debugbreak();
     return MutableMessage;
 }
 
@@ -57,7 +57,7 @@ RdPort_DispatchIoctl(_In_    PDEVICE_OBJECT DeviceObject,
                      _Inout_ IRP *Irp)
 {
     UNIMPLEMENTED;
-    __debugbreak();
+    //__debugbreak();
     return 0;
 }
 
@@ -70,7 +70,7 @@ RdPort_DispatchInternalIoctl(_In_ PDEVICE_OBJECT DeviceObject,
                                      _Inout_ IRP *Irp)
 {
     UNIMPLEMENTED;
-    __debugbreak();
+    //__debugbreak();
     return 0;
 }
 
@@ -83,7 +83,7 @@ RdPort_DispatchSystemControl(_In_ PDEVICE_OBJECT DeviceObject,
                                      _In_ PVOID Tag)
 {
     UNIMPLEMENTED;
-    __debugbreak();
+    //__debugbreak();
     return 0;
 }
 
@@ -95,7 +95,7 @@ NTAPI
 RdPort_DispatchCloseDevice(_In_ PDEVICE_OBJECT DeviceObject)
 {
     UNIMPLEMENTED;
-    __debugbreak();
+    //__debugbreak();
     return 0;
 }
 
@@ -108,7 +108,7 @@ RdPort_AddDevice(_In_    DRIVER_OBJECT *DriverObject,
                  _Inout_ DEVICE_OBJECT *PhysicalDeviceObject)
 {
     UNIMPLEMENTED;
-    __debugbreak();
+    //__debugbreak();
     return 0;
 }
 
@@ -120,6 +120,6 @@ NTAPI
 RdPort_DriverUnload(_In_ PDRIVER_OBJECT DriverObject)
 {
     UNIMPLEMENTED;
-    __debugbreak();
+    //__debugbreak();
     return 0;
 }
