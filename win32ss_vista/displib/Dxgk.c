@@ -34,7 +34,7 @@ RDDM_StartDevice(
   RtlCopyMemory(&PublicDxgkrnlInterface, DxgkInterface, sizeof(PublicDxgkrnlInterface));
 
   DPRINT("RDDM: Starting display miniport driver\n");
-  __debugbreak();
+  //__debugbreak();
 
   /* Execute The Miniport */
   return PublicStartDevice(MiniportDeviceContext, DxgkStartInfo, DxgkInterface, NumberOfVideoPresentSources, NumberOfChildren);

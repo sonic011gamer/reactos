@@ -136,7 +136,7 @@ DxgkUnload(_In_ DRIVER_OBJECT *DriverObject)
     PAGED_CODE();
     /* For now a stub, and breakpoint so we can backtrace */
     DPRINT("DxgkUnload: Entry Point\n");
-    __debugbreak();
+    //__debugbreak();
     return STATUS_SUCCESS;
 }
 
