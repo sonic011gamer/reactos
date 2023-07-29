@@ -821,16 +821,16 @@
 @ stdcall MultiByteToWideChar(long long str long ptr long)
 @ stdcall NeedCurrentDirectoryForExePathA(str)
 @ stdcall NeedCurrentDirectoryForExePathW(wstr)
-@ stub -version=0x600+ NlsCheckPolicy ;Incorrect.
+@ stdcall -stub -version=0x600+ NlsCheckPolicy(ptr) ;Incorrect.
 @ stdcall -version=0x500-0x600 NlsConvertIntegerToString(long long long wstr long)
-@ stub -version=0x600+ NlsEventDataDescCreate ;Incorrect
+@ stdcall -stub -version=0x600+ NlsEventDataDescCreate(ptr) ;Incorrect
 @ stdcall NlsGetCacheUpdateCount()
 @ stdcall -version=0x500-0x502 NlsResetProcessLocale()
-@ stub -version=0x600+ NlsUpdateLocale
-@ stub -version=0x600+ NlsUpdateSystemLocale
-@ stub -version=0x600+ NlsWriteEtwEvent
-@ stub -version=0x600+ NormalizeString
-@ stub -version=0x600+ NotifyUILanguageChange
+@ stdcall -stub -version=0x600+ NlsUpdateLocale(ptr)
+@ stdcall -stub -version=0x600+ NlsUpdateSystemLocale(ptr)
+@ stdcall -stub -version=0x600+ NlsWriteEtwEvent(ptr)
+@ stdcall -stub -version=0x600+ NormalizeString(ptr)
+@ stdcall -stub -version=0x600+ NotifyUILanguageChange(ptr)
 @ stdcall OpenConsoleW(wstr long long long)
 @ stdcall -version=0x500-0x502 OpenDataFile(long long)
 @ stdcall OpenEventA(long long str)
@@ -1375,8 +1375,8 @@
 @ stdcall -stub -version=0x601+ Wow64GetThreadSelectorEntry(ptr long ptr)
 @ stdcall -stub -version=0x601+ -arch=x86_64 UmsThreadYield(ptr)
 @ stdcall -stub -version=0x601+ -arch=i386,x86_64 InitializeContext(ptr long ptr ptr)
-@ stub  -version=0x600+ GetProductName
-@ stub  -version=0x601+ GetXStateFeaturesMask
-@ stub  -version=0x601+ LoadStringByReference
-@ stub  -version=0x601+ LocateXStateFeature
-@ stub  -version=0x601+ GetEraNameCountedString
+@ stdcall -stub  -version=0x600+ GetProductName(ptr)
+@ stdcall -stub  -version=0x601+ GetXStateFeaturesMask(ptr)
+@ stdcall -stub  -version=0x601+ LoadStringByReference(ptr)
+@ stdcall -stub  -version=0x601+ LocateXStateFeature(ptr)
+@ stdcall -stub  -version=0x601+ GetEraNameCountedString(ptr)
