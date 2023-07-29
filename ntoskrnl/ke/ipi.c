@@ -18,6 +18,15 @@ extern KSPIN_LOCK KiReverseStallIpiLock;
 
 /* PRIVATE FUNCTIONS *********************************************************/
 
+NTKERNELAPI
+VOID
+FASTCALL
+KeInvalidateRangeAllCaches(
+  _In_ PVOID BaseAddress,
+  _In_ ULONG Length)
+{
+
+}
 VOID
 NTAPI
 KiIpiGenericCallTarget(IN PKIPI_CONTEXT PacketContext,

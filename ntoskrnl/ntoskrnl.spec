@@ -1734,3 +1734,6 @@
 @ stdcall -arch=arm __rt_udiv()
 @ stdcall -arch=arm __rt_udiv64()
 @ stdcall -arch=arm __rt_srsh()
+@ stdcall -stub PsIsSecureProcess(ptr)
+@ stdcall -version=0x600+ ZwRequestPort(ptr ptr)
+@ stdcall KeInvalidateRangeAllCaches(ptr long)
