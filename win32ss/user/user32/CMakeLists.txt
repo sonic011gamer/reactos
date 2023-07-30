@@ -25,6 +25,7 @@ list(APPEND SOURCE
     misc/desktop.c
     misc/display.c
     misc/dllmain.c
+    misc/dwm_longhorn.c
     misc/exit.c
     misc/exticon.c
     misc/imm.c

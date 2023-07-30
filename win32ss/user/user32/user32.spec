@@ -792,8 +792,13 @@
 @ stub UnregisterSessionPort
 @ stub RegisterSessionPort
 @ stub CheckDesktopByThreadId
+@ stub DwmGetSurfaceArea
 @ stub DwmStopRedirection
 @ stub DwmStartRedirection
 @ stub GetWindowRgnEx
-@ stub SetWindowRgnEx
-@ stub UpdateWindowTransform
+
+
+@ stdcall SetWindowRgnEx(long ptr long)
+@ stdcall UpdateWindowTransform(long long ptr)
+@ stdcall DwmStartup(ptr)
+@ stdcall DwmShutdown(ptr)

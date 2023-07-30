@@ -3751,6 +3751,9 @@ NtUserSetScrollBarInfo(
     LONG idObject,
     SETSCROLLBARINFO *info);
 
+BOOLEAN
+NTAPI
+NtUserDwmStartup(HANDLE Handle);
 #endif /* __WIN32K_NTUSER_H */
 
 /* EOF */

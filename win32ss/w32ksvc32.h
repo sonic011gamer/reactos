@@ -694,3 +694,4 @@
 // For Wine DX
     SVC_(GdiDdDDICreateDCFromMemory, 1)
     SVC_(GdiDdDDIDestroyDCFromMemory, 1)
+    SVC_(UserDwmStartup, 1)
