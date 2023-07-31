@@ -34,3 +34,10 @@
 @ stdcall GetProcessDpiAwarenessInternal(ptr ptr)
 @ stdcall SetProcessDpiAwarenessInternal(long)
 @ stdcall GetDpiForMonitorInternal(ptr long ptr ptr)
+
+@   stdcall DwmGetDxRgn(ptr ptr ptr)
+@   stdcall DwmHintDxUpdate(ptr ptr)
+@   stdcall DwmStopRedirection()
+@   stdcall DwmStartRedirection(ptr)
+@ stdcall RegisterSessionPort(long)
+@ stdcall UnregisterSessionPort()

@@ -751,8 +751,10 @@
 742 stdcall -version=0x600+ DisplayConfigGetDeviceInfo(ptr) user32_vista.DisplayConfigGetDeviceInfo
 743 stdcall -version=0x600+ -stub  GetDisplayConfigBufferSizes(long ptr ptr)
 
-
-
+@   stdcall -version=0x600+ DwmGetDxRgn(ptr ptr ptr) user32_vista.DwmGetDxRgn
+@   stdcall -version=0x600+ DwmHintDxUpdate(ptr ptr) user32_vista.DwmHintDxUpdate
+@   stdcall -version=0x600+ DwmStopRedirection() user32_vista.DwmStopRedirection
+@   stdcall -version=0x600+ DwmStartRedirection(ptr) user32_vista.DwmStartRedirection
 
 @   stdcall -version=0x600+ ChangeWindowMessageFilter(long long) user32_vista.ChangeWindowMessageFilter
 @   stdcall -version=0x600+ ChangeWindowMessageFilterEx(long long long ptr) user32_vista.ChangeWindowMessageFilterEx
@@ -787,3 +789,11 @@
 @ stdcall -version=0x600+ SetProcessDpiAwarenessInternal(long) user32_vista.SetProcessDpiAwarenessInternal
 @ stdcall -version=0x600+ GetDpiForMonitorInternal(ptr long ptr ptr) user32_vista.GetDpiForMonitorInternal
 @ stdcall -stub SetWindowDisplayAffinity(ptr)
+;used by dwm
+@ stdcall -version=0x600+ UnregisterSessionPort() user32_vista.UnregisterSessionPort
+@ stdcall -version=0x600+ RegisterSessionPort(long) user32_vista.RegisterSessionPort
+@ stub -version=0x600+ GetWindowRgnEx
+@ stub -version=0x600+ GetWindowMinimizeRect
+@ stub -version=0x600+ SetWindowRgnEx
+@ stub -version=0x600+ UpdateWindowTransform
+@ stub -version=0x600+ CheckDesktopByThreadId

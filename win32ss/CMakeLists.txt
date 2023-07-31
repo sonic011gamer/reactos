@@ -96,6 +96,7 @@ list(APPEND SOURCE
     user/ntuser/misc/rtlstr.c
     user/ntuser/misc/copy.c
     user/ntuser/misc/registry.c
+    user/ntuser/vista/dwm.c
     reactx/ntddraw/ddraw.c
     reactx/ntddraw/dd.c
     reactx/ntddraw/ddsurf.c
@@ -161,6 +162,7 @@ list(APPEND SOURCE
     user/ntuser/object.c
     user/rtl/text.c
     gdi/ntgdi/arc.c
+    gdi/ntgdi/vista/dwm.c
     gdi/ntgdi/bezier.c
     gdi/ntgdi/bitblt.c
     gdi/ntgdi/bitmaps.c

@@ -1,0 +1,5 @@
+add_subdirectory(applications)
+add_subdirectory(dwmapi)
+add_subdirectory(dwmredir)
+add_subdirectory(milcore)
+add_subdirectory(uDWM)

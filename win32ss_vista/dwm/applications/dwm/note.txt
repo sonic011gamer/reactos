@@ -1,0 +1,4 @@
+I got the naming from the symbols, frankly i don't want to comme up with a custom naming scheme
+so il borrow the official one.
+
+CDwmAppHost ->

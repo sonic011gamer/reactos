@@ -619,7 +619,8 @@
 619 stdcall -stub -version=0x600+ D3DKMTOpenAdapterFromGdiDisplayName(ptr)
 620 stdcall -stub -version=0x600+ D3DKMTSetVidPnSourceOwner(ptr)
 621 stdcall -stub -version=0x600+ D3DKMTCheckVidPnExclusiveOwnership(ptr)
-
+@ stdcall -version=0x600+ DwmGetDirtyRgn()
+@ stdcall -version=0x600+ DwmGetSurfaceData()
 @ stdcall -stub -version=0x600+ D3DKMTAcquireKeyedMutex(ptr)
 @ stdcall -stub -version=0x600+ D3DKMTConfigureSharedResource(ptr)
 @ stdcall -stub -version=0x600+ D3DKMTCreateAllocation(ptr)

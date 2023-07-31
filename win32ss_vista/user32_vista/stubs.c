@@ -261,3 +261,65 @@ GetDpiForMonitorInternal(HMONITOR monitor ,UINT one,UINT* two,UINT* three)
 {
     return FALSE;
 }
+
+UINT32
+WINAPI
+DwmGetDxRgn(PVOID x1, PVOID x2, PVOID x3)
+{
+    DPRINT1("DwmGetDxRgn Entry\n");
+    __debugbreak();
+    return 0;
+}
+
+/*
+ * NtUserDwmGetDxRgn
+ * @ UNIMPLEMENTED
+ * UNDOCUMENTED
+ */
+UINT32
+WINAPI
+DwmHintDxUpdate(PVOID x1, PVOID x2)
+{
+    DPRINT1("DwmHintDxUpdate Entry\n");
+    __debugbreak();
+    return 0;
+}
+
+BOOLEAN
+APIENTRY
+NtUserDwmStartRedirection(HANDLE Handle);
+
+BOOLEAN
+WINAPI
+DwmStartRedirection(HANDLE Handle)
+{
+    return NtUserDwmStartRedirection(Handle);
+}
+
+BOOLEAN
+WINAPI
+DwmStopRedirection(VOID)
+{
+    DPRINT1("It's been requested to kill DWM, Forcing success\n");
+    return TRUE;
+}
+
+UINT32
+APIENTRY
+NtUserRegisterSessionPort(HANDLE Handle);
+
+NTSTATUS
+WINAPI
+RegisterSessionPort(UINT32 x1)
+{
+    return NtUserRegisterSessionPort((HANDLE)x1);
+}
+
+NTSTATUS
+WINAPI
+UnregisterSessionPort()
+{
+    DPRINT1("UnregisterSessionPort\n");
+    __debugbreak();
+    return STATUS_SUCCESS;
+}

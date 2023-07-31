@@ -1,0 +1,4 @@
+@ stub DwmVersionCheck
+@ stub DwmRedirectionManagerSetClientRenderTarget
+@ stub DwmRedirectionManagerInitialize
+@ stub DwmRedirectionManagerSetClientChannel
