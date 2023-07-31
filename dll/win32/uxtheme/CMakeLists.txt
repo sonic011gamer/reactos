@@ -13,6 +13,7 @@ list(APPEND SOURCE
     nonclient.c
     property.c
     stylemap.c
+    CThemeServer.cpp
     system.c
     themehooks.c
     uxini.c

@@ -14,23 +14,23 @@
 14 stub -noname RegisterDefaultTheme
 15 stub -noname DumpLoadedThemeToTextFile
 16 stdcall -noname OpenThemeDataFromFile(ptr ptr wstr long)
-17 stub -noname OpenThemeFileFromData
-18 stub -noname GetThemeSysSize96
-19 stub -noname GetThemeSysFont96
-20 stub -noname SessionAllocate
-21 stub -noname SessionFree
-22 stub -noname ThemeHooksOn
-23 stub -noname ThemeHooksOff
-24 stub -noname AreThemeHooksActive
-25 stub -noname GetCurrentChangeNumber
-26 stub -noname GetNewChangeNumber
-27 stub -noname SetGlobalTheme
-28 stub -noname GetGlobalTheme
+17 stdcall -stub -noname OpenThemeFileFromData(ptr)
+18 stdcall -stub -noname GetThemeSysSize96(ptr)
+19 stdcall -stub -noname GetThemeSysFont96(ptr)
+20 stdcall -stub -noname SessionAllocate(ptr long long ptr ptr long long)
+21 stdcall -stub -noname SessionFree(ptr)
+22 stdcall -stub -noname ThemeHooksOn(ptr)
+23 stdcall -stub -noname ThemeHooksOff(ptr)
+24 stdcall -stub -noname AreThemeHooksActive(ptr)
+25 stdcall -stub -noname GetCurrentChangeNumber(ptr)
+26 stdcall -stub -noname GetNewChangeNumber(ptr)
+27 stdcall -stub -noname SetGlobalTheme(ptr)
+28 stdcall -stub -noname GetGlobalTheme(ptr)
 29 stdcall -noname CheckThemeSignature(wstr)
-30 stub -noname LoadTheme
-31 stub -noname InitUserTheme
-32 stub -noname InitUserRegistry
-33 stub -noname ReestablishServerConnection
+30 stdcall -stub -noname LoadTheme(ptr)
+31 stdcall -stub -noname InitUserTheme(ptr)
+32 stdcall -stub -noname InitUserRegistry(ptr)
+33 stdcall -stub -noname ReestablishServerConnection(ptr)
 34 stdcall -noname ThemeHooksInstall()
 35 stdcall -noname ThemeHooksRemove()
 36 stub -noname RefreshThemeForTS

@@ -17,7 +17,7 @@ PGRAPHICS_DEVICE gpVgaGraphicsDevice;
 
 static PGRAPHICS_DEVICE gpGraphicsDeviceFirst = NULL;
 static PGRAPHICS_DEVICE gpGraphicsDeviceLast = NULL;
-static HSEMAPHORE ghsemGraphicsDeviceList;
+ HSEMAPHORE ghsemGraphicsDeviceList;
 static ULONG giDevNum = 1;
 
 CODE_SEG("INIT")

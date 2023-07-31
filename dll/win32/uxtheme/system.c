@@ -1259,11 +1259,6 @@ HRESULT WINAPI EnumThemes(LPCWSTR pszThemePath, ENUMTHEMEPROC callback,
                 wsprintfW(szPath, szFormat, szDir, wfd.cFileName, wfd.cFileName);
 
                 hr = GetThemeDocumentationProperty(szPath, szDisplayName, szName, sizeof(szName)/sizeof(szName[0]));
-                if(FAILED(hr))
-                {
-                    ERR("Failed to get theme name from %S\n", szPath);
-                    continue;
-                }
 
                 hr = GetThemeDocumentationProperty(szPath, szTooltip, szTip, sizeof(szTip)/sizeof(szTip[0]));
                 if (FAILED(hr))
@@ -1272,7 +1267,7 @@ HRESULT WINAPI EnumThemes(LPCWSTR pszThemePath, ENUMTHEMEPROC callback,
                 TRACE("callback(%s,%s,%s,%p)\n", debugstr_w(szPath), debugstr_w(szName), debugstr_w(szTip), lpData);
                 if(!callback(NULL, szPath, szName, szTip, NULL, lpData)) {
                     TRACE("callback ended enum\n");
-                    break;
+                    //break;
                 }
             }
         } while(FindNextFileW(hFind, &wfd));
