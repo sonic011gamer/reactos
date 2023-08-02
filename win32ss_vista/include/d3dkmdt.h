@@ -10,9 +10,24 @@
 
 #include "d3dukmdt.h"
 
+#pragma warning(push)
+#pragma warning(disable:4201) // anonymous unions warning
+#pragma warning(disable:4214)   // nonstandard extension used: bit field types other than int
+
+//
+// Available only for Vista (LONGHORN) and later and for
+// multiplatform tools such as debugger extensions
+//
+#if (NTDDI_VERSION >= NTDDI_LONGHORN) || defined(D3DKMDT_SPECIAL_MULTIPLATFORM_TOOL)
+
+//
+// Hardcoded overlay count
+//
 #define D3DKMDT_MAX_OVERLAYS_BITCOUNT           2
 #define D3DKMDT_MAX_OVERLAYS                    (1 << D3DKMDT_MAX_OVERLAYS_BITCOUNT)
 
+
+//////////////////// VidPN management DDI handles /////////////////////////////////////////////////////////
 DECLARE_HANDLE(D3DKMDT_HVIDPN);
 DECLARE_HANDLE(D3DKMDT_HVIDEOPRESENTSOURCESET);
 DECLARE_HANDLE(D3DKMDT_HVIDEOPRESENTTARGETSET);
@@ -26,6 +41,10 @@ DECLARE_HANDLE(D3DKMDT_HMONITORDESCRIPTORSET);
 // Alias VOID* to make LDDM kernel mode interface prototypes using adapter handles self-explanatory.
 typedef VOID* D3DKMDT_ADAPTER;
 
+
+
+//////////////////// VidPN management DDI constants /////////////////////////////////////////////////////////
+
 // Special values representing that given variable has not been initialized to a valid value intended
 // to catch development time errors. A valid parameter should never have this value.
 #define D3DKMDT_DIMENSION_UNINITIALIZED  (UINT)(~0)
@@ -36,6 +55,17 @@ typedef VOID* D3DKMDT_ADAPTER;
 #define D3DKMDT_DIMENSION_NOTSPECIFIED  (UINT)(~1)
 #define D3DKMDT_FREQUENCY_NOTSPECIFIED  (UINT)(~1)
 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Purpose: Video mode standard descriptor type, listing standards that are explicitly supported by Windows.
+//
+// Remarks: This enum specifies based on which standard the video signal timing parameters should be computed.
+//          Note that NTSC, PAL, and SECAM mode variants are treated as individual groups to avoid complicating
+//          the DDI with the notion of "sub-standard" (because they don't differ from each other in the parameters
+//          used to describe the video signal in the DDI and the parameters that they do differ in are of no
+//          interest to us in DMM).
+//
 typedef enum _D3DKMDT_VIDEO_SIGNAL_STANDARD
 {
     D3DKMDT_VSS_UNINITIALIZED =  0,
@@ -85,6 +115,14 @@ typedef enum _D3DKMDT_VIDEO_SIGNAL_STANDARD
 }
 D3DKMDT_VIDEO_SIGNAL_STANDARD;
 
+
+
+//////////////////// Video present sources //////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Purpose: Video present source descriptor type.
+//
 typedef struct _D3DKMDT_VIDEO_PRESENT_SOURCE
 {
     // Unique ID used to reference the respective video present source by the miniport and the OS.
@@ -95,6 +133,13 @@ typedef struct _D3DKMDT_VIDEO_PRESENT_SOURCE
 }
 D3DKMDT_VIDEO_PRESENT_SOURCE;
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Purpose: VidPN source mode enumeration type descriptor type.
+//
+// Remarks: This type is used to specify whether a VidPN source mode is a graphics or a text mode
+//          (see VIDEO_PRESENT_SOURCE_MODE for more details).
+//
 typedef enum _D3DKMDT_VIDPN_SOURCE_MODE_TYPE
 {
     D3DKMDT_RMT_UNINITIALIZED                 = 0,
@@ -105,6 +150,18 @@ typedef enum _D3DKMDT_VIDPN_SOURCE_MODE_TYPE
 }
 D3DKMDT_VIDPN_SOURCE_MODE_TYPE;
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Purpose: Pixel value access mode descriptor type.
+//
+// Remarks: Use Direct to represent VidPN source modes with colors stored directly in the primary surface.
+//          Use PresetPalette to represent VidPN source modes with colors' indices stored in the primary
+//          surface and actual color values stored in a palette specific to the video card, that must
+//          be queried from the video miniport.
+//          Use SettablePalette to represent VidPN source modes with colors' indices stored in the primary
+//          surface and actual color values stored in a settable palette that can be dynamically set on
+//          the video card, by specifying it to the video miniport.
+//
 typedef enum _D3DKMDT_PIXEL_VALUE_ACCESS_MODE
 {
     D3DKMDT_PVAM_UNINITIALIZED   = 0,
@@ -114,6 +171,34 @@ typedef enum _D3DKMDT_PIXEL_VALUE_ACCESS_MODE
 }
 D3DKMDT_PIXEL_VALUE_ACCESS_MODE;
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Purpose: Descriptor type of the color basis with respect to which the pixels' colors are expanded,
+//          or conversely, based on which the color values are synthesized.
+//
+// Remarks: The commonly used color bases in graphics industry are RGB, which has the basis (red, green, blue),
+//          as well as YPbPr and YCbCr, which have scaled variants of basis:
+//          (1, blue-1, red-1)*intensity(red,green,blue).
+//          Tri-stimulus linear RGB is well suited for real-time rendering, since most filtering algorithms
+//          use tri-stimulus values to approximate light's spectral transformations caused by its interaction
+//          with the environment, primarily due to the fact that there is a linear relationship between the
+//          perceived light level and the light's spectral intensity. Ideally, all processing of video content
+//          (i.e. scaling, filtering, etc) should be performed in a linear RGB space.
+//          Y'PbPr spaces store data using a nonlinear curve which is approximately the inverse of a gamma
+//          2.2 curve (i.e. x^0.45).  This allows more precision to be stored in darker intensities where the
+//          human eye is more sensitive.
+//          sRGB (more accurately, sR'G'B') stores light intensities relative to a gamma curve.
+//          scRGB stores linear values and requires much higher precision to represent the same perceptually
+//          similar signal.
+//          The light-intensity based YPbPr and YCbCr is better suited for persistence of pre-rendered content,
+//          such as video streaming. This is due to the fact that a human visual system is more responsive to
+//          small differences in photons' intensity rather than frequency (i.e. perceived color), and, hence,
+//          a light-intensity based color expansion over a finite dynamic range, yields a better perceptual
+//          image quality for the human eye than a tri-stimulus based color expansion in that same range
+//          (e.g  non-linear Y8Cb8Cr8 appears slightly better than R8G8B8 and is comparable to R9G9B9).
+//          To represent monochrome modes, use Intensity. Grayscale imaging is heavily used in medical imaging.
+//          Note: the apostrophe notation Y'PbPr is used to remind you that you are working with non-linear data.
+//
 typedef enum _D3DKMDT_COLOR_BASIS
 {
     D3DKMDT_CB_UNINITIALIZED = 0,
@@ -125,6 +210,16 @@ typedef enum _D3DKMDT_COLOR_BASIS
 }
 D3DKMDT_COLOR_BASIS;
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Purpose: Descriptor type of the color coefficients dynamic range, whose linear combination with the
+//          respective color basis produces final pixel values.
+//
+// Remarks: Examples include (5,6,5,0) for R5G6B5, (8,8,8,8) for R8G8B8A8, and (24, 0, 0, 0) for 24-bit
+//          grayscale pixel encoding format.
+//          NOTE: Currently this is only used for target modes, none of which has the 4th channel (e.g. alpha).
+//                We are keeping the 4th field for extensibility purpose to avoid miniport interface revision
+//                if 4-channel video interfaces became available between display adapter and monitor.
+//
 typedef struct _D3DKMDT_COLOR_COEFF_DYNAMIC_RANGES
 {
     UINT  FirstChannel;
@@ -134,14 +229,41 @@ typedef struct _D3DKMDT_COLOR_COEFF_DYNAMIC_RANGES
 }
 D3DKMDT_COLOR_COEFF_DYNAMIC_RANGES;
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Purpose: 2D region descriptor type.
+//
+// Remarks: We define our own rather than reusing SIZE type to avoid dependency on SDK headers.
+//
 typedef struct _D3DKMDT_2DREGION
 {
     UINT cx;
     UINT cy;
 }
 D3DKMDT_2DREGION;
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Purpose: 2D offset descriptor type.
+//
+// Remarks: We define our own rather than reusing SIZE type to avoid dependency on SDK headers.
+//
 typedef D3DKMDT_2DREGION  D3DKMDT_2DOFFSET;
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Purpose: Graphics video present source mode descriptor type.
+//
+// Remarks: Graphics video present source mode is the dominantly used subtype of the video present source
+//          modes (other being the text video present source mode).
+//          Note that whenever video present source mode's visible size,
+//          VIDEO_PRESENT_SOURCE_MODE.GRAPHICS_RENDERING_FORMAT.sizeVisible is not equal to the respective
+//          video mode's visible size, VIDEO_PRESENT_TARGET_MODE.sizeVisible, h/w scaling is undertaken by
+//          the video output codec.
+//
+//          Miniport is free to support any D3D pixel format for its graphics modes that is meaningful
+//          as a primary surface pixel format.
+//
 typedef struct _D3DKMDT_GRAPHICS_RENDERING_FORMAT
 {
     // Size of the primary surface required for this VidPN source mode.
@@ -411,7 +533,7 @@ typedef struct _D3DKMDT_VIDEO_SIGNAL_INFO
         struct
         {
             // Scan line ordering (e.g. progressive, interlaced).
-           // D3DDDI_VIDEO_SIGNAL_SCANLINE_ORDERING ScanLineOrdering : 3;
+            D3DDDI_VIDEO_SIGNAL_SCANLINE_ORDERING ScanLineOrdering : 3;
 
             // Vertical refresh frequency divider
             UINT VSyncFreqDivider               : 6;
@@ -2228,6 +2350,8 @@ typedef union _DXGK_MONITORLINKINFO_CAPABILITIES
 #endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_1)
 
 
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_2)
+
 #if defined(__cplusplus) && !defined(SORTPP_PASS)
 
 typedef enum _DXGK_DISPLAY_USAGE : BYTE
@@ -2265,5 +2389,34 @@ typedef BYTE DXGK_DISPLAY_USAGE;
 typedef BYTE DXGK_DISPLAY_TECHNOLOGY;
 typedef BYTE DXGK_DISPLAY_DESCRIPTOR_TYPE;
 #endif // defined(__cplusplus) && !defined(SORTPP_PASS)
+
+#endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_2)
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_5)
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Capabilities, preferences and other information reported by display only capable adapters.
+
+typedef struct _D3DKMT_DISPLAY_CAPS
+{
+    union
+    {
+        struct
+        {
+            UINT64 PreferPhysicallyContiguous : 1;
+            UINT64 Reserved : 63;
+        };
+        UINT64 Value;
+    };
+} D3DKMT_DISPLAY_CAPS;
+
+#endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_5)
+
+#pragma pack( pop )
+
+#endif // (NTDDI_VERSION >= NTDDI_LONGHORN) || defined(D3DKMDT_SPECIAL_MULTIPLATFORM_TOOL)
+
+#pragma warning(pop)
+
 
 #endif // D3DKMDT_H
