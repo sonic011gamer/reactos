@@ -30,7 +30,7 @@
 #define DXGKDDI_INTERFACE_VERSION_WDDM3_0    0xF003
 #define DXGKDDI_INTERFACE_VERSION_WDDM3_1   0x10004 /* Windows 11 2023*/
 
-#define VERSION_WDDM_REACTOS DXGKDDI_INTERFACE_VERSION_VISTA
+#define VERSION_WDDM_REACTOS DXGKDDI_INTERFACE_VERSION_WIN7
 
 /* dont really care about switching target for this version */
 
@@ -92,7 +92,7 @@
 #define D3D_UMD_INTERFACE_VERSION_WDDM3_1_1     0x10000
 #define D3D_UMD_INTERFACE_VERSION_WDDM3_1       D3D_UMD_INTERFACE_VERSION_WDDM3_1_1
 
-#define D3D_UMD_REACTOS_VERSION D3D_UMD_INTERFACE_VERSION_VISTA
+#define D3D_UMD_REACTOS_VERSION D3D_UMD_INTERFACE_VERSION_WIN7
 
 #if !defined(DXGKDDI_INTERFACE_VERSION)
 #define DXGKDDI_INTERFACE_VERSION           VERSION_WDDM_REACTOS
@@ -102,7 +102,9 @@
 #define D3D_UMD_INTERFACE_VERSION           D3D_UMD_REACTOS_VERSION
 #endif
 
-/* No need to change these from the windows SDK headers! */
+#ifdef _WIN32
+// For Windows, don't enforce any unnatural alignment or data sizes/types.
+// The WOW64 thunking layer will handle translation.
 #define D3DKMT_ALIGN64
 #define D3DKMT_PTR_HELPER(Name)
 #define D3DKMT_PTR(Type, Name) Type Name
@@ -111,6 +113,34 @@ typedef SIZE_T D3DKMT_SIZE_T;
 typedef UINT_PTR D3DKMT_UINT_PTR;
 typedef ULONG_PTR D3DKMT_ULONG_PTR;
 typedef HANDLE D3DKMT_PTR_TYPE;
+#else
+// For other platforms, struct layout should be fixed-size, x64-compatible
+#if __cplusplus >= 201103L
+ #define D3DKMT_ALIGN64 alignas(8)
+#else
+ #define D3DKMT_ALIGN64 __attribute__((aligned(8)))
+#endif
+#define D3DKMT_PTR_HELPER(Name) D3DKMT_ALIGN64 UINT64 Name;
+#define D3DKMT_PTR(Type, Name)       \
+union D3DKMT_ALIGN64                 \
+{                                    \
+    D3DKMT_PTR_HELPER(Name##_Align)  \
+    Type Name;                       \
+}
+#define D3DKMT_PTR_INIT(x) { (UINT64)(SIZE_T)(x) }
+typedef UINT64 D3DKMT_SIZE_T, D3DKMT_UINT_PTR, D3DKMT_ULONG_PTR;
+typedef union _D3DKMT_PTR_TYPE
+{
+    D3DKMT_PTR_HELPER(Ptr_Align);
+    HANDLE Ptr;
+} D3DKMT_PTR_TYPE;
+#endif
+
+//
+// Available only for Vista (LONGHORN) and later and for
+// multiplatform tools such as debugger extensions
+//
+#if (NTDDI_VERSION >= NTDDI_LONGHORN) || defined(D3DKMDT_SPECIAL_MULTIPLATFORM_TOOL)
 
 typedef ULONGLONG D3DGPU_VIRTUAL_ADDRESS;
 typedef ULONGLONG D3DGPU_SIZE_T;
@@ -129,7 +159,6 @@ typedef struct _GPUP_DRIVER_ESCAPE_INPUT
    LUID        vfLUID; //LUID that was returned from SET_PARTITION_DETAILS
 } GPUP_DRIVER_ESCAPE_INPUT, *PGPUP_DRIVER_ESCAPE_INPUT;
 
-/* Following typedefs are 1:1 with windows headers as of 3/27/2023 */
 typedef enum _DXGKVGPU_ESCAPE_TYPE
 {
     DXGKVGPU_ESCAPE_TYPE_READ_PCI_CONFIG            = 0,
@@ -257,10 +286,39 @@ typedef struct _D3DGPU_PHYSICAL_ADDRESS
     UINT64  SegmentOffset;
 } D3DGPU_PHYSICAL_ADDRESS;
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Purpose: Video present source unique identification number descriptor type
+//
+
 typedef UINT  D3DDDI_VIDEO_PRESENT_SOURCE_ID;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Purpose: Video present source unique identification number descriptor type.
+//
 typedef UINT  D3DDDI_VIDEO_PRESENT_TARGET_ID;
+
+//
+// DDI level handle that represents a kernel mode object (allocation, device, etc)
+//
 typedef UINT D3DKMT_HANDLE;
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Purpose: Video present target mode fractional frequency descriptor type.
+//
+// Remarks: Fractional value used to represent vertical and horizontal frequencies of a video mode
+//          (i.e. VSync and HSync). Vertical frequencies are stored in Hz. Horizontal frequencies
+//          are stored in Hz.
+//          The dynamic range of this encoding format, given 10^-7 resolution is {0..(2^32 - 1) / 10^7},
+//          which translates to {0..428.4967296} [Hz] for vertical frequencies and {0..428.4967296} [Hz]
+//          for horizontal frequencies. This sub-microseconds precision range should be acceptable even
+//          for a pro-video application (error in one microsecond for video signal synchronization would
+//          imply a time drift with a cycle of 10^7/(60*60*24) = 115.741 days.
+//
+//          If rational number with a finite fractional sequence, use denominator of form 10^(length of fractional sequence).
+//          If rational number without a finite fractional sequence, or a sequence exceeding the precision allowed by the
+//          dynamic range of the denominator, or an irrational number, use an appropriate ratio of integers which best
+//          represents the value.
+//
 typedef struct _D3DDDI_RATIONAL
 {
     UINT    Numerator;
@@ -869,7 +927,6 @@ typedef enum _D3DDDI_OUTPUT_WIRE_COLOR_SPACE_TYPE
     // for now graphics drivers should not expect it.
     D3DDDI_OUTPUT_WIRE_COLOR_SPACE_G2084_P2020_DVLL       = 33,
 } D3DDDI_OUTPUT_WIRE_COLOR_SPACE_TYPE;
-
 
 typedef struct _D3DDDIRECT
 {
@@ -1887,6 +1944,7 @@ typedef struct _D3DDDI_QUERYREGISTRY_INFO
 #define D3DDDI_ALLOCATIONPRIORITY_HIGH          0xa0000000
 #define D3DDDI_ALLOCATIONPRIORITY_MAXIMUM       0xc8000000
 
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM1_3)
 
 // Cross adapter resource pitch alignment in bytes.
 // Must be power of 2.
@@ -1897,4 +1955,8 @@ typedef struct _D3DDDI_QUERYREGISTRY_INFO
 //
 #define D3DKMT_CROSS_ADAPTER_RESOURCE_HEIGHT_ALIGNMENT 4
 
-#endif /* D3DUKMDT_H */
+#endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM1_3)
+
+#endif // (NTDDI_VERSION >= NTDDI_LONGHORN) || defined(D3DKMDT_SPECIAL_MULTIPLATFORM_TOOL)
+
+#endif
