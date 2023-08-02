@@ -10,8 +10,13 @@
  *  These headers are based off of reversing drivers
  *  and minimizing the public WDK headers ***ONLY***
  */
-
+#include <wingdi.h>
 #include "d3dkmdt.h"
+
+#pragma warning(push)
+#pragma warning(disable:4201) // anonymous unions warning
+#pragma warning(disable:4200) // zero-sized array in struct/union
+#pragma warning(disable:4214)   // nonstandard extension used: bit field types other than int
 
 
 typedef struct _OBJECT_ATTRIBUTES OBJECT_ATTRIBUTES;
@@ -3990,7 +3995,9 @@ typedef struct _D3DKMT_QUERYSTATISTICS
 #endif
     };
 } D3DKMT_QUERYSTATISTICS;
-
+#if defined(_AMD64_)
+C_ASSERT(sizeof(D3DKMT_QUERYSTATISTICS) == 0x328);
+#endif
 
 //
 // end D3DKMT_QUERYSTATISTICS
@@ -4328,9 +4335,1770 @@ typedef struct _D3DKMT_GETDEVICESTATE
     };
 } D3DKMT_GETDEVICESTATE;
 
+typedef struct _D3DKMT_CREATEDCFROMMEMORY
+{
+    D3DKMT_PTR(VOID*,               pMemory);      // in: memory for DC
+    D3DDDIFORMAT                    Format;        // in: Memory pixel format
+    UINT                            Width;         // in: Memory Width
+    UINT                            Height;        // in: Memory Height
+    UINT                            Pitch;         // in: Memory pitch
+    D3DKMT_PTR(HDC,                 hDeviceDc);    // in: DC describing the device
+    D3DKMT_PTR(PALETTEENTRY*,       pColorTable);  // in: Palette
+    D3DKMT_PTR(HDC,                 hDc);          // out: HDC
+    D3DKMT_PTR(HANDLE,              hBitmap);      // out: Handle to bitmap
+} D3DKMT_CREATEDCFROMMEMORY;
 
-// ADDD MORE HEADERS HERE FROM HERE VVVVVVV
-//typedef struct _D3DKMT_CREATEDCFROMMEMORY
+typedef struct _D3DKMT_DESTROYDCFROMMEMORY
+{
+    D3DKMT_PTR(HDC,    hDc);           // in:
+    D3DKMT_PTR(HANDLE, hBitmap);       // in:
+} D3DKMT_DESTROYDCFROMMEMORY;
+
+#define D3DKMT_SETCONTEXTSCHEDULINGPRIORITY_ABSOLUTE 0x40000000
+
+typedef struct _D3DKMT_SETCONTEXTSCHEDULINGPRIORITY
+{
+    D3DKMT_HANDLE                   hContext;      // in: context handle
+    INT                             Priority;      // in: context priority
+} D3DKMT_SETCONTEXTSCHEDULINGPRIORITY;
+
+typedef struct _D3DKMT_SETCONTEXTINPROCESSSCHEDULINGPRIORITY
+{
+    D3DKMT_HANDLE                   hContext;      // in: context handle
+    INT                             Priority;      // in: context priority
+} D3DKMT_SETCONTEXTINPROCESSSCHEDULINGPRIORITY;
+
+typedef struct _D3DKMT_CHANGESURFACEPOINTER
+{
+    D3DKMT_PTR(HDC,                 hDC);            // in: dc handle
+    D3DKMT_PTR(HANDLE,              hBitmap);        // in: bitmap handle
+    D3DKMT_PTR(LPVOID,              pSurfacePointer);// in: new surface pointer
+    UINT                            Width;           // in: Memory Width
+    UINT                            Height;          // in: Memory Height
+    UINT                            Pitch;           // in: Memory pitch
+} D3DKMT_CHANGESURFACEPOINTER;
+
+typedef struct _D3DKMT_GETCONTEXTSCHEDULINGPRIORITY
+{
+    D3DKMT_HANDLE                   hContext;      // in: context handle
+    INT                             Priority;      // out: context priority
+} D3DKMT_GETCONTEXTSCHEDULINGPRIORITY;
+
+typedef struct _D3DKMT_GETCONTEXTINPROCESSSCHEDULINGPRIORITY
+{
+    D3DKMT_HANDLE                   hContext;      // in: context handle
+    INT                             Priority;      // out: context priority
+} D3DKMT_GETCONTEXTINPROCESSSCHEDULINGPRIORITY;
+
+typedef enum _D3DKMT_SCHEDULINGPRIORITYCLASS
+{
+    D3DKMT_SCHEDULINGPRIORITYCLASS_IDLE         = 0,
+    D3DKMT_SCHEDULINGPRIORITYCLASS_BELOW_NORMAL = 1,
+    D3DKMT_SCHEDULINGPRIORITYCLASS_NORMAL       = 2,
+    D3DKMT_SCHEDULINGPRIORITYCLASS_ABOVE_NORMAL = 3,
+    D3DKMT_SCHEDULINGPRIORITYCLASS_HIGH         = 4,
+    D3DKMT_SCHEDULINGPRIORITYCLASS_REALTIME     = 5,
+} D3DKMT_SCHEDULINGPRIORITYCLASS;
+
+typedef struct _D3DKMT_GETSCANLINE
+{
+    D3DKMT_HANDLE                   hAdapter;           // in: Adapter handle
+    D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId;      // in: Adapter's VidPN Source ID
+    BOOLEAN                         InVerticalBlank;    // out: Within vertical blank
+    UINT                            ScanLine;           // out: Current scan line
+} D3DKMT_GETSCANLINE;
+
+typedef enum _D3DKMT_QUEUEDLIMIT_TYPE
+{
+    D3DKMT_SET_QUEUEDLIMIT_PRESENT     = 1,
+    D3DKMT_GET_QUEUEDLIMIT_PRESENT     = 2,
+} D3DKMT_QUEUEDLIMIT_TYPE;
+
+typedef struct _D3DKMT_SETQUEUEDLIMIT
+{
+    D3DKMT_HANDLE                   hDevice;            // in: device handle
+    D3DKMT_QUEUEDLIMIT_TYPE         Type;               // in: limit type
+    union
+    {
+        UINT                        QueuedPresentLimit; // in (or out): queued present limit
+        struct
+        {
+            D3DDDI_VIDEO_PRESENT_SOURCE_ID VidPnSourceId;          // in: adapter's VidPN source ID
+            UINT                           QueuedPendingFlipLimit; // in (or out): flip pending limit
+        };
+    };
+} D3DKMT_SETQUEUEDLIMIT;
+
+typedef struct _D3DKMT_POLLDISPLAYCHILDREN
+{
+    D3DKMT_HANDLE                   hAdapter;                 // in: Adapter handle
+    UINT                            NonDestructiveOnly :  1;  // in: 0x00000001 Destructive or not
+    UINT                            SynchronousPolling :  1;  // in: 0x00000002 Synchronous polling or not
+    UINT                            DisableModeReset   :  1;  // in: 0x00000004 Disable DMM mode reset on monitor event
+    UINT                            PollAllAdapters    :  1;  // in: 0x00000008 Poll all adapters
+    UINT                            PollInterruptible  :  1;  // in: 0x00000010 Poll interruptible targets as well.
+    UINT                            Reserved           : 27;  // in: 0xffffffc0
+} D3DKMT_POLLDISPLAYCHILDREN;
+
+typedef struct _D3DKMT_INVALIDATEACTIVEVIDPN
+{
+    D3DKMT_HANDLE                   hAdapter;               // in: Adapter handle
+    D3DKMT_PTR(VOID*,               pPrivateDriverData);    // in: Private driver data
+    UINT                            PrivateDriverDataSize;  // in: Size of private driver data
+} D3DKMT_INVALIDATEACTIVEVIDPN;
+
+typedef struct _D3DKMT_CHECKOCCLUSION
+{
+    D3DKMT_PTR(HWND,            hWindow);        // in:  Destination window handle
+} D3DKMT_CHECKOCCLUSION;
+
+typedef struct _D3DKMT_WAITFORIDLE
+{
+    D3DKMT_HANDLE   hDevice;        // in:  Device to wait for idle
+} D3DKMT_WAITFORIDLE;
+
+typedef struct _D3DKMT_CHECKMONITORPOWERSTATE
+{
+    D3DKMT_HANDLE    hAdapter;    // in: Adapter to check on
+    D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId;      // in: Adapter's VidPN Source ID
+} D3DKMT_CHECKMONITORPOWERSTATE;
+
+typedef struct _D3DKMT_SETDISPLAYPRIVATEDRIVERFORMAT
+{
+    D3DKMT_HANDLE                   hDevice;                         // in: Identifies the device
+    D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId;                   // in: Identifies which VidPn we are changing the private driver format attribute for
+    UINT                            PrivateDriverFormatAttribute;    // In: Requested private format attribute for VidPn specified
+} D3DKMT_SETDISPLAYPRIVATEDRIVERFORMAT;
+
+typedef struct _D3DKMT_CREATEKEYEDMUTEX
+{
+    D3DKMT_ALIGN64 UINT64                   InitialValue;               // in:  Initial value to release to
+    D3DKMT_HANDLE                           hSharedHandle;              // out:  Global handle to keyed mutex
+    D3DKMT_HANDLE                           hKeyedMutex;                // out: Handle to the keyed mutex in this process
+} D3DKMT_CREATEKEYEDMUTEX;
+
+typedef struct _D3DKMT_OPENKEYEDMUTEX
+{
+    D3DKMT_HANDLE                           hSharedHandle;              // in:  Global handle to keyed mutex
+    D3DKMT_HANDLE                           hKeyedMutex;                // out: Handle to the keyed mutex in this process
+} D3DKMT_OPENKEYEDMUTEX;
+
+typedef struct _D3DKMT_DESTROYKEYEDMUTEX
+{
+    D3DKMT_HANDLE                           hKeyedMutex;                // in:  Identifies the keyed mutex being destroyed.
+} D3DKMT_DESTROYKEYEDMUTEX;
+
+typedef struct _D3DKMT_ACQUIREKEYEDMUTEX
+{
+    D3DKMT_HANDLE                           hKeyedMutex;                // in: Handle to the keyed mutex
+    D3DKMT_ALIGN64 UINT64                   Key;                        // in: Key value to Acquire
+    D3DKMT_PTR(PLARGE_INTEGER,              pTimeout);                  // in: NT-style timeout value
+    D3DKMT_ALIGN64 UINT64                   FenceValue;                 // out: Current fence value of the GPU sync object
+} D3DKMT_ACQUIREKEYEDMUTEX;
+
+typedef struct _D3DKMT_RELEASEKEYEDMUTEX
+{
+    D3DKMT_HANDLE                           hKeyedMutex;                // in: Handle to the keyed mutex
+    D3DKMT_ALIGN64 UINT64                   Key;                        // in: Key value to Release to
+    D3DKMT_ALIGN64 UINT64                   FenceValue;                 // in: New fence value to use for GPU sync object
+} D3DKMT_RELEASEKEYEDMUTEX;
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WIN8)
+
+typedef struct _D3DKMT_CREATEKEYEDMUTEX2_FLAGS
+{
+    union
+    {
+        struct
+        {
+            UINT NtSecuritySharing      : 1;    // If set, the keyed mutex will be shared using DxgkShareObjects instead of D3DKMT_CREATEKEYEDMUTEX2::hSharedHandle
+            UINT Reserved               : 31;
+        };
+        UINT Value;
+    };
+} D3DKMT_CREATEKEYEDMUTEX2_FLAGS;
+
+typedef struct _D3DKMT_CREATEKEYEDMUTEX2
+{
+    D3DKMT_ALIGN64 UINT64                         InitialValue;           // in:  Initial value to release to
+    D3DKMT_HANDLE                                 hSharedHandle;          // out: Global handle to keyed mutex, NULL if NtSecuritySharing is set.
+    D3DKMT_HANDLE                                 hKeyedMutex;            // out: Handle to the keyed mutex in this process
+    D3DKMT_PTR(_In_reads_bytes_opt_(PrivateRuntimeDataSize)
+    VOID*,                                        pPrivateRuntimeData);   // in:  Buffer containing initial private data.
+                                                                          //      If NULL then PrivateRuntimeDataSize must be 0.
+    UINT                                          PrivateRuntimeDataSize; // in:  Size in bytes of pPrivateRuntimeData.
+    D3DKMT_CREATEKEYEDMUTEX2_FLAGS                Flags;                  // in:  Creation flags.
+} D3DKMT_CREATEKEYEDMUTEX2;
+
+typedef struct _D3DKMT_OPENKEYEDMUTEX2
+{
+    D3DKMT_HANDLE                                 hSharedHandle;          // in:  Global handle to keyed mutex
+    D3DKMT_HANDLE                                 hKeyedMutex;            // out: Handle to the keyed mutex in this process
+    D3DKMT_PTR(_In_reads_bytes_opt_(PrivateRuntimeDataSize)
+    VOID*,                                        pPrivateRuntimeData);   // in:  Buffer containing initial private data.
+                                                                          //      If NULL then PrivateRuntimeDataSize must be 0.
+                                                                          //      It will only be copied if the keyed mutex does not already have private data.
+    UINT                                          PrivateRuntimeDataSize; // in:  Size in bytes of pPrivateRuntimeData.
+} D3DKMT_OPENKEYEDMUTEX2;
+
+typedef struct _D3DKMT_OPENKEYEDMUTEXFROMNTHANDLE
+{
+    D3DKMT_PTR(HANDLE,                            hNtHandle);             // in:  NT handle to keyed mutex
+    D3DKMT_HANDLE                                 hKeyedMutex;            // out: Handle to the keyed mutex in this process
+    D3DKMT_PTR(_In_reads_bytes_opt_(PrivateRuntimeDataSize)
+    VOID*,                                        pPrivateRuntimeData);   // in:  Buffer containing initial private data.
+                                                                          //      If NULL then PrivateRuntimeDataSize must be 0.
+                                                                          //      It will only be copied if the keyed mutex does not already have private data.
+    UINT                                          PrivateRuntimeDataSize; // in:  Size in bytes of pPrivateRuntimeData.
+} D3DKMT_OPENKEYEDMUTEXFROMNTHANDLE;
+
+typedef struct _D3DKMT_ACQUIREKEYEDMUTEX2
+{
+    D3DKMT_HANDLE                                       hKeyedMutex;            // in:  Handle to the keyed mutex
+    D3DKMT_ALIGN64 UINT64                               Key;                    // in:  Key value to Acquire
+    D3DKMT_PTR(PLARGE_INTEGER,                          pTimeout);              // in:  NT-style timeout value
+    D3DKMT_ALIGN64 UINT64                               FenceValue;             // out: Current fence value of the GPU sync object
+    D3DKMT_PTR(_Out_writes_bytes_all_opt_(PrivateRuntimeDataSize)
+    VOID*,                                              pPrivateRuntimeData);   // out: Buffer to copy private data to.
+                                                                                //      If NULL then PrivateRuntimeDataSize must be 0.
+    UINT                                                PrivateRuntimeDataSize; // in:  Size in bytes of pPrivateRuntimeData.
+} D3DKMT_ACQUIREKEYEDMUTEX2;
+
+typedef struct _D3DKMT_RELEASEKEYEDMUTEX2
+{
+    D3DKMT_HANDLE                                 hKeyedMutex;            // in: Handle to the keyed mutex
+    D3DKMT_ALIGN64 UINT64                         Key;                    // in: Key value to Release to
+    D3DKMT_ALIGN64 UINT64                         FenceValue;             // in: New fence value to use for GPU sync object
+    D3DKMT_PTR(_In_reads_bytes_opt_(PrivateRuntimeDataSize)
+    VOID*,                                        pPrivateRuntimeData);   // in: Buffer containing new private data.
+                                                                          //     If NULL then PrivateRuntimeDataSize must be 0.
+    UINT                                          PrivateRuntimeDataSize; // in: Size in bytes of pPrivateRuntimeData.
+} D3DKMT_RELEASEKEYEDMUTEX2;
+#endif
+
+
+typedef struct _D3DKMT_CONFIGURESHAREDRESOURCE
+{
+    D3DKMT_HANDLE   hDevice;        // in:  Device that created the resource
+    D3DKMT_HANDLE   hResource;      // in: Handle for shared resource
+    BOOLEAN         IsDwm;          // in: TRUE when the process is DWM
+    D3DKMT_PTR(HANDLE, hProcess);   // in: Process handle for the non-DWM case
+    BOOLEAN         AllowAccess;    // in: Indicates whereh the process is allowed access
+} D3DKMT_CONFIGURESHAREDRESOURCE;
+
+typedef struct _D3DKMT_CHECKSHAREDRESOURCEACCESS
+{
+    D3DKMT_HANDLE   hResource;      // in: Handle for the resource
+    UINT            ClientPid;      // in: Client process PID
+} D3DKMT_CHECKSHAREDRESOURCEACCESS;
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WIN8)
+typedef enum _D3DKMT_OFFER_PRIORITY
+{
+    D3DKMT_OFFER_PRIORITY_LOW=1,    // Content is not useful
+    D3DKMT_OFFER_PRIORITY_NORMAL,   // Content is useful but easy to regenerate
+    D3DKMT_OFFER_PRIORITY_HIGH,     // Content is useful and difficult to regenerate
+    D3DKMT_OFFER_PRIORITY_AUTO,     // Let VidMm decide offer priority based on eviction priority
+} D3DKMT_OFFER_PRIORITY;
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_0)
+typedef struct _D3DKMT_OFFER_FLAGS
+{
+    union
+    {
+        struct
+        {
+            UINT OfferImmediately :  1; // 0x00000001
+            UINT AllowDecommit    :  1; // 0x00000002
+            UINT Reserved         : 30; // 0xFFFFFFFC
+        };
+        UINT Value;
+    };
+} D3DKMT_OFFER_FLAGS;
+#endif // DXGKDDI_INTERFACE_VERSION
+
+typedef struct _D3DKMT_OFFERALLOCATIONS
+{
+    D3DKMT_HANDLE hDevice;                        // in: Device that created the allocations
+    D3DKMT_PTR(D3DKMT_HANDLE*, pResources);       // in: array of D3D runtime resource handles.
+    D3DKMT_PTR(CONST D3DKMT_HANDLE*, HandleList); // in: array of allocation handles. If non-NULL, pResources must be NULL.
+    UINT NumAllocations;                          // in: number of items in whichever of pResources or HandleList is non-NULL.
+    D3DKMT_OFFER_PRIORITY Priority;               // in: priority with which to offer the allocations
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_0)
+    D3DKMT_OFFER_FLAGS Flags;                     // in: various flags for determining offer behavior
+#endif // DXGKDDI_INTERFACE_VERSION
+} D3DKMT_OFFERALLOCATIONS;
+
+typedef struct _D3DKMT_RECLAIMALLOCATIONS
+{
+    D3DKMT_HANDLE hDevice;                        // in:  Device that created the allocations
+    D3DKMT_PTR(D3DKMT_HANDLE*, pResources);       // in: array of D3D runtime resource handles.
+    D3DKMT_PTR(CONST D3DKMT_HANDLE*, HandleList); // in: array of allocation handles. If non-NULL, pResources must be NULL.
+    D3DKMT_PTR(BOOL*, pDiscarded);                // out: optional array of booleans specifying whether each resource or allocation was discarded.
+    UINT NumAllocations;                          // in:  number of items in pDiscarded and whichever of pResources or HandleList is non-NULL.
+} D3DKMT_RECLAIMALLOCATIONS;
+
+typedef struct _D3DKMT_RECLAIMALLOCATIONS2
+{
+    D3DKMT_HANDLE hPagingQueue;                   // in:  Device that created the allocations
+    UINT NumAllocations;                          // in:  number of items in pDiscarded and whichever of pResources or HandleList is non-NULL.
+    D3DKMT_PTR(D3DKMT_HANDLE*, pResources);       // in: array of D3D runtime resource handles.
+    D3DKMT_PTR(CONST D3DKMT_HANDLE*, HandleList); // in: array of allocation handles. If non-NULL, pResources must be NULL.
+#if(DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_1 || \
+    D3D_UMD_INTERFACE_VERSION >= D3D_UMD_INTERFACE_VERSION_WDDM2_1)
+    union
+    {
+        BOOL* pDiscarded;                   // out: optional array of booleans specifying whether each resource or allocation was discarded.
+        D3DDDI_RECLAIM_RESULT* pResults;    // out: array of results specifying whether each resource or allocation is OK, discarded, or has no commitment.
+        D3DKMT_PTR_HELPER(AlignUnionTo64)
+    };
+#else
+    D3DKMT_PTR(BOOL*, pDiscarded);          // out: optional array of booleans specifying whether each resource or allocation was discarded.
+#endif // (DXGKDDI_INTERFACE_VERSION || D3D_UMD_INTERFACE_VERSION)
+    D3DKMT_ALIGN64 UINT64 PagingFenceValue; // out: The paging fence to synchronize against before submitting work to the GPU which
+                                            //      references any of the resources or allocations in the provided arrays
+} D3DKMT_RECLAIMALLOCATIONS2;
+
+typedef struct _D3DKMT_OUTPUTDUPLCREATIONFLAGS
+{
+    union
+    {
+        struct
+        {
+            UINT    CompositionUiCaptureOnly : 1;
+            UINT    Reserved : 31;
+        };
+        UINT    Value;
+    };
+} D3DKMT_OUTPUTDUPLCREATIONFLAGS;
+
+typedef struct _D3DKMT_OUTPUTDUPL_KEYEDMUTEX
+{
+    D3DKMT_PTR(HANDLE, hSharedSurfaceNt);
+}D3DKMT_OUTPUTDUPL_KEYEDMUTEX;
+
+#define OUTPUTDUPL_CREATE_MAX_KEYEDMUTXES 3
+typedef struct _D3DKMT_CREATE_OUTPUTDUPL
+{
+    D3DKMT_HANDLE                   hAdapter;
+    D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId;
+    UINT                            KeyedMutexCount;            // in : If zero then means is this the pre-create check
+    UINT                            RequiredKeyedMutexCount;    // out: The number of keyed mutexs needed
+    D3DKMT_OUTPUTDUPL_KEYEDMUTEX    KeyedMutexs[OUTPUTDUPL_CREATE_MAX_KEYEDMUTXES];
+    D3DKMT_OUTPUTDUPLCREATIONFLAGS  Flags;
+} D3DKMT_CREATE_OUTPUTDUPL;
+
+typedef struct _D3DKMT_DESTROY_OUTPUTDUPL
+{
+    D3DKMT_HANDLE                   hAdapter;
+    D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId;
+    BOOL                            bDestroyAllContexts;
+} D3DKMT_DESTROY_OUTPUTDUPL;
+
+typedef struct _D3DKMT_OUTPUTDUPL_POINTER_POSITION
+{
+    POINT   Position;
+    BOOL    Visible;
+} D3DKMT_OUTPUTDUPL_POINTER_POSITION;
+
+typedef struct _D3DKMT_OUTPUTDUPL_FRAMEINFO
+{
+    D3DKMT_ALIGN64 LARGE_INTEGER        LastPresentTime;
+    D3DKMT_ALIGN64 LARGE_INTEGER        LastMouseUpdateTime;
+    UINT                                AccumulatedFrames;
+    BOOL                                RectsCoalesced;
+    BOOL                                ProtectedContentMaskedOut;
+    D3DKMT_OUTPUTDUPL_POINTER_POSITION  PointerPosition;
+    UINT                                TotalMetadataBufferSize;
+    UINT                                PointerShapeBufferSize;
+} D3DKMT_OUTPUTDUPL_FRAMEINFO;
+
+typedef struct _D3DKMT_OUTPUTDUPL_GET_FRAMEINFO
+{
+    D3DKMT_HANDLE                   hAdapter;
+    D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId;
+    D3DKMT_OUTPUTDUPL_FRAMEINFO     FrameInfo;
+} D3DKMT_OUTPUTDUPL_GET_FRAMEINFO;
+
+typedef enum _D3DKMT_OUTPUTDUPL_METADATATYPE
+{
+    D3DKMT_OUTPUTDUPL_METADATATYPE_DIRTY_RECTS = 0,
+    D3DKMT_OUTPUTDUPL_METADATATYPE_MOVE_RECTS  = 1
+} D3DKMT_OUTPUTDUPL_METADATATYPE;
+
+typedef struct _D3DKMT_OUTPUTDUPL_METADATA
+{
+    D3DKMT_HANDLE                                                       hAdapter;
+    D3DDDI_VIDEO_PRESENT_SOURCE_ID                                      VidPnSourceId;
+    D3DKMT_OUTPUTDUPL_METADATATYPE                                      Type;
+    UINT                                                                BufferSizeSupplied;
+    D3DKMT_PTR(_Field_size_bytes_part_(BufferSizeSupplied, BufferSizeRequired) PVOID, pBuffer);
+    UINT                                                                BufferSizeRequired;
+} D3DKMT_OUTPUTDUPL_METADATA;
+
+typedef enum _D3DKMT_OUTDUPL_POINTER_SHAPE_TYPE
+{
+    D3DKMT_OUTDUPL_POINTER_SHAPE_TYPE_MONOCHROME     = 0x00000001,
+    D3DKMT_OUTDUPL_POINTER_SHAPE_TYPE_COLOR          = 0x00000002,
+    D3DKMT_OUTDUPL_POINTER_SHAPE_TYPE_MASKED_COLOR   = 0x00000004
+} D3DKMT_OUTDUPL_POINTER_SHAPE_TYPE;
+
+typedef struct _D3DKMT_OUTDUPL_POINTER_SHAPE_INFO
+{
+    D3DKMT_OUTDUPL_POINTER_SHAPE_TYPE   Type;
+    UINT                                Width;
+    UINT                                Height;
+    UINT                                Pitch;
+    POINT                               HotSpot;
+} D3DKMT_OUTDUPL_POINTER_SHAPE_INFO;
+
+typedef struct _D3DKMT_OUTPUTDUPL_GET_POINTER_SHAPE_DATA
+{
+    D3DKMT_HANDLE                                                       hAdapter;
+    D3DDDI_VIDEO_PRESENT_SOURCE_ID                                      VidPnSourceId;
+    UINT                                                                BufferSizeSupplied;
+    D3DKMT_PTR(_Field_size_bytes_part_(BufferSizeSupplied, BufferSizeRequired) PVOID, pShapeBuffer);
+    UINT                                                                BufferSizeRequired;
+    D3DKMT_OUTDUPL_POINTER_SHAPE_INFO                                   ShapeInfo;
+} D3DKMT_OUTPUTDUPL_GET_POINTER_SHAPE_DATA;
+
+typedef struct _D3DKMT_OUTPUTDUPL_RELEASE_FRAME
+{
+    D3DKMT_HANDLE                   hAdapter;
+    D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId;
+    UINT                            NextKeyMutexIdx;    // out : index of the next keyed mutex to use
+} D3DKMT_OUTPUTDUPL_RELEASE_FRAME;
+
+
+#define D3DKMT_MAX_OBJECTS_PER_HANDLE 3
+
+#define D3DKMT_MAX_BUNDLE_OBJECTS_PER_HANDLE 16
+
+#define D3DKMT_GDI_STYLE_HANDLE_DECORATION 0x2
+
+typedef struct _D3DKMT_GETSHAREDRESOURCEADAPTERLUID
+{
+    D3DKMT_HANDLE hGlobalShare;    // in : Shared resource handle
+    D3DKMT_PTR(HANDLE, hNtHandle); // in : Process's NT handle
+    LUID AdapterLuid;              // out: adapter LUID
+} D3DKMT_GETSHAREDRESOURCEADAPTERLUID;
+
+typedef enum _D3DKMT_GPU_PREFERENCE_QUERY_STATE
+{
+    D3DKMT_GPU_PREFERENCE_STATE_UNINITIALIZED,
+    D3DKMT_GPU_PREFERENCE_STATE_HIGH_PERFORMANCE,
+    D3DKMT_GPU_PREFERENCE_STATE_MINIMUM_POWER,
+    D3DKMT_GPU_PREFERENCE_STATE_UNSPECIFIED,
+    D3DKMT_GPU_PREFERENCE_STATE_NOT_FOUND,
+    D3DKMT_GPU_PREFERENCE_STATE_USER_SPECIFIED_GPU
+} D3DKMT_GPU_PREFERENCE_QUERY_STATE;
+
+typedef enum _D3DKMT_GPU_PREFERENCE_QUERY_TYPE
+{
+    D3DKMT_GPU_PREFERENCE_TYPE_IHV_DLIST,
+    D3DKMT_GPU_PREFERENCE_TYPE_DX_DATABASE,
+    D3DKMT_GPU_PREFERENCE_TYPE_USER_PREFERENCE
+} D3DKMT_GPU_PREFERENCE_QUERY_TYPE;
+
+typedef struct _D3DKMT_HYBRID_LIST
+{
+    D3DKMT_GPU_PREFERENCE_QUERY_STATE State;    // Gpu preference query state
+    LUID AdapterLuid;                           // in,opt: Adapter luid to per-adapter DList state. Optional if QueryType == D3DKMT_GPU_PREFERENCE_TYPE_IHV_DLIST
+    BOOL bUserPreferenceQuery;                  // Whether referring to user gpu preference, or per-adapter DList query
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_6)
+    D3DKMT_GPU_PREFERENCE_QUERY_TYPE QueryType; // Replaced bUserPreferenceQuery, for referring to which D3DKMT_GPU_PREFERENCE_QUERY_TYPE
+#endif
+} D3DKMT_HYBRID_LIST;
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM1_3)
+typedef struct
+{
+    DXGK_MIRACAST_CHUNK_INFO ChunkInfo;
+    UINT                     PrivateDriverDataSize; // Size of private data
+    BYTE                     PrivateDriverData[1];  // Private data buffer
+} D3DKMT_MIRACAST_CHUNK_DATA;
+
+typedef enum
+{
+    MiracastStopped = 0,
+    MiracastStartPending = 1,
+    MiracastStarted = 2,
+    MiracastStopPending = 3,
+} D3DKMT_MIRACAST_DISPLAY_DEVICE_STATE;
+
+typedef enum
+{
+    D3DKMT_MIRACAST_DEVICE_STATUS_SUCCESS                   = 0,
+    D3DKMT_MIRACAST_DEVICE_STATUS_SUCCESS_NO_MONITOR        = 1,
+    D3DKMT_MIRACAST_DEVICE_STATUS_PENDING                   = 2,
+    D3DKMT_MIRACAST_DEVICE_STATUS_UNKOWN_ERROR              = 0x80000001,
+    D3DKMT_MIRACAST_DEVICE_STATUS_GPU_RESOURCE_IN_USE       = 0x80000002,
+    D3DKMT_MIRACAST_DEVICE_STATUS_DEVICE_ERROR              = 0x80000003,
+    D3DKMT_MIRACAST_DEVICE_STATUS_UNKOWN_PAIRING            = 0x80000004,
+    D3DKMT_MIRACAST_DEVICE_STATUS_REMOTE_SESSION            = 0x80000005,
+    D3DKMT_MIRACAST_DEVICE_STATUS_DEVICE_NOT_FOUND          = 0x80000006,
+    D3DKMT_MIRACAST_DEVICE_STATUS_DEVICE_NOT_STARTED        = 0x80000007,
+    D3DKMT_MIRACAST_DEVICE_STATUS_INVALID_PARAMETER         = 0x80000008,
+    D3DKMT_MIRACAST_DEVICE_STATUS_INSUFFICIENT_BANDWIDTH    = 0x80000009,
+    D3DKMT_MIRACAST_DEVICE_STATUS_INSUFFICIENT_MEMORY       = 0x8000000A,
+    D3DKMT_MIRACAST_DEVICE_STATUS_CANCELLED                 = 0x8000000B,
+} D3DKMT_MIRACAST_DEVICE_STATUS;
+
+typedef struct _D3DKMT_MIRACAST_DISPLAY_DEVICE_STATUS
+{
+    //
+    // Miracast display device state.
+    //
+    D3DKMT_MIRACAST_DISPLAY_DEVICE_STATE State;
+} D3DKMT_MIRACAST_DISPLAY_DEVICE_STATUS, *PD3DKMT_MIRACAST_DISPLAY_DEVICE_STATUS;
+
+typedef struct _D3DKMT_MIRACAST_DISPLAY_DEVICE_CAPS
+{
+    BOOLEAN HdcpSupported;
+    ULONG DefaultControlPort;
+    BOOLEAN UsesIhvSolution;
+} D3DKMT_MIRACAST_DISPLAY_DEVICE_CAPS, *PD3DKMT_MIRACAST_DISPLAY_DEVICE_CAPS;
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_0)
+typedef struct _D3DKMT_MIRACAST_DISPLAY_STOP_SESSIONS
+{
+    LUID AdapterLuid;
+    D3DDDI_VIDEO_PRESENT_TARGET_ID TargetId;
+    UINT StopReason;
+} D3DKMT_MIRACAST_DISPLAY_STOP_SESSIONS, *PD3DKMT_MIRACAST_DISPLAY_STOP_SESSIONS;
+#endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_0)
+
+
+#endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM1_3)
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_0)
+
+typedef struct _D3DKMT_WAITFORSYNCHRONIZATIONOBJECTFROMCPU
+{
+    D3DKMT_HANDLE           hDevice;                        // in: Handle to the device.
+    UINT                    ObjectCount;                    // in: Number of objects to wait on.
+
+    D3DKMT_PTR(_Field_size_(ObjectCount)
+    const D3DKMT_HANDLE*,   ObjectHandleArray);             // in: Handle to monitored fence synchronization objects to wait on.
+
+    D3DKMT_PTR(_Field_size_(ObjectCount)
+    const UINT64*,          FenceValueArray);               // in: Fence values to be waited on.
+
+    D3DKMT_PTR(HANDLE,      hAsyncEvent);                   // in: Event to be signaled when the wait condition is satisfied.
+                                                            // When set to NULL, the call will not return until the wait condition is satisfied.
+
+    D3DDDI_WAITFORSYNCHRONIZATIONOBJECTFROMCPU_FLAGS Flags; // in: Flags that specify the wait mode.
+} D3DKMT_WAITFORSYNCHRONIZATIONOBJECTFROMCPU;
+
+typedef struct _D3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMCPU
+{
+    D3DKMT_HANDLE           hDevice;            // in: Handle to the device.
+    UINT                    ObjectCount;        // in: Number of objects to signal.
+
+    D3DKMT_PTR(_Field_size_(ObjectCount)
+    const D3DKMT_HANDLE*,   ObjectHandleArray); // in: Handle to monitored fence synchronization objects to signal.
+
+    D3DKMT_PTR(_Field_size_(ObjectCount)
+    const UINT64*,          FenceValueArray);   // in: Fence values to be signaled.
+
+    D3DDDICB_SIGNALFLAGS    Flags;              // in: Specifies signal behavior.
+} D3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMCPU;
+
+typedef struct _D3DKMT_WAITFORSYNCHRONIZATIONOBJECTFROMGPU
+{
+    D3DKMT_HANDLE           hContext;                   // in: Specify the context that should be waiting.
+    UINT                    ObjectCount;                // in: Number of object to wait on.
+
+    D3DKMT_PTR(_Field_size_(ObjectCount)
+    const D3DKMT_HANDLE*,   ObjectHandleArray);         // in: Handles to synchronization objects to wait on.
+
+    union
+    {
+        _Field_size_(ObjectCount)
+        const UINT64*       MonitoredFenceValueArray;   // in: monitored fence values to be waited.
+
+        D3DKMT_ALIGN64 UINT64 FenceValue;               // in: fence value to be waited.
+
+        D3DKMT_ALIGN64 UINT64 Reserved[8];
+    };
+} D3DKMT_WAITFORSYNCHRONIZATIONOBJECTFROMGPU;
+
+typedef struct _D3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMGPU
+{
+    D3DKMT_HANDLE           hContext;           // in: Identifies the context that the signal is being submitted to.
+    UINT                    ObjectCount;        // in: Specifies the number of objects to signal.
+
+    D3DKMT_PTR(_Field_size_(ObjectCount)
+    const D3DKMT_HANDLE*,   ObjectHandleArray); // in: Specifies the objects to signal.
+
+    union
+    {
+        _Field_size_(ObjectCount)
+        const UINT64*   MonitoredFenceValueArray; // in: monitored fence values to be signaled
+
+        D3DKMT_ALIGN64 UINT64 Reserved[8];
+    };
+} D3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMGPU;
+
+typedef struct _D3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMGPU2
+{
+    UINT                    ObjectCount;            // in: Specifies the number of objects to signal.
+
+    D3DKMT_PTR(_Field_size_(ObjectCount)
+    const D3DKMT_HANDLE*,   ObjectHandleArray);     // in: Specifies the objects to signal.
+
+    D3DDDICB_SIGNALFLAGS    Flags;                  // in: Specifies signal behavior.
+
+    ULONG                   BroadcastContextCount;  // in: Specifies the number of contexts to broadcast this signal to.
+
+    D3DKMT_PTR(_Field_size_(BroadcastContextCount)
+    const D3DKMT_HANDLE*,   BroadcastContextArray); // in: Specifies context handles to broadcast to.
+
+    union
+    {
+        D3DKMT_ALIGN64 UINT64 FenceValue;           // in: fence value to be signaled;
+
+        HANDLE              CpuEventHandle;         // in: handle of a CPU event to be signaled if Flags.EnqueueCpuEvent flag is set.
+
+        _Field_size_(ObjectCount)
+        const UINT64*       MonitoredFenceValueArray; // in: monitored fence values to be signaled
+
+        D3DKMT_ALIGN64 UINT64 Reserved[8];
+    };
+} D3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMGPU2;
+
+typedef struct _D3DKMT_CREATEPAGINGQUEUE
+{
+    D3DKMT_HANDLE               hDevice;                        // in: Handle to the device.
+    D3DDDI_PAGINGQUEUE_PRIORITY Priority;                       // in: scheduling priority relative to other paging queues on this device
+    D3DKMT_HANDLE               hPagingQueue;                   // out: handle to the paging queue used to synchronize paging operations for this device.
+    D3DKMT_HANDLE               hSyncObject;                    // out: handle to the monitored fence object used to synchronize paging operations for this paging queue.
+    D3DKMT_PTR(VOID*,           FenceValueCPUVirtualAddress);   // out: Read-only mapping of the fence value for the CPU
+    UINT                        PhysicalAdapterIndex;           // in: Physical adapter index (engine ordinal)
+} D3DKMT_CREATEPAGINGQUEUE;
+
+typedef struct _D3DKMT_EVICT
+{
+    D3DKMT_HANDLE               hDevice;            // in: Device that created the allocations
+    UINT                        NumAllocations;     // in: number of allocation handles
+    D3DKMT_PTR(CONST D3DKMT_HANDLE*, AllocationList); // in: an array of NumAllocations allocation handles
+    D3DDDI_EVICT_FLAGS          Flags;              // in: eviction flags
+    D3DKMT_ALIGN64 UINT64       NumBytesToTrim;     // out: This value indicates how much to trim in order to satisfy the new budget.
+} D3DKMT_EVICT;
+
+typedef struct _D3DKMT_LOCK2
+{
+    D3DKMT_HANDLE       hDevice;            // in: Handle to the device.
+    D3DKMT_HANDLE       hAllocation;        // in: allocation to lock
+    D3DDDICB_LOCK2FLAGS Flags;              // in: Bit field defined by D3DDDI_LOCK2FLAGS
+    D3DKMT_PTR(PVOID,   pData);             // out: Virtual address of the locked allocation
+} D3DKMT_LOCK2;
+
+typedef struct _D3DKMT_UNLOCK2
+{
+    D3DKMT_HANDLE           hDevice;        // in: Handle to the device.
+    D3DKMT_HANDLE           hAllocation;    // in: allocation to unlock
+} D3DKMT_UNLOCK2;
+
+typedef struct _D3DKMT_INVALIDATECACHE
+{
+    D3DKMT_HANDLE   hDevice;
+    D3DKMT_HANDLE   hAllocation;
+    D3DKMT_ALIGN64 D3DKMT_SIZE_T   Offset;
+    D3DKMT_ALIGN64 D3DKMT_SIZE_T   Length;
+} D3DKMT_INVALIDATECACHE;
+
+typedef struct _D3DKMT_FREEGPUVIRTUALADDRESS
+{
+    D3DKMT_HANDLE           hAdapter;                               // in: Handle to an adapter.
+    D3DKMT_ALIGN64 D3DGPU_VIRTUAL_ADDRESS  BaseAddress;                            // in: Start of a virtual address range in bytes
+    D3DKMT_ALIGN64 D3DGPU_SIZE_T           Size;                                   // in: Size of the virtual address range in bytes
+} D3DKMT_FREEGPUVIRTUALADDRESS;
+
+typedef struct _D3DKMT_UPDATEGPUVIRTUALADDRESS
+{
+    D3DKMT_HANDLE                               hDevice;
+    D3DKMT_HANDLE                               hContext;
+    D3DKMT_HANDLE                               hFenceObject;
+    UINT                                        NumOperations;
+    D3DKMT_PTR(D3DDDI_UPDATEGPUVIRTUALADDRESS_OPERATION*, Operations);
+    D3DKMT_ALIGN64 D3DKMT_SIZE_T                Reserved0;
+    D3DKMT_ALIGN64 UINT64                       Reserved1;
+    D3DKMT_ALIGN64 UINT64                       FenceValue;
+    union
+    {
+       struct
+       {
+           UINT  DoNotWait  :  1;
+           UINT  Reserved   : 31;
+       };
+       UINT Value;
+    } Flags;
+} D3DKMT_UPDATEGPUVIRTUALADDRESS;
+
+typedef struct _D3DKMT_CREATECONTEXTVIRTUAL
+{
+    D3DKMT_HANDLE               hDevice;                        // in:
+    UINT                        NodeOrdinal;                    // in:
+    UINT                        EngineAffinity;                 // in:
+    D3DDDI_CREATECONTEXTFLAGS   Flags;                          // in:
+    D3DKMT_PTR(VOID*,           pPrivateDriverData);            // in:
+    UINT                        PrivateDriverDataSize;          // in:
+    D3DKMT_CLIENTHINT           ClientHint;                     // in:  Hints which client is creating the context
+    D3DKMT_HANDLE               hContext;                       // out:
+} D3DKMT_CREATECONTEXTVIRTUAL;
+
+typedef struct _D3DKMT_SUBMITCOMMANDFLAGS
+{
+    UINT    NullRendering           :  1;  // 0x00000001
+    UINT    PresentRedirected       :  1;  // 0x00000002
+    UINT    NoKmdAccess             :  1;  // 0x00000004
+    UINT    Reserved                : 29;  // 0xFFFFFFF8
+} D3DKMT_SUBMITCOMMANDFLAGS;
+
+typedef struct _D3DKMT_SUBMITCOMMAND
+{
+    D3DKMT_ALIGN64 D3DGPU_VIRTUAL_ADDRESS Commands;
+    UINT                        CommandLength;
+    D3DKMT_SUBMITCOMMANDFLAGS   Flags;
+    D3DKMT_ALIGN64 ULONGLONG    PresentHistoryToken;                            // in: Present history token for redirected present calls
+    UINT                        BroadcastContextCount;
+    D3DKMT_HANDLE               BroadcastContext[D3DDDI_MAX_BROADCAST_CONTEXT];
+    D3DKMT_PTR(VOID*,           pPrivateDriverData);
+    UINT                        PrivateDriverDataSize;
+    UINT                        NumPrimaries;
+    D3DKMT_HANDLE               WrittenPrimaries[D3DDDI_MAX_WRITTEN_PRIMARIES];
+    UINT                        NumHistoryBuffers;
+    D3DKMT_PTR(D3DKMT_HANDLE*,  HistoryBufferArray);
+} D3DKMT_SUBMITCOMMAND;
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_2)
+
+typedef struct _D3DKMT_SUBMITCOMMANDTOHWQUEUE
+{
+    D3DKMT_HANDLE               hHwQueue;               // in: Context queue to submit the command to.
+
+    D3DKMT_ALIGN64 UINT64       HwQueueProgressFenceId; // in: Hardware queue progress fence value that will be signaled once the command is finished.
+
+    D3DKMT_ALIGN64 D3DGPU_VIRTUAL_ADDRESS CommandBuffer;// in: GPU VA of the command buffer to be executed on the GPU.
+    UINT                        CommandLength;          // in: Length in bytes of the command buffer.
+
+    UINT                        PrivateDriverDataSize;  // in: Size of private driver data in bytes.
+
+    D3DKMT_PTR(_Field_size_bytes_(PrivateDriverDataSize)
+    VOID*,                      pPrivateDriverData);    // in: Pointer to the private driver data.
+
+    UINT                        NumPrimaries;           // in: The number of primaries written by this command buffer.
+
+    D3DKMT_PTR(_Field_size_    (NumPrimaries)
+    D3DKMT_HANDLE CONST*,       WrittenPrimaries);      // in: The array of primaries written by this command buffer.
+} D3DKMT_SUBMITCOMMANDTOHWQUEUE;
+
+typedef struct _D3DKMT_SUBMITWAITFORSYNCOBJECTSTOHWQUEUE
+{
+    D3DKMT_HANDLE           hHwQueue;               // in: Context queue to submit the command to.
+
+    UINT                    ObjectCount;            // in: Number of objects to wait on.
+
+    D3DKMT_PTR(_Field_size_(ObjectCount)
+    const D3DKMT_HANDLE*,   ObjectHandleArray);     // in: Handles to monitored fence synchronization objects to wait on.
+
+    D3DKMT_PTR(_Field_size_(ObjectCount)
+    const UINT64*,          FenceValueArray);       // in: monitored fence values to be waited.
+} D3DKMT_SUBMITWAITFORSYNCOBJECTSTOHWQUEUE;
+
+typedef struct _D3DKMT_SUBMITSIGNALSYNCOBJECTSTOHWQUEUE
+{
+    D3DDDICB_SIGNALFLAGS    Flags;                  // in: Specifies signal behavior.
+
+    ULONG                   BroadcastHwQueueCount;  // in: Specifies the number of hardware queues to broadcast this signal to.
+
+    D3DKMT_PTR(_Field_size_(BroadcastHwQueueCount)
+    const D3DKMT_HANDLE*,   BroadcastHwQueueArray); // in: Specifies hardware queue handles to broadcast to.
+
+    UINT                    ObjectCount;            // in: Number of objects to signal.
+
+    D3DKMT_PTR(_Field_size_(ObjectCount)
+    const D3DKMT_HANDLE*,   ObjectHandleArray);     // in: Handles to monitored fence synchronization objects to signal.
+
+    D3DKMT_PTR(_Field_size_(ObjectCount)
+    const UINT64*,          FenceValueArray);       // in: monitored fence values to signal.
+} D3DKMT_SUBMITSIGNALSYNCOBJECTSTOHWQUEUE;
+
+#endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_2)
+
+typedef struct _D3DKMT_QUERYVIDEOMEMORYINFO
+{
+    D3DKMT_PTR(HANDLE,          hProcess);                  // in,opt: A handle to a process. If NULL, the current process is used.
+                                                            //         The process handle must be opened with PROCESS_QUERY_INFORMATION privileges
+    D3DKMT_HANDLE               hAdapter;                   // in : The adapter to query for this process
+    D3DKMT_MEMORY_SEGMENT_GROUP MemorySegmentGroup;         // in : The memory segment group to query.
+    D3DKMT_ALIGN64 UINT64       Budget;                     // out: Total memory the application may use
+    D3DKMT_ALIGN64 UINT64       CurrentUsage;               // out: Current memory usage of the device
+    D3DKMT_ALIGN64 UINT64       CurrentReservation;         // out: Current reservation of the device
+    D3DKMT_ALIGN64 UINT64       AvailableForReservation;    // out: Total that the device may reserve
+    UINT                        PhysicalAdapterIndex;       // in : Zero based physical adapter index in the LDA configuration.
+} D3DKMT_QUERYVIDEOMEMORYINFO;
+
+typedef struct _D3DKMT_CHANGEVIDEOMMEMORYRESERVATION
+{
+    D3DKMT_PTR(HANDLE,          hProcess);                  // in,opt: A handle to a process. If NULL, the current process is used.
+                                                            //         The process handle must be opened with PROCESS_SET_INFORMATION privileges
+    D3DKMT_HANDLE               hAdapter;                   // in : The adapter to change reservation for.
+    D3DKMT_MEMORY_SEGMENT_GROUP MemorySegmentGroup;         // in : The memory segment group to change reservation for.
+    D3DKMT_ALIGN64 UINT64       Reservation;                // in : Desired reservation in the range between 0 and AvailableForReservation returned by QueryVideoMemoryInfo.
+    UINT                        PhysicalAdapterIndex;       // in : Zero based physical adapter index in the LDA configuration.
+} D3DKMT_CHANGEVIDEOMEMORYRESERVATION;
+
+typedef struct _D3DKMT_SETSTABLEPOWERSTATE
+{
+    D3DKMT_HANDLE   hAdapter;   // in: The adapter to enable or disable stable power for
+    BOOL            Enabled;    // in: Whether or not stable power is being requested on or off.
+} D3DKMT_SETSTABLEPOWERSTATE;
+
+
+typedef struct _D3DKMT_SHAREOBJECTWITHHOST
+{
+    D3DKMT_HANDLE           hDevice;                // in
+    D3DKMT_HANDLE           hObject;                // in
+    D3DKMT_ALIGN64 UINT64   Reserved;               // in Must be zero. Reserved for future use
+    D3DKMT_ALIGN64 UINT64   hVailProcessNtHandle;   // out
+} D3DKMT_SHAREOBJECTWITHHOST;
+
+//
+// This API is used to support sync_file in Android.
+// A sync_file is a wrapper around the given monitored fence and the fence value.
+// When a sync_file is created, a wait for sync object on CPU is issued
+// and a file descriptor (FD) it returned to the app. The app can wait on the FD,
+// which will be unblocked when the sync object with this fence value is signaled.
+//
+typedef struct _D3DKMT_CREATESYNCFILE
+{
+	D3DKMT_HANDLE           hDevice;                // in:  Device owner of the monitored fence.
+	D3DKMT_HANDLE           hMonitoredFence;        // in:  Monitored fence object
+	D3DKMT_ALIGN64 UINT64   FenceValue;             // in:  Fence value to wait for
+	D3DKMT_ALIGN64 UINT64   hSyncFile;	            // out: File descriptor on Android or a NT handle on Windows (when implemented)
+} D3DKMT_CREATESYNCFILE;
+
+
+typedef struct _D3DKMT_TRIMNOTIFICATION
+{
+    D3DKMT_PTR(VOID*,                  Context);        // In: context at Register
+    D3DDDI_TRIMRESIDENCYSET_FLAGS      Flags;           // In: trim flags
+    D3DKMT_ALIGN64 UINT64              NumBytesToTrim;  // In: When TrimToBudget flag is set, this value indicates how much VidMm
+                                                        // requests the app to trim to fit in the new budget.
+} D3DKMT_TRIMNOTIFICATION;
+
+typedef VOID (APIENTRY *PFND3DKMT_TRIMNOTIFICATIONCALLBACK)(_Inout_ D3DKMT_TRIMNOTIFICATION*);
+
+typedef struct _D3DKMT_REGISTERTRIMNOTIFICATION
+{
+    LUID                               AdapterLuid;
+    D3DKMT_HANDLE                      hDevice;
+    PFND3DKMT_TRIMNOTIFICATIONCALLBACK Callback;
+    D3DKMT_PTR(VOID*,                  Context); // In: callback context
+    D3DKMT_PTR(VOID*,                  Handle);  // Out: for Unregister
+} D3DKMT_REGISTERTRIMNOTIFICATION;
+
+typedef struct _D3DKMT_UNREGISTERTRIMNOTIFICATION
+{
+    D3DKMT_PTR(VOID*,                              Handle);   // In: Handle returned from RegisterTrimNotification,
+                                                              // or NULL to unregister all Callback instances.
+    D3DKMT_PTR(PFND3DKMT_TRIMNOTIFICATIONCALLBACK, Callback); // In: When Handle is NULL, this parameter specifies that all registered instances of Callback
+                                                              // should be unregistered. This unregistration method should only be used
+                                                              // in DLL unload scenarios when the DLL being unloaded cannot guarantee that
+                                                              // all trim callbacks are unregistered through their handles.
+} D3DKMT_UNREGISTERTRIMNOTIFICATION;
+
+typedef struct _D3DKMT_BUDGETCHANGENOTIFICATION
+{
+    D3DKMT_PTR(VOID*,     Context);   // In: context at Register
+    D3DKMT_ALIGN64 UINT64 Budget;     // In: new budget
+} D3DKMT_BUDGETCHANGENOTIFICATION;
+
+typedef VOID (APIENTRY *PFND3DKMT_BUDGETCHANGENOTIFICATIONCALLBACK)(_In_ D3DKMT_BUDGETCHANGENOTIFICATION*);
+
+typedef struct _D3DKMT_REGISTERBUDGETCHANGENOTIFICATION
+{
+    D3DKMT_HANDLE                                  hDevice;
+    D3DKMT_PTR(PFND3DKMT_BUDGETCHANGENOTIFICATIONCALLBACK, Callback);
+    D3DKMT_PTR(VOID*,                              Context);  // In: callback context
+    D3DKMT_PTR(VOID*,                              Handle);   // Out: for Unregister
+} D3DKMT_REGISTERBUDGETCHANGENOTIFICATION;
+
+typedef struct _D3DKMT_UNREGISTERBUDGETCHANGENOTIFICATION
+{
+    D3DKMT_PTR(VOID*,                              Handle);   // In: from register
+} D3DKMT_UNREGISTERBUDGETCHANGENOTIFICATION;
+
+typedef struct _D3DKMT_QUERYVIDPNEXCLUSIVEOWNERSHIP
+{
+    D3DKMT_PTR(HANDLE,              hProcess);      // In: Process handle
+    D3DKMT_PTR(HWND,                hWindow);       // In: Window handle
+    D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId;  // Out: VidPn source ID
+    LUID                            AdapterLuid;    // Out: Adapter LUID
+    D3DKMT_VIDPNSOURCEOWNER_TYPE    OwnerType;      // Out: Owner Type
+} D3DKMT_QUERYVIDPNEXCLUSIVEOWNERSHIP;
+
+
+typedef enum _D3DKMT_DEVICE_ERROR_REASON {
+    D3DKMT_DEVICE_ERROR_REASON_GENERIC           = 0x80000000,
+    D3DKMT_DEVICE_ERROR_REASON_DRIVER_ERROR      = 0x80000006,
+} D3DKMT_DEVICE_ERROR_REASON;
+
+typedef struct _D3DKMT_MARKDEVICEASERROR
+{
+    D3DKMT_HANDLE              hDevice; // in: Device handle
+    D3DKMT_DEVICE_ERROR_REASON Reason;  // in: Status code
+} D3DKMT_MARKDEVICEASERROR;
+
+typedef struct _D3DKMT_FLUSHHEAPTRANSITIONS
+{
+    D3DKMT_HANDLE              hAdapter;
+} D3DKMT_FLUSHHEAPTRANSITIONS;
+
+typedef struct _D3DKMT_QUERYPROCESSOFFERINFO
+{
+    _In_ ULONG cbSize;
+    D3DKMT_PTR(_In_ HANDLE, hProcess);
+    _Out_ D3DKMT_ALIGN64 UINT64 DecommitUniqueness;
+    _Out_ D3DKMT_ALIGN64 UINT64 DecommittableBytes;
+} D3DKMT_QUERYPROCESSOFFERINFO;
+
+typedef union _D3DKMT_TRIMPROCESSCOMMITMENT_FLAGS
+{
+    struct
+    {
+        UINT Lazy           :  1;
+        UINT OnlyRepurposed :  1;
+        UINT Reserved       : 30;
+    };
+    UINT Value;
+} D3DKMT_TRIMPROCESSCOMMITMENT_FLAGS;
+
+typedef struct _D3DKMT_TRIMPROCESSCOMMITMENT
+{
+    _In_ ULONG cbSize;
+    D3DKMT_PTR(_In_ HANDLE, hProcess);
+    _In_ D3DKMT_TRIMPROCESSCOMMITMENT_FLAGS Flags;
+    _In_ D3DKMT_ALIGN64 UINT64 DecommitRequested;
+    _Out_ D3DKMT_ALIGN64 UINT64 NumBytesDecommitted;
+} D3DKMT_TRIMPROCESSCOMMITMENT;
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_2)
+
+typedef struct _D3DKMT_CREATEHWCONTEXT
+{
+    D3DKMT_HANDLE               hDevice;                // in:  Handle to the device owning this context.
+    UINT                        NodeOrdinal;            // in:  Identifier for the node targetted by this context.
+    UINT                        EngineAffinity;         // in:  Engine affinity within the specified node.
+    D3DDDI_CREATEHWCONTEXTFLAGS Flags;                  // in:  Context creation flags.
+    UINT                        PrivateDriverDataSize;  // in:  Size of private driver data
+    D3DKMT_PTR(_Inout_
+    _Field_size_bytes_         (PrivateDriverDataSize)
+    VOID*,                      pPrivateDriverData);    // in/out:  Private driver data
+    D3DKMT_HANDLE               hHwContext;             // out: Handle of the created context.
+} D3DKMT_CREATEHWCONTEXT;
+
+typedef struct _D3DKMT_DESTROYHWCONTEXT
+{
+    D3DKMT_HANDLE               hHwContext;             // in:  Identifies the context being destroyed.
+} D3DKMT_DESTROYHWCONTEXT;
+
+typedef struct _D3DKMT_CREATEHWQUEUE
+{
+    D3DKMT_HANDLE               hHwContext;                             // in:  Handle to the hardware context the queue is associated with.
+    D3DDDI_CREATEHWQUEUEFLAGS   Flags;                                  // in:  Hardware queue creation flags.
+    UINT                        PrivateDriverDataSize;                  // in:  Size of private driver data
+    D3DKMT_PTR(_Inout_
+    _Field_size_bytes_         (PrivateDriverDataSize)
+    VOID*,                      pPrivateDriverData);                    // in/out:  Private driver data
+    D3DKMT_HANDLE               hHwQueue;                               // out: handle to the hardware queue object to submit work to.
+    D3DKMT_HANDLE               hHwQueueProgressFence;                  // out: handle to the monitored fence object used to monitor the queue progress.
+    D3DKMT_PTR(VOID*,           HwQueueProgressFenceCPUVirtualAddress); // out: Read-only mapping of the queue progress fence value for the CPU
+    D3DKMT_ALIGN64 D3DGPU_VIRTUAL_ADDRESS HwQueueProgressFenceGPUVirtualAddress;  // out: Read/write mapping of the queue progress fence value for the GPU
+} D3DKMT_CREATEHWQUEUE;
+
+typedef struct _D3DKMT_DESTROYHWQUEUE
+{
+    D3DKMT_HANDLE               hHwQueue;   // in: handle to the hardware queue to be destroyed.
+} D3DKMT_DESTROYHWQUEUE;
+
+typedef struct _D3DKMT_GETALLOCATIONPRIORITY
+{
+    D3DKMT_HANDLE           hDevice;            // in: Indentifies the device
+    D3DKMT_HANDLE           hResource;          // in: Specify the resource to get priority of.
+    D3DKMT_PTR(CONST D3DKMT_HANDLE*, phAllocationList); // in: pointer to an array allocation to get priorities of.
+    UINT                    AllocationCount;    // in: Number of allocations in phAllocationList
+    D3DKMT_PTR(UINT*,       pPriorities);       // out: Priority for each of the allocation in the array.
+} D3DKMT_GETALLOCATIONPRIORITY;
+
+#endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_2)
+
+
+
+#endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_0)
+
+#endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WIN8)
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_1)
+typedef union _D3DKMT_SETFSEBLOCKFLAGS
+{
+    struct
+    {
+        UINT Block : 1;
+        UINT Reserved : 31;
+    };
+    UINT Value;
+} D3DKMT_SETFSEBLOCKFLAGS;
+
+typedef struct _D3DKMT_SETFSEBLOCK
+{
+    LUID                            AdapterLuid;
+    D3DKMT_HANDLE                   hAdapter;
+    D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId;
+    D3DKMT_SETFSEBLOCKFLAGS         Flags;
+} D3DKMT_SETFSEBLOCK;
+
+typedef union _D3DKMT_QUERYFSEFLAGS
+{
+    struct
+    {
+        UINT Blocked : 1;
+        UINT Reserved : 31;
+    };
+    UINT Value;
+} D3DKMT_QUERYFSEBLOCKFLAGS;
+
+typedef struct _D3DKMT_QUERYFSEBLOCK
+{
+    LUID                            AdapterLuid;
+    D3DKMT_HANDLE                   hAdapter;
+    D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId;
+    D3DKMT_QUERYFSEBLOCKFLAGS       Flags;
+} D3DKMT_QUERYFSEBLOCK;
+#endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_1)
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_2)
+#endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_2)
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_3)
+
+typedef struct _D3DKMT_CREATEPROTECTEDSESSION
+{
+    D3DKMT_HANDLE                                           hDevice;                // in: device handle
+    D3DKMT_HANDLE                                           hSyncObject;            // in: monitored fence handle associated to this session (kernel handle)
+    D3DKMT_PTR(_Field_size_bytes_(PrivateDriverDataSize)
+    CONST VOID*,                                            pPrivateDriverData);    // in: Private driver data
+    UINT                                                    PrivateDriverDataSize;  // in: Size of private runtime data
+    D3DKMT_PTR(_Field_size_bytes_(PrivateRuntimeDataSize)
+    CONST VOID*,                                            pPrivateRuntimeData);   // in: Private runtime data
+    UINT                                                    PrivateRuntimeDataSize; // in: Size of private runtime data
+
+    D3DKMT_HANDLE                                           hHandle;                // out: protected session handle (kernel handle)
+
+} D3DKMT_CREATEPROTECTEDSESSION;
+
+typedef struct _D3DKMT_DESTROYPROTECTEDSESSION
+{
+    D3DKMT_HANDLE                                           hHandle; // in: protected session handle (kernel handle)
+
+} D3DKMT_DESTROYPROTECTEDSESSION;
+
+typedef enum _D3DKMT_PROTECTED_SESSION_STATUS
+{
+    D3DKMT_PROTECTED_SESSION_STATUS_OK         = 0,
+    D3DKMT_PROTECTED_SESSION_STATUS_INVALID    = 1,
+} D3DKMT_PROTECTED_SESSION_STATUS;
+
+typedef struct _D3DKMT_QUERYPROTECTEDSESSIONSTATUS
+{
+    D3DKMT_HANDLE                                           hHandle; // in: protected session handle (kernel handle)
+    D3DKMT_PROTECTED_SESSION_STATUS                         Status;  // out: protected session status
+
+} D3DKMT_QUERYPROTECTEDSESSIONSTATUS;
+
+typedef struct _D3DKMT_QUERYPROTECTEDSESSIONINFOFROMNTHANDLE
+{
+    D3DKMT_PTR(HANDLE,                                      hNtHandle);             // in: protected session handle (NT handle)
+    D3DKMT_PTR(_Field_size_bytes_(PrivateDriverDataSize)
+    CONST VOID*,                                            pPrivateDriverData);    // in: Private driver data
+    UINT                                                    PrivateDriverDataSize;  // in/out: Size of private runtime data
+    D3DKMT_PTR(_Field_size_bytes_(PrivateRuntimeDataSize)
+    CONST VOID*,                                            pPrivateRuntimeData);   // in: Private runtime data
+    UINT                                                    PrivateRuntimeDataSize; // in/out: Size of private runtime data
+
+} D3DKMT_QUERYPROTECTEDSESSIONINFOFROMNTHANDLE;
+
+typedef struct _D3DKMT_OPENPROTECTEDSESSIONFROMNTHANDLE
+{
+    D3DKMT_PTR(HANDLE,                                      hNtHandle);// in: protected session handle (NT handle)
+    D3DKMT_HANDLE                                           hHandle;   // out: protected session handle (kernel handle)
+
+} D3DKMT_OPENPROTECTEDSESSIONFROMNTHANDLE;
+
+
+typedef struct _D3DKMT_GETPROCESSDEVICEREMOVALSUPPORT
+{
+    D3DKMT_PTR(HANDLE, hProcess);    // in: Process handle
+    LUID    AdapterLuid; // in: Luid of Adapter that is potentially being detached
+    BOOLEAN Support;     // out: Whether or not the process using the adapter can recover from graphics device removal
+
+} D3DKMT_GETPROCESSDEVICEREMOVALSUPPORT;
+
+#endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_3)
+
+
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_7)
+
+
+#endif // DXGKDDI_INTERFACE_VERSION_WDDM2_7
+
+
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATEALLOCATION)(_Inout_ D3DKMT_CREATEALLOCATION*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATEALLOCATION2)(_Inout_ D3DKMT_CREATEALLOCATION*); // _ADVSCH_
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYRESOURCEINFO)(_Inout_ D3DKMT_QUERYRESOURCEINFO*);
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WIN8)
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYRESOURCEINFOFROMNTHANDLE)(_Inout_ D3DKMT_QUERYRESOURCEINFOFROMNTHANDLE*);
+
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SHAREOBJECTS)(
+    _In_range_(1, D3DKMT_MAX_OBJECTS_PER_HANDLE) UINT   cObjects,
+    _In_reads_(cObjects) CONST D3DKMT_HANDLE *          hObjects,
+    _In_ POBJECT_ATTRIBUTES                             pObjectAttributes,
+    _In_ DWORD                                          dwDesiredAccess,
+    _Out_ HANDLE *                                      phSharedNtHandle
+    );
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENNTHANDLEFROMNAME)(_Inout_ D3DKMT_OPENNTHANDLEFROMNAME*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENRESOURCEFROMNTHANDLE)(_Inout_ D3DKMT_OPENRESOURCEFROMNTHANDLE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENSYNCOBJECTFROMNTHANDLE)(_Inout_ D3DKMT_OPENSYNCOBJECTFROMNTHANDLE*);
+#endif
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENRESOURCE)(_Inout_ D3DKMT_OPENRESOURCE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENRESOURCE2)(_Inout_ D3DKMT_OPENRESOURCE*); // _ADVSCH_
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_DESTROYALLOCATION)(_In_ CONST D3DKMT_DESTROYALLOCATION*);
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_0)
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_DESTROYALLOCATION2)(_In_ CONST D3DKMT_DESTROYALLOCATION2*);
+#endif // DXGKDDI_INTERFACE_VERSION_WDDM2_0
+
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETALLOCATIONPRIORITY)(_In_ CONST D3DKMT_SETALLOCATIONPRIORITY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYALLOCATIONRESIDENCY)(_In_ CONST D3DKMT_QUERYALLOCATIONRESIDENCY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATEDEVICE)(_Inout_ D3DKMT_CREATEDEVICE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_DESTROYDEVICE)(_In_ CONST D3DKMT_DESTROYDEVICE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATECONTEXT)(_Inout_ D3DKMT_CREATECONTEXT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_DESTROYCONTEXT)(_In_ CONST D3DKMT_DESTROYCONTEXT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATESYNCHRONIZATIONOBJECT)(_Inout_ D3DKMT_CREATESYNCHRONIZATIONOBJECT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATESYNCHRONIZATIONOBJECT2)(_Inout_ D3DKMT_CREATESYNCHRONIZATIONOBJECT2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENSYNCHRONIZATIONOBJECT)(_Inout_ D3DKMT_OPENSYNCHRONIZATIONOBJECT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_DESTROYSYNCHRONIZATIONOBJECT)(_In_ CONST D3DKMT_DESTROYSYNCHRONIZATIONOBJECT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_WAITFORSYNCHRONIZATIONOBJECT)(_In_ CONST D3DKMT_WAITFORSYNCHRONIZATIONOBJECT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_WAITFORSYNCHRONIZATIONOBJECT2)(_In_ CONST D3DKMT_WAITFORSYNCHRONIZATIONOBJECT2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SIGNALSYNCHRONIZATIONOBJECT)(_In_ CONST D3DKMT_SIGNALSYNCHRONIZATIONOBJECT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SIGNALSYNCHRONIZATIONOBJECT2)(_In_ CONST D3DKMT_SIGNALSYNCHRONIZATIONOBJECT2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_LOCK)(_Inout_ D3DKMT_LOCK*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_UNLOCK)(_In_ CONST D3DKMT_UNLOCK*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETDISPLAYMODELIST)(_Inout_ D3DKMT_GETDISPLAYMODELIST*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETDISPLAYMODE)(_Inout_ CONST D3DKMT_SETDISPLAYMODE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETMULTISAMPLEMETHODLIST)(_Inout_ D3DKMT_GETMULTISAMPLEMETHODLIST*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_PRESENT)(_Inout_ D3DKMT_PRESENT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_RENDER)(_Inout_ D3DKMT_RENDER*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETRUNTIMEDATA)(_Inout_ CONST D3DKMT_GETRUNTIMEDATA*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYADAPTERINFO)(_Inout_ CONST D3DKMT_QUERYADAPTERINFO*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENADAPTERFROMHDC)(_Inout_ D3DKMT_OPENADAPTERFROMHDC*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENADAPTERFROMGDIDISPLAYNAME)(_Inout_ D3DKMT_OPENADAPTERFROMGDIDISPLAYNAME*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENADAPTERFROMDEVICENAME)(_Inout_ D3DKMT_OPENADAPTERFROMDEVICENAME*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CLOSEADAPTER)(_In_ CONST D3DKMT_CLOSEADAPTER*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETSHAREDPRIMARYHANDLE)(_Inout_ D3DKMT_GETSHAREDPRIMARYHANDLE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_ESCAPE)(_In_ CONST D3DKMT_ESCAPE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYSTATISTICS)(_In_ CONST D3DKMT_QUERYSTATISTICS*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETVIDPNSOURCEOWNER)(_In_ CONST D3DKMT_SETVIDPNSOURCEOWNER*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETPRESENTHISTORY)(_Inout_ D3DKMT_GETPRESENTHISTORY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATEOVERLAY)(_Inout_ D3DKMT_CREATEOVERLAY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_UPDATEOVERLAY)(_In_ CONST D3DKMT_UPDATEOVERLAY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_FLIPOVERLAY)(_In_ CONST D3DKMT_FLIPOVERLAY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_DESTROYOVERLAY)(_In_ CONST D3DKMT_DESTROYOVERLAY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_WAITFORVERTICALBLANKEVENT)(_In_ CONST D3DKMT_WAITFORVERTICALBLANKEVENT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETGAMMARAMP)(_In_ CONST D3DKMT_SETGAMMARAMP*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETDEVICESTATE)(_Inout_ D3DKMT_GETDEVICESTATE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATEDCFROMMEMORY)(_Inout_ D3DKMT_CREATEDCFROMMEMORY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_DESTROYDCFROMMEMORY)(_In_ CONST D3DKMT_DESTROYDCFROMMEMORY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETCONTEXTSCHEDULINGPRIORITY)(_In_ CONST D3DKMT_SETCONTEXTSCHEDULINGPRIORITY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETCONTEXTSCHEDULINGPRIORITY)(_Inout_ D3DKMT_GETCONTEXTSCHEDULINGPRIORITY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETPROCESSSCHEDULINGPRIORITYCLASS)(_In_ HANDLE, _In_ D3DKMT_SCHEDULINGPRIORITYCLASS);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETPROCESSSCHEDULINGPRIORITYCLASS)(_In_ HANDLE, _Out_ D3DKMT_SCHEDULINGPRIORITYCLASS*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_RELEASEPROCESSVIDPNSOURCEOWNERS)(_In_ HANDLE);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETSCANLINE)(_Inout_ D3DKMT_GETSCANLINE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CHANGESURFACEPOINTER)(_In_ CONST D3DKMT_CHANGESURFACEPOINTER*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETQUEUEDLIMIT)(_In_ CONST D3DKMT_SETQUEUEDLIMIT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_POLLDISPLAYCHILDREN)(_In_ CONST D3DKMT_POLLDISPLAYCHILDREN*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_INVALIDATEACTIVEVIDPN)(_In_ CONST D3DKMT_INVALIDATEACTIVEVIDPN*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CHECKOCCLUSION)(_In_ CONST D3DKMT_CHECKOCCLUSION*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_WAITFORIDLE)(_In_ CONST D3DKMT_WAITFORIDLE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CHECKMONITORPOWERSTATE)(_In_ CONST D3DKMT_CHECKMONITORPOWERSTATE*);
+typedef _Check_return_ BOOLEAN  (APIENTRY *PFND3DKMT_CHECKEXCLUSIVEOWNERSHIP)();
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CHECKVIDPNEXCLUSIVEOWNERSHIP)(_In_ CONST D3DKMT_CHECKVIDPNEXCLUSIVEOWNERSHIP*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETDISPLAYPRIVATEDRIVERFORMAT)(_In_ CONST D3DKMT_SETDISPLAYPRIVATEDRIVERFORMAT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SHAREDPRIMARYLOCKNOTIFICATION)(_In_ CONST D3DKMT_SHAREDPRIMARYLOCKNOTIFICATION*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SHAREDPRIMARYUNLOCKNOTIFICATION)(_In_ CONST D3DKMT_SHAREDPRIMARYUNLOCKNOTIFICATION*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATEKEYEDMUTEX)(_Inout_ D3DKMT_CREATEKEYEDMUTEX*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENKEYEDMUTEX)(_Inout_ D3DKMT_OPENKEYEDMUTEX*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_DESTROYKEYEDMUTEX)(_In_ CONST D3DKMT_DESTROYKEYEDMUTEX*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_ACQUIREKEYEDMUTEX)(_Inout_ D3DKMT_ACQUIREKEYEDMUTEX*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_RELEASEKEYEDMUTEX)(_Inout_ D3DKMT_RELEASEKEYEDMUTEX*);
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WIN8)
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATEKEYEDMUTEX2)(_Inout_ D3DKMT_CREATEKEYEDMUTEX2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENKEYEDMUTEX2)(_Inout_ D3DKMT_OPENKEYEDMUTEX2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_ACQUIREKEYEDMUTEX2)(_Inout_ D3DKMT_ACQUIREKEYEDMUTEX2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_RELEASEKEYEDMUTEX2)(_Inout_ D3DKMT_RELEASEKEYEDMUTEX2*);
+#endif
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CONFIGURESHAREDRESOURCE)(_In_ CONST D3DKMT_CONFIGURESHAREDRESOURCE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETOVERLAYSTATE)(_Inout_ D3DKMT_GETOVERLAYSTATE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CHECKSHAREDRESOURCEACCESS)(_In_ CONST D3DKMT_CHECKSHAREDRESOURCEACCESS*);
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WIN8)
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OFFERALLOCATIONS)(_In_ CONST D3DKMT_OFFERALLOCATIONS*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_RECLAIMALLOCATIONS)(_Inout_ CONST D3DKMT_RECLAIMALLOCATIONS*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATEOUTPUTDUPL)(_In_ CONST D3DKMT_CREATE_OUTPUTDUPL*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_DESTROYOUTPUTDUPL)(_In_ CONST D3DKMT_DESTROY_OUTPUTDUPL*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OUTPUTDUPLGETFRAMEINFO)(_Inout_ D3DKMT_OUTPUTDUPL_GET_FRAMEINFO*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OUTPUTDUPLGETMETADATA)(_Inout_ D3DKMT_OUTPUTDUPL_METADATA*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OUTPUTDUPLGETPOINTERSHAPEDATA)(_Inout_ D3DKMT_OUTPUTDUPL_GET_POINTER_SHAPE_DATA*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OUTPUTDUPLRELEASEFRAME)(_In_ D3DKMT_OUTPUTDUPL_RELEASE_FRAME*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OUTPUTDUPLPRESENT)(_In_ CONST D3DKMT_OUTPUTDUPLPRESENT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_ENUMADAPTERS)(_Inout_ CONST D3DKMT_ENUMADAPTERS*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_ENUMADAPTERS2)(_Inout_ CONST D3DKMT_ENUMADAPTERS2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENADAPTERFROMLUID)(_Inout_ D3DKMT_OPENADAPTERFROMLUID*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYREMOTEVIDPNSOURCEFROMGDIDISPLAYNAME)(_Inout_ D3DKMT_QUERYREMOTEVIDPNSOURCEFROMGDIDISPLAYNAME*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETVIDPNSOURCEOWNER1)(_In_ CONST D3DKMT_SETVIDPNSOURCEOWNER1*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_PINDIRECTFLIPRESOURCES)(_In_ CONST D3DKMT_PINDIRECTFLIPRESOURCES*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_UNPINDIRECTFLIPRESOURCES)(_In_ CONST D3DKMT_UNPINDIRECTFLIPRESOURCES*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_WAITFORVERTICALBLANKEVENT2)(_In_ CONST D3DKMT_WAITFORVERTICALBLANKEVENT2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETDWMVERTICALBLANKEVENT)(_In_ CONST D3DKMT_GETVERTICALBLANKEVENT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETSYNCREFRESHCOUNTWAITTARGET)(_In_ CONST D3DKMT_SETSYNCREFRESHCOUNTWAITTARGET*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETCONTEXTINPROCESSSCHEDULINGPRIORITY)(_In_ CONST D3DKMT_SETCONTEXTINPROCESSSCHEDULINGPRIORITY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETCONTEXTINPROCESSSCHEDULINGPRIORITY)(_Inout_ D3DKMT_GETCONTEXTINPROCESSSCHEDULINGPRIORITY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_PRESENTMULTIPLANEOVERLAY)(_In_ CONST D3DKMT_PRESENT_MULTIPLANE_OVERLAY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETSHAREDRESOURCEADAPTERLUID)(_Inout_ D3DKMT_GETSHAREDRESOURCEADAPTERLUID*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETSTEREOENABLED)(_In_ BOOL);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYHYBRIDLISTVALUE)(_Inout_ D3DKMT_HYBRID_LIST*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETHYBRIDLISTVVALUE)(_Inout_ D3DKMT_HYBRID_LIST*);
+#endif
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM1_3)
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CHECKMULTIPLANEOVERLAYSUPPORT)(_Inout_ D3DKMT_CHECKMULTIPLANEOVERLAYSUPPORT*);
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_0)
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_MAKERESIDENT)(_Inout_ D3DDDI_MAKERESIDENT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_EVICT)(_Inout_ D3DKMT_EVICT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_WAITFORSYNCHRONIZATIONOBJECTFROMCPU)(_In_ CONST D3DKMT_WAITFORSYNCHRONIZATIONOBJECTFROMCPU*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMCPU)(_In_ CONST D3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMCPU*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_WAITFORSYNCHRONIZATIONOBJECTFROMGPU)(_In_ CONST D3DKMT_WAITFORSYNCHRONIZATIONOBJECTFROMGPU*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMGPU)(_In_ CONST D3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMGPU*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMGPU2)(_In_ CONST D3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMGPU2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATEPAGINGQUEUE)(_Inout_ D3DKMT_CREATEPAGINGQUEUE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_DESTROYPAGINGQUEUE)(_Inout_ D3DDDI_DESTROYPAGINGQUEUE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_LOCK2)(_Inout_ D3DKMT_LOCK2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_UNLOCK2)(_In_ CONST D3DKMT_UNLOCK2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_INVALIDATECACHE)(_In_ const D3DKMT_INVALIDATECACHE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_RESERVEGPUVIRTUALADDRESS)(_Inout_ D3DDDI_RESERVEGPUVIRTUALADDRESS*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_MAPGPUVIRTUALADDRESS)(_Inout_ D3DDDI_MAPGPUVIRTUALADDRESS*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_FREEGPUVIRTUALADDRESS)(_In_ CONST D3DKMT_FREEGPUVIRTUALADDRESS*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_UPDATEGPUVIRTUALADDRESS)(_In_ CONST D3DKMT_UPDATEGPUVIRTUALADDRESS*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETRESOURCEPRESENTPRIVATEDRIVERDATA)(_Inout_ D3DDDI_GETRESOURCEPRESENTPRIVATEDRIVERDATA*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATECONTEXTVIRTUAL)(_Inout_ D3DKMT_CREATECONTEXTVIRTUAL*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SUBMITCOMMAND)(_In_ CONST D3DKMT_SUBMITCOMMAND*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENSYNCOBJECTFROMNTHANDLE2)(_Inout_ D3DKMT_OPENSYNCOBJECTFROMNTHANDLE2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENSYNCOBJECTNTHANDLEFROMNAME)(_Inout_ D3DKMT_OPENSYNCOBJECTNTHANDLEFROMNAME*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYVIDEOMEMORYINFO)(_Inout_ D3DKMT_QUERYVIDEOMEMORYINFO*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CHANGEVIDEOMEMORYRESERVATION)(_In_ CONST D3DKMT_CHANGEVIDEOMEMORYRESERVATION*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_REGISTERTRIMNOTIFICATION)(_Inout_ D3DKMT_REGISTERTRIMNOTIFICATION*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_UNREGISTERTRIMNOTIFICATION)(_Inout_ D3DKMT_UNREGISTERTRIMNOTIFICATION*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_REGISTERBUDGETCHANGENOTIFICATION)(_Inout_ D3DKMT_REGISTERBUDGETCHANGENOTIFICATION*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_UNREGISTERBUDGETCHANGENOTIFICATION)(_Inout_ D3DKMT_UNREGISTERBUDGETCHANGENOTIFICATION*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CHECKMULTIPLANEOVERLAYSUPPORT2)(_Inout_ D3DKMT_CHECKMULTIPLANEOVERLAYSUPPORT2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_PRESENTMULTIPLANEOVERLAY2)(_In_ CONST D3DKMT_PRESENT_MULTIPLANE_OVERLAY2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_RECLAIMALLOCATIONS2)(_Inout_ D3DKMT_RECLAIMALLOCATIONS2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETSTABLEPOWERSTATE)(_In_ CONST D3DKMT_SETSTABLEPOWERSTATE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYCLOCKCALIBRATION)(_Inout_ D3DKMT_QUERYCLOCKCALIBRATION*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYVIDPNEXCLUSIVEOWNERSHIP)(_Inout_ D3DKMT_QUERYVIDPNEXCLUSIVEOWNERSHIP*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_ADJUSTFULLSCREENGAMMA)(_In_ D3DKMT_ADJUSTFULLSCREENGAMMA*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETVIDPNSOURCEHWPROTECTION)(_In_ D3DKMT_SETVIDPNSOURCEHWPROTECTION*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_MARKDEVICEASERROR)(_In_ D3DKMT_MARKDEVICEASERROR*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_FLUSHHEAPTRANSITIONS)(_In_ D3DKMT_FLUSHHEAPTRANSITIONS*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETHWPROTECTIONTEARDOWNRECOVERY)(_In_ D3DKMT_SETHWPROTECTIONTEARDOWNRECOVERY*);
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_1)
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYPROCESSOFFERINFO)(_Inout_ D3DKMT_QUERYPROCESSOFFERINFO*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_TRIMPROCESSCOMMITMENT)(_Inout_ D3DKMT_TRIMPROCESSCOMMITMENT*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_UPDATEALLOCATIONPROPERTY)(_Inout_ D3DDDI_UPDATEALLOCPROPERTY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CHECKMULTIPLANEOVERLAYSUPPORT3)(_Inout_ D3DKMT_CHECKMULTIPLANEOVERLAYSUPPORT3*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_PRESENTMULTIPLANEOVERLAY3)(_In_ CONST D3DKMT_PRESENT_MULTIPLANE_OVERLAY3*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETFSEBLOCK)(_In_ CONST D3DKMT_SETFSEBLOCK*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYFSEBLOCK)(_Inout_ D3DKMT_QUERYFSEBLOCK*);
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_2)
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETALLOCATIONPRIORITY)(_In_ CONST D3DKMT_GETALLOCATIONPRIORITY*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETMULTIPLANEOVERLAYCAPS)(_Inout_ D3DKMT_GET_MULTIPLANE_OVERLAY_CAPS*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETPOSTCOMPOSITIONCAPS)(_Inout_ D3DKMT_GET_POST_COMPOSITION_CAPS*);
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_3)
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SETVIDPNSOURCEOWNER2)(_In_ CONST D3DKMT_SETVIDPNSOURCEOWNER2*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_GETPROCESSDEVICEREMOVALSUPPORT)(_Inout_ D3DKMT_GETPROCESSDEVICEREMOVALSUPPORT*);
+
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATEPROTECTEDSESSION)(_Inout_ D3DKMT_CREATEPROTECTEDSESSION*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_DESTROYPROTECTEDSESSION)(_Inout_ D3DKMT_DESTROYPROTECTEDSESSION*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYPROTECTEDSESSIONSTATUS)(_Inout_ D3DKMT_QUERYPROTECTEDSESSIONSTATUS*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_QUERYPROTECTEDSESSIONINFOFROMNTHANDLE)(_Inout_ D3DKMT_QUERYPROTECTEDSESSIONINFOFROMNTHANDLE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENPROTECTEDSESSIONFROMNTHANDLE)(_Inout_ D3DKMT_OPENPROTECTEDSESSIONFROMNTHANDLE*);
+
+
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENKEYEDMUTEXFROMNTHANDLE)(_Inout_ D3DKMT_OPENKEYEDMUTEXFROMNTHANDLE*);
+
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_4)
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATEHWQUEUE)(_Inout_ D3DKMT_CREATEHWQUEUE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_DESTROYHWQUEUE)(_In_ CONST D3DKMT_DESTROYHWQUEUE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SUBMITCOMMANDTOHWQUEUE)(_In_ CONST D3DKMT_SUBMITCOMMANDTOHWQUEUE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SUBMITWAITFORSYNCOBJECTSTOHWQUEUE)(_In_ CONST D3DKMT_SUBMITWAITFORSYNCOBJECTSTOHWQUEUE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SUBMITSIGNALSYNCOBJECTSTOHWQUEUE)(_In_ CONST D3DKMT_SUBMITSIGNALSYNCOBJECTSTOHWQUEUE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SUBMITPRESENTBLTTOHWQUEUE)(_In_ CONST D3DKMT_SUBMITPRESENTBLTTOHWQUEUE*);
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_5)
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_SUBMITPRESENTTOHWQUEUE)(_Inout_ D3DKMT_SUBMITPRESENTTOHWQUEUE*);
+#endif  // DXGKDDI_INTERFACE_VERSION_WDDM2_5
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_6)
+
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OUTPUTDUPLPRESENTTOHWQUEUE)(_In_ CONST D3DKMT_OUTPUTDUPLPRESENTTOHWQUEUE*);
+
+
+#endif  // DXGKDDI_INTERFACE_VERSION_WDDM2_6
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_7)
+
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_ENUMADAPTERS3)(_Inout_ D3DKMT_ENUMADAPTERS3*);
+
+
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_9)
+
+
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM3_0)
+
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CANCELPRESENTS)(_In_ D3DKMT_CANCEL_PRESENTS*);
+
+
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM3_1)
+
+
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_CREATENATIVEFENCE)(_Inout_ D3DKMT_CREATENATIVEFENCE*);
+typedef _Check_return_ NTSTATUS (APIENTRY *PFND3DKMT_OPENNATIVEFENCEFROMNTHANDLE)(_Inout_ D3DKMT_OPENNATIVEFENCEFROMNTHANDLE*);
+typedef _Check_return_ NTSTATUS (APIENTRY* PFND3DKMT_CREATEDOORBELL)(_In_ D3DKMT_CREATE_DOORBELL*);
+typedef _Check_return_ NTSTATUS (APIENTRY* PFND3DKMT_CONNECTDOORBELL)(_In_ D3DKMT_CONNECT_DOORBELL*);
+typedef _Check_return_ NTSTATUS (APIENTRY* PFND3DKMT_DESTROYDOORBELL)(_In_ D3DKMT_DESTROY_DOORBELL*);
+typedef _Check_return_ NTSTATUS (APIENTRY* PFND3DKMT_NOTIFYWORKSUBMISSION)(_In_ D3DKMT_NOTIFY_WORK_SUBMISSION*);
+
+#endif
+
+#if !defined(D3DKMDT_SPECIAL_MULTIPLATFORM_TOOL)
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateAllocation(_Inout_ D3DKMT_CREATEALLOCATION*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateAllocation2(_Inout_ D3DKMT_CREATEALLOCATION*); // _ADVSCH_
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTQueryResourceInfo(_Inout_ D3DKMT_QUERYRESOURCEINFO*);
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WIN8)
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTQueryResourceInfoFromNtHandle(_Inout_ D3DKMT_QUERYRESOURCEINFOFROMNTHANDLE*);
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTShareObjects(
+    _In_range_(1, D3DKMT_MAX_OBJECTS_PER_HANDLE) UINT   cObjects,
+    _In_reads_(cObjects) CONST D3DKMT_HANDLE *          hObjects,
+    _In_ POBJECT_ATTRIBUTES                             pObjectAttributes,
+    _In_ DWORD                                          dwDesiredAccess,
+    _Out_ HANDLE *                                      phSharedNtHandle
+    );
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenNtHandleFromName(_Inout_ D3DKMT_OPENNTHANDLEFROMNAME*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenResourceFromNtHandle(_Inout_ D3DKMT_OPENRESOURCEFROMNTHANDLE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenSyncObjectFromNtHandle(_Inout_ D3DKMT_OPENSYNCOBJECTFROMNTHANDLE*);
+#endif
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenResource(_Inout_ D3DKMT_OPENRESOURCE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenResource2(_Inout_ D3DKMT_OPENRESOURCE*); // _ADVSCH_
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroyAllocation(_In_ CONST D3DKMT_DESTROYALLOCATION*);
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_0)
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroyAllocation2(_In_ CONST D3DKMT_DESTROYALLOCATION2*);
+#endif // DXGKDDI_INTERFACE_VERSION_WDDM2_0
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetAllocationPriority(_In_ CONST D3DKMT_SETALLOCATIONPRIORITY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTQueryAllocationResidency(_In_ CONST D3DKMT_QUERYALLOCATIONRESIDENCY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateDevice(_Inout_ D3DKMT_CREATEDEVICE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroyDevice(_In_ CONST D3DKMT_DESTROYDEVICE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateContext(_Inout_ D3DKMT_CREATECONTEXT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroyContext(_In_ CONST D3DKMT_DESTROYCONTEXT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateSynchronizationObject(_Inout_ D3DKMT_CREATESYNCHRONIZATIONOBJECT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateSynchronizationObject2(_Inout_ D3DKMT_CREATESYNCHRONIZATIONOBJECT2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenSynchronizationObject(_Inout_ D3DKMT_OPENSYNCHRONIZATIONOBJECT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroySynchronizationObject(_In_ CONST D3DKMT_DESTROYSYNCHRONIZATIONOBJECT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTWaitForSynchronizationObject(_In_ CONST D3DKMT_WAITFORSYNCHRONIZATIONOBJECT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTWaitForSynchronizationObject2(_In_ CONST D3DKMT_WAITFORSYNCHRONIZATIONOBJECT2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSignalSynchronizationObject(_In_ CONST D3DKMT_SIGNALSYNCHRONIZATIONOBJECT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSignalSynchronizationObject2(_In_ CONST D3DKMT_SIGNALSYNCHRONIZATIONOBJECT2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTLock(_Inout_ D3DKMT_LOCK*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTUnlock(_In_ CONST D3DKMT_UNLOCK*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetDisplayModeList(_Inout_ D3DKMT_GETDISPLAYMODELIST*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetDisplayMode(_Inout_ CONST D3DKMT_SETDISPLAYMODE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetMultisampleMethodList(_Inout_ D3DKMT_GETMULTISAMPLEMETHODLIST*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTPresent(_Inout_ D3DKMT_PRESENT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTRender(_Inout_ D3DKMT_RENDER*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetRuntimeData(_Inout_ CONST D3DKMT_GETRUNTIMEDATA*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTQueryAdapterInfo(_Inout_ CONST D3DKMT_QUERYADAPTERINFO*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenAdapterFromHdc(_Inout_ D3DKMT_OPENADAPTERFROMHDC*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenAdapterFromGdiDisplayName(_Inout_ D3DKMT_OPENADAPTERFROMGDIDISPLAYNAME*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenAdapterFromDeviceName(_Inout_ D3DKMT_OPENADAPTERFROMDEVICENAME*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCloseAdapter(_In_ CONST D3DKMT_CLOSEADAPTER*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetSharedPrimaryHandle(_Inout_ D3DKMT_GETSHAREDPRIMARYHANDLE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTEscape(_In_ CONST D3DKMT_ESCAPE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTQueryStatistics(_In_ CONST D3DKMT_QUERYSTATISTICS*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetVidPnSourceOwner(_In_ CONST D3DKMT_SETVIDPNSOURCEOWNER*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetPresentHistory(_Inout_ D3DKMT_GETPRESENTHISTORY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetPresentQueueEvent(_In_ D3DKMT_HANDLE hAdapter, _Inout_ HANDLE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateOverlay(_Inout_ D3DKMT_CREATEOVERLAY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTUpdateOverlay(_In_ CONST D3DKMT_UPDATEOVERLAY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTFlipOverlay(_In_ CONST D3DKMT_FLIPOVERLAY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroyOverlay(_In_ CONST D3DKMT_DESTROYOVERLAY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTWaitForVerticalBlankEvent(_In_ CONST D3DKMT_WAITFORVERTICALBLANKEVENT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetGammaRamp(_In_ CONST D3DKMT_SETGAMMARAMP*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetDeviceState(_Inout_ D3DKMT_GETDEVICESTATE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateDCFromMemory(_Inout_ D3DKMT_CREATEDCFROMMEMORY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroyDCFromMemory(_In_ CONST D3DKMT_DESTROYDCFROMMEMORY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetContextSchedulingPriority(_In_ CONST D3DKMT_SETCONTEXTSCHEDULINGPRIORITY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetContextSchedulingPriority(_Inout_ D3DKMT_GETCONTEXTSCHEDULINGPRIORITY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetProcessSchedulingPriorityClass(_In_ HANDLE, _In_ D3DKMT_SCHEDULINGPRIORITYCLASS);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetProcessSchedulingPriorityClass(_In_ HANDLE, _Out_ D3DKMT_SCHEDULINGPRIORITYCLASS*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTReleaseProcessVidPnSourceOwners(_In_ HANDLE);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetScanLine(_Inout_ D3DKMT_GETSCANLINE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTChangeSurfacePointer(_In_ CONST D3DKMT_CHANGESURFACEPOINTER*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetQueuedLimit(_In_ CONST D3DKMT_SETQUEUEDLIMIT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTPollDisplayChildren(_In_ CONST D3DKMT_POLLDISPLAYCHILDREN*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTInvalidateActiveVidPn(_In_ CONST D3DKMT_INVALIDATEACTIVEVIDPN*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCheckOcclusion(_In_ CONST D3DKMT_CHECKOCCLUSION*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTWaitForIdle(IN CONST D3DKMT_WAITFORIDLE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCheckMonitorPowerState(_In_ CONST D3DKMT_CHECKMONITORPOWERSTATE*);
+EXTERN_C _Check_return_ BOOLEAN  APIENTRY D3DKMTCheckExclusiveOwnership(VOID);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCheckVidPnExclusiveOwnership(_In_ CONST D3DKMT_CHECKVIDPNEXCLUSIVEOWNERSHIP*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetDisplayPrivateDriverFormat(_In_ CONST D3DKMT_SETDISPLAYPRIVATEDRIVERFORMAT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSharedPrimaryLockNotification(_In_ CONST D3DKMT_SHAREDPRIMARYLOCKNOTIFICATION*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSharedPrimaryUnLockNotification(_In_ CONST D3DKMT_SHAREDPRIMARYUNLOCKNOTIFICATION*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateKeyedMutex(_Inout_ D3DKMT_CREATEKEYEDMUTEX*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenKeyedMutex(_Inout_ D3DKMT_OPENKEYEDMUTEX*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroyKeyedMutex(_In_ CONST D3DKMT_DESTROYKEYEDMUTEX*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTAcquireKeyedMutex(_Inout_ D3DKMT_ACQUIREKEYEDMUTEX*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTReleaseKeyedMutex(_Inout_ D3DKMT_RELEASEKEYEDMUTEX*);
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WIN8)
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateKeyedMutex2(_Inout_ D3DKMT_CREATEKEYEDMUTEX2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenKeyedMutex2(_Inout_ D3DKMT_OPENKEYEDMUTEX2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTAcquireKeyedMutex2(_Inout_ D3DKMT_ACQUIREKEYEDMUTEX2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTReleaseKeyedMutex2(_Inout_ D3DKMT_RELEASEKEYEDMUTEX2*);
+#endif
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTConfigureSharedResource(_In_ CONST D3DKMT_CONFIGURESHAREDRESOURCE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetOverlayState(_Inout_ D3DKMT_GETOVERLAYSTATE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCheckSharedResourceAccess(_In_ CONST D3DKMT_CHECKSHAREDRESOURCEACCESS*);
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WIN8)
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOfferAllocations(_In_ CONST D3DKMT_OFFERALLOCATIONS*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTReclaimAllocations(_Inout_ CONST D3DKMT_RECLAIMALLOCATIONS*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateOutputDupl(_In_ CONST D3DKMT_CREATE_OUTPUTDUPL*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroyOutputDupl(_In_ CONST D3DKMT_DESTROY_OUTPUTDUPL*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOutputDuplGetFrameInfo(_Inout_ D3DKMT_OUTPUTDUPL_GET_FRAMEINFO*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOutputDuplGetMetaData(_Inout_ D3DKMT_OUTPUTDUPL_METADATA*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOutputDuplGetPointerShapeData(_Inout_ D3DKMT_OUTPUTDUPL_GET_POINTER_SHAPE_DATA*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOutputDuplReleaseFrame(_Inout_ D3DKMT_OUTPUTDUPL_RELEASE_FRAME*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOutputDuplPresent(_In_ CONST D3DKMT_OUTPUTDUPLPRESENT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTEnumAdapters(_Inout_ CONST D3DKMT_ENUMADAPTERS*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTEnumAdapters2(_Inout_ CONST D3DKMT_ENUMADAPTERS2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenAdapterFromLuid(_Inout_ CONST D3DKMT_OPENADAPTERFROMLUID*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTQueryRemoteVidPnSourceFromGdiDisplayName(_Inout_ D3DKMT_QUERYREMOTEVIDPNSOURCEFROMGDIDISPLAYNAME*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetVidPnSourceOwner1(_In_ CONST D3DKMT_SETVIDPNSOURCEOWNER1*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTWaitForVerticalBlankEvent2(_In_ CONST D3DKMT_WAITFORVERTICALBLANKEVENT2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetSyncRefreshCountWaitTarget(_In_ CONST D3DKMT_SETSYNCREFRESHCOUNTWAITTARGET*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetDWMVerticalBlankEvent(_In_ CONST D3DKMT_GETVERTICALBLANKEVENT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTPresentMultiPlaneOverlay(_In_ CONST D3DKMT_PRESENT_MULTIPLANE_OVERLAY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetSharedResourceAdapterLuid(_Inout_ D3DKMT_GETSHAREDRESOURCEADAPTERLUID*);
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM1_3)
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCheckMultiPlaneOverlaySupport(_Inout_ D3DKMT_CHECKMULTIPLANEOVERLAYSUPPORT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetContextInProcessSchedulingPriority(_In_ CONST D3DKMT_SETCONTEXTINPROCESSSCHEDULINGPRIORITY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetContextInProcessSchedulingPriority(_Inout_ D3DKMT_GETCONTEXTINPROCESSSCHEDULINGPRIORITY*);
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_0)
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTMakeResident(_Inout_ D3DDDI_MAKERESIDENT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTEvict(_Inout_ D3DKMT_EVICT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTWaitForSynchronizationObjectFromCpu(_In_ CONST D3DKMT_WAITFORSYNCHRONIZATIONOBJECTFROMCPU*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSignalSynchronizationObjectFromCpu(_In_ CONST D3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMCPU*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTWaitForSynchronizationObjectFromGpu(_In_ CONST D3DKMT_WAITFORSYNCHRONIZATIONOBJECTFROMGPU*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSignalSynchronizationObjectFromGpu(_In_ CONST D3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMGPU*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSignalSynchronizationObjectFromGpu2(_In_ CONST D3DKMT_SIGNALSYNCHRONIZATIONOBJECTFROMGPU2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreatePagingQueue(_Inout_ D3DKMT_CREATEPAGINGQUEUE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroyPagingQueue(_Inout_ D3DDDI_DESTROYPAGINGQUEUE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTLock2(_Inout_ D3DKMT_LOCK2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTUnlock2(_In_ CONST D3DKMT_UNLOCK2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTInvalidateCache(_In_ CONST D3DKMT_INVALIDATECACHE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTMapGpuVirtualAddress(_Inout_ D3DDDI_MAPGPUVIRTUALADDRESS*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTReserveGpuVirtualAddress(_Inout_ D3DDDI_RESERVEGPUVIRTUALADDRESS*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTFreeGpuVirtualAddress(_In_ CONST D3DKMT_FREEGPUVIRTUALADDRESS*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTUpdateGpuVirtualAddress(_In_ CONST D3DKMT_UPDATEGPUVIRTUALADDRESS*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetResourcePresentPrivateDriverData(_Inout_ D3DDDI_GETRESOURCEPRESENTPRIVATEDRIVERDATA*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateContextVirtual(_In_ D3DKMT_CREATECONTEXTVIRTUAL*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSubmitCommand(_In_ CONST D3DKMT_SUBMITCOMMAND*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenSyncObjectFromNtHandle2(_Inout_ D3DKMT_OPENSYNCOBJECTFROMNTHANDLE2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenSyncObjectNtHandleFromName(_Inout_ D3DKMT_OPENSYNCOBJECTNTHANDLEFROMNAME*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTQueryVideoMemoryInfo(_Inout_ D3DKMT_QUERYVIDEOMEMORYINFO*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTChangeVideoMemoryReservation(_In_ CONST D3DKMT_CHANGEVIDEOMEMORYRESERVATION*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTRegisterTrimNotification(_Inout_ D3DKMT_REGISTERTRIMNOTIFICATION*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTUnregisterTrimNotification(_Inout_ D3DKMT_UNREGISTERTRIMNOTIFICATION*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCheckMultiPlaneOverlaySupport2(_Inout_ D3DKMT_CHECKMULTIPLANEOVERLAYSUPPORT2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTPresentMultiPlaneOverlay2(_In_ CONST D3DKMT_PRESENT_MULTIPLANE_OVERLAY2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTReclaimAllocations2(_Inout_ D3DKMT_RECLAIMALLOCATIONS2*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetStablePowerState(_In_ CONST D3DKMT_SETSTABLEPOWERSTATE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTQueryClockCalibration(_Inout_ D3DKMT_QUERYCLOCKCALIBRATION*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTQueryVidPnExclusiveOwnership(_Inout_ D3DKMT_QUERYVIDPNEXCLUSIVEOWNERSHIP*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTAdjustFullscreenGamma(_In_ D3DKMT_ADJUSTFULLSCREENGAMMA*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetVidPnSourceHwProtection(_In_ D3DKMT_SETVIDPNSOURCEHWPROTECTION*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTMarkDeviceAsError(_In_ D3DKMT_MARKDEVICEASERROR*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTFlushHeapTransitions(_In_ D3DKMT_FLUSHHEAPTRANSITIONS*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetHwProtectionTeardownRecovery(_In_ D3DKMT_SETHWPROTECTIONTEARDOWNRECOVERY*);
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_1)
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTQueryProcessOfferInfo(_Inout_ D3DKMT_QUERYPROCESSOFFERINFO*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTTrimProcessCommitment(_Inout_ D3DKMT_TRIMPROCESSCOMMITMENT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTUpdateAllocationProperty(_Inout_ D3DDDI_UPDATEALLOCPROPERTY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCheckMultiPlaneOverlaySupport3(_Inout_ D3DKMT_CHECKMULTIPLANEOVERLAYSUPPORT3*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTPresentMultiPlaneOverlay3(_In_ CONST D3DKMT_PRESENT_MULTIPLANE_OVERLAY3*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetFSEBlock(_In_ CONST D3DKMT_SETFSEBLOCK*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTQueryFSEBlock(_Inout_ D3DKMT_QUERYFSEBLOCK*);
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_2)
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateHwContext(_Inout_ D3DKMT_CREATEHWCONTEXT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroyHwContext(_In_ CONST D3DKMT_DESTROYHWCONTEXT*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateHwQueue(_Inout_ D3DKMT_CREATEHWQUEUE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroyHwQueue(_In_ CONST D3DKMT_DESTROYHWQUEUE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSubmitCommandToHwQueue(_In_ CONST D3DKMT_SUBMITCOMMANDTOHWQUEUE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSubmitWaitForSyncObjectsToHwQueue(_In_ CONST D3DKMT_SUBMITWAITFORSYNCOBJECTSTOHWQUEUE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSubmitSignalSyncObjectsToHwQueue(_In_ CONST D3DKMT_SUBMITSIGNALSYNCOBJECTSTOHWQUEUE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetAllocationPriority(_In_ CONST D3DKMT_GETALLOCATIONPRIORITY*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetMultiPlaneOverlayCaps(_Inout_ D3DKMT_GET_MULTIPLANE_OVERLAY_CAPS*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetPostCompositionCaps(_Inout_ D3DKMT_GET_POST_COMPOSITION_CAPS*);
+
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_3)
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTPresentRedirected(_In_ D3DKMT_PRESENT_REDIRECTED*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetVidPnSourceOwner2(_In_ CONST D3DKMT_SETVIDPNSOURCEOWNER2*);
+
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSetMonitorColorSpaceTransform(_In_ D3DKMT_SET_COLORSPACE_TRANSFORM*);
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateProtectedSession(_Inout_ D3DKMT_CREATEPROTECTEDSESSION*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroyProtectedSession(_Inout_ D3DKMT_DESTROYPROTECTEDSESSION*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTQueryProtectedSessionStatus(_Inout_ D3DKMT_QUERYPROTECTEDSESSIONSTATUS*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTQueryProtectedSessionInfoFromNtHandle(_Inout_ D3DKMT_QUERYPROTECTEDSESSIONINFOFROMNTHANDLE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenProtectedSessionFromNtHandle(_Inout_ D3DKMT_OPENPROTECTEDSESSIONFROMNTHANDLE*);
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTGetProcessDeviceRemovalSupport(_Inout_ D3DKMT_GETPROCESSDEVICEREMOVALSUPPORT*);
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenKeyedMutexFromNtHandle(_Inout_ D3DKMT_OPENKEYEDMUTEXFROMNTHANDLE*);
+
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_4)
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTRegisterVailProcess(_In_ GUID*);
+
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSubmitPresentBltToHwQueue(_In_ CONST D3DKMT_SUBMITPRESENTBLTTOHWQUEUE*);
+
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_5)
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTSubmitPresentToHwQueue(_Inout_ D3DKMT_SUBMITPRESENTTOHWQUEUE*);
+
+#endif
+
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_6)
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOutputDuplPresentToHwQueue(_In_ CONST D3DKMT_OUTPUTDUPLPRESENTTOHWQUEUE*);
+
+
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_7)
+
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTEnumAdapters3(_Inout_ D3DKMT_ENUMADAPTERS3*);
+
+
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_9)
+
+
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM3_0)
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCancelPresents(_In_ D3DKMT_CANCEL_PRESENTS*);
+
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTShareObjectWithHost(_Inout_ D3DKMT_SHAREOBJECTWITHHOST*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateSyncFile(_Inout_ D3DKMT_CREATESYNCFILE*);
+
+// Used in WSL to close the internal file descriptor to /dev/dxg
+EXTERN_C VOID APIENTRY D3DKMTCloseDxCoreDevice();
+
+#endif
+
+#if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM3_1)
+
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateNativeFence(_Inout_ D3DKMT_CREATENATIVEFENCE*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTOpenNativeFenceFromNtHandle(_Inout_ D3DKMT_OPENNATIVEFENCEFROMNTHANDLE*);
+
+
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTCreateDoorbell(_In_ D3DKMT_CREATE_DOORBELL*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTConnectDoorbell(_In_ D3DKMT_CONNECT_DOORBELL*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTDestroyDoorbell(_In_ D3DKMT_DESTROY_DOORBELL*);
+EXTERN_C _Check_return_ NTSTATUS APIENTRY D3DKMTNotifyWorkSubmission(_In_ D3DKMT_NOTIFY_WORK_SUBMISSION*);
+#endif
+//
+// Interface used for shared power component management
+// {ea5c6870-e93c-4588-bef1-fec42fc9429a}
+//
+
+DEFINE_GUID(GUID_DEVINTERFACE_GRAPHICSPOWER, 0xea5c6870, 0xe93c, 0x4588, 0xbe, 0xf1, 0xfe, 0xc4, 0x2f, 0xc9, 0x42, 0x9a);
+
+#define IOCTL_INTERNAL_GRAPHICSPOWER_REGISTER \
+    CTL_CODE(FILE_DEVICE_VIDEO, 0xa01, METHOD_NEITHER, FILE_ANY_ACCESS)
+
+#define DXGK_GRAPHICSPOWER_VERSION_1_0 0x1000
+#define DXGK_GRAPHICSPOWER_VERSION_1_1 0x1001
+#define DXGK_GRAPHICSPOWER_VERSION_1_2 0x1002
+#define DXGK_GRAPHICSPOWER_VERSION DXGK_GRAPHICSPOWER_VERSION_1_2
+
+typedef
+    _IRQL_requires_max_(PASSIVE_LEVEL)
+VOID
+(*PDXGK_POWER_NOTIFICATION)(
+    PVOID GraphicsDeviceHandle,
+    DEVICE_POWER_STATE NewGrfxPowerState,
+    BOOLEAN PreNotification,
+    PVOID PrivateHandle
+    );
+
+typedef
+    _IRQL_requires_max_(PASSIVE_LEVEL)
+VOID
+(*PDXGK_REMOVAL_NOTIFICATION)(
+    PVOID GraphicsDeviceHandle,
+    PVOID PrivateHandle
+    );
+
+typedef
+    _IRQL_requires_max_(DISPATCH_LEVEL)
+VOID
+(*PDXGK_FSTATE_NOTIFICATION)(
+    PVOID GraphicsDeviceHandle,
+    ULONG ComponentIndex,
+    UINT NewFState,
+    BOOLEAN PreNotification,
+    PVOID PrivateHandle
+    );
+
+typedef
+    _IRQL_requires_(DISPATCH_LEVEL)
+VOID
+(*PDXGK_INITIAL_COMPONENT_STATE) (
+    PVOID GraphicsDeviceHandle,
+    PVOID PrivateHandle,
+    ULONG ComponentIndex,
+    BOOLEAN IsBlockingType,
+    UINT InitialFState,
+    GUID ComponentGuid,
+    UINT PowerComponentMappingFlag
+);
+
+
+typedef struct _DXGK_GRAPHICSPOWER_REGISTER_INPUT_V_1_2 {
+    ULONG Version;
+    PVOID PrivateHandle;
+    PDXGK_POWER_NOTIFICATION PowerNotificationCb;
+    PDXGK_REMOVAL_NOTIFICATION RemovalNotificationCb;
+    PDXGK_FSTATE_NOTIFICATION FStateNotificationCb;
+    PDXGK_INITIAL_COMPONENT_STATE InitialComponentStateCb;
+} DXGK_GRAPHICSPOWER_REGISTER_INPUT_V_1_2, *PDXGK_GRAPHICSPOWER_REGISTER_INPUT_V_1_2;
+
+typedef DXGK_GRAPHICSPOWER_REGISTER_INPUT_V_1_2 DXGK_GRAPHICSPOWER_REGISTER_INPUT;
+typedef DXGK_GRAPHICSPOWER_REGISTER_INPUT *PDXGK_GRAPHICSPOWER_REGISTER_INPUT;
+
+typedef
+    _Check_return_
+    _IRQL_requires_max_(APC_LEVEL)
+NTSTATUS
+(*PDXGK_SET_SHARED_POWER_COMPONENT_STATE)(
+    PVOID DeviceHandle,
+    PVOID PrivateHandle,
+    ULONG ComponentIndex,
+    BOOLEAN Active
+    );
+
+typedef
+    _Check_return_
+    _IRQL_requires_max_(APC_LEVEL)
+NTSTATUS
+(*PDXGK_GRAPHICSPOWER_UNREGISTER)(
+    PVOID DeviceHandle,
+    PVOID PrivateHandle
+    );
+
+typedef struct _DXGK_GRAPHICSPOWER_REGISTER_OUTPUT
+{
+    PVOID DeviceHandle;
+    DEVICE_POWER_STATE InitialGrfxPowerState;
+    PDXGK_SET_SHARED_POWER_COMPONENT_STATE SetSharedPowerComponentStateCb;
+    PDXGK_GRAPHICSPOWER_UNREGISTER UnregisterCb;
+} DXGK_GRAPHICSPOWER_REGISTER_OUTPUT, *PDXGK_GRAPHICSPOWER_REGISTER_OUTPUT;
+
+typedef enum _DXGKMT_POWER_SHARED_TYPE
+{
+    DXGKMT_POWER_SHARED_TYPE_AUDIO   = 0,
+} DXGKMT_POWER_SHARED_TYPE;
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // !defined(D3DKMDT_SPECIAL_MULTIPLATFORM_TOOL)
 
 #endif // (NTDDI_VERSION >= NTDDI_LONGHORN) || defined(D3DKMDT_SPECIAL_MULTIPLATFORM_TOOL)
 
+
+#pragma warning(pop)
