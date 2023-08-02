@@ -13,11 +13,12 @@
 #include <wingdi.h>
 #include "d3dkmdt.h"
 
+#if defined (_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable:4201) // anonymous unions warning
 #pragma warning(disable:4200) // zero-sized array in struct/union
 #pragma warning(disable:4214)   // nonstandard extension used: bit field types other than int
-
+#endif
 
 typedef struct _OBJECT_ATTRIBUTES OBJECT_ATTRIBUTES;
 typedef OBJECT_ATTRIBUTES *POBJECT_ATTRIBUTES;
@@ -6100,5 +6101,6 @@ typedef enum _DXGKMT_POWER_SHARED_TYPE
 
 #endif // (NTDDI_VERSION >= NTDDI_LONGHORN) || defined(D3DKMDT_SPECIAL_MULTIPLATFORM_TOOL)
 
-
+#if defined (_MSC_VER)
 #pragma warning(pop)
+#endif

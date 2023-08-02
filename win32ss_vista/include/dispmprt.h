@@ -2,10 +2,12 @@
 #ifndef _DISPMPRT_H_
 #define _DISPMPRT_H_
 
+#if defined (_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable:4115) // named type definition in parentheses
 #pragma warning(disable:4201) // nameless struct/union
 #pragma warning(disable:4214) // bit field types other than int
+#endif
 
 #ifndef _ACPIIOCT_H_
 #include "acpiioct.h"
@@ -254,9 +256,11 @@ typedef struct _DXGK_CHILD_CAPABILITIES {
     DXGK_CHILD_DEVICE_HPD_AWARENESS HpdAwareness;
 } DXGK_CHILD_CAPABILITIES, *PDXGK_CHILD_CAPABILITIES;
 
+#if defined (_MSC_VER)
 // We don't want to add anything in the Type union which would increase the
 // size beyond the original DXGK_VIDEO_OUTPUT_CAPABILITIES unexpectedly so assert it.
 static_assert( FIELD_OFFSET( DXGK_CHILD_CAPABILITIES, HpdAwareness ) == 12, "Type field has changed size" );
+#endif
 
 typedef enum _DXGK_CHILD_DEVICE_TYPE {
    TypeUninitialized,
@@ -4411,6 +4415,8 @@ typedef struct _DXGK_DP_INTERFACE
     OUT PDXGKDDI_DPSBMTRANSMISSION      DxgkDdiDPSBMTransmission;
 } DXGK_DP_INTERFACE, *PDXGK_DP_INTERFACE;
 
+#if defined (_MSC_VER)
 #pragma warning(pop)
+#endif
 
 #endif // _DISPMPRT_H_
