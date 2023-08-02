@@ -35,10 +35,12 @@
 #define DXGK_KEYWORD_LOG_FLAGS_STABLE_POWER   0x1000
 #define DXGK_KEYWORD_LOG_FLAGS_STABLE_POWER2  0x2000
 
+#if defined (_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable:4200) /* nonstandard extension used : zero-sized array in struct/union */
 #pragma warning(disable:4201) // anonymous unions warning
 #pragma warning(disable:4510 4512 4610 ) // cannot generate default constructor
+#endif
 
 typedef D3DDDI_SEGMENTPREFERENCE DXGK_SEGMENTPREFERENCE;
 
@@ -10249,8 +10251,9 @@ typedef DXGKDDI_FLUSHHWQUEUE         *PDXGKDDI_FLUSHHWQUEUE;
 
 #endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM3_1)
 
-
+#if defined (_MSC_VER)
 #pragma warning(pop)
+#endif
 
 #endif /* _D3DKMDDI_H_ */
 

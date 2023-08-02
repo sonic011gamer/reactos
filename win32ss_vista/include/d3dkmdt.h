@@ -9,10 +9,11 @@
 #define D3DKMDT_H
 
 #include "d3dukmdt.h"
-
+#if defined (_MSC_VER)
 #pragma warning(push)
 #pragma warning(disable:4201) // anonymous unions warning
 #pragma warning(disable:4214)   // nonstandard extension used: bit field types other than int
+#endif
 
 //
 // Available only for Vista (LONGHORN) and later and for
@@ -529,6 +530,7 @@ typedef struct _D3DKMDT_VIDEO_SIGNAL_INFO
 
     union
     {
+#if defined (_MSC_VER)
 #if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM1_3_M1)
         struct
         {
@@ -542,7 +544,7 @@ typedef struct _D3DKMDT_VIDEO_SIGNAL_INFO
 
         } AdditionalSignalInfo;
 #endif // DXGKDDI_INTERFACE_VERSION_WDDM1_3_M1
-
+#endif
         // Scan line ordering (e.g. progressive, interlaced).
         D3DDDI_VIDEO_SIGNAL_SCANLINE_ORDERING  ScanLineOrdering;
     };
@@ -2412,11 +2414,14 @@ typedef struct _D3DKMT_DISPLAY_CAPS
 
 #endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM2_5)
 
+#if defined (_MSC_VER)
 #pragma pack( pop )
+#endif
 
 #endif // (NTDDI_VERSION >= NTDDI_LONGHORN) || defined(D3DKMDT_SPECIAL_MULTIPLATFORM_TOOL)
 
+#if defined (_MSC_VER)
 #pragma warning(pop)
-
+#endif
 
 #endif // D3DKMDT_H

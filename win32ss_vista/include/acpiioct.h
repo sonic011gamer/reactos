@@ -7,7 +7,9 @@
 #pragma warning(push)
 #endif
 
+#if defined (_MSC_VER)
 #pragma warning(disable:4201) // named type definition in parentheses
+#endif
 
 //
 // IRP_MJ_INTERNAL_DEVICE_CONTROL CODES
