@@ -1,16 +1,8 @@
-/*
- * PROJECT:     ReactOS WDDM Alternative Headers
- * LICENSE:     MIT (https://spdx.org/licenses/MIT)
- * PURPOSE:     d3dkmddi minimal header acqusition
- * COPYRIGHT:   Copyright 2023 Justin Miller <justinmiller100@gmail.com>
- */
-#pragma once
-/*
- *  These headers are based off of reversing drivers
- *  and minimizing the public WDK headers ***ONLY***
- */
 
-#include "d3dkmdt.h"
+#ifndef _D3DKMDDI_H_
+#define _D3DKMDDI_H_
+
+#include <d3dkmdt.h>
 
 #ifndef DXGK_ALLOCATIONINFOFLAGS_EXT
 #define DXGK_ALLOCATIONINFOFLAGS_EXT
@@ -42,6 +34,11 @@
 //
 #define DXGK_KEYWORD_LOG_FLAGS_STABLE_POWER   0x1000
 #define DXGK_KEYWORD_LOG_FLAGS_STABLE_POWER2  0x2000
+
+#pragma warning(push)
+#pragma warning(disable:4200) /* nonstandard extension used : zero-sized array in struct/union */
+#pragma warning(disable:4201) // anonymous unions warning
+#pragma warning(disable:4510 4512 4610 ) // cannot generate default constructor
 
 typedef D3DDDI_SEGMENTPREFERENCE DXGK_SEGMENTPREFERENCE;
 
@@ -88,12 +85,24 @@ typedef struct _DXGK_ALLOCATIONLIST
 // The below is to allow drivers to use the updated annotations if they wish,
 // but not yet require all drivers to update their annotations.
 //
+
 #ifdef ENABLE_DXGK_SAL
 #define _Function_class_DXGK_(param)    _Function_class_(param)
 #else
 #define _Function_class_DXGK_(param)
 #endif
 
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Purpose: Define parameter types for SAL-annotated DDI parameters.  These are used by DDI function
+//          name typedefs in dispmprt.h and d3dkmddi.h.  They are not needed in a driver's DDI function
+//          definitions, and should not be used in driver code.
+//
+//  Naming convention: Concatenate all SAL annotations, an underscore, other modifiers
+//                     such as CONST, and the type of the parameter, and use uppercase
+//                     only.
+//
 typedef _In_          BOOLEAN               IN_BOOLEAN;
 typedef _In_          UCHAR                 IN_UCHAR;
 typedef _In_          DEVICE_POWER_STATE    IN_DEVICE_POWER_STATE;
@@ -10239,4 +10248,11 @@ typedef DXGKDDI_NOTIFYWORKSUBMISSION *PDXGKDDI_NOTIFYWORKSUBMISSION;
 typedef DXGKDDI_FLUSHHWQUEUE         *PDXGKDDI_FLUSHHWQUEUE;
 
 #endif // (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WDDM3_1)
+
+
+#pragma warning(pop)
+
+#endif /* _D3DKMDDI_H_ */
+
+
 
