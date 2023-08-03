@@ -968,13 +968,4 @@ KeRemoveSystemServiceTable(IN ULONG Index)
     return TRUE;
 }
 
-/* UNIMPLEMENTED */
-ULONG
-NTAPI
-KeQueryActiveProcessorCountEx(_In_ USHORT GroupNumber)
-{
-    //HACK: Return one to make drivers happy
-    return 1;
-}
-
 /* EOF */
