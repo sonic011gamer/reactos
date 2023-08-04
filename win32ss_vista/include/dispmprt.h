@@ -2763,11 +2763,11 @@ typedef enum _DEBUG_LEVEL {
 //
 
 NTSTATUS
+NTAPI
 DxgkInitialize(
-    _In_ PDRIVER_OBJECT DriverObject,
-    _In_ PUNICODE_STRING RegistryPath,
-    _In_ PDRIVER_INITIALIZATION_DATA DriverInitializationData
-    );
+  _In_ PDRIVER_OBJECT              DriverObject,
+  _In_ PUNICODE_STRING             RegistryPath,
+  _In_ PDRIVER_INITIALIZATION_DATA DriverInitializationData);
 
 #if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WIN8)
 
