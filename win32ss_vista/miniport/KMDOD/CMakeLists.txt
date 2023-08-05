@@ -13,17 +13,17 @@ list(APPEND SOURCE
      blthw.cxx
      memory.cxx)
 
-add_library(kmdod MODULE
+add_library(SampleDisplay MODULE
     ${SOURCE}
     sampledisplay.rc
     )
 
 if(USE_CLANG_CL)
-    target_compile_options(kmdod PRIVATE "-Wno-missing-braces")
+    target_compile_options(SampleDisplay PRIVATE "-Wno-missing-braces")
 endif()
 
-set_module_type(kmdod kernelmodedriver ENTRYPOINT DriverEntry)
-target_link_libraries(kmdod displib)
-add_importlibs(kmdod ntoskrnl hal dxgkrnl)
-add_driver_inf(xboxvmp sampledisplay.inf)
-add_cd_file(TARGET kmdod DESTINATION reactos/system32/drivers NO_CAB FOR all)
+set_module_type(SampleDisplay kernelmodedriver ENTRYPOINT DriverEntry)
+target_link_libraries(SampleDisplay displib)
+add_importlibs(SampleDisplay ntoskrnl hal dxgkrnl)
+add_driver_inf(SampleDisplay sampledisplay.inf)
+add_cd_file(TARGET SampleDisplay DESTINATION reactos/system32/drivers NO_CAB FOR all)
