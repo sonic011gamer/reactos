@@ -2772,6 +2772,7 @@ DxgkInitialize(
 #if (DXGKDDI_INTERFACE_VERSION >= DXGKDDI_INTERFACE_VERSION_WIN8)
 
 NTSTATUS
+NTAPI
 DxgkInitializeDisplayOnlyDriver(
     _In_ PDRIVER_OBJECT DriverObject,
     _In_ PUNICODE_STRING RegistryPath,
