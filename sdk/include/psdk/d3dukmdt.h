@@ -24,7 +24,7 @@
         ((DWORD)(BYTE)(ch0) | ((DWORD)(BYTE)(ch1) << 8) | \
         ((DWORD)(BYTE)(ch2) << 16) | ((DWORD)(BYTE)(ch3) << 24))
 #endif /* MAKEFOURCC */
-
+#define WINED3DKMDT
 typedef enum _D3DDDIFORMAT
 {
     D3DDDIFMT_UNKNOWN                 = 0,

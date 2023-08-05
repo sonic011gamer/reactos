@@ -31,5 +31,7 @@ DxgkInitializeDisplayOnlyDriver(
   _In_ PUNICODE_STRING             RegistryPath,
   _In_ PKMDDOD_INITIALIZATION_DATA KmdDodInitializationData)
 {
+    DPRINT1("DxgkInitializeDisplayOnlyDriver: Enter\n");
+    __debugbreak();
     return 1;
 }

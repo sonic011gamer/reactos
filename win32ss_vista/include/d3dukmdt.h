@@ -30,7 +30,7 @@
 #define DXGKDDI_INTERFACE_VERSION_WDDM3_0    0xF003
 #define DXGKDDI_INTERFACE_VERSION_WDDM3_1   0x10004 /* Windows 11 2023*/
 
-#define VERSION_WDDM_REACTOS DXGKDDI_INTERFACE_VERSION_WIN8
+#define VERSION_WDDM_REACTOS DXGKDDI_INTERFACE_VERSION_WDDM2_0
 
 /* dont really care about switching target for this version */
 
@@ -722,7 +722,7 @@ typedef struct _D3DDDI_SEGMENTPREFERENCE
                 ((DWORD)(BYTE)(ch2) << 16) | ((DWORD)(BYTE)(ch3) << 24 ))
 #endif /* defined(MAKEFOURCC) */
 
-
+#ifndef WINED3DKMDT
 typedef enum _D3DDDIFORMAT
 {
 
@@ -864,7 +864,7 @@ typedef enum _D3DDDIFORMAT
 
     D3DDDIFMT_FORCE_UINT        =0x7fffffff
 } D3DDDIFORMAT;
-
+#endif
 typedef enum D3DDDI_COLOR_SPACE_TYPE
 {
     D3DDDI_COLOR_SPACE_RGB_FULL_G22_NONE_P709             = 0,

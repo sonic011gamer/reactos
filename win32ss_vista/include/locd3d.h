@@ -9,3 +9,4 @@
 #include "d3dkmddi.h"
 #include "d3dkmthk.h"
 #include "dispmprt.h"
+#include "newerrors.h"
