@@ -3997,7 +3997,9 @@ typedef struct _D3DKMT_QUERYSTATISTICS
     };
 } D3DKMT_QUERYSTATISTICS;
 #if defined(_AMD64_)
+#if defined (_MSC_VER)
 C_ASSERT(sizeof(D3DKMT_QUERYSTATISTICS) == 0x328);
+#endif
 #endif
 
 //
