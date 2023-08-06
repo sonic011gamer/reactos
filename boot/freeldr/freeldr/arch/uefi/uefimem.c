@@ -268,6 +268,9 @@ UefiMemGetMemoryMap(ULONG *MemoryMapSize)
     return FreeldrMem;
 }
 
+VOID
+UefiPrintFramebufferData(VOID);
+
 static VOID
 UefiExitBootServices(VOID)
 {
@@ -276,7 +279,7 @@ UefiExitBootServices(VOID)
     EFI_STATUS Status;
     UINTN DescriptorSize;
     UINT32 DescriptorVersion;
-
+    UefiPrintFramebufferData();
     TRACE("Attempting to exit bootsevices\n");
     PUEFI_LoadMemoryMap(&MapKey,
                         &MapSize,

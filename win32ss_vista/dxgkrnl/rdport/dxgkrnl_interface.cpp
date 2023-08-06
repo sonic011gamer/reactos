@@ -49,7 +49,7 @@ RDDM_DxgkCbGetDeviceInformation(_In_ HANDLE DeviceHandle,
     DeviceInfo->MiniportDeviceContext = Extension->MiniportFdo;
     DeviceInfo->PhysicalDeviceObject = Extension->MiniportPdo;
    // DeviceInfo->TranslatedResourceList =
-    __debugbreak();
+   // __debugbreak();
     return STATUS_SUCCESS;
 }
 
@@ -267,10 +267,14 @@ DxgkCbAcquirePostDisplayOwnership(_In_ HANDLE DeviceHandle,
                                   _Out_ PDXGK_DISPLAY_INFORMATION DisplayInfo)
 {
     DPRINT1("DxgkCbAcquirePostDisplayOwnership: Enter with device handle %X\n", DeviceHandle);
-     DisplayInfo->Width = 32;
-    DisplayInfo->Height = 32;
-
-    return 0;
+    DisplayInfo->Width = 800;
+    DisplayInfo->Height = 600;
+    DisplayInfo->Pitch = 4;
+    DisplayInfo->ColorFormat = D3DDDIFMT_R8G8B8;
+    DisplayInfo->PhysicAddress.QuadPart = 0x80000000;
+    DisplayInfo->TargetId = 1;
+    DisplayInfo->AcpiId = 0;
+    return STATUS_SUCCESS;
 }
 
 NTSTATUS
@@ -354,7 +358,6 @@ RDDM_SetupDxgkrnl(
     DxgkrnlInterface = DxgkrnlInterfaceLoc;
     DPRINT1("Targetting version: %X\n", DxgkrnlInterface.Version);
     DPRINT1("Dxgkrnl has started\n\n");
-    __debugbreak();
    // RDDM_AddDeviceMapLink();
     return STATUS_SUCCESS;
 }

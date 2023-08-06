@@ -57,12 +57,12 @@ UefiInitalizeVideo(VOID)
 VOID
 UefiPrintFramebufferData(VOID)
 {
-    TRACE("Framebuffer BaseAddress       : %X\n", framebufferData.BaseAddress);
-    TRACE("Framebuffer BufferSize        : %X\n", framebufferData.BufferSize);
-    TRACE("Framebuffer ScreenWidth       : %d\n", framebufferData.ScreenWidth);
-    TRACE("Framebuffer ScreenHeight      : %d\n", framebufferData.ScreenHeight);
-    TRACE("Framebuffer PixelsPerScanLine : %d\n", framebufferData.PixelsPerScanLine);
-    TRACE("Framebuffer PixelFormat       : %d\n", framebufferData.PixelFormat);
+    printf("Framebuffer BaseAddress       : %X\n", framebufferData.BaseAddress);
+    printf("Framebuffer BufferSize        : %X\n", framebufferData.BufferSize);
+    printf("Framebuffer ScreenWidth       : %d\n", framebufferData.ScreenWidth);
+    printf("Framebuffer ScreenHeight      : %d\n", framebufferData.ScreenHeight);
+    printf("Framebuffer PixelsPerScanLine : %d\n", framebufferData.PixelsPerScanLine);
+    printf("Framebuffer PixelFormat       : %d\n", framebufferData.PixelFormat);
 }
 
 static ULONG
