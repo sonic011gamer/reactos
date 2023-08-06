@@ -34,3 +34,7 @@ typedef struct _DXGKRNL_PRIVATE_EXTENSION
 } DXGKRNL_PRIVATE_EXTENSION, *PDXGKRNL_PRIVATE_EXTENSION;
 
 #include "rdport.h"
+
+#if __cplusplus
+#include "classes/dxgadapter.hxx"
+#endif
