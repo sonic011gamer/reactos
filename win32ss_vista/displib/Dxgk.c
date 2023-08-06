@@ -57,7 +57,7 @@ DxgkInitialize(
   _In_ PUNICODE_STRING             RegistryPath,
   _In_ PDRIVER_INITIALIZATION_DATA DriverInitializationData)
 {
-    /* This is internal and gets filled out VIA a IOCTRL - Thank you Vista RTM Symbols */
+    /* This is internal and gets filled out VIA a IOCTRL - Thank you Vista RTM Symbols - and windows 8*/
     NTSTATUS (NTAPI *DpiInitialize)(PDRIVER_OBJECT, PUNICODE_STRING, PDRIVER_INITIALIZATION_DATA);
     DRIVER_INITIALIZATION_DATA *LocDriverInitializationData;
     UNICODE_STRING DxgkrnlServiceName;

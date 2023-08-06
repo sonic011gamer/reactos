@@ -9,6 +9,12 @@
 //#define NDEBUG
 #include <debug.h>
 
+NTSTATUS
+NTAPI
+DpiKmdDodInitialize(PDRIVER_OBJECT DriverObject,
+                    PUNICODE_STRING SourceString,
+                    PKMDDOD_INITIALIZATION_DATA KmdDodInitializationData);
+
 /**
  * @brief The first real transaction between WDDM Miniport and Dxgkrnl, this internal routine
  * gets called by Displib and passes the callback list into a internal struct
@@ -60,7 +66,7 @@ RdPort_InitializeMiniport(PDRIVER_OBJECT DriverObject, PUNICODE_STRING SourceStr
     }
 
     /* Fill out the internal structure - WIP */
-    DriverObjectExtension->DriverInitData = *DriverInitData;
+    DriverObjectExtension->DriverInitData = (PVOID)DriverInitData;
     DriverObjectExtension->DriverObject = DriverObject;
 
     /* Fill out the public dispatch routines */
@@ -114,6 +120,17 @@ DxgkInternalDeviceControl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
         case IOCTL_VIDEO_I_AM_REACTOS:
             DPRINT1("This Dxgkrnl is from reactos\n");
             Irp->IoStatus.Status = STATUS_SUCCESS;
+            break;
+        case 0x230047:
+            /*
+             * Grab a reference to the InitializeMiniport function so we can acquire the Miniport
+             * callback list and continue setup
+             */
+            OutputBuffer = (PVOID*)Irp->UserBuffer;
+            Irp->IoStatus.Information = 0;
+            Irp->IoStatus.Status = STATUS_SUCCESS;
+            *OutputBuffer = (PVOID)DpiKmdDodInitialize;
+            DPRINT("0x230047 - Queued DpiKmdDodInitialize up\n");
             break;
         default:
             DPRINT("RdPort_InternalIoctl: unknown IOCTRL Code: %X\n", IoControlCode);
@@ -192,3 +209,8 @@ DriverEntry(
     return Status;
 }
 
+
+
+/* 
+ * https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/d3dkmdt/ns-d3dkmdt-_dxgk_display_information
+ */

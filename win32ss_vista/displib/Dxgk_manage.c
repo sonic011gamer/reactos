@@ -17,7 +17,8 @@ ULONG
 RDDM_FindIoControlCode()
 {
     /* For now just return the Vista-7 REGISTER IOCTRL */
-    return IOCTL_VIDEO_DDI_FUNC_REGISTER;
+    //return IOCTL_VIDEO_DDI_FUNC_REGISTER;
+    return 0x230047;
 }
 
 /* Something failed, unload driver */
@@ -28,3 +29,4 @@ RDDM_UnloadDxgkrnl(_In_ PUNICODE_STRING DxgkrnlServiceName)
                          L"\\Registry\\Machine\\System\\CurrentControlSet\\Services\\DXGKrnl");
     ZwUnloadDriver(DxgkrnlServiceName);
 }
+

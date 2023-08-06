@@ -32,6 +32,9 @@ DxgkInitializeDisplayOnlyDriver(
   _In_ PKMDDOD_INITIALIZATION_DATA KmdDodInitializationData)
 {
     DPRINT1("DxgkInitializeDisplayOnlyDriver: Enter\n");
-    __debugbreak();
-    return 1;
+
+    /* seems kinda stupid i know i know, but why waste code lol? it's literally just moving a pointer around */
+    return DxgkInitialize(DriverObject,
+                          RegistryPath,
+                          (PDRIVER_INITIALIZATION_DATA)KmdDodInitializationData);
 }

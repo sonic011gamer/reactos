@@ -20,13 +20,12 @@
 
 extern "C"
 NTSTATUS
+NTAPI
 DriverEntry(
     _In_  DRIVER_OBJECT*  pDriverObject,
     _In_  UNICODE_STRING* pRegistryPath)
 {
-    __debugbreak();
     PAGED_CODE();
-
 
     // Initialize DDI function pointers and dxgkrnl
     KMDDOD_INITIALIZATION_DATA InitialData = {0};

@@ -8,6 +8,7 @@ spec2def(dxgkrnl.sys dxgkrnl.spec ADD_IMPORTLIB)
 list(APPEND SOURCE
      rdport/rdioctrl.cpp
      rdport/rdport.cpp
+     kmdod.cpp
      entry.cpp)
 
 add_library(dxgkrnl MODULE
