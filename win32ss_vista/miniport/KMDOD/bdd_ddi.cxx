@@ -9,7 +9,7 @@
 
 #include "BDD.hxx"
 
-
+#include <debug.h>
 #pragma code_seg(push)
 #pragma code_seg("INIT")
 // BEGIN: Init Code
@@ -19,9 +19,10 @@
 //
 
 extern "C"
+{
 NTSTATUS
 NTAPI
-DriverEntry(
+CppDriverEntry(
     _In_  DRIVER_OBJECT*  pDriverObject,
     _In_  UNICODE_STRING* pRegistryPath)
 {
@@ -62,6 +63,7 @@ DriverEntry(
     InitialData.DxgkDdiSystemDisplayWrite           = BddDdiSystemDisplayWrite;
 
     NTSTATUS Status = DxgkInitializeDisplayOnlyDriver(pDriverObject, pRegistryPath, &InitialData);
+    DPRINT1("DxgkInitializeDisplayOnlyDriver: Finished\n");
     if (!NT_SUCCESS(Status))
     {
         BDD_LOG_ERROR1("DxgkInitializeDisplayOnlyDriver failed with Status: 0x%I64x", Status);
@@ -70,6 +72,7 @@ DriverEntry(
 
 
     return Status;
+}
 }
 // END: Init Code
 #pragma code_seg(pop)
@@ -87,12 +90,16 @@ BddDdiUnload(VOID)
     PAGED_CODE();
 }
 
+
 NTSTATUS
+NTAPI
 BddDdiAddDevice(
     _In_ DEVICE_OBJECT* pPhysicalDeviceObject,
     _Outptr_ PVOID*  ppDeviceContext)
 {
     PAGED_CODE();
+    DPRINT1("BddDdiAddDevice: Entry\n");
+    __debugbreak();
 
     if ((pPhysicalDeviceObject == NULL) ||
         (ppDeviceContext == NULL))
@@ -133,6 +140,7 @@ BddDdiRemoveDevice(
 }
 
 NTSTATUS
+NTAPI
 BddDdiStartDevice(
     _In_  VOID*              pDeviceContext,
     _In_  DXGK_START_INFO*   pDxgkStartInfo,

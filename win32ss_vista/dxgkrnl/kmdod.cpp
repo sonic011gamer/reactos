@@ -54,7 +54,7 @@ DpiKmdDodInitialize(PDRIVER_OBJECT DriverObject,
     }
 
     /* Fill out the internal structure - WIP */
-    DriverObjectExtension->DriverInitData = (PVOID)KmdDodInitializationData;
+    DriverObjectExtension->DriverInitData = *KmdDodInitializationData;
     DriverObjectExtension->DriverObject = DriverObject;
 
     /* Fill out the public dispatch routines */
@@ -67,9 +67,9 @@ DpiKmdDodInitialize(PDRIVER_OBJECT DriverObject,
     DriverObject->MajorFunction[IRP_MJ_SYSTEM_CONTROL] = (PDRIVER_DISPATCH)RdPort_DispatchSystemControl;
     DriverObject->MajorFunction[IRP_MJ_CLOSE] = (PDRIVER_DISPATCH)RdPort_DispatchCloseDevice;
 
-    DriverExtend->AddDevice = RdPort_AddDevice;
+    DriverExtend->AddDevice = RdPortAddDevice;
     DriverObject->DriverUnload = (PDRIVER_UNLOAD)RdPort_DriverUnload;
-    DPRINT("RdPort_InitializeMiniport: Finished\n");
+    DPRINT("DpiKmdDodInitialize: Finished\n");
     return STATUS_SUCCESS;
     }
 

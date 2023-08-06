@@ -38,8 +38,8 @@ RdPort_DispatchCloseDevice(_In_ PDEVICE_OBJECT DeviceObject);
 
 NTSTATUS
 NTAPI
-RdPort_AddDevice(_In_    DRIVER_OBJECT *DriverObject,
-                 _Inout_ DEVICE_OBJECT *PhysicalDeviceObject);
+RdPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
+                _Inout_ DEVICE_OBJECT *PhysicalDeviceObject);
 NTSTATUS
 NTAPI
 RdPort_DriverUnload(_In_ PDRIVER_OBJECT DriverObject);

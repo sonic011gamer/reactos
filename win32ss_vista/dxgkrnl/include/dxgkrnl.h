@@ -26,7 +26,7 @@
 /* FIXME: This needs some real investigation - this is this stupid  */
 typedef struct _DXGKRNL_PRIVATE_EXTENSION
 {
-	PVOID DriverInitData;
+	KMDDOD_INITIALIZATION_DATA DriverInitData;
 	PDRIVER_OBJECT DriverObject;
     PDEVICE_OBJECT MiniportFdo;
     PDEVICE_OBJECT MiniportPdo;

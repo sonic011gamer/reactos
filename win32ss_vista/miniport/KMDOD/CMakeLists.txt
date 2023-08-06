@@ -8,6 +8,7 @@ list(APPEND SOURCE
      bdd_ddi.cxx
      bdd_dmm.cxx
      bdd_util.cxx
+     entry.c
      bdd.cxx
      bltfuncs.cxx
      blthw.cxx

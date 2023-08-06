@@ -66,7 +66,7 @@ RdPort_InitializeMiniport(PDRIVER_OBJECT DriverObject, PUNICODE_STRING SourceStr
     }
 
     /* Fill out the internal structure - WIP */
-    DriverObjectExtension->DriverInitData = (PVOID)DriverInitData;
+    //DriverObjectExtension->DriverInitData = (PVOID)DriverInitData;
     DriverObjectExtension->DriverObject = DriverObject;
 
     /* Fill out the public dispatch routines */
@@ -79,12 +79,19 @@ RdPort_InitializeMiniport(PDRIVER_OBJECT DriverObject, PUNICODE_STRING SourceStr
     DriverObject->MajorFunction[IRP_MJ_SYSTEM_CONTROL] = (PDRIVER_DISPATCH)RdPort_DispatchSystemControl;
     DriverObject->MajorFunction[IRP_MJ_CLOSE] = (PDRIVER_DISPATCH)RdPort_DispatchCloseDevice;
 
-    DriverExtend->AddDevice = RdPort_AddDevice;
+    DriverExtend->AddDevice = RdPortAddDevice;
     DriverObject->DriverUnload = (PDRIVER_UNLOAD)RdPort_DriverUnload;
     DPRINT("RdPort_InitializeMiniport: Finished\n");
     return STATUS_SUCCESS;
 }
 
+NTSTATUS
+NTAPI
+DpiStartAdapter()
+{
+    DPRINT1("DpiStartAdapter: EnryPoint\n");
+    return 0;
+}
 /*
  * @ HALF-IMPLEMENTED
  */
@@ -119,6 +126,7 @@ DxgkInternalDeviceControl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
             break;
         case IOCTL_VIDEO_I_AM_REACTOS:
             DPRINT1("This Dxgkrnl is from reactos\n");
+            DpiStartAdapter();
             Irp->IoStatus.Status = STATUS_SUCCESS;
             break;
         case 0x230047:

@@ -13,9 +13,8 @@
  * This should probably be inside of the SDK/LIB/DRIVERS, but I'm keeping it here
  * due to the need of the LDDM headers :).
  */
-
-static PDXGKDDI_START_DEVICE                   PublicStartDevice;
-static DXGKRNL_INTERFACE                       PublicDxgkrnlInterface;
+PDXGKDDI_START_DEVICE                   PublicStartDevice;
+DXGKRNL_INTERFACE                       PublicDxgkrnlInterface;
 
 /*
  * This internally replaces the StartAdapter routine in the function pointer list
@@ -23,6 +22,7 @@ static DXGKRNL_INTERFACE                       PublicDxgkrnlInterface;
  * interface and break into the debugger before going into a WDDM Miniport.
  */
 NTSTATUS
+NTAPI
 RDDM_StartDevice(
     _In_  const PVOID          MiniportDeviceContext,
     _In_  PDXGK_START_INFO     DxgkStartInfo,
@@ -138,6 +138,8 @@ DxgkInitialize(
           PublicStartDevice = LocDriverInitializationData->DxgkDdiStartDevice;
           LocDriverInitializationData->DxgkDdiStartDevice = (PDXGKDDI_START_DEVICE)RDDM_StartDevice;
           Status = DpiInitialize(DriverObject, RegistryPath, LocDriverInitializationData);
+          DPRINT1("Displib: return from DpiInitialize Success\n");
+          return Status;
         }
         return Status;
     }

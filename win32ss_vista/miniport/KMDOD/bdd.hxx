@@ -411,6 +411,7 @@ BddDdiUnload(VOID);
 // is replaced by the single commented line below:
 // DXGKDDI_ADD_DEVICE BddDdiAddDevice;
 NTSTATUS
+NTAPI
 BddDdiAddDevice(
     _In_ DEVICE_OBJECT* pPhysicalDeviceObject,
     _Outptr_ PVOID*  ppDeviceContext);
@@ -420,6 +421,7 @@ BddDdiRemoveDevice(
     _In_  VOID* pDeviceContext);
 
 NTSTATUS
+NTAPI
 BddDdiStartDevice(
     _In_  VOID*              pDeviceContext,
     _In_  DXGK_START_INFO*   pDxgkStartInfo,

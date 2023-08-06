@@ -1864,6 +1864,7 @@ typedef
 _Function_class_DXGK_(DXGKDDI_ADD_DEVICE)
 _IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_ADD_DEVICE(
     IN_CONST_PDEVICE_OBJECT     PhysicalDeviceObject,
     OUT_PPVOID                  MiniportDeviceContext
@@ -1874,6 +1875,7 @@ typedef
 _Function_class_DXGK_(DXGKDDI_START_DEVICE)
 _IRQL_requires_DXGK_(PASSIVE_LEVEL)
 NTSTATUS
+NTAPI
 DXGKDDI_START_DEVICE(
     IN_CONST_PVOID          MiniportDeviceContext,
     IN_PDXGK_START_INFO     DxgkStartInfo,
