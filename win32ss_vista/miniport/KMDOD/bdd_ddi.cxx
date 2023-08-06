@@ -19,7 +19,6 @@
 //
 
 extern "C"
-{
 NTSTATUS
 NTAPI
 CppDriverEntry(
@@ -63,7 +62,6 @@ CppDriverEntry(
     InitialData.DxgkDdiSystemDisplayWrite           = BddDdiSystemDisplayWrite;
 
     NTSTATUS Status = DxgkInitializeDisplayOnlyDriver(pDriverObject, pRegistryPath, &InitialData);
-    DPRINT1("DxgkInitializeDisplayOnlyDriver: Finished\n");
     if (!NT_SUCCESS(Status))
     {
         BDD_LOG_ERROR1("DxgkInitializeDisplayOnlyDriver failed with Status: 0x%I64x", Status);
@@ -73,7 +71,7 @@ CppDriverEntry(
 
     return Status;
 }
-}
+
 // END: Init Code
 #pragma code_seg(pop)
 
@@ -89,7 +87,6 @@ BddDdiUnload(VOID)
 {
     PAGED_CODE();
 }
-
 
 NTSTATUS
 NTAPI

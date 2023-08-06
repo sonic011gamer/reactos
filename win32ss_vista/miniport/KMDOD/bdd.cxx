@@ -9,7 +9,7 @@
 
 
 #include "BDD.hxx"
-
+#include <debug.h>
 #pragma code_seg("PAGE")
 
 
@@ -48,16 +48,12 @@ NTSTATUS BASIC_DISPLAY_DRIVER::StartDevice(_In_  DXGK_START_INFO*   pDxgkStartIn
 {
     PAGED_CODE();
 
-    BDD_ASSERT(pDxgkStartInfo != NULL);
-    BDD_ASSERT(pDxgkInterface != NULL);
-    BDD_ASSERT(pNumberOfViews != NULL);
-    BDD_ASSERT(pNumberOfChildren != NULL);
-
-    RtlCopyMemory(&m_StartInfo, pDxgkStartInfo, sizeof(m_StartInfo));
+    //RtlCopyMemory(&m_StartInfo, pDxgkStartInfo, sizeof(m_StartInfo));
     RtlCopyMemory(&m_DxgkInterface, pDxgkInterface, sizeof(m_DxgkInterface));
     RtlZeroMemory(m_CurrentModes, sizeof(m_CurrentModes));
     m_CurrentModes[0].DispInfo.TargetId = D3DDDI_ID_UNINITIALIZED;
 
+    DPRINT1("BASIC_DISPLAY_DRIVER::StartDevice: calling DxgkCbGetDeviceInformation\n");
     // Get device information from OS.
     NTSTATUS Status = m_DxgkInterface.DxgkCbGetDeviceInformation(m_DxgkInterface.DeviceHandle, &m_DeviceInfo);
     if (!NT_SUCCESS(Status))

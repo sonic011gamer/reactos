@@ -16,7 +16,7 @@ NTAPI
 DpiKmdDodInitialize(PDRIVER_OBJECT DriverObject,
                     PUNICODE_STRING SourceString,
                     PKMDDOD_INITIALIZATION_DATA KmdDodInitializationData);
-
+extern DXGKRNL_INTERFACE DxgkrnlInterface;
 /**
  * @brief The first real transaction between WDDM Miniport and Dxgkrnl, this internal routine
  * gets called by Displib and passes the callback list into a internal struct
@@ -86,7 +86,7 @@ RdPort_InitializeMiniport(PDRIVER_OBJECT DriverObject, PUNICODE_STRING SourceStr
     DPRINT("RdPort_InitializeMiniport: Finished\n");
     return STATUS_SUCCESS;
 }
-extern DXGKRNL_INTERFACE DxgkrnlInterface;
+
 NTSTATUS
 NTAPI
 DpiStartAdapter()
@@ -196,6 +196,12 @@ DxgkCreateClose(PDEVICE_OBJECT DeviceObject, PIRP Irp)
     return STATUS_SUCCESS;
 }
 
+NTSTATUS
+NTAPI
+RDDM_SetupDxgkrnl(
+    IN PDRIVER_OBJECT DriverObject,
+    IN PUNICODE_STRING RegistryPath);
+
 EXTERN_C
 NTSTATUS
 NTAPI 
@@ -228,7 +234,7 @@ DriverEntry(
 
     if (!NT_SUCCESS(Status))
         DPRINT1("DriverEntry Failed with status %X", Status);
-
+    RDDM_SetupDxgkrnl(DriverObject, RegistryPath);
     return Status;
 }
 

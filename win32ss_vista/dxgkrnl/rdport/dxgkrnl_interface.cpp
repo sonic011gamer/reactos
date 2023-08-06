@@ -45,6 +45,7 @@ RDDM_DxgkCbGetDeviceInformation(_In_ HANDLE DeviceHandle,
                                 _Out_ PDXGK_DEVICE_INFO DeviceInfo)
 {
 
+    DPRINT1("RDDM_DxgkCbGetDeviceInformation: Called\n");
     DeviceInfo->MiniportDeviceContext = Extension->MiniportFdo;
     DeviceInfo->PhysicalDeviceObject = Extension->MiniportPdo;
    // DeviceInfo->TranslatedResourceList =
@@ -266,8 +267,19 @@ DxgkCbAcquirePostDisplayOwnership(_In_ HANDLE DeviceHandle,
                                   _Out_ PDXGK_DISPLAY_INFORMATION DisplayInfo)
 {
     DPRINT1("DxgkCbAcquirePostDisplayOwnership: Enter with device handle %X\n", DeviceHandle);
-    DisplayInfo = {0};
-    DisplayInfo->Width = 10;
+     DisplayInfo->Width = 32;
+    DisplayInfo->Height = 32;
+
+    return 0;
+}
+
+NTSTATUS
+APIENTRY
+CALLBACK
+HandleUnimplemented()
+{
+    UNIMPLEMENTED;
+    __debugbreak();
     return 0;
 }
 /*
@@ -280,46 +292,47 @@ RDDM_SetupDxgkrnl(
     IN PDRIVER_OBJECT DriverObject,
     IN PUNICODE_STRING RegistryPath)
 {
-    DxgkrnlInterface.Size = sizeof(DXGKRNL_INTERFACE);
-    DxgkrnlInterface.Version = DXGKDDI_INTERFACE_VERSION_VISTA_SP1;
-    DxgkrnlInterface.DeviceHandle = (HANDLE)DriverObject;
-    DxgkrnlInterface.DxgkCbEvalAcpiMethod = RDDM_DxgkCbEvalAcpiMethod;
-    DxgkrnlInterface.DxgkCbGetDeviceInformation = RDDM_DxgkCbGetDeviceInformation;
-    DxgkrnlInterface.DxgkCbIndicateChildStatus = RDDM_DxgkCbIndicateChildStatus;
-    DxgkrnlInterface.DxgkCbMapMemory = RDDM_DxgkCbMapMemory;
-    DxgkrnlInterface.DxgkCbQueueDpc = RDDM_DxgkCbQueueDpc;
-    DxgkrnlInterface.DxgkCbQueryServices = RDDM_DxgkCbQueryServices;
-    DxgkrnlInterface.DxgkCbReadDeviceSpace = RDDM_DxgkCbReadDeviceSpace;
-    DxgkrnlInterface.DxgkCbSynchronizeExecution = RDDM_DxgkCbSynchronizeExecution;
-    DxgkrnlInterface.DxgkCbUnmapMemory = RDDM_DxgkCbUnmapMemory;
-    DxgkrnlInterface.DxgkCbWriteDeviceSpace = RDDM_DxgkCbWriteDeviceSpace;
-    DxgkrnlInterface.DxgkCbIsDevicePresent = RDDM_DxgkCbIsDevicePresent;
-    DxgkrnlInterface.DxgkCbGetHandleData = RDDM_DxgkCbGetHandleData;
-    DxgkrnlInterface.DxgkCbGetHandleParent = RDDM_DxgkCbGetHandleParent;
-    DxgkrnlInterface.DxgkCbEnumHandleChildren = RDDM_DxgkCbEnumHandleChildren;
-    DxgkrnlInterface.DxgkCbNotifyInterrupt = RDDM_DxgkCbNotifyInterrupt;
-    DxgkrnlInterface.DxgkCbNotifyDpc = RDDM_DxgkCbNotifyDpc;
-    DxgkrnlInterface.DxgkCbQueryVidPnInterface = RDDM_DxgkCbQueryVidPnInterface;
-    DxgkrnlInterface.DxgkCbQueryMonitorInterface = RDDM_DxgkCbQueryMonitorInterface;
-    DxgkrnlInterface.DxgkCbGetCaptureAddress = RDDM_DxgkCbGetCaptureAddress;
-    DxgkrnlInterface.DxgkCbLogEtwEvent = RDDM_DxgkCbLogEtwEvent;
+    DXGKRNL_INTERFACE DxgkrnlInterfaceLoc = {0};
+    DxgkrnlInterfaceLoc.Size = sizeof(DXGKRNL_INTERFACE);
+    DxgkrnlInterfaceLoc.Version = DXGKDDI_INTERFACE_VERSION_VISTA_SP1;
+    DxgkrnlInterfaceLoc.DeviceHandle = (HANDLE)DriverObject;
+    DxgkrnlInterfaceLoc.DxgkCbEvalAcpiMethod = RDDM_DxgkCbEvalAcpiMethod;
+    DxgkrnlInterfaceLoc.DxgkCbGetDeviceInformation = RDDM_DxgkCbGetDeviceInformation;
+    DxgkrnlInterfaceLoc.DxgkCbIndicateChildStatus = RDDM_DxgkCbIndicateChildStatus;
+    DxgkrnlInterfaceLoc.DxgkCbMapMemory = RDDM_DxgkCbMapMemory;
+    DxgkrnlInterfaceLoc.DxgkCbQueueDpc = RDDM_DxgkCbQueueDpc;
+    DxgkrnlInterfaceLoc.DxgkCbQueryServices = RDDM_DxgkCbQueryServices;
+    DxgkrnlInterfaceLoc.DxgkCbReadDeviceSpace = RDDM_DxgkCbReadDeviceSpace;
+    DxgkrnlInterfaceLoc.DxgkCbSynchronizeExecution = RDDM_DxgkCbSynchronizeExecution;
+    DxgkrnlInterfaceLoc.DxgkCbUnmapMemory = RDDM_DxgkCbUnmapMemory;
+    DxgkrnlInterfaceLoc.DxgkCbWriteDeviceSpace = RDDM_DxgkCbWriteDeviceSpace;
+    DxgkrnlInterfaceLoc.DxgkCbIsDevicePresent = RDDM_DxgkCbIsDevicePresent;
+    DxgkrnlInterfaceLoc.DxgkCbGetHandleData = RDDM_DxgkCbGetHandleData;
+    DxgkrnlInterfaceLoc.DxgkCbGetHandleParent = RDDM_DxgkCbGetHandleParent;
+    DxgkrnlInterfaceLoc.DxgkCbEnumHandleChildren = RDDM_DxgkCbEnumHandleChildren;
+    DxgkrnlInterfaceLoc.DxgkCbNotifyInterrupt = RDDM_DxgkCbNotifyInterrupt;
+    DxgkrnlInterfaceLoc.DxgkCbNotifyDpc = RDDM_DxgkCbNotifyDpc;
+    DxgkrnlInterfaceLoc.DxgkCbQueryVidPnInterface = RDDM_DxgkCbQueryVidPnInterface;
+    DxgkrnlInterfaceLoc.DxgkCbQueryMonitorInterface = RDDM_DxgkCbQueryMonitorInterface;
+    DxgkrnlInterfaceLoc.DxgkCbGetCaptureAddress = RDDM_DxgkCbGetCaptureAddress;
+    DxgkrnlInterfaceLoc.DxgkCbLogEtwEvent = RDDM_DxgkCbLogEtwEvent;
 
-    DxgkrnlInterface.DxgkCbCreateContextAllocation = (DXGKCB_CREATECONTEXTALLOCATION          )NULL;
-    DxgkrnlInterface.DxgkCbDestroyContextAllocation = (DXGKCB_DESTROYCONTEXTALLOCATION         )NULL;
-    DxgkrnlInterface.DxgkCbSetPowerComponentActive = (DXGKCB_SETPOWERCOMPONENTACTIVE          )NULL;
-    DxgkrnlInterface.DxgkCbSetPowerComponentIdle = (DXGKCB_SETPOWERCOMPONENTIDLE            )NULL;
-    DxgkrnlInterface.DxgkCbAcquirePostDisplayOwnership = DxgkCbAcquirePostDisplayOwnership;
-    DxgkrnlInterface.DxgkCbPowerRuntimeControlRequest = (DXGKCB_POWERRUNTIMECONTROLREQUEST       )NULL;
-    DxgkrnlInterface.DxgkCbSetPowerComponentLatency = (DXGKCB_SETPOWERCOMPONENTLATENCY         )NULL;
-    DxgkrnlInterface.DxgkCbSetPowerComponentResidency = (DXGKCB_SETPOWERCOMPONENTRESIDENCY       )NULL;
-    DxgkrnlInterface.DxgkCbCompleteFStateTransition = (DXGKCB_COMPLETEFSTATETRANSITION         )NULL;
-    DxgkrnlInterface.DxgkCbCompletePStateTransition = (DXGKCB_COMPLETEPSTATETRANSITION         )NULL;
-    DxgkrnlInterface.DxgkCbMapContextAllocation = (DXGKCB_MAPCONTEXTALLOCATION             )NULL;
-    DxgkrnlInterface.DxgkCbUpdateContextAllocation = (DXGKCB_UPDATECONTEXTALLOCATION          )NULL;
-    DxgkrnlInterface.DxgkCbReserveGpuVirtualAddressRange = (DXGKCB_RESERVEGPUVIRTUALADDRESSRANGE    )NULL;
-    DxgkrnlInterface.DxgkCbAcquireHandleData = (DXGKCB_ACQUIREHANDLEDATA                )NULL;
-    DxgkrnlInterface.DxgkCbReleaseHandleData = (DXGKCB_RELEASEHANDLEDATA                )NULL;
-    DxgkrnlInterface.DxgkCbHardwareContentProtectionTeardown = (DXGKCB_HARDWARECONTENTPROTECTIONTEARDOWN)NULL;
+    DxgkrnlInterfaceLoc.DxgkCbCreateContextAllocation = (DXGKCB_CREATECONTEXTALLOCATION          )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbDestroyContextAllocation = (DXGKCB_DESTROYCONTEXTALLOCATION         )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbSetPowerComponentActive = (DXGKCB_SETPOWERCOMPONENTACTIVE          )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbSetPowerComponentIdle = (DXGKCB_SETPOWERCOMPONENTIDLE            )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbAcquirePostDisplayOwnership = DxgkCbAcquirePostDisplayOwnership;
+    DxgkrnlInterfaceLoc.DxgkCbPowerRuntimeControlRequest = (DXGKCB_POWERRUNTIMECONTROLREQUEST       )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbSetPowerComponentLatency = (DXGKCB_SETPOWERCOMPONENTLATENCY         )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbSetPowerComponentResidency = (DXGKCB_SETPOWERCOMPONENTRESIDENCY       )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbCompleteFStateTransition = (DXGKCB_COMPLETEFSTATETRANSITION         )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbCompletePStateTransition = (DXGKCB_COMPLETEPSTATETRANSITION         )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbMapContextAllocation = (DXGKCB_MAPCONTEXTALLOCATION             )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbUpdateContextAllocation = (DXGKCB_UPDATECONTEXTALLOCATION          )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbReserveGpuVirtualAddressRange = (DXGKCB_RESERVEGPUVIRTUALADDRESSRANGE    )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbAcquireHandleData = (DXGKCB_ACQUIREHANDLEDATA                )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbReleaseHandleData = (DXGKCB_RELEASEHANDLEDATA                )HandleUnimplemented;
+    DxgkrnlInterfaceLoc.DxgkCbHardwareContentProtectionTeardown = (DXGKCB_HARDWARECONTENTPROTECTIONTEARDOWN)HandleUnimplemented;
 #if 0
     DXGKCB_CREATECONTEXTALLOCATION           DxgkCbCreateContextAllocation;
     DXGKCB_DESTROYCONTEXTALLOCATION          DxgkCbDestroyContextAllocation;
@@ -338,8 +351,10 @@ RDDM_SetupDxgkrnl(
     DXGKCB_RELEASEHANDLEDATA                 DxgkCbReleaseHandleData;
     DXGKCB_HARDWARECONTENTPROTECTIONTEARDOWN DxgkCbHardwareContentProtectionTeardown;
 #endif
+    DxgkrnlInterface = DxgkrnlInterfaceLoc;
     DPRINT1("Targetting version: %X\n", DxgkrnlInterface.Version);
     DPRINT1("Dxgkrnl has started\n\n");
+    __debugbreak();
    // RDDM_AddDeviceMapLink();
     return STATUS_SUCCESS;
 }
