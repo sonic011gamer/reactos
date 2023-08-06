@@ -9,6 +9,8 @@
 //#define NDEBUG
 #include <debug.h>
 
+extern PDXGKRNL_PRIVATE_EXTENSION Extension;
+
 NTSTATUS
 NTAPI
 DpiKmdDodInitialize(PDRIVER_OBJECT DriverObject,
@@ -84,13 +86,26 @@ RdPort_InitializeMiniport(PDRIVER_OBJECT DriverObject, PUNICODE_STRING SourceStr
     DPRINT("RdPort_InitializeMiniport: Finished\n");
     return STATUS_SUCCESS;
 }
-
+extern DXGKRNL_INTERFACE DxgkrnlInterface;
 NTSTATUS
 NTAPI
 DpiStartAdapter()
 {
+    NTSTATUS Status;
+    DXGK_START_INFO     DxgkStartInfo = {0};
+    ULONG              NumberOfVideoPresentSources;
+    ULONG              NumberOfChildren;
     DPRINT1("DpiStartAdapter: EnryPoint\n");
-    return 0;
+    Status = Extension->DriverInitData.DxgkDdiStartDevice(Extension->MiniportContext, &DxgkStartInfo,
+                                                 &DxgkrnlInterface, &NumberOfVideoPresentSources, &NumberOfChildren);
+    if (Status == STATUS_SUCCESS)
+    {
+        DPRINT1("DxgkDdiStartDevice: Device has started\n");
+    }
+    else{
+        DPRINT1("DxgkDdiStartDevice: Failed with Status %d\n", Status);
+    }
+    return Status;
 }
 /*
  * @ HALF-IMPLEMENTED

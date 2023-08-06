@@ -9,6 +9,9 @@
 //#define NDEBUG
 #include <debug.h>
 
+extern PDXGKDDI_START_DEVICE                   PublicStartDevice;
+extern DXGKRNL_INTERFACE                       PublicDxgkrnlInterface;
+
 NTSTATUS
 NTAPI
 RDDM_StartDevice(
@@ -17,8 +20,8 @@ RDDM_StartDevice(
     _In_  PDXGKRNL_INTERFACE   DxgkInterface,
     _Out_ PULONG               NumberOfVideoPresentSources,
     _Out_ PULONG               NumberOfChildren);
-extern PDXGKDDI_START_DEVICE                   PublicStartDevice;
-extern DXGKRNL_INTERFACE                       PublicDxgkrnlInterface;
+
+
 /*
  * TODO: Implement windows 8+ style initalization for
  * WDDM miniport drivers.

@@ -171,7 +171,6 @@ RdPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
     Extension->MiniportFdo = Fdo;
     Extension->MiniportPdo = PhysicalDeviceObject;
     DPRINT1("RdPortAddDevice: Created Device\n");
-    __debugbreak();
     return 0;
 }
 
