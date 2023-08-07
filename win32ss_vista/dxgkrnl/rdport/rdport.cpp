@@ -41,3 +41,18 @@ RdPort_SetupGlobalState()
     /* doesnt matter for our baby dxgkrnl yet */
     return STATUS_SUCCESS;
 }
+
+extern DXGGLOBAL* GlobalDxgGlobal;
+
+NTSTATUS
+NTAPI
+DxgkAddAdapter(PDEVICE_OBJECT DeviceObject, DXGADAPTER *DxgAdapter)
+{
+  NTSTATUS Status;
+
+  if ( !DeviceObject )
+    return STATUS_INVALID_PARAMETER;
+
+  Status = GlobalDxgGlobal->CreateAdapter(DeviceObject, &DxgAdapter);
+  return Status;
+}

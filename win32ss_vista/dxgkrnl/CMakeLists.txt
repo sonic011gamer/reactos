@@ -10,7 +10,14 @@ list(APPEND SOURCE
      rdport/rdport.cpp
      rdport/dxgkrnl_interface.cpp
      kmdod.cpp
-     entry.cpp)
+     entry.cpp
+     #Dxgkrnl Classes
+     dxg/dxgadapter.cpp
+     vidpn/vidpn_mgr.cpp
+     vidpn/dmmvidpntopology.cpp
+     vidpn/dmmvidpn_presentpath.cpp
+     dxgglobal.cpp
+     )
 
 add_library(dxgkrnl MODULE
     ${SOURCE}

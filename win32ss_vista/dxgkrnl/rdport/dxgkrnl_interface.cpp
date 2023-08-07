@@ -11,6 +11,8 @@
 
 DXGKRNL_INTERFACE DxgkrnlInterface;
 extern PDXGKRNL_PRIVATE_EXTENSION Extension;
+extern DXGGLOBAL* GlobalDxgGlobal;
+
 /*
  * https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/dispmprt/nc-dispmprt-dxgkcb_eval_acpi_method
  * @ UNIMPLEMENTED
@@ -296,6 +298,9 @@ RDDM_SetupDxgkrnl(
     IN PDRIVER_OBJECT DriverObject,
     IN PUNICODE_STRING RegistryPath)
 {
+    DXGGLOBAL DxgGlobal;
+
+    GlobalDxgGlobal = &DxgGlobal;
     DXGKRNL_INTERFACE DxgkrnlInterfaceLoc = {0};
     DxgkrnlInterfaceLoc.Size = sizeof(DXGKRNL_INTERFACE);
     DxgkrnlInterfaceLoc.Version = DXGKDDI_INTERFACE_VERSION_VISTA_SP1;

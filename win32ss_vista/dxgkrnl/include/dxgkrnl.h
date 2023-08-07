@@ -36,5 +36,9 @@ typedef struct _DXGKRNL_PRIVATE_EXTENSION
 #include "rdport.h"
 
 #if __cplusplus
+
+/* HAS TO BE AFTER VIDPN AND FRIENDS*/
 #include "classes/dxgadapter.hxx"
+/* HAS TO BE THE BOTTOM*/
+#include "classes/dxgglobal.hxx"
 #endif
