@@ -44,7 +44,7 @@ BOOL APIENTRY DrvStrokePath(
     _In_ MIX        mix
     )
 {
-        UNIMPLEMENTED;
+    UNIMPLEMENTED;
     __debugbreak();
     return 0;
 }
