@@ -47,7 +47,7 @@ NTSTATUS BASIC_DISPLAY_DRIVER::StartDevice(_In_  DXGK_START_INFO*   pDxgkStartIn
                                            _Out_ ULONG*             pNumberOfChildren)
 {
     PAGED_CODE();
-
+    m_Flags.DriverStarted = TRUE;
     //RtlCopyMemory(&m_StartInfo, pDxgkStartInfo, sizeof(m_StartInfo));
     RtlCopyMemory(&m_DxgkInterface, pDxgkInterface, sizeof(m_DxgkInterface));
     RtlZeroMemory(m_CurrentModes, sizeof(m_CurrentModes));
@@ -76,13 +76,6 @@ NTSTATUS BASIC_DISPLAY_DRIVER::StartDevice(_In_  DXGK_START_INFO*   pDxgkStartIn
     // This sample driver only uses the frame buffer of the POST device. DxgkCbAcquirePostDisplayOwnership
     // gives you the frame buffer address and ensures that no one else is drawing to it. Be sure to give it back!
     Status = m_DxgkInterface.DxgkCbAcquirePostDisplayOwnership(m_DxgkInterface.DeviceHandle, &(m_CurrentModes[0].DispInfo));
-    if (!NT_SUCCESS(Status) || m_CurrentModes[0].DispInfo.Width == 0)
-    {
-        // The most likely cause of failure is that the driver is simply not running on a POST device, or we are running
-        // after a pre-WDDM 1.2 driver. Since we can't draw anything, we should fail to start.
-        return STATUS_UNSUCCESSFUL;
-    }
-    m_Flags.DriverStarted = TRUE;
     *pNumberOfViews = MAX_VIEWS;
     *pNumberOfChildren = MAX_CHILDREN;
 

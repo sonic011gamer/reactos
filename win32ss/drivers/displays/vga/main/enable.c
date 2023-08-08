@@ -190,6 +190,7 @@ DrvEnableDriver(IN ULONG EngineVersion,
                 IN ULONG SizeOfDED,
                 OUT PDRVENABLEDATA DriveEnableData)
 {
+    __debugbreak();
     DPRINT("DrvEnableDriver called...\n");
 
     vgaPreCalc();

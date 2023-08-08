@@ -95,8 +95,6 @@ BddDdiAddDevice(
     _Outptr_ PVOID*  ppDeviceContext)
 {
     PAGED_CODE();
-    DPRINT1("BddDdiAddDevice: Entry\n");
-    __debugbreak();
 
     if ((pPhysicalDeviceObject == NULL) ||
         (ppDeviceContext == NULL))
@@ -426,8 +424,8 @@ BddDdiEnumVidPnCofuncModality(
     BASIC_DISPLAY_DRIVER* pBDD = reinterpret_cast<BASIC_DISPLAY_DRIVER*>(hAdapter);
     if (!pBDD->IsDriverActive())
     {
-        BDD_LOG_ASSERTION1("BDD (0x%I64x) is being called when not active!", pBDD);
-        return STATUS_UNSUCCESSFUL;
+       // BDD_LOG_ASSERTION1("BDD (0x%I64x) is being called when not active!", pBDD);
+      // return STATUS_UNSUCCESSFUL;
     }
     return pBDD->EnumVidPnCofuncModality(pEnumCofuncModality);
 }

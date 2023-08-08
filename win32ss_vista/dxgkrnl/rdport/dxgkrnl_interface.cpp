@@ -222,12 +222,7 @@ APIENTRY
 CALLBACK
 RDDM_DxgkCbQueryVidPnInterface(IN_CONST_D3DKMDT_HVIDPN                hVidPn,
                                IN_CONST_DXGK_VIDPN_INTERFACE_VERSION  VidPnInterfaceVersion,
-                               DEREF_OUT_CONST_PPDXGK_VIDPN_INTERFACE ppVidPnInterface)
-{
-    //TODO: Implement meh
-    UNIMPLEMENTED;
-    return STATUS_UNSUCCESSFUL;
-}
+                               DEREF_OUT_CONST_PPDXGK_VIDPN_INTERFACE ppVidPnInterface);
 
 NTSTATUS
 APIENTRY
@@ -303,7 +298,7 @@ RDDM_SetupDxgkrnl(
     GlobalDxgGlobal = &DxgGlobal;
     DXGKRNL_INTERFACE DxgkrnlInterfaceLoc = {0};
     DxgkrnlInterfaceLoc.Size = sizeof(DXGKRNL_INTERFACE);
-    DxgkrnlInterfaceLoc.Version = DXGKDDI_INTERFACE_VERSION_VISTA_SP1;
+    DxgkrnlInterfaceLoc.Version = DXGKDDI_INTERFACE_VERSION_WDDM2_0;
     DxgkrnlInterfaceLoc.DeviceHandle = (HANDLE)DriverObject;
     DxgkrnlInterfaceLoc.DxgkCbEvalAcpiMethod = RDDM_DxgkCbEvalAcpiMethod;
     DxgkrnlInterfaceLoc.DxgkCbGetDeviceInformation = RDDM_DxgkCbGetDeviceInformation;

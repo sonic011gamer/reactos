@@ -10,9 +10,12 @@ list(APPEND SOURCE
      rdport/rdport.cpp
      rdport/dxgkrnl_interface.cpp
      kmdod.cpp
+     dxgk_misc.cpp
+     vidpn/vidpn_interface.cpp
      entry.cpp
      #Dxgkrnl Classes
      dxg/dxgadapter.cpp
+     dxg/dxgdevice.cpp
      vidpn/vidpn_mgr.cpp
      vidpn/dmmvidpntopology.cpp
      vidpn/dmmvidpn_presentpath.cpp

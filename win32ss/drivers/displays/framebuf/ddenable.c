@@ -36,6 +36,7 @@ DrvEnableDirectDraw(
   OUT DD_SURFACECALLBACKS  *pSurfaceCallBacks,
   OUT DD_PALETTECALLBACKS  *pPaletteCallBacks)
 {
+	__debugbreak();
 	 PPDEV ppdev = (PPDEV)dhpdev;
 
 	 if (ppdev->bDDInitialized)

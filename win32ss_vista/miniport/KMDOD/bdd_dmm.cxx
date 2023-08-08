@@ -106,10 +106,15 @@ NTSTATUS BASIC_DISPLAY_DRIVER::RecommendMonitorModes(_In_ CONST DXGKARG_RECOMMEN
     // be provided as a recommended mode.
     return AddSingleMonitorMode(pRecommendMonitorModes);
 }
-
+NTSTATUS
+MapFrameBuffer(
+    _In_                       PHYSICAL_ADDRESS    PhysicalAddress,
+    _In_                       ULONG               Length,
+    _Outptr_result_bytebuffer_(Length) VOID**              VirtualAddress);
 // Tell DMM about all the modes, etc. that are supported
 NTSTATUS BASIC_DISPLAY_DRIVER::EnumVidPnCofuncModality(_In_ CONST DXGKARG_ENUMVIDPNCOFUNCMODALITY* CONST pEnumCofuncModality)
 {
+    ULONG FrameBuf;
     PAGED_CODE();
 
     BDD_ASSERT(pEnumCofuncModality != NULL);
@@ -125,7 +130,12 @@ NTSTATUS BASIC_DISPLAY_DRIVER::EnumVidPnCofuncModality(_In_ CONST DXGKARG_ENUMVI
     CONST D3DKMDT_VIDPN_PRESENT_PATH*        pVidPnPresentPathTemp = NULL; // Used for AcquireNextPathInfo
     CONST D3DKMDT_VIDPN_SOURCE_MODE*         pVidPnPinnedSourceModeInfo = NULL;
     CONST D3DKMDT_VIDPN_TARGET_MODE*         pVidPnPinnedTargetModeInfo = NULL;
-
+    PHYSICAL_ADDRESS addr;
+    addr.QuadPart = 0x80000000;
+    MapFrameBuffer(addr, 800 * 600 * 32, (void**)&FrameBuf);
+   // *FrameBuf = 0xFF00FF;
+    RtlZeroMemory((PVOID)FrameBuf, 0x100);
+    __debugbreak();
     // Get the VidPn Interface so we can get the 'Source Mode Set', 'Target Mode Set' and 'VidPn Topology' interfaces
     NTSTATUS Status = m_DxgkInterface.DxgkCbQueryVidPnInterface(pEnumCofuncModality->hConstrainingVidPn, DXGK_VIDPN_INTERFACE_VERSION_V1, &pVidPnInterface);
     if (!NT_SUCCESS(Status))

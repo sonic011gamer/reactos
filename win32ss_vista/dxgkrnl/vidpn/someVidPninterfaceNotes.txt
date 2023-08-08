@@ -1,0 +1,26 @@
+PDXGKDDI_ISSUPPORTEDVIDPN               DxgkDdiIsSupportedVidPn:
+
+typedef struct _DXGKARG_ISSUPPORTEDVIDPN {
+  IN D3DKMDT_HVIDPN hDesiredVidPn;
+  OUT BOOLEAN       IsVidPnSupported;
+} DXGKARG_ISSUPPORTEDVIDPN;
+
+https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/d3dkmddi/ns-d3dkmddi-_dxgkarg_issupportedvidpn
+
+It's literally just for verification. like, okay lol
+
+PDXGKDDI_RECOMMENDFUNCTIONALVIDPN       DxgkDdiRecommendFunctionalVidPn;
+A pointer to a DXGKARG_RECOMMENDFUNCTIONALVIDPN structure that contains function arguments. The caller supplies the hRecommendedFunctionalVidPn member, which is a handle to an empty VidPN object. DxgkDdiRecommendFunctionalVidPn populates the VidPN object with the elements of a functional VidPN: topology, mode sets, pinned modes.
+
+PDXGKDDI_ENUMVIDPNCOFUNCMODALITY        DxgkDdiEnumVidPnCofuncModality;
+PDXGKDDI_SETVIDPNSOURCEVISIBILITY       DxgkDdiSetVidPnSourceVisibility;
+PDXGKDDI_COMMITVIDPN                    DxgkDdiCommitVidPn;
+PDXGKDDI_UPDATEACTIVEVIDPNPRESENTPATH   DxgkDdiUpdateActiveVidPnPresentPath;
+PDXGKDDI_RECOMMENDMONITORMODES          DxgkDdiRecommendMonitorModes;
+PDXGKDDI_GETSCANLINE                    DxgkDdiGetScanLine;
+
+\\\\
+
+
+
+https://learn.microsoft.com/en-us/windows-hardware/drivers/display/enumerating-cofunctional-vidpn-source-and-target-modes

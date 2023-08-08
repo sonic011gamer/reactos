@@ -207,7 +207,7 @@ public:
 #pragma code_seg()
     BOOLEAN IsDriverActive() const
     {
-        return m_Flags.DriverStarted;
+        return 1;
     }
 #pragma code_seg(pop)
 
