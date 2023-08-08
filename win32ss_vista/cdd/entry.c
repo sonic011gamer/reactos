@@ -1,193 +1,6 @@
 #include "cdd.h"
 #include <debug.h>
 
-
-VOID APIENTRY DrvSynchronizeSurface(
-    SURFOBJ *pso,
-    RECTL   *prcl,
-    FLONG    fl
-)
-{
-    UNIMPLEMENTED;
-    __debugbreak();
-}
-
-BOOL APIENTRY DrvStrokePath(
-    _Inout_ SURFOBJ   *pso,
-    _In_ PATHOBJ   *ppo,
-    _In_ CLIPOBJ   *pco,
-    _In_opt_ XFORMOBJ  *pxo,
-    _In_ BRUSHOBJ  *pbo,
-    _In_ POINTL    *pptlBrushOrg,
-    _In_ LINEATTRS *plineattrs,
-    _In_ MIX        mix
-    )
-{
-        UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
-}
-
-BOOL APIENTRY DrvTransparentBlt(
-    _Inout_ SURFOBJ    *psoDst,
-    _In_ SURFOBJ    *psoSrc,
-    _In_ CLIPOBJ    *pco,
-    _In_opt_ XLATEOBJ   *pxlo,
-    _In_ RECTL      *prclDst,
-    _In_ RECTL      *prclSrc,
-    _In_ ULONG      iTransColor,
-    _In_ ULONG      ulReserved
-)
-{
-        UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
-}
-
-BOOL APIENTRY DrvBitBlt(
-    _Inout_ SURFOBJ  *psoTrg,
-    _In_opt_ SURFOBJ  *psoSrc,
-    _In_opt_ SURFOBJ  *psoMask,
-    _In_ CLIPOBJ  *pco,
-    _In_opt_ XLATEOBJ *pxlo,
-    _In_ RECTL    *prclTrg,
-    _In_opt_ POINTL   *pptlSrc,
-    _In_opt_ POINTL   *pptlMask,
-    _In_opt_ BRUSHOBJ *pbo,
-    _In_opt_ POINTL   *pptlBrush,
-    _In_ ROP4      rop4
-    )
-{
-        UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
-}
-
-
-BOOL APIENTRY
-DrvCopyBits(
-    OUT SURFOBJ*  DestObj,
-    IN  SURFOBJ*  SourceObj,
-    IN  CLIPOBJ*  ClipObj,
-    IN  XLATEOBJ* XLateObj,
-    IN  RECTL*    DestRectL,
-    IN  POINTL*   SrcPointL)
-{
-        UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
-}
-
-
-BOOL APIENTRY DrvTextOut(
-    SURFOBJ  *pso,
-    STROBJ   *pstro,
-    FONTOBJ  *pfo,
-    CLIPOBJ  *pco,
-    RECTL    *prclExtra,        // Obsolete, always NULL
-    RECTL    *prclOpaque,
-    BRUSHOBJ *pboFore,
-    BRUSHOBJ *pboOpaque,
-    POINTL   *pptlOrg,
-    MIX       mix
-    )
-{
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
-}
-
-BOOL APIENTRY
-DrvLineTo(
-    IN SURFOBJ *DestObj,
-    IN CLIPOBJ *Clip,
-    IN BRUSHOBJ *Brush,
-    IN LONG x1,
-    IN LONG y1,
-    IN LONG x2,
-    IN LONG y2,
-    IN RECTL *RectBounds,
-    IN MIX mix)
-{
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
-}
-
-BOOL APIENTRY DrvFillPath(
-    _Inout_ SURFOBJ  *pso,
-    _In_ PATHOBJ  *ppo,
-    _In_ CLIPOBJ  *pco,
-    _In_ BRUSHOBJ *pbo,
-    _In_ POINTL   *pptlBrushOrg,
-    _In_ MIX       mix,
-    _In_ FLONG     flOptions
-    )
-{
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
-}
-
-BOOL APIENTRY DrvStrokeAndFillPath(
-    _Inout_ SURFOBJ   *pso,
-    _Inout_ PATHOBJ   *ppo,
-    _In_ CLIPOBJ   *pco,
-    _In_opt_ XFORMOBJ  *pxo,
-    _In_ BRUSHOBJ  *pboStroke,
-    _In_ LINEATTRS *plineattrs,
-    _In_ BRUSHOBJ  *pboFill,
-    _In_ POINTL    *pptlBrushOrg,
-    _In_ MIX        mixFill,
-    _In_ FLONG      flOptions
-    )
-{
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
-}
-
-BOOL APIENTRY DrvStretchBltROP(
-    _Inout_ SURFOBJ         *psoDest,
-    _Inout_ SURFOBJ         *psoSrc,
-    _In_opt_ SURFOBJ         *psoMask,
-    _In_ CLIPOBJ         *pco,
-    _In_opt_ XLATEOBJ        *pxlo,
-    _In_opt_ COLORADJUSTMENT *pca,
-    _In_ POINTL          *pptlHTOrg,
-    _In_ RECTL           *prclDest,
-    _In_ RECTL           *prclSrc,
-    _In_opt_ POINTL          *pptlMask,
-    _In_ ULONG            iMode,
-    _In_ BRUSHOBJ        *pbo,
-    _In_ DWORD            rop4
-    )
-{
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
-}
-
-
-BOOL APIENTRY DrvPlgBlt(
-    _Inout_ SURFOBJ         *psoTrg,
-    _Inout_ SURFOBJ         *psoSrc,
-    _In_opt_ SURFOBJ         *psoMsk,
-    _In_ CLIPOBJ         *pco,
-    _In_opt_ XLATEOBJ        *pxlo,
-    _In_opt_ COLORADJUSTMENT *pca,
-    _In_opt_ POINTL          *pptlBrushOrg,
-    _In_ POINTFIX        *pptfx,
-    _In_ RECTL           *prcl,
-    _In_opt_ POINTL          *pptl,
-    _In_ ULONG            iMode
-    )
-{
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
-}
-
 static DRVFN DrvFunctionTable[] =
 {
    {INDEX_DrvEnablePDEV, (PFN)DrvEnablePDEV},
@@ -232,8 +45,7 @@ DrvEnableDriver(ULONG iEngineVersion,
                 ULONG cj,
                 PDRVENABLEDATA pded)
 {
-    DPRINT1("ReactOS CDD - ReactOS Display Driver Model\n");
-    __debugbreak();
+    DPRINT1("---ReactOS CDD - ReactOS Display Driver Model---\n");
     if (cj >= sizeof(DRVENABLEDATA))
     {
        pded->c = sizeof(DrvFunctionTable) / sizeof(DRVFN);
@@ -256,10 +68,20 @@ DrvDisableDriver()
 
 VOID
 APIENTRY
-DrvNotify(SURFOBJ *pso,
-          ULONG    iType,
-          PVOID    pvData)
+DrvNotify(_In_ SURFOBJ *pso,
+          _In_ ULONG    iType,
+          _In_ PVOID    pvData)
 {
     UNIMPLEMENTED;
     __debugbreak();
+}
+
+BOOL
+APIENTRY
+DrvAssertMode(_In_ DHPDEV dhpdev,
+              _In_ BOOL bEnable)
+{
+    UNIMPLEMENTED;
+    __debugbreak();
+    return 0;
 }

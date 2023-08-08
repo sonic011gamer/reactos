@@ -9,6 +9,7 @@ DrvDisableSurface(
     UNIMPLEMENTED;
     __debugbreak();
 }
+
 HSURF APIENTRY
 DrvEnableSurface(
    IN DHPDEV dhpdev)
@@ -17,6 +18,7 @@ DrvEnableSurface(
     __debugbreak();
     return NULL;
 }
+
 VOID APIENTRY
 DrvMovePointer(
    IN SURFOBJ *pso,
@@ -24,8 +26,8 @@ DrvMovePointer(
    IN LONG y,
    IN RECTL *prcl)
 {
-       UNIMPLEMENTED;
-    __debugbreak();
+   UNIMPLEMENTED;
+   __debugbreak();
 }
 
 BOOL
@@ -50,27 +52,25 @@ DrvSetPointerShape(
    IN RECTL *prcl,
    IN FLONG fl)
 {
-       UNIMPLEMENTED;
-    __debugbreak();
-/*   return SPS_DECLINE;*/
+   UNIMPLEMENTED;
+   __debugbreak();
    return EngSetPointerShape(pso, psoMask, psoColor, pxlo, xHot, yHot, x, y, prcl, fl);
 }
 
-ULONG APIENTRY
-DrvGetModes(
-   IN HANDLE hDriver,
-   IN ULONG cjSize,
-   OUT DEVMODEW *pdm)
+ULONG
+APIENTRY
+DrvGetModes(_In_ HANDLE hDriver,
+            _In_ ULONG cjSize,
+            _Out_ DEVMODEW *pdm)
 {
-
-       UNIMPLEMENTED;
-    __debugbreak();
-    return 1;
-
+   UNIMPLEMENTED;
+   __debugbreak();
+   return 1;
 }
 
 
-BOOL APIENTRY
+BOOL
+APIENTRY
 DrvSetPalette(
    IN DHPDEV dhpdev,
    IN PALOBJ *ppalo,
@@ -83,18 +83,8 @@ DrvSetPalette(
     return 0;
 }
 
-BOOL APIENTRY
-DrvAssertMode(
-   IN DHPDEV dhpdev,
-   IN BOOL bEnable)
-{
-       UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
-}
-
-
-DHPDEV APIENTRY
+DHPDEV
+APIENTRY
 DrvEnablePDEV(
    IN DEVMODEW *pdm,
    IN LPWSTR pwszLogAddress,
@@ -108,42 +98,9 @@ DrvEnablePDEV(
    IN LPWSTR pwszDeviceName,
    IN HANDLE hDriver)
 {
-       UNIMPLEMENTED;
+   UNIMPLEMENTED;
     __debugbreak();
    return NULL;
-}
-
-BOOL APIENTRY
-DrvEnableDirectDraw(
-    DHPDEV dhpdev,
-    DD_CALLBACKS *pCallbacks,
-    DD_SURFACECALLBACKS *pSurfaceCallbacks,
-    DD_PALETTECALLBACKS *pPaletteCallbacks)
-{
-    RtlZeroMemory(pCallbacks, sizeof(*pCallbacks));
-    RtlZeroMemory(pSurfaceCallbacks, sizeof(*pSurfaceCallbacks));
-    RtlZeroMemory(pPaletteCallbacks, sizeof(*pPaletteCallbacks));
-
-    pCallbacks->dwSize = sizeof(*pCallbacks);
-    pSurfaceCallbacks->dwSize = sizeof(*pSurfaceCallbacks);
-    pPaletteCallbacks->dwSize = sizeof(*pPaletteCallbacks);
-
-    /* We don't support any optional callback */
-    UNIMPLEMENTED;
-    __debugbreak();
-    return TRUE;
-}
-
-/*
- * DrvDisableDirectDraw
- */
-
-VOID APIENTRY
-DrvDisableDirectDraw(
-    DHPDEV dhpdev)
-{
-   UNIMPLEMENTED;
-   __debugbreak();
 }
 
 

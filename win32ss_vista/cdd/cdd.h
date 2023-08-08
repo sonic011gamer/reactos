@@ -10,7 +10,6 @@
 #include <winioctl.h>
 #include <ntddvdeo.h>
 //#include "../include/locd3d.h"
-//#define EXPERIMENTAL_MOUSE_CURSOR_SUPPORT
 
 typedef struct _PDEV
 {
@@ -22,9 +21,9 @@ typedef struct _PDEV
    ULONG ScreenHeight;
    ULONG ScreenDelta;
    BYTE BitsPerPixel;
-   ULONG RedMask;
-   ULONG GreenMask;
-   ULONG BlueMask;
+   ULONG RedMask; //TODO: Grab me from WDDM
+   ULONG GreenMask; //TODO: Grab me from WDDM
+   ULONG BlueMask; //TODO: Grab me from WDDM
    BYTE PaletteShift;
    PVOID ScreenPtr;
    HPALETTE DefaultPalette;
@@ -49,8 +48,8 @@ typedef struct _PDEV
    DDPIXELFORMAT ddpfDisplay;
 } PDEV, *PPDEV;
 
-#define DEVICE_NAME	L"framebuf"
-#define ALLOC_TAG	'FUBF'
+#define DEVICE_NAME	L"cdd"
+#define ALLOC_TAG	'DDC'
 
 
 BOOL APIENTRY
@@ -83,28 +82,28 @@ DrvCompletePDEV(
    IN DHPDEV dhpdev,
    IN HDEV hdev);
 
-VOID APIENTRY
-DrvDisablePDEV(
-   IN DHPDEV dhpdev);
+VOID
+APIENTRY
+DrvDisablePDEV(IN DHPDEV dhpdev);
 
-HSURF APIENTRY
-DrvEnableSurface(
-   IN DHPDEV dhpdev);
+HSURF
+APIENTRY
+DrvEnableSurface(IN DHPDEV dhpdev);
 
-VOID APIENTRY
-DrvDisableSurface(
-   IN DHPDEV dhpdev);
+VOID
+APIENTRY
+DrvDisableSurface(IN DHPDEV dhpdev);
 
-BOOL APIENTRY
-DrvAssertMode(
-   IN DHPDEV dhpdev,
-   IN BOOL bEnable);
+BOOL
+APIENTRY
+DrvAssertMode(_In_ DHPDEV dhpdev,
+              _In_ BOOL bEnable);
 
-ULONG APIENTRY
-DrvGetModes(
-   IN HANDLE hDriver,
-   IN ULONG cjSize,
-   OUT DEVMODEW *pdm);
+ULONG
+APIENTRY
+DrvGetModes(_In_ HANDLE hDriver,
+            _In_ ULONG cjSize,
+            _Out_ DEVMODEW *pdm);
 
 BOOL APIENTRY
 DrvSetPalette(
@@ -114,20 +113,21 @@ DrvSetPalette(
    IN ULONG iStart,
    IN ULONG cColors);
 
-ULONG APIENTRY
-DrvSetPointerShape(
-   IN SURFOBJ *pso,
-   IN SURFOBJ *psoMask,
-   IN SURFOBJ *psoColor,
-   IN XLATEOBJ *pxlo,
-   IN LONG xHot,
-   IN LONG yHot,
-   IN LONG x,
-   IN LONG y,
-   IN RECTL *prcl,
-   IN FLONG fl);
+ULONG
+APIENTRY
+DrvSetPointerShape(IN SURFOBJ *pso,
+                   IN SURFOBJ *psoMask,
+                   IN SURFOBJ *psoColor,
+                   IN XLATEOBJ *pxlo,
+                   IN LONG xHot,
+                   IN LONG yHot,
+                   IN LONG x,
+                   IN LONG y,
+                   IN RECTL *prcl,
+                   IN FLONG fl);
 
-VOID APIENTRY
+VOID
+APIENTRY
 DrvMovePointer(
    IN SURFOBJ *pso,
    IN LONG x,
@@ -159,28 +159,161 @@ DrvDisableDriver();
 
 VOID
 APIENTRY
-DrvNotify(SURFOBJ *pso,
-          ULONG    iType,
-          PVOID    pvData);
+DrvNotify(_In_ SURFOBJ *pso,
+          _In_ ULONG    iType,
+          _In_ PVOID    pvData);
 BOOL
 APIENTRY
 DrvIcmSetDeviceGammaRamp(DHPDEV  dhpdev,
-                        ULONG   iFormat,
-                        LPVOID  lpRamp);
-VOID APIENTRY DrvSynchronizeSurface(
+                         ULONG   iFormat,
+                         LPVOID  lpRamp);
+VOID
+APIENTRY
+DrvSynchronizeSurface(
     SURFOBJ *pso,
     RECTL   *prcl,
-    FLONG    fl
-);
+    FLONG    fl);
 
-BOOL APIENTRY DrvStrokePath(
-    _Inout_ SURFOBJ   *pso,
-    _In_ PATHOBJ   *ppo,
-    _In_ CLIPOBJ   *pco,
-    _In_opt_ XFORMOBJ  *pxo,
-    _In_ BRUSHOBJ  *pbo,
-    _In_ POINTL    *pptlBrushOrg,
-    _In_ LINEATTRS *plineattrs,
-    _In_ MIX        mix
-    );
+BOOL
+APIENTRY
+DrvStrokePath(_Inout_ SURFOBJ   *pso,
+              _In_ PATHOBJ   *ppo,
+              _In_ CLIPOBJ   *pco,
+              _In_opt_ XFORMOBJ  *pxo,
+              _In_ BRUSHOBJ  *pbo,
+              _In_ POINTL    *pptlBrushOrg,
+              _In_ LINEATTRS *plineattrs,
+              _In_ MIX        mix);
+
+BOOL
+APIENTRY
+DrvBitBlt(_Inout_ SURFOBJ  *psoTrg,
+          _In_opt_ SURFOBJ  *psoSrc,
+          _In_opt_ SURFOBJ  *psoMask,
+          _In_ CLIPOBJ  *pco,
+          _In_opt_ XLATEOBJ *pxlo,
+          _In_ RECTL    *prclTrg,
+          _In_opt_ POINTL   *pptlSrc,
+          _In_opt_ POINTL   *pptlMask,
+          _In_opt_ BRUSHOBJ *pbo,
+          _In_opt_ POINTL   *pptlBrush,
+          _In_ ROP4      rop4);
+
+
+VOID
+APIENTRY
+DrvSynchronizeSurface(SURFOBJ *pso,
+                      RECTL   *prcl,
+                      FLONG    fl);
+
+BOOL
+APIENTRY
+DrvStrokePath(_Inout_  SURFOBJ   *pso,
+              _In_     PATHOBJ   *ppo,
+              _In_     CLIPOBJ   *pco,
+              _In_opt_ XFORMOBJ  *pxo,
+              _In_     BRUSHOBJ  *pbo,
+              _In_     POINTL    *pptlBrushOrg,
+              _In_     LINEATTRS *plineattrs,
+              _In_     MIX        mix);
+
+BOOL
+APIENTRY
+DrvTransparentBlt(_Inout_  SURFOBJ    *psoDst,
+                  _In_     SURFOBJ    *psoSrc,
+                  _In_     CLIPOBJ    *pco,
+                  _In_opt_ XLATEOBJ   *pxlo,
+                  _In_     RECTL      *prclDst,
+                  _In_     RECTL      *prclSrc,
+                  _In_     ULONG      iTransColor,
+                  _In_     ULONG      ulReserved);
+
+BOOL
+APIENTRY
+DrvCopyBits(_Out_ SURFOBJ*  DestObj,
+            _In_  SURFOBJ*  SourceObj,
+            _In_  CLIPOBJ*  ClipObj,
+            _In_  XLATEOBJ* XLateObj,
+            _In_  RECTL*    DestRectL,
+            _In_  POINTL*   SrcPointL);
+
+
+BOOL
+APIENTRY
+DrvTextOut(_In_ SURFOBJ  *pso,
+           _In_ STROBJ   *pstro,
+           _In_ FONTOBJ  *pfo,
+           _In_ CLIPOBJ  *pco,
+           _In_ RECTL    *prclExtra,
+           _In_ RECTL    *prclOpaque,
+           _In_ BRUSHOBJ *pboFore,
+           _In_ BRUSHOBJ *pboOpaque,
+           _In_ POINTL   *pptlOrg,
+           _In_ MIX       mix);
+
+BOOL
+APIENTRY
+DrvLineTo(_In_ SURFOBJ *DestObj,
+          _In_ CLIPOBJ *Clip,
+          _In_ BRUSHOBJ *Brush,
+          _In_ LONG x1,
+          _In_ LONG y1,
+          _In_ LONG x2,
+          _In_ LONG y2,
+          _In_ RECTL *RectBounds,
+          _In_ MIX mix);
+
+BOOL
+APIENTRY
+DrvFillPath(_Inout_ SURFOBJ  *pso,
+            _In_    PATHOBJ  *ppo,
+            _In_    CLIPOBJ  *pco,
+            _In_    BRUSHOBJ *pbo,
+            _In_    POINTL   *pptlBrushOrg,
+            _In_    MIX       mix,
+            _In_    FLONG     flOptions);
+
+BOOL
+APIENTRY
+DrvStrokeAndFillPath(_Inout_  SURFOBJ   *pso,
+                     _Inout_  PATHOBJ   *ppo,
+                     _In_     CLIPOBJ   *pco,
+                     _In_opt_ XFORMOBJ  *pxo,
+                     _In_     BRUSHOBJ  *pboStroke,
+                     _In_     LINEATTRS *plineattrs,
+                     _In_     BRUSHOBJ  *pboFill,
+                     _In_     POINTL    *pptlBrushOrg,
+                     _In_     MIX        mixFill,
+                     _In_     FLONG      flOptions);
+
+BOOL
+APIENTRY
+DrvStretchBltROP(_Inout_  SURFOBJ         *psoDest,
+                 _Inout_  SURFOBJ         *psoSrc,
+                 _In_opt_ SURFOBJ         *psoMask,
+                 _In_     CLIPOBJ         *pco,
+                 _In_opt_ XLATEOBJ        *pxlo,
+                 _In_opt_ COLORADJUSTMENT *pca,
+                 _In_     POINTL          *pptlHTOrg,
+                 _In_     RECTL           *prclDest,
+                 _In_     RECTL           *prclSrc,
+                 _In_opt_ POINTL          *pptlMask,
+                 _In_     ULONG            iMode,
+                 _In_     BRUSHOBJ        *pbo,
+                 _In_     DWORD            rop4);
+
+BOOL
+APIENTRY
+DrvPlgBlt(_Inout_  SURFOBJ         *psoTrg,
+          _Inout_  SURFOBJ         *psoSrc,
+          _In_opt_ SURFOBJ         *psoMsk,
+          _In_     CLIPOBJ         *pco,
+          _In_opt_ XLATEOBJ        *pxlo,
+          _In_opt_ COLORADJUSTMENT *pca,
+          _In_opt_ POINTL          *pptlBrushOrg,
+          _In_     POINTFIX        *pptfx,
+          _In_     RECTL           *prcl,
+          _In_opt_ POINTL          *pptl,
+          _In_     ULONG            iMode);
+
 #endif /* _CDD_PCH_ */

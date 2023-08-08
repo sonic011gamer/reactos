@@ -1,5 +1,6 @@
 
 list(APPEND SOURCE
+    anotherblt.c
     cdd.c
     entry.c
     cdd.h)
