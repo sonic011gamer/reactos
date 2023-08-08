@@ -1,6 +1,7 @@
 
 list(APPEND SOURCE
     cdd.c
+    entry.c
     cdd.h)
 
 add_library(cdd MODULE

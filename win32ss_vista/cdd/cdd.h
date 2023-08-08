@@ -153,4 +153,34 @@ IntSetPalette(
    IN ULONG iStart,
    IN ULONG cColors);
 
+VOID
+APIENTRY
+DrvDisableDriver();
+
+VOID
+APIENTRY
+DrvNotify(SURFOBJ *pso,
+          ULONG    iType,
+          PVOID    pvData);
+BOOL
+APIENTRY
+DrvIcmSetDeviceGammaRamp(DHPDEV  dhpdev,
+                        ULONG   iFormat,
+                        LPVOID  lpRamp);
+VOID APIENTRY DrvSynchronizeSurface(
+    SURFOBJ *pso,
+    RECTL   *prcl,
+    FLONG    fl
+);
+
+BOOL APIENTRY DrvStrokePath(
+    _Inout_ SURFOBJ   *pso,
+    _In_ PATHOBJ   *ppo,
+    _In_ CLIPOBJ   *pco,
+    _In_opt_ XFORMOBJ  *pxo,
+    _In_ BRUSHOBJ  *pbo,
+    _In_ POINTL    *pptlBrushOrg,
+    _In_ LINEATTRS *plineattrs,
+    _In_ MIX        mix
+    );
 #endif /* _CDD_PCH_ */

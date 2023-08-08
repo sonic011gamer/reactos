@@ -1,32 +1,20 @@
 
 #include "cdd.h"
 #include <debug.h>
-static DRVFN DrvFunctionTable[] =
-{
-   {INDEX_DrvEnablePDEV, (PFN)DrvEnablePDEV},
-   {INDEX_DrvCompletePDEV, (PFN)DrvCompletePDEV},
-   {INDEX_DrvDisablePDEV, (PFN)DrvDisablePDEV},
-   {INDEX_DrvEnableSurface, (PFN)DrvEnableSurface},
-   {INDEX_DrvDisableSurface, (PFN)DrvDisableSurface},
-   {INDEX_DrvAssertMode, (PFN)DrvAssertMode},
-   {INDEX_DrvGetModes, (PFN)DrvGetModes},
-   {INDEX_DrvSetPalette, (PFN)DrvSetPalette},
-   {INDEX_DrvSetPointerShape, (PFN)DrvSetPointerShape},
-   {INDEX_DrvMovePointer, (PFN)DrvMovePointer},
-   {INDEX_DrvEnableDirectDraw, (PFN)DrvEnableDirectDraw},
-   {INDEX_DrvDisableDirectDraw, (PFN)DrvDisableDirectDraw},
 
-};
 VOID APIENTRY
 DrvDisableSurface(
    IN DHPDEV dhpdev)
 {
-
+    UNIMPLEMENTED;
+    __debugbreak();
 }
 HSURF APIENTRY
 DrvEnableSurface(
    IN DHPDEV dhpdev)
 {
+   UNIMPLEMENTED;
+    __debugbreak();
     return NULL;
 }
 VOID APIENTRY
@@ -36,6 +24,17 @@ DrvMovePointer(
    IN LONG y,
    IN RECTL *prcl)
 {
+       UNIMPLEMENTED;
+    __debugbreak();
+}
+
+BOOL
+APIENTRY
+DrvIcmSetDeviceGammaRamp(DHPDEV  dhpdev,
+                        ULONG   iFormat,
+                        LPVOID  lpRamp)
+{
+   return 0;
 }
 
 ULONG APIENTRY
@@ -51,6 +50,8 @@ DrvSetPointerShape(
    IN RECTL *prcl,
    IN FLONG fl)
 {
+       UNIMPLEMENTED;
+    __debugbreak();
 /*   return SPS_DECLINE;*/
    return EngSetPointerShape(pso, psoMask, psoColor, pxlo, xHot, yHot, x, y, prcl, fl);
 }
@@ -61,6 +62,9 @@ DrvGetModes(
    IN ULONG cjSize,
    OUT DEVMODEW *pdm)
 {
+
+       UNIMPLEMENTED;
+    __debugbreak();
     return 1;
 
 }
@@ -74,6 +78,8 @@ DrvSetPalette(
    IN ULONG iStart,
    IN ULONG cColors)
 {
+       UNIMPLEMENTED;
+    __debugbreak();
     return 0;
 }
 
@@ -82,33 +88,9 @@ DrvAssertMode(
    IN DHPDEV dhpdev,
    IN BOOL bEnable)
 {
+       UNIMPLEMENTED;
+    __debugbreak();
     return 0;
-}
-
-
-VOID APIENTRY
-DrvCompletePDEV(
-   IN DHPDEV dhpdev,
-   IN HDEV hdev)
-{
-   ((PPDEV)dhpdev)->hDevEng = hdev;
-}
-
-VOID APIENTRY
-DrvDisablePDEV(
-   IN DHPDEV dhpdev)
-{
-   if (((PPDEV)dhpdev)->DefaultPalette)
-   {
-      EngDeletePalette(((PPDEV)dhpdev)->DefaultPalette);
-   }
-
-   if (((PPDEV)dhpdev)->PaletteEntries != NULL)
-   {
-      EngFreeMem(((PPDEV)dhpdev)->PaletteEntries);
-   }
-
-   EngFreeMem(dhpdev);
 }
 
 
@@ -126,6 +108,8 @@ DrvEnablePDEV(
    IN LPWSTR pwszDeviceName,
    IN HANDLE hDriver)
 {
+       UNIMPLEMENTED;
+    __debugbreak();
    return NULL;
 }
 
@@ -145,7 +129,8 @@ DrvEnableDirectDraw(
     pPaletteCallbacks->dwSize = sizeof(*pPaletteCallbacks);
 
     /* We don't support any optional callback */
-
+    UNIMPLEMENTED;
+    __debugbreak();
     return TRUE;
 }
 
@@ -157,25 +142,38 @@ VOID APIENTRY
 DrvDisableDirectDraw(
     DHPDEV dhpdev)
 {
+   UNIMPLEMENTED;
+   __debugbreak();
 }
 
-BOOL APIENTRY
-DrvEnableDriver(
-   ULONG iEngineVersion,
-   ULONG cj,
-   PDRVENABLEDATA pded)
+
+/*
+ * @implemented
+ */
+VOID APIENTRY
+DrvCompletePDEV(
+   IN DHPDEV dhpdev,
+   IN HDEV hdev)
 {
-    DPRINT1("ReactOS CDD\n");
-   __debugbreak();
-   if (cj >= sizeof(DRVENABLEDATA))
+   ((PPDEV)dhpdev)->hDevEng = hdev;
+}
+
+/*
+ * @implemented
+ */
+VOID APIENTRY
+DrvDisablePDEV(
+   IN DHPDEV dhpdev)
+{
+   if (((PPDEV)dhpdev)->DefaultPalette)
    {
-      pded->c = sizeof(DrvFunctionTable) / sizeof(DRVFN);
-      pded->pdrvfn = DrvFunctionTable;
-      pded->iDriverVersion = DDI_DRIVER_VERSION_NT5;
-      return TRUE;
+      EngDeletePalette(((PPDEV)dhpdev)->DefaultPalette);
    }
-   else
+
+   if (((PPDEV)dhpdev)->PaletteEntries != NULL)
    {
-      return FALSE;
+      EngFreeMem(((PPDEV)dhpdev)->PaletteEntries);
    }
+
+   EngFreeMem(dhpdev);
 }
