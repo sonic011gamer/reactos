@@ -2313,6 +2313,14 @@ APIENTRY
 EngReadStateEvent(
     _In_ PEVENT pEvent);
 
+ENGAPI
+NTSTATUS
+APIENTRY
+EngQueryW32kCddInterface(HANDLE DriverHandle, UINT32 Something,
+                          PVOID W32kCddInterface,
+                          PVOID DxgAdapter,
+                          PVOID OkayLol, PVOID ProcessLocal);
+
 _Requires_lock_held_(*hsem)
 _Releases_lock_(*hsem)
 _Releases_lock_(_Global_critical_region_)

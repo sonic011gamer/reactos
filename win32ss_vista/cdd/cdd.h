@@ -2,16 +2,50 @@
 
 #ifndef _CDD_PCH_
 #define _CDD_PCH_
-
-#include <stdarg.h>
+#define __WINE_D3DKMTHK_H
+#include <ntddk.h>
 #include <windef.h>
+#include <winerror.h>
+
+extern "C"
+{
+#include "../include/d3dukmdt.h"
+#include "../include/d3dkmdt.h"
+#include "../include/d3dkmthk.h"
+#include "../include/d3dkmddi.h"
+}
+#include <stdarg.h>
 #include <wingdi.h>
 #include <winddi.h>
 #include <winioctl.h>
 #include <ntddvdeo.h>
-//#include "../include/locd3d.h"
 
-typedef struct _PDEV
+typedef enum _W32KCDD_INTERFACE_VERSION
+{
+   INVALID_VERSION = 0,
+   RTM_VISTA,
+} W32KCDD_INTERFACE_VERSION;
+
+/* RTM Vista */
+typedef struct _WIN32CDD_INTERFACE
+{
+   DWORD Magic; // Bruh?
+   W32KCDD_INTERFACE_VERSION Version;
+   DWORD* Win32kPfns[5];
+   #if 0
+   Pfn W32kCddGetWin32kCommand;
+   Pfn W32kCddClipRegion;
+   Pfn W32kCddIncPresentUniq;
+   Pfn W32kCddInitPdev;
+   Pfn W32kCddIsNullBrush;
+   #endif
+//   HRGN D3DDirtyRgnFn; /* not sure */
+} WIN32CDD_INTERFACE;
+
+#include "cdd_testinterface.h"
+//#include "../include/locd3d.h"
+/* This doesn't match any windows version exactly, it doesn't need to */
+typedef struct _CDDPDEV
 {
    HANDLE hDriver;
    HDEV hDevEng;
@@ -29,16 +63,10 @@ typedef struct _PDEV
    HPALETTE DefaultPalette;
    PALETTEENTRY *PaletteEntries;
 
-#ifdef EXPERIMENTAL_MOUSE_CURSOR_SUPPORT
-   VIDEO_POINTER_ATTRIBUTES PointerAttributes;
-   XLATEOBJ *PointerXlateObject;
-   HSURF PointerColorSurface;
-   HSURF PointerMaskSurface;
-   HSURF PointerSaveSurface;
-   POINTL PointerHotSpot;
-#endif
-
-   /* DirectX Support */
+   HRGN hrgnx1;
+   HRGN hrgnx2;
+   HRGN hrgnx3;
+   /* DirectX Support - Depreciated in WDDM */
    DWORD iDitherFormat;
    ULONG MemHeight;
    ULONG MemWidth;
@@ -46,7 +74,7 @@ typedef struct _PDEV
    VIDEOMEMORY* pvmList;
    BOOL bDDInitialized;
    DDPIXELFORMAT ddpfDisplay;
-} PDEV, *PPDEV;
+} CDDPDEV, *PCDDPDEV;
 
 #define DEVICE_NAME	L"cdd"
 #define ALLOC_TAG	'DDC'
@@ -136,14 +164,14 @@ DrvMovePointer(
 
 BOOL
 IntInitScreenInfo(
-   PPDEV ppdev,
+   PCDDPDEV ppdev,
    LPDEVMODEW pDevMode,
    PGDIINFO pGdiInfo,
    PDEVINFO pDevInfo);
 
 BOOL
 IntInitDefaultPalette(
-   PPDEV ppdev,
+   PCDDPDEV ppdev,
    PDEVINFO pDevInfo);
 
 BOOL APIENTRY

@@ -4,7 +4,7 @@
  * PURPOSE:     Dxgkrnl workarounds for win32k
  * COPYRIGHT:   Copyright 2023 Justin Miller <justin.miller@reactos.org>
  */
-
+#define __WINE_D3DKMTHK_H
 #include <win32k.h>
 #include <ntddvdeo.h>
 //#define NDEBUG
@@ -85,4 +85,16 @@ TryHackedDxgkrnlStartAdapter()
 BypassDxgkrnl:
     DPRINT1("TryHackedDxgkrnlAdapterStart: Dxgkrnl is not loaded\n");
     return TRUE;
+}
+
+
+NTSTATUS
+APIENTRY
+EngQueryW32kCddInterface(HANDLE DriverHandle, UINT32 Something,
+                          PVOID W32kCddInterface,
+                          PVOID DxgAdapter,
+                          PVOID OkayLol, PVOID ProcessLocal)
+{
+    UNIMPLEMENTED;
+    return 0;
 }

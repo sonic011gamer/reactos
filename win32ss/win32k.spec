@@ -111,6 +111,7 @@
 @ stdcall EngQueryPerformanceCounter(ptr)
 @ stdcall EngQueryPerformanceFrequency(ptr)
 @ stdcall EngQuerySystemAttribute(long ptr)
+@ stdcall EngQueryW32kCddInterface(ptr long ptr ptr ptr ptr)
 @ stdcall EngReadStateEvent(ptr)
 @ stdcall EngReleaseSemaphore(ptr)
 @ stdcall EngRestoreFloatingPointState(ptr)

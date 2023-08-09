@@ -17,9 +17,17 @@ DrvBitBlt(_Inout_ SURFOBJ  *psoTrg,
           _In_opt_ POINTL   *pptlBrush,
           _In_ ROP4      rop4)
 {
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
+    return EngBitBlt(psoTrg,
+                     psoSrc,
+                     psoMask,
+                     pco,
+                     pxlo,
+                     prclTrg,
+                     pptlSrc,
+                     pptlMask,
+                     pbo,
+                     pptlBrush,
+                     rop4);
 }
 
 
@@ -44,9 +52,9 @@ BOOL APIENTRY DrvStrokePath(
     _In_ MIX        mix
     )
 {
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
+
+    return EngStrokePath(pso, ppo, pco,
+                    pxo, pbo, pptlBrushOrg, plineattrs, mix);
 }
 
 BOOL APIENTRY DrvTransparentBlt(
@@ -59,9 +67,10 @@ BOOL APIENTRY DrvTransparentBlt(
     _In_ ULONG      iTransColor,
     _In_ ULONG      ulReserved)
 {
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
+    return EngTransparentBlt(psoDst, psoSrc,
+                             pco, pxlo, prclDst,
+                             prclSrc, iTransColor,
+                              ulReserved);
 }
 
 BOOL
@@ -73,9 +82,9 @@ DrvCopyBits(_Out_ SURFOBJ*  DestObj,
             _In_  RECTL*    DestRectL,
             _In_  POINTL*   SrcPointL)
 {
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
+    return  DrvBitBlt(DestObj, SourceObj, 0,
+                        ClipObj, XLateObj, DestRectL,
+                        SrcPointL, 0, 0, 0, FALSE);
 }
 
 
@@ -92,9 +101,9 @@ BOOL APIENTRY DrvTextOut(
     _In_ MIX       mix
     )
 {
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
+    return EngTextOut(pso, pstro, pfo, pco,
+                      prclExtra, prclOpaque, pboFore,
+                       pboOpaque, pptlOrg, mix);
 }
 
 BOOL APIENTRY
@@ -109,9 +118,8 @@ DrvLineTo(
     _In_ RECTL *RectBounds,
     _In_ MIX mix)
 {
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
+    return EngLineTo(DestObj, Clip, Brush,
+                    x1,  y1, x2, y2, RectBounds, mix);
 }
 
 BOOL APIENTRY DrvFillPath(
@@ -124,9 +132,9 @@ BOOL APIENTRY DrvFillPath(
     _In_ FLONG     flOptions
     )
 {
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
+    return EngFillPath(pso, ppo, pco,
+                      pbo, pptlBrushOrg,
+                      mix, flOptions);
 }
 
 BOOL APIENTRY DrvStrokeAndFillPath(
@@ -142,9 +150,10 @@ BOOL APIENTRY DrvStrokeAndFillPath(
     _In_ FLONG      flOptions
     )
 {
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
+    return  EngStrokeAndFillPath(pso, ppo, pco,
+                               pxo, pboStroke,
+                               plineattrs, pboFill,
+                              pptlBrushOrg,  mixFill, flOptions);
 }
 
 BOOL APIENTRY DrvStretchBltROP(
@@ -163,9 +172,10 @@ BOOL APIENTRY DrvStretchBltROP(
     _In_ DWORD            rop4
     )
 {
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
+    return EngStretchBltROP(psoDest, psoSrc, psoMask,
+                            pco, pxlo, pca, pptlHTOrg,
+                            prclDest, prclSrc, pptlMask,
+                           iMode, pbo,  rop4);
 }
 
 
@@ -183,7 +193,7 @@ BOOL APIENTRY DrvPlgBlt(
     _In_ ULONG            iMode
     )
 {
-    UNIMPLEMENTED;
-    __debugbreak();
-    return 0;
+    return EngPlgBlt(psoTrg, psoSrc, psoMsk,
+                      pco, pxlo, pca, pptlBrushOrg,
+                      pptfx, prcl, pptl, iMode);
 }

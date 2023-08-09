@@ -72,8 +72,8 @@ typedef unsigned long  DWORD;
 typedef unsigned char  BYTE;
 
 #include <windef.h>
-#include <d3dkmddi.h>
-#include <d3dkmdt.h>
+#include "d3dkmddi.h"
+#include "d3dkmdt.h"
 
 #define DlDebugPrintEx(arg) DlDebugPrint arg
 

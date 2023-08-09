@@ -1,5 +1,7 @@
 
 #include "cdd.h"
+#include "../dxgkrnl/include/classes/dxgdevice.hxx"
+#include "../dxgkrnl/include/classes/dxgadapter.hxx"
 #include <debug.h>
 
 static LOGFONTW SystemFont = { 16, 7, 0, 0, 700, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, VARIABLE_PITCH | FF_DONTCARE, L"System" };
@@ -121,7 +123,7 @@ GetAvailableModes(
 
 BOOL
 IntInitScreenInfo(
-   PPDEV ppdev,
+   PCDDPDEV ppdev,
    LPDEVMODEW pDevMode,
    PGDIINFO pGdiInfo,
    PDEVINFO pDevInfo)
@@ -133,7 +135,7 @@ IntInitScreenInfo(
 
 BOOL
 IntInitDefaultPalette(
-   PPDEV ppdev,
+   PCDDPDEV ppdev,
    PDEVINFO pDevInfo)
 {
    ULONG ColorLoop;
@@ -147,7 +149,7 @@ IntInitDefaultPalette(
    }
    else
    {
-      ppdev->PaletteEntries = EngAllocMem(0, sizeof(PALETTEENTRY) << 8, ALLOC_TAG);
+      ppdev->PaletteEntries = (PALETTEENTRY*)EngAllocMem(0, sizeof(PALETTEENTRY) << 8, ALLOC_TAG);
       if (ppdev->PaletteEntries == NULL)
       {
          return FALSE;
@@ -190,7 +192,7 @@ VOID APIENTRY
 DrvDisableSurface(
    IN DHPDEV dhpdev)
 {
-   PPDEV ppdev = (PPDEV)dhpdev;
+   PCDDPDEV ppdev = (PCDDPDEV)dhpdev;
 
    EngDeleteSurface(ppdev->hSurfEng);
    ppdev->hSurfEng = NULL;
@@ -200,7 +202,7 @@ HSURF APIENTRY
 DrvEnableSurface(
    IN DHPDEV dhpdev)
 {
-   PPDEV ppdev = (PPDEV)dhpdev;
+   PCDDPDEV ppdev = (PCDDPDEV)dhpdev;
    HSURF hSurface;
    ULONG BitmapType;
    SIZEL ScreenSize;
@@ -324,9 +326,68 @@ DrvGetModes(_In_ HANDLE hDriver,
             _In_ ULONG cjSize,
             _Out_ DEVMODEW *pdm)
 {
-   UNIMPLEMENTED;
+   NTSTATUS Status = STATUS_PROCEDURE_NOT_FOUND;
+   /*
+    * X 1) Call EngQueryW32kCddInterface here for some reason TODO: why the fuck here?
+    * 2) There's some functiom callback happening in the stack trace i dont udnerstand here
+    * X 3) Load the Dxgkrnl DeviceObject so we can make IOCTRL calls
+    * X 4) Build IOCTRL request seems like IOCTRL code is : 0x23E05B - Not sure what the name would be
+    * ill have to make oen up but i know this is where the CDD Interface gets passed.. aka
+    * stuff for making some of these requests :)
+    * 5) Get the dipslay mode list. from here we parse ths auto translating from D3DFORMAT to
+    * what GDI will find quite helpful.
+    * 6)
+    *
+    */
+   DXGADAPTER* DxgAdapter = NULL;
+   PFILE_OBJECT RDDM_FileObject;
+   PDEVICE_OBJECT RDDM_DeviceObject;
+   WIN32CDD_INTERFACE W32kCddInterface;
+   ULONG ProcessLocal;
+   PIRP Irp;
+   KEVENT Event;
+   UINT32 OkayLol;
+   IO_STATUS_BLOCK IoStatusBlock;
+   UNICODE_STRING DestinationString;
+    D3DKMT_GETDISPLAYMODELIST *GetDisplayModeList;
+    W32kCddInterface.Version = RTM_VISTA;
+   RtlInitUnicodeString(&DestinationString, L"\\Device\\DxgKrnl");
+   Status = IoGetDeviceObjectPointer(&DestinationString, FILE_ALL_ACCESS, &RDDM_FileObject, &RDDM_DeviceObject);
+   if(Status != STATUS_SUCCESS)
+   {
+       DPRINT1("DrvGetModes: Setting up DxgKrnl Failed\n");
+   }
+   DXGKCDD_INTERFACE Interfaces;
+
+   Status = EngQueryW32kCddInterface(hDriver, 0, (PVOID)&W32kCddInterface, (PVOID)DxgAdapter, (PVOID)&OkayLol, (PVOID)&ProcessLocal);
+   if (Status != STATUS_SUCCESS)
+   {
+      DPRINT1("DrvGetModes: EngQueryW32kCddInterface Failed with Status %d\n", Status);
+   }
+
+   /* Build event and create IRP */
+   DPRINT1("DrvGetModes: Building IOCTRL with DxgKrnl\n");
+   KeInitializeEvent(&Event, SynchronizationEvent, FALSE);
+   Irp = IoBuildDeviceIoControlRequest(0x23E05B, /* TODO: decide name*/
+                                         RDDM_DeviceObject,
+                                         &Interfaces,
+                                         0x4C,
+                                         &Interfaces,
+                                         0x4C,
+                                         TRUE,
+                                         &Event,
+                                         &IoStatusBlock);
+
+   Status = IofCallDriver(RDDM_DeviceObject, Irp);
+   KeWaitForSingleObject(&Event, Executive, 0, 0, 0);
+   Status = IoStatusBlock.Status;
+   DPRINT1("DrvGetModes: IofCallDriver Status %d\n", IoStatusBlock.Status);
+   Status = Interfaces.DxgkCddGetDisplayModeList((PVOID)DxgAdapter, &GetDisplayModeList);
+   DPRINT1("DxgkCddGetDisplayModeList: Status %d\n", Status);
+   DPRINT1("DxgkCddGetDisplayModeList: Screen Height %d\n", GetDisplayModeList->pModeList->Height);
+
    __debugbreak();
-   return 1;
+   return 0;
 }
 
 
@@ -345,7 +406,7 @@ DrvSetPalette(
    if (cColors == 0)
        return FALSE;
 
-   PaletteEntries = EngAllocMem(0, cColors * sizeof(ULONG), ALLOC_TAG);
+   PaletteEntries = (PALETTEENTRY*)EngAllocMem(0, cColors * sizeof(ULONG), ALLOC_TAG);
    if (PaletteEntries == NULL)
    {
       return FALSE;
@@ -378,11 +439,11 @@ DrvEnablePDEV(
    IN LPWSTR pwszDeviceName,
    IN HANDLE hDriver)
 {
-   PPDEV ppdev;
+   PCDDPDEV ppdev;
    GDIINFO GdiInfo;
    DEVINFO DevInfo;
 
-   ppdev = EngAllocMem(FL_ZERO_MEMORY, sizeof(PDEV), ALLOC_TAG);
+   ppdev = (PCDDPDEV)EngAllocMem(FL_ZERO_MEMORY, sizeof(CDDPDEV), ALLOC_TAG);
    if (ppdev == NULL)
    {
       return NULL;
@@ -417,7 +478,7 @@ DrvCompletePDEV(
    IN DHPDEV dhpdev,
    IN HDEV hdev)
 {
-   ((PPDEV)dhpdev)->hDevEng = hdev;
+   ((PCDDPDEV)dhpdev)->hDevEng = hdev;
 }
 
 /*
@@ -427,14 +488,14 @@ VOID APIENTRY
 DrvDisablePDEV(
    IN DHPDEV dhpdev)
 {
-   if (((PPDEV)dhpdev)->DefaultPalette)
+   if (((PCDDPDEV)dhpdev)->DefaultPalette)
    {
-      EngDeletePalette(((PPDEV)dhpdev)->DefaultPalette);
+      EngDeletePalette(((PCDDPDEV)dhpdev)->DefaultPalette);
    }
 
-   if (((PPDEV)dhpdev)->PaletteEntries != NULL)
+   if (((PCDDPDEV)dhpdev)->PaletteEntries != NULL)
    {
-      EngFreeMem(((PPDEV)dhpdev)->PaletteEntries);
+      EngFreeMem(((PCDDPDEV)dhpdev)->PaletteEntries);
    }
 
    EngFreeMem(dhpdev);

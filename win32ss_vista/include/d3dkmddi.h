@@ -1,8 +1,7 @@
 
-#ifndef _D3DKMDDI_H_
-#define _D3DKMDDI_H_
+#pragma once
 
-#include <d3dkmdt.h>
+#include "d3dkmdt.h"
 
 #ifndef DXGK_ALLOCATIONINFOFLAGS_EXT
 #define DXGK_ALLOCATIONINFOFLAGS_EXT
@@ -10254,8 +10253,6 @@ typedef DXGKDDI_FLUSHHWQUEUE         *PDXGKDDI_FLUSHHWQUEUE;
 #if defined (_MSC_VER)
 #pragma warning(pop)
 #endif
-
-#endif /* _D3DKMDDI_H_ */
 
 
 
