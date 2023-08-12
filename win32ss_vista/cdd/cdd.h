@@ -16,7 +16,9 @@ extern "C"
 }
 #include <stdarg.h>
 #include <wingdi.h>
+#ifndef DXGK
 #include <winddi.h>
+#endif
 #include <winioctl.h>
 #include <ntddvdeo.h>
 

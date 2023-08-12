@@ -11,6 +11,20 @@
 #include <windef.h>
 #include <ntstatus.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+	#endif
+NTKERNELAPI
+NTSTATUS
+NTAPI
+ObCloseHandle(
+    _In_ HANDLE Handle,
+    _In_ KPROCESSOR_MODE AccessMode
+);
+#ifdef __cplusplus
+}
+#endif
 #include <stdio.h>
 #include "../../include/locd3d.h"
 #include <ntddvdeo.h>
@@ -33,7 +47,9 @@ typedef struct _DXGKRNL_PRIVATE_EXTENSION
     PVOID MiniportContext;
 	UNICODE_STRING RegistryPath;
     UNICODE_STRING NewRegistryPath;
+	PDEVICE_OBJECT NextDeviceObject;
 } DXGKRNL_PRIVATE_EXTENSION, *PDXGKRNL_PRIVATE_EXTENSION;
+
 
 #include "rdport.h"
 

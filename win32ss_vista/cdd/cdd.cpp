@@ -7,7 +7,7 @@
 static LOGFONTW SystemFont = { 16, 7, 0, 0, 700, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, VARIABLE_PITCH | FF_DONTCARE, L"System" };
 static LOGFONTW AnsiVariableFont = { 12, 9, 0, 0, 400, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_STROKE_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_DONTCARE, L"MS Sans Serif" };
 static LOGFONTW AnsiFixedFont = { 12, 9, 0, 0, 400, 0, 0, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS, CLIP_STROKE_PRECIS, PROOF_QUALITY, FIXED_PITCH | FF_DONTCARE, L"Courier" };
-
+ULONG_PTR FramebufferMapped;
 const PALETTEENTRY BASEPALETTE[20] =
 {
    { 0x00, 0x00, 0x00, 0x00 },
@@ -128,8 +128,221 @@ IntInitScreenInfo(
    PGDIINFO pGdiInfo,
    PDEVINFO pDevInfo)
 {
-   UNIMPLEMENTED;
-   __debugbreak();
+   ULONG ModeCount;
+   ULONG ModeInfoSize;
+   PVIDEO_MODE_INFORMATION ModeInfo, ModeInfoPtr, SelectedMode = NULL;
+   //VIDEO_COLOR_CAPABILITIES ColorCapabilities;
+  // ULONG Temp;
+
+    VIDEO_MODE_INFORMATION ModeInfoList[1];
+   ModeInfoList[0].Length = 0x1D4C00;
+   ModeInfoList[0].ModeIndex = 0;
+   ModeInfoList[0].VisScreenWidth = 800;
+   ModeInfoList[0].VisScreenHeight = 600;
+   ModeInfoList[0].ScreenStride = 4;
+    ULONG BytesPerPixel = 4;
+
+    ModeInfoList[0].ScreenStride = 800 * BytesPerPixel;
+    ModeInfoList[0].NumberOfPlanes = 1;
+    ModeInfoList[0].BitsPerPlane = BytesPerPixel * 8;
+    ModeInfoList[0].Frequency = 60;
+   ModeInfoList[0].XMillimeter = 0; /* FIXME */
+   ModeInfoList[0].YMillimeter = 0; /* FIXME */
+    if (BytesPerPixel >= 3)
+    {
+        ModeInfoList[0].NumberRedBits = 8;
+        ModeInfoList[0].NumberGreenBits = 8;
+        ModeInfoList[0].NumberBlueBits = 8;
+        ModeInfoList[0].RedMask = 0xFF0000;
+        ModeInfoList[0].GreenMask = 0x00FF00;
+        ModeInfoList[0].BlueMask = 0x0000FF;
+    }
+    else
+    {
+        /* FIXME: not implemented */
+       // WARN_(IHVVIDEO, "BytesPerPixel %d - not implemented\n", BytesPerPixel);
+    }
+    ModeInfoList[0].VideoMemoryBitmapWidth = ModeInfoList[0].VisScreenWidth;
+    ModeInfoList[0].VideoMemoryBitmapHeight = ModeInfoList[0].VisScreenHeight;
+    ModeInfoList[0].AttributeFlags = VIDEO_MODE_GRAPHICS | VIDEO_MODE_COLOR |
+        VIDEO_MODE_NO_OFF_SCREEN;
+   ModeInfoList[0].DriverSpecificAttributeFlags = 0;
+
+   ModeInfoSize = sizeof(VIDEO_MODE_INFORMATION) * 2;
+   ModeInfo = ModeInfoList;
+   /*
+    * Call miniport to get information about video modes.
+    */
+
+   ModeCount = 1;//GetAvailableModes(ppdev->hDriver, &ModeInfo, &ModeInfoSize);
+   if (ModeCount == 0)
+   {
+      return FALSE;
+   }
+
+   /*
+    * Select the video mode depending on the info passed in pDevMode.
+    */
+
+   if (pDevMode->dmPelsWidth == 0 && pDevMode->dmPelsHeight == 0 &&
+       pDevMode->dmBitsPerPel == 0 && pDevMode->dmDisplayFrequency == 0)
+   {
+      ModeInfoPtr = ModeInfo;
+      while (ModeCount-- > 0)
+      {
+         if (ModeInfoPtr->Length == 0)
+         {
+            ModeInfoPtr = (PVIDEO_MODE_INFORMATION)
+               (((PUCHAR)ModeInfoPtr) + ModeInfoSize);
+            continue;
+         }
+         SelectedMode = ModeInfoPtr;
+         break;
+      }
+   }
+   else
+   {
+      ModeInfoPtr = ModeInfo;
+      while (ModeCount-- > 0)
+      {
+         if (ModeInfoPtr->Length > 0 &&
+             pDevMode->dmPelsWidth == ModeInfoPtr->VisScreenWidth &&
+             pDevMode->dmPelsHeight == ModeInfoPtr->VisScreenHeight &&
+             pDevMode->dmBitsPerPel == (ModeInfoPtr->BitsPerPlane *
+                                        ModeInfoPtr->NumberOfPlanes) &&
+             pDevMode->dmDisplayFrequency == ModeInfoPtr->Frequency)
+         {
+            SelectedMode = ModeInfoPtr;
+            break;
+         }
+
+         ModeInfoPtr = (PVIDEO_MODE_INFORMATION)
+            (((PUCHAR)ModeInfoPtr) + ModeInfoSize);
+      }
+   }
+
+   if (SelectedMode == NULL)
+   {
+      //EngFreeMem(ModeInfo);
+      //return FALSE;
+   }
+
+   /*
+    * Fill in the GDIINFO data structure with the information returned from
+    * the kernel driver.
+    */
+
+   ppdev->ModeIndex = SelectedMode->ModeIndex;
+   ppdev->ScreenWidth = SelectedMode->VisScreenWidth;
+   ppdev->ScreenHeight = SelectedMode->VisScreenHeight;
+   ppdev->ScreenDelta = SelectedMode->ScreenStride;
+   ppdev->BitsPerPixel = (UCHAR)(SelectedMode->BitsPerPlane * SelectedMode->NumberOfPlanes);
+
+   ppdev->MemWidth = SelectedMode->VideoMemoryBitmapWidth;
+   ppdev->MemHeight = SelectedMode->VideoMemoryBitmapHeight;
+
+   ppdev->RedMask = SelectedMode->RedMask;
+   ppdev->GreenMask = SelectedMode->GreenMask;
+   ppdev->BlueMask = SelectedMode->BlueMask;
+
+   pGdiInfo->ulVersion = GDI_DRIVER_VERSION;
+   pGdiInfo->ulTechnology = DT_RASDISPLAY;
+   pGdiInfo->ulHorzSize = SelectedMode->XMillimeter;
+   pGdiInfo->ulVertSize = SelectedMode->YMillimeter;
+   pGdiInfo->ulHorzRes = SelectedMode->VisScreenWidth;
+   pGdiInfo->ulVertRes = SelectedMode->VisScreenHeight;
+   pGdiInfo->ulPanningHorzRes = SelectedMode->VisScreenWidth;
+   pGdiInfo->ulPanningVertRes = SelectedMode->VisScreenHeight;
+   pGdiInfo->cBitsPixel = SelectedMode->BitsPerPlane;
+   pGdiInfo->cPlanes = SelectedMode->NumberOfPlanes;
+   pGdiInfo->ulVRefresh = SelectedMode->Frequency;
+   pGdiInfo->ulBltAlignment = 1;
+   pGdiInfo->ulLogPixelsX = pDevMode->dmLogPixels;
+   pGdiInfo->ulLogPixelsY = pDevMode->dmLogPixels;
+   pGdiInfo->flTextCaps = TC_RA_ABLE;
+   pGdiInfo->flRaster = 0;
+   pGdiInfo->ulDACRed = SelectedMode->NumberRedBits;
+   pGdiInfo->ulDACGreen = SelectedMode->NumberGreenBits;
+   pGdiInfo->ulDACBlue = SelectedMode->NumberBlueBits;
+   pGdiInfo->ulAspectX = 0x24;
+   pGdiInfo->ulAspectY = 0x24;
+   pGdiInfo->ulAspectXY = 0x33;
+   pGdiInfo->xStyleStep = 1;
+   pGdiInfo->yStyleStep = 1;
+   pGdiInfo->denStyleStep = 3;
+   pGdiInfo->ptlPhysOffset.x = 0;
+   pGdiInfo->ptlPhysOffset.y = 0;
+   pGdiInfo->szlPhysSize.cx = 0;
+   pGdiInfo->szlPhysSize.cy = 0;
+
+
+
+   pGdiInfo->ciDevice.Red.Y = 0;
+   pGdiInfo->ciDevice.Green.Y = 0;
+   pGdiInfo->ciDevice.Blue.Y = 0;
+   pGdiInfo->ciDevice.Cyan.x = 0;
+   pGdiInfo->ciDevice.Cyan.y = 0;
+   pGdiInfo->ciDevice.Cyan.Y = 0;
+   pGdiInfo->ciDevice.Magenta.x = 0;
+   pGdiInfo->ciDevice.Magenta.y = 0;
+   pGdiInfo->ciDevice.Magenta.Y = 0;
+   pGdiInfo->ciDevice.Yellow.x = 0;
+   pGdiInfo->ciDevice.Yellow.y = 0;
+   pGdiInfo->ciDevice.Yellow.Y = 0;
+   pGdiInfo->ciDevice.MagentaInCyanDye = 0;
+   pGdiInfo->ciDevice.YellowInCyanDye = 0;
+   pGdiInfo->ciDevice.CyanInMagentaDye = 0;
+   pGdiInfo->ciDevice.YellowInMagentaDye = 0;
+   pGdiInfo->ciDevice.CyanInYellowDye = 0;
+   pGdiInfo->ciDevice.MagentaInYellowDye = 0;
+   pGdiInfo->ulDevicePelsDPI = 0;
+   pGdiInfo->ulPrimaryOrder = PRIMARY_ORDER_CBA;
+   pGdiInfo->ulHTPatternSize = HT_PATSIZE_4x4_M;
+   pGdiInfo->flHTFlags = HT_FLAG_ADDITIVE_PRIMS;
+
+   pDevInfo->flGraphicsCaps = 0;
+   pDevInfo->lfDefaultFont = SystemFont;
+   pDevInfo->lfAnsiVarFont = AnsiVariableFont;
+   pDevInfo->lfAnsiFixFont = AnsiFixedFont;
+   pDevInfo->cFonts = 0;
+   pDevInfo->cxDither = 0;
+   pDevInfo->cyDither = 0;
+   pDevInfo->hpalDefault = 0;
+   pDevInfo->flGraphicsCaps2 = 0;
+
+   if (ppdev->BitsPerPixel == 8)
+   {
+      pGdiInfo->ulNumColors = 20;
+      pGdiInfo->ulNumPalReg = 1 << ppdev->BitsPerPixel;
+      pGdiInfo->ulHTOutputFormat = HT_FORMAT_8BPP;
+      pDevInfo->flGraphicsCaps |= GCAPS_PALMANAGED;
+      pDevInfo->iDitherFormat = BMF_8BPP;
+      /* Assuming palette is orthogonal - all colors are same size. */
+      ppdev->PaletteShift = (UCHAR)(8 - pGdiInfo->ulDACRed);
+   }
+   else
+   {
+      pGdiInfo->ulNumColors = (ULONG)(-1);
+      pGdiInfo->ulNumPalReg = 0;
+      switch (ppdev->BitsPerPixel)
+      {
+         case 16:
+            pGdiInfo->ulHTOutputFormat = HT_FORMAT_16BPP;
+            pDevInfo->iDitherFormat = BMF_16BPP;
+            break;
+
+         case 24:
+            pGdiInfo->ulHTOutputFormat = HT_FORMAT_24BPP;
+            pDevInfo->iDitherFormat = BMF_24BPP;
+            break;
+
+         default:
+            pGdiInfo->ulHTOutputFormat = HT_FORMAT_32BPP;
+            pDevInfo->iDitherFormat = BMF_32BPP;
+      }
+   }
+
+ //  EngFreeMem(ModeInfo);
    return TRUE;
 }
 
@@ -221,7 +434,7 @@ DrvEnableSurface(
     */
 
    //TODO: This is just a note, this isn't suppose to be called yet
-   VideoMemoryInfo.FrameBufferBase = (PVOID)0x80000000;
+   VideoMemoryInfo.FrameBufferBase = (PVOID)FramebufferMapped;
 #if 0
    if (EngDeviceIoControl(ppdev->hDriver, IOCTL_VIDEO_MAP_VIDEO_MEMORY,
                           &VideoMemory, sizeof(VIDEO_MEMORY),
@@ -236,7 +449,7 @@ DrvEnableSurface(
    switch (ppdev->BitsPerPixel)
    {
       case 8:
-         IntSetPalette(dhpdev, ppdev->PaletteEntries, 0, 256);
+       //  IntSetPalette(dhpdev, ppdev->PaletteEntries, 0, 256);
          BitmapType = BMF_8BPP;
          break;
 
@@ -349,7 +562,7 @@ DrvGetModes(_In_ HANDLE hDriver,
    UINT32 OkayLol;
    IO_STATUS_BLOCK IoStatusBlock;
    UNICODE_STRING DestinationString;
-    D3DKMT_GETDISPLAYMODELIST *GetDisplayModeList;
+  //  D3DKMT_GETDISPLAYMODELIST *GetDisplayModeList;
     W32kCddInterface.Version = RTM_VISTA;
    RtlInitUnicodeString(&DestinationString, L"\\Device\\DxgKrnl");
    Status = IoGetDeviceObjectPointer(&DestinationString, FILE_ALL_ACCESS, &RDDM_FileObject, &RDDM_DeviceObject);
@@ -357,23 +570,23 @@ DrvGetModes(_In_ HANDLE hDriver,
    {
        DPRINT1("DrvGetModes: Setting up DxgKrnl Failed\n");
    }
-   DXGKCDD_INTERFACE Interfaces;
+  /// DXGKCDD_INTERFACE Interfaces;
 
    Status = EngQueryW32kCddInterface(hDriver, 0, (PVOID)&W32kCddInterface, (PVOID)DxgAdapter, (PVOID)&OkayLol, (PVOID)&ProcessLocal);
    if (Status != STATUS_SUCCESS)
    {
       DPRINT1("DrvGetModes: EngQueryW32kCddInterface Failed with Status %d\n", Status);
    }
-
+   ULONG_PTR Ptr;
    /* Build event and create IRP */
    DPRINT1("DrvGetModes: Building IOCTRL with DxgKrnl\n");
    KeInitializeEvent(&Event, SynchronizationEvent, FALSE);
    Irp = IoBuildDeviceIoControlRequest(0x23E05B, /* TODO: decide name*/
                                          RDDM_DeviceObject,
-                                         &Interfaces,
-                                         0x4C,
-                                         &Interfaces,
-                                         0x4C,
+                                         &Ptr,
+                                         sizeof(Ptr),
+                                         &Ptr,
+                                         sizeof(Ptr),
                                          TRUE,
                                          &Event,
                                          &IoStatusBlock);
@@ -382,12 +595,117 @@ DrvGetModes(_In_ HANDLE hDriver,
    KeWaitForSingleObject(&Event, Executive, 0, 0, 0);
    Status = IoStatusBlock.Status;
    DPRINT1("DrvGetModes: IofCallDriver Status %d\n", IoStatusBlock.Status);
-   Status = Interfaces.DxgkCddGetDisplayModeList((PVOID)DxgAdapter, &GetDisplayModeList);
+   FramebufferMapped = (ULONG_PTR)Ptr;
    DPRINT1("DxgkCddGetDisplayModeList: Status %d\n", Status);
-   DPRINT1("DxgkCddGetDisplayModeList: Screen Height %d\n", GetDisplayModeList->pModeList->Height);
+  // DPRINT1("DxgkCddGetDisplayModeList: Screen Height %d\n", GetDisplayModeList->pModeList->Height);
 
-   __debugbreak();
-   return 0;
+#if 0
+typedef struct _VIDEO_MODE_INFORMATION {
+    ULONG Length;
+    ULONG ModeIndex;
+    ULONG VisScreenWidth;
+    ULONG VisScreenHeight;
+    ULONG ScreenStride;
+    ULONG NumberOfPlanes;
+    ULONG BitsPerPlane;
+    ULONG Frequency;
+    ULONG XMillimeter;
+    ULONG YMillimeter;
+    ULONG NumberRedBits;
+    ULONG NumberGreenBits;
+    ULONG NumberBlueBits;
+    ULONG RedMask;
+    ULONG GreenMask;
+    ULONG BlueMask;
+    ULONG AttributeFlags;
+    ULONG VideoMemoryBitmapWidth;
+    ULONG VideoMemoryBitmapHeight;
+    ULONG DriverSpecificAttributeFlags;
+} VIDEO_MODE_INFORMATION, *PVIDEO_MODE_INFORMATION;
+#endif
+
+   VIDEO_MODE_INFORMATION ModeInfoList[1];
+   ModeInfoList[0].Length = 0x1D4C00;
+   ModeInfoList[0].ModeIndex = 0;
+   ModeInfoList[0].VisScreenWidth = 800;
+   ModeInfoList[0].VisScreenHeight = 600;
+   ModeInfoList[0].ScreenStride = 4;
+    ULONG BytesPerPixel = 4;
+
+    ModeInfoList[0].ScreenStride = 800 * BytesPerPixel;
+    ModeInfoList[0].NumberOfPlanes = 1;
+    ModeInfoList[0].BitsPerPlane = BytesPerPixel * 8;
+    ModeInfoList[0].Frequency = 60;
+   ModeInfoList[0].XMillimeter = 0; /* FIXME */
+   ModeInfoList[0].YMillimeter = 0; /* FIXME */
+    if (BytesPerPixel >= 3)
+    {
+        ModeInfoList[0].NumberRedBits = 8;
+        ModeInfoList[0].NumberGreenBits = 8;
+        ModeInfoList[0].NumberBlueBits = 8;
+        ModeInfoList[0].RedMask = 0xFF0000;
+        ModeInfoList[0].GreenMask = 0x00FF00;
+        ModeInfoList[0].BlueMask = 0x0000FF;
+    }
+    else
+    {
+        /* FIXME: not implemented */
+       // WARN_(IHVVIDEO, "BytesPerPixel %d - not implemented\n", BytesPerPixel);
+    }
+    ModeInfoList[0].VideoMemoryBitmapWidth = ModeInfoList[0].VisScreenWidth;
+    ModeInfoList[0].VideoMemoryBitmapHeight = ModeInfoList[0].VisScreenHeight;
+    ModeInfoList[0].AttributeFlags = VIDEO_MODE_GRAPHICS | VIDEO_MODE_COLOR |
+        VIDEO_MODE_NO_OFF_SCREEN;
+   ModeInfoList[0].DriverSpecificAttributeFlags = 0;
+
+   ULONG ModeCount;
+   ULONG ModeInfoSize = sizeof(VIDEO_MODE_INFORMATION) * 2;
+   PVIDEO_MODE_INFORMATION ModeInfo, ModeInfoPtr;
+   ULONG OutputSize;
+
+   ModeInfo = ModeInfoList;
+   ModeCount = 1;
+   if (ModeCount == 0)
+   {
+      return 0;
+   }
+
+   if (pdm == NULL)
+   {
+      //EngFreeMem(ModeInfo);
+      return 1 * sizeof(DEVMODEW);
+   }
+
+   /*
+    * Copy the information about supported modes into the output buffer.
+    */
+
+   OutputSize = 0;
+   ModeInfoPtr = ModeInfo;
+
+   while (ModeCount-- > 0)
+   {
+
+      memset(pdm, 0, sizeof(DEVMODEW));
+      memcpy(pdm->dmDeviceName, DEVICE_NAME, sizeof(DEVICE_NAME));
+      pdm->dmSpecVersion =
+      pdm->dmDriverVersion = DM_SPECVERSION;
+      pdm->dmSize = sizeof(DEVMODEW);
+      pdm->dmDriverExtra = 0;
+      pdm->dmBitsPerPel = ModeInfoPtr->NumberOfPlanes * ModeInfoPtr->BitsPerPlane;
+      pdm->dmPelsWidth = ModeInfoPtr->VisScreenWidth;
+      pdm->dmPelsHeight = ModeInfoPtr->VisScreenHeight;
+      pdm->dmDisplayFrequency = ModeInfoPtr->Frequency;
+      pdm->dmDisplayFlags = 0;
+      pdm->dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT |
+                      DM_DISPLAYFREQUENCY | DM_DISPLAYFLAGS;
+
+      ModeInfoPtr = (PVIDEO_MODE_INFORMATION)(((ULONG_PTR)ModeInfoPtr) + ModeInfoSize);
+      pdm = (LPDEVMODEW)(((ULONG_PTR)pdm) + sizeof(DEVMODEW));
+      OutputSize += sizeof(DEVMODEW);
+   }
+
+   return OutputSize;
 }
 
 
@@ -419,7 +737,7 @@ DrvSetPalette(
       return FALSE;
    }
 
-   bRet = IntSetPalette(dhpdev, PaletteEntries, iStart, cColors);
+   bRet = FALSE;//IntSetPalette(dhpdev, PaletteEntries, iStart, cColors);
    EngFreeMem(PaletteEntries);
    return bRet;
 }
@@ -453,8 +771,8 @@ DrvEnablePDEV(
 
    if (!IntInitScreenInfo(ppdev, pdm, &GdiInfo, &DevInfo))
    {
-      EngFreeMem(ppdev);
-      return NULL;
+      //EngFreeMem(ppdev);
+     // return NULL;
    }
 
    if (!IntInitDefaultPalette(ppdev, &DevInfo))

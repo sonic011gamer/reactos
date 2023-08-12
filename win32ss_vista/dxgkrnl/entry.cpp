@@ -6,6 +6,11 @@
  */
 
 #include <include/dxgkrnl.h>
+#include "../include/d3dukmdt.h"
+#include "../include/d3dkmdt.h"
+#include "../include/d3dkmthk.h"
+#include "../include/d3dkmddi.h"
+#include "../../cdd/cdd_testinterface.h"
 //#define NDEBUG
 #include <debug.h>
 
@@ -114,6 +119,32 @@ DpiStartAdapter()
    // DxgkrnlVidPnAdapterTest();
     return Status;
 }
+
+DXGKCDD_INTERFACE Interface;
+#if 0
+typedef struct _D3DKMT_DISPLAYMODE
+{
+    UINT                                   Width;
+    UINT                                   Height;
+    D3DDDIFORMAT                           Format;
+    UINT                                   IntegerRefreshRate;
+    D3DDDI_RATIONAL                        RefreshRate;
+    D3DDDI_VIDEO_SIGNAL_SCANLINE_ORDERING  ScanLineOrdering;
+    D3DDDI_ROTATION                        DisplayOrientation;
+    UINT                                   DisplayFixedOutput;
+    D3DKMDT_DISPLAYMODE_FLAGS              Flags;
+} D3DKMT_DISPLAYMODE;
+#endif
+NTSTATUS
+APIENTRY
+DxgkCdd_GetDisplayMode(PVOID DxgAdater, D3DKMT_GETDISPLAYMODELIST **GetDisplayModeList)
+{
+
+    DPRINT1("DxgkCdd_GetDisplayMode: Called\n");
+   // D3DKMT_DISPLAYMODE Mode = {0};
+   // GetDisplayModeList->pModeList[0] = Mode;
+    return 0;
+}
 /*
  * @ HALF-IMPLEMENTED
  */
@@ -150,6 +181,12 @@ DxgkInternalDeviceControl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
             DPRINT1("This Dxgkrnl is from reactos\n");
             DpiStartAdapter();
             Irp->IoStatus.Status = STATUS_SUCCESS;
+            break;
+        case 0x23E05B:
+            OutputBuffer = (PVOID*)Irp->UserBuffer;
+            Irp->IoStatus.Information = 0;
+            Irp->IoStatus.Status = STATUS_SUCCESS;
+            *OutputBuffer = (PVOID)Interface.DxgkCddWaitForVerticalBlankEvent;
             break;
         case 0x230047:
             /*
@@ -219,6 +256,13 @@ DriverEntry(
     NTSTATUS Status;
     UNICODE_STRING DestinationString;
     PDEVICE_OBJECT DxgkrnlDeviceObject;
+     Interface.Version = 1;
+     Interface.DxgkCddGetDisplayModeList = DxgkCdd_GetDisplayMode;
+    PHYSICAL_ADDRESS Address;
+    Address.QuadPart = 0x80000000;
+     Interface.DxgkCddWaitForVerticalBlankEvent = MmMapIoSpace(Address,
+                                   0x1D4C00,
+                                   MmNonCached);
 
     /* First fillout dispatch table */
     DriverObject->MajorFunction[IRP_MJ_CREATE] = (PDRIVER_DISPATCH)DxgkCreateClose;
