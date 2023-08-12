@@ -67,6 +67,7 @@ InitDisplayDriver(
     IN PWSTR pwszDeviceName,
     IN PWSTR pwszRegKey)
 {
+    __debugbreak();
     PGRAPHICS_DEVICE pGraphicsDevice;
     UNICODE_STRING ustrDeviceName, ustrDisplayDrivers, ustrDescription;
     NTSTATUS Status;

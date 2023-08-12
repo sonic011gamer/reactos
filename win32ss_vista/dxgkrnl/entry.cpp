@@ -91,19 +91,6 @@ VOID
 NTAPI
 DxgkrnlVidPnAdapterTest()
 {
-    NTSTATUS Status;
-    const HANDLE  hAdapter = DxgkrnlInterface.DeviceHandle;
-    DXGKARG_ENUMVIDPNCOFUNCMODALITY     pEnumCofuncModality;
-    DXGK_ENUM_PIVOT Pivot;
-    Pivot.VidPnSourceId = 1;
-    Pivot.VidPnSourceId = 1;
-    pEnumCofuncModality.EnumPivot = Pivot;
-    pEnumCofuncModality.EnumPivotType = D3DKMDT_EPT_UNINITIALIZED;
-    pEnumCofuncModality.hConstrainingVidPn = NULL;
-    DPRINT1("Beginning VidPn Adaptersetup tests\n this is a hack. Don't trust the output\n");
-    Status = Extension->DriverInitData.DxgkDdiEnumVidPnCofuncModality(hAdapter,&pEnumCofuncModality);
-     DPRINT1("DxgkDdiEnumVidPnCofuncModality returned with status :%X\n", Status);
-     __debugbreak();
 }
 
 NTSTATUS
@@ -124,7 +111,7 @@ DpiStartAdapter()
     else{
         DPRINT1("DxgkDdiStartDevice: Failed with Status %d\n", Status);
     }
-    DxgkrnlVidPnAdapterTest();
+   // DxgkrnlVidPnAdapterTest();
     return Status;
 }
 /*

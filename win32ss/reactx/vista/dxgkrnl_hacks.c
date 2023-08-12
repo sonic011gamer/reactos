@@ -80,6 +80,7 @@ TryHackedDxgkrnlStartAdapter()
     else
     {
         DPRINT1("TryHackedDxgkrnlAdapterStart: ReactOS AdapterStart hack triggered\n");
+        /* let's load cdd here.. i guess */
         return TRUE;
     }
 BypassDxgkrnl:

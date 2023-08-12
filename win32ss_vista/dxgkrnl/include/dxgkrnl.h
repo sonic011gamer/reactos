@@ -31,6 +31,8 @@ typedef struct _DXGKRNL_PRIVATE_EXTENSION
     PDEVICE_OBJECT MiniportFdo;
     PDEVICE_OBJECT MiniportPdo;
     PVOID MiniportContext;
+	UNICODE_STRING RegistryPath;
+    UNICODE_STRING NewRegistryPath;
 } DXGKRNL_PRIVATE_EXTENSION, *PDXGKRNL_PRIVATE_EXTENSION;
 
 #include "rdport.h"
