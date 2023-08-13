@@ -11,7 +11,9 @@
 #include <debug.h>
 
 PDXGKRNL_PRIVATE_EXTENSION Extension;
-
+NTSTATUS
+NTAPI
+DxgkrnlCreateIds();
 /*
  * @ UNIMPLEMENTED
  */
@@ -898,6 +900,7 @@ RdPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
     Extension->MiniportFdo = Fdo;
     Extension->MiniportPdo = PhysicalDeviceObject;
     DPRINT1("RdPortAddDevice: Created Device\n");
+    DxgkrnlCreateIds();
     /* Remove the initializing flag */
     (DriverObject->DeviceObject)->Flags &= ~DO_DEVICE_INITIALIZING;
     Extension->NextDeviceObject = IoAttachDeviceToDeviceStack(

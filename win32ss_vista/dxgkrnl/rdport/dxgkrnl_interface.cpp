@@ -31,6 +31,10 @@ RDDM_DxgkCbEvalAcpiMethod(_In_ HANDLE DeviceHandle,
     return STATUS_UNSUCCESSFUL;
 }
 
+NTSTATUS
+NTAPI
+DxgkrnlSetupResourceList(_Inout_ PCM_RESOURCE_LIST* ResourceList);
+
 /**
  * @brief Fills out the DXGK_DEVICE_INFO parameter allocated
  *  by a miniport driver
@@ -47,31 +51,29 @@ RDDM_DxgkCbGetDeviceInformation(_In_ HANDLE DeviceHandle,
                                 _Out_ PDXGK_DEVICE_INFO DeviceInfo)
 {
     PHYSICAL_ADDRESS PhyNull, HighestPhysicalAddress;
+    NTSTATUS Status;
+
+    PCM_RESOURCE_LIST TranslatedResourceList;
     PhyNull.QuadPart = NULL;
     HighestPhysicalAddress.QuadPart = 0x1000000000;
-#if 0
-typedef struct _DXGK_DEVICE_INFO {
-    PVOID MiniportDeviceContext; X
-    PDEVICE_OBJECT PhysicalDeviceObject; X
-    UNICODE_STRING DeviceRegistryPath;
-    PCM_RESOURCE_LIST TranslatedResourceList; 
-    LARGE_INTEGER SystemMemorySize; X
-    PHYSICAL_ADDRESS HighestPhysicalAddress; X
-    PHYSICAL_ADDRESS AgpApertureBase; X
-    SIZE_T AgpApertureSize; X
-    DOCKING_STATE DockingState; X
-} DXGK_DEVICE_INFO, *PDXGK_DEVICE_INFO;
-#endif
+
+
+    Status = DxgkrnlSetupResourceList(&TranslatedResourceList);
+    if (Status != STATUS_SUCCESS)
+    {
+        DPRINT1("DxgkCbGetDeviceInformation: Failed with status\n", Status);
+    }
     DPRINT1("RDDM_DxgkCbGetDeviceInformation: Called\n");
+    DeviceInfo->TranslatedResourceList = TranslatedResourceList;
     DeviceInfo->MiniportDeviceContext = Extension->MiniportFdo;
     DeviceInfo->PhysicalDeviceObject = Extension->MiniportPdo;
     DeviceInfo->DockingState = DockStateUnsupported;
     DeviceInfo->SystemMemorySize.QuadPart = 0x1000000000;
     DeviceInfo->AgpApertureBase = PhyNull;
     DeviceInfo->AgpApertureSize = 0;
+    DeviceInfo->DeviceRegistryPath = Extension->RegistryPath;
     DeviceInfo->HighestPhysicalAddress = HighestPhysicalAddress;
     DeviceInfo->MiniportDeviceContext = Extension->MiniportContext;
-    UNIMPLEMENTED;
     __debugbreak();
    // DeviceInfo->TranslatedResourceList =
    // __debugbreak();
@@ -155,7 +157,9 @@ RDDM_DxgkCbSynchronizeExecution(_In_ HANDLE DeviceHandle,
 {
     //TODO: Implement meh
     UNIMPLEMENTED;
-    return STATUS_UNSUCCESSFUL;
+    *ReturnValue = 1;
+    __debugbreak();
+    return STATUS_SUCCESS;
 }
 
 NTSTATUS
