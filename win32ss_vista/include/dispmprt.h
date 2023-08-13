@@ -2361,7 +2361,6 @@ typedef struct _DRIVER_INITIALIZATION_DATA {
     PDXGKDDI_UNLOAD                         DxgkDdiUnload;
     PDXGKDDI_QUERY_INTERFACE                DxgkDdiQueryInterface;
     PDXGKDDI_CONTROL_ETW_LOGGING            DxgkDdiControlEtwLogging;
-
     PDXGKDDI_QUERYADAPTERINFO               DxgkDdiQueryAdapterInfo;
     PDXGKDDI_CREATEDEVICE                   DxgkDdiCreateDevice;
     PDXGKDDI_CREATEALLOCATION               DxgkDdiCreateAllocation;

@@ -15,6 +15,7 @@ DpiKmdDodInitialize(PDRIVER_OBJECT DriverObject,
                     PUNICODE_STRING SourceString,
                     PKMDDOD_INITIALIZATION_DATA KmdDodInitializationData)
 {
+    #if 0
     DPRINT("DpiKmdDodInitialize: Entry point\n");
     DPRINT("DpiKmdDodInitialize: KMDOD WDDM Miniport driver Reports version: 0x%X\n", KmdDodInitializationData->Version);
     
@@ -72,7 +73,7 @@ DpiKmdDodInitialize(PDRIVER_OBJECT DriverObject,
     DPRINT("DpiKmdDodInitialize: Finished\n");
     return STATUS_SUCCESS;
     }
-
+#endif
     return 0;
 }
 

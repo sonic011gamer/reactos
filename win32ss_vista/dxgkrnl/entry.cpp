@@ -73,7 +73,7 @@ RdPort_InitializeMiniport(PDRIVER_OBJECT DriverObject, PUNICODE_STRING SourceStr
     }
 
     /* Fill out the internal structure - WIP */
-    //DriverObjectExtension->DriverInitData = (PVOID)DriverInitData;
+    DriverObjectExtension->DriverInitData = *DriverInitData;
     DriverObjectExtension->DriverObject = DriverObject;
 
     /* Fill out the public dispatch routines */
@@ -251,7 +251,7 @@ RDDM_SetupDxgkrnl(
 
 EXTERN_C
 NTSTATUS
-NTAPI 
+NTAPI
 DriverEntry(
     IN PDRIVER_OBJECT DriverObject,
     IN PUNICODE_STRING RegistryPath)
@@ -261,11 +261,7 @@ DriverEntry(
     PDEVICE_OBJECT DxgkrnlDeviceObject;
      Interface.Version = 1;
      Interface.DxgkCddGetDisplayModeList = DxgkCdd_GetDisplayMode;
-    PHYSICAL_ADDRESS Address;
-    Address.QuadPart = 0x80000000;
-     Interface.DxgkCddWaitForVerticalBlankEvent = MmMapIoSpace(Address,
-                                   0x1D4C00,
-                                   MmNonCached);
+
 
     /* First fillout dispatch table */
     DriverObject->MajorFunction[IRP_MJ_CREATE] = (PDRIVER_DISPATCH)DxgkCreateClose;
@@ -277,7 +273,7 @@ DriverEntry(
     RtlInitUnicodeString(&DestinationString, L"\\Device\\DxgKrnl");
 
     DPRINT1("---------------------------ReactOS Display Driver Model---------------------------\n");
-    DPRINT1("Targetting Version: 0x%X\n", VERSION_WDDM_REACTOS);
+    DPRINT1("Targetting Version: 0x%X\n", DXGKDDI_INTERFACE_VERSION_VISTA_SP1);
     Status = IoCreateDevice(DriverObject,
                             0,
                             &DestinationString,

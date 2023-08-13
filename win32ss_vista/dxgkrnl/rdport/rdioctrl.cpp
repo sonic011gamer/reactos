@@ -241,6 +241,7 @@ IntCreateRegistryPath(
 #define TAG_VIDEO_PORT_BUFFER   '\0mpV'
 static
 NTSTATUS
+NTAPI
 IntVideoPortAddDeviceMapLink(
     PDXGKRNL_PRIVATE_EXTENSION DeviceExtension)
 {
@@ -364,6 +365,7 @@ IntVideoPortAddDeviceMapLink(
 
 
 NTSTATUS
+NTAPI
 IntDuplicateUnicodeString(
     IN ULONG Flags,
     IN PCUNICODE_STRING SourceString,
@@ -867,7 +869,7 @@ RdPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
     {
         DPRINT1("Could not gather DXGKRNL Extension\n");
     }
-
+    DPRINT1("Calling the Miniport Device\n");
     /* Call the miniport Routine */
     Status = Extension->DriverInitData.DxgkDdiAddDevice(PhysicalDeviceObject, (PVOID*)&Context);
     if(Status != STATUS_SUCCESS)

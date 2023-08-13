@@ -102,8 +102,16 @@ KeQueryLogicalProcessorRelationship(
     _Out_writes_bytes_opt_(*Length) PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX Information,
     _Inout_ PULONG Length)
 {
+    SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX InformationLoc = {0};
+    InformationLoc.Relationship = RelationProcessorCore;
+   // InformationLoc.GroupCount = 0;
+    InformationLoc.Size = sizeof(InformationLoc.Processor);
+
+
+
+    Information = &InformationLoc;
     UNIMPLEMENTED;
-    return STATUS_INVALID_PARAMETER;
+    return STATUS_SUCCESS;
 }
 
 NTKRNLVISTAAPI
