@@ -104,9 +104,12 @@ DpiStartAdapter()
 {
     NTSTATUS Status;
     DXGK_START_INFO     DxgkStartInfo = {0};
+    //HACK: Yeah. No.
+    DxgkStartInfo.AdapterGuid = {1, 0};
+       //DxgkStartInfo.TcbPrivilege = {SE_TCB_PRIVILEGE, 0};
     ULONG              NumberOfVideoPresentSources;
     ULONG              NumberOfChildren;
-    DPRINT1("DpiStartAdapter: EnryPoint\n");
+    DPRINT1("DpiStartAdapter: EntryPoint\n");
     Status = Extension->DriverInitData.DxgkDdiStartDevice(Extension->MiniportContext, &DxgkStartInfo,
                                                  &DxgkrnlInterface, &NumberOfVideoPresentSources, &NumberOfChildren);
     if (Status == STATUS_SUCCESS)
@@ -116,7 +119,7 @@ DpiStartAdapter()
     else{
         DPRINT1("DxgkDdiStartDevice: Failed with Status %d\n", Status);
     }
-   // DxgkrnlVidPnAdapterTest();
+
     return Status;
 }
 
@@ -196,7 +199,7 @@ DxgkInternalDeviceControl(DEVICE_OBJECT *DeviceObject, IRP *Irp)
             OutputBuffer = (PVOID*)Irp->UserBuffer;
             Irp->IoStatus.Information = 0;
             Irp->IoStatus.Status = STATUS_SUCCESS;
-            *OutputBuffer = (PVOID)DpiKmdDodInitialize;
+            *OutputBuffer = (PVOID)RdPort_InitializeMiniport;
             DPRINT("0x230047 - Queued DpiKmdDodInitialize up\n");
             break;
         default:

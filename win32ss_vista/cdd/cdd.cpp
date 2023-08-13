@@ -595,7 +595,8 @@ DrvGetModes(_In_ HANDLE hDriver,
    KeWaitForSingleObject(&Event, Executive, 0, 0, 0);
    Status = IoStatusBlock.Status;
    DPRINT1("DrvGetModes: IofCallDriver Status %d\n", IoStatusBlock.Status);
-   FramebufferMapped = (ULONG_PTR)Ptr;
+   __debugbreak();
+ //  FramebufferMapped = (ULONG_PTR)Ptr;
    DPRINT1("DxgkCddGetDisplayModeList: Status %d\n", Status);
   // DPRINT1("DxgkCddGetDisplayModeList: Screen Height %d\n", GetDisplayModeList->pModeList->Height);
 

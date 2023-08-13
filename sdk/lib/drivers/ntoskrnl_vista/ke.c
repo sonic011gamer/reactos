@@ -170,3 +170,25 @@ KeSetTargetProcessorDpcEx(
     KeSetTargetProcessorDpc(Dpc, ProcNumber->Number);
     return STATUS_SUCCESS;
 }
+
+NTKRNLVISTAAPI
+NTSTATUS
+NTAPI
+KeGetProcessorNumberFromIndex(
+  _In_ ULONG ProcIndex,
+  _Out_ PPROCESSOR_NUMBER ProcNumber)
+{
+    PROCESSOR_NUMBER *ProcNumberLoc = ProcNumber;
+    ProcNumberLoc->Group = 0;
+    ProcNumberLoc->Number = 1;
+    return STATUS_SUCCESS;
+}
+
+NTKRNLVISTAAPI
+ULONG
+NTAPI
+KeGetProcessorIndexFromNumber(
+  _In_ PPROCESSOR_NUMBER ProcNumber)
+{
+  return 0;
+}

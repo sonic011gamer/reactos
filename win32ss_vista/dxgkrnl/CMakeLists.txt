@@ -9,6 +9,7 @@ list(APPEND SOURCE
      rdport/rdioctrl.cpp
      rdport/rdport.cpp
      rdport/dxgkrnl_interface.cpp
+     rdport/resource.cpp
      kmdod.cpp
      dxgk_misc.cpp
      vidpn/vidpn_interface.cpp

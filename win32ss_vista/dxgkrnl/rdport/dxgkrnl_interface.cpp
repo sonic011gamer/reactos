@@ -46,10 +46,33 @@ APIENTRY
 RDDM_DxgkCbGetDeviceInformation(_In_ HANDLE DeviceHandle,
                                 _Out_ PDXGK_DEVICE_INFO DeviceInfo)
 {
-
+    PHYSICAL_ADDRESS PhyNull, HighestPhysicalAddress;
+    PhyNull.QuadPart = NULL;
+    HighestPhysicalAddress.QuadPart = 0x1000000000;
+#if 0
+typedef struct _DXGK_DEVICE_INFO {
+    PVOID MiniportDeviceContext; X
+    PDEVICE_OBJECT PhysicalDeviceObject; X
+    UNICODE_STRING DeviceRegistryPath;
+    PCM_RESOURCE_LIST TranslatedResourceList; 
+    LARGE_INTEGER SystemMemorySize; X
+    PHYSICAL_ADDRESS HighestPhysicalAddress; X
+    PHYSICAL_ADDRESS AgpApertureBase; X
+    SIZE_T AgpApertureSize; X
+    DOCKING_STATE DockingState; X
+} DXGK_DEVICE_INFO, *PDXGK_DEVICE_INFO;
+#endif
     DPRINT1("RDDM_DxgkCbGetDeviceInformation: Called\n");
     DeviceInfo->MiniportDeviceContext = Extension->MiniportFdo;
     DeviceInfo->PhysicalDeviceObject = Extension->MiniportPdo;
+    DeviceInfo->DockingState = DockStateUnsupported;
+    DeviceInfo->SystemMemorySize.QuadPart = 0x1000000000;
+    DeviceInfo->AgpApertureBase = PhyNull;
+    DeviceInfo->AgpApertureSize = 0;
+    DeviceInfo->HighestPhysicalAddress = HighestPhysicalAddress;
+    DeviceInfo->MiniportDeviceContext = Extension->MiniportContext;
+    UNIMPLEMENTED;
+    __debugbreak();
    // DeviceInfo->TranslatedResourceList =
    // __debugbreak();
     return STATUS_SUCCESS;
@@ -82,6 +105,7 @@ RDDM_DxgkCbMapMemory(_In_ HANDLE DeviceHandle,
 {
     //TODO: Implement meh
     UNIMPLEMENTED;
+    __debugbreak();
     return STATUS_UNSUCCESSFUL;
 }
 
@@ -103,6 +127,7 @@ RDDM_DxgkCbQueryServices(_In_ HANDLE DeviceHandle,
 {
     //TODO: Implement meh
     UNIMPLEMENTED;
+    __debugbreak();
     return STATUS_UNSUCCESSFUL;
 }
 
@@ -165,6 +190,7 @@ RDDM_DxgkCbIsDevicePresent(_In_ HANDLE DeviceHandle,
 {
     //TODO: Implement meh
     UNIMPLEMENTED;
+    __debugbreak();
     return STATUS_UNSUCCESSFUL;
 }
 
@@ -298,7 +324,7 @@ RDDM_SetupDxgkrnl(
     GlobalDxgGlobal = &DxgGlobal;
     DXGKRNL_INTERFACE DxgkrnlInterfaceLoc = {0};
     DxgkrnlInterfaceLoc.Size = sizeof(DXGKRNL_INTERFACE);
-    DxgkrnlInterfaceLoc.Version = DXGKDDI_INTERFACE_VERSION_WDDM2_0;
+    DxgkrnlInterfaceLoc.Version = DXGKDDI_INTERFACE_VERSION_VISTA;
     DxgkrnlInterfaceLoc.DeviceHandle = (HANDLE)DriverObject;
     DxgkrnlInterfaceLoc.DxgkCbEvalAcpiMethod = RDDM_DxgkCbEvalAcpiMethod;
     DxgkrnlInterfaceLoc.DxgkCbGetDeviceInformation = RDDM_DxgkCbGetDeviceInformation;
@@ -320,7 +346,7 @@ RDDM_SetupDxgkrnl(
     DxgkrnlInterfaceLoc.DxgkCbQueryMonitorInterface = RDDM_DxgkCbQueryMonitorInterface;
     DxgkrnlInterfaceLoc.DxgkCbGetCaptureAddress = RDDM_DxgkCbGetCaptureAddress;
     DxgkrnlInterfaceLoc.DxgkCbLogEtwEvent = RDDM_DxgkCbLogEtwEvent;
-
+#if 0
     DxgkrnlInterfaceLoc.DxgkCbCreateContextAllocation = (DXGKCB_CREATECONTEXTALLOCATION          )HandleUnimplemented;
     DxgkrnlInterfaceLoc.DxgkCbDestroyContextAllocation = (DXGKCB_DESTROYCONTEXTALLOCATION         )HandleUnimplemented;
     DxgkrnlInterfaceLoc.DxgkCbSetPowerComponentActive = (DXGKCB_SETPOWERCOMPONENTACTIVE          )HandleUnimplemented;
@@ -337,7 +363,6 @@ RDDM_SetupDxgkrnl(
     DxgkrnlInterfaceLoc.DxgkCbAcquireHandleData = (DXGKCB_ACQUIREHANDLEDATA                )HandleUnimplemented;
     DxgkrnlInterfaceLoc.DxgkCbReleaseHandleData = (DXGKCB_RELEASEHANDLEDATA                )HandleUnimplemented;
     DxgkrnlInterfaceLoc.DxgkCbHardwareContentProtectionTeardown = (DXGKCB_HARDWARECONTENTPROTECTIONTEARDOWN)HandleUnimplemented;
-#if 0
     DXGKCB_CREATECONTEXTALLOCATION           DxgkCbCreateContextAllocation;
     DXGKCB_DESTROYCONTEXTALLOCATION          DxgkCbDestroyContextAllocation;
     DXGKCB_SETPOWERCOMPONENTACTIVE           DxgkCbSetPowerComponentActive;
