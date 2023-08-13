@@ -95,6 +95,57 @@ RDDM_DxgkCbIndicateChildStatus(_In_ HANDLE DeviceHandle,
 }
 
 
+NTSTATUS NTAPI
+DxgkpMapPhysicalMemory(
+   IN HANDLE Process,
+   IN PHYSICAL_ADDRESS PhysicalAddress,
+   IN ULONG SizeInBytes,
+   IN ULONG Protect,
+   IN OUT PVOID *VirtualAddress  OPTIONAL)
+{
+   OBJECT_ATTRIBUTES ObjAttribs;
+   UNICODE_STRING UnicodeString;
+   HANDLE hMemObj;
+   NTSTATUS Status;
+   SIZE_T Size;
+
+   /* Initialize object attribs */
+   RtlInitUnicodeString(&UnicodeString, L"\\Device\\PhysicalMemory");
+   InitializeObjectAttributes(&ObjAttribs,
+                              &UnicodeString,
+                              OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE,
+                              NULL, NULL);
+
+   /* Open physical memory section */
+   Status = ZwOpenSection(&hMemObj, SECTION_ALL_ACCESS, &ObjAttribs);
+   if (!NT_SUCCESS(Status))
+   {
+      DPRINT1("ZwOpenSection() failed! (0x%x)\n", Status);
+      return Status;
+   }
+
+   /* Map view of section */
+   Size = SizeInBytes;
+   Status = ZwMapViewOfSection(hMemObj,
+                               Process,
+                               VirtualAddress,
+                               0,
+                               Size,
+                               (PLARGE_INTEGER)(&PhysicalAddress),
+                               &Size,
+                               ViewUnmap,
+                               0,
+                               Protect);
+   ZwClose(hMemObj);
+   if (!NT_SUCCESS(Status))
+   {
+      DPRINT1("ZwMapViewOfSection() failed! (0x%x)\n", Status);
+   }
+
+   return Status;
+}
+
+
 NTSTATUS
 APIENTRY
 RDDM_DxgkCbMapMemory(_In_ HANDLE DeviceHandle,
@@ -105,10 +156,45 @@ RDDM_DxgkCbMapMemory(_In_ HANDLE DeviceHandle,
                      _In_ MEMORY_CACHING_TYPE CacheType,
                      _Outptr_ PVOID *VirtualAddress)
 {
+    NTSTATUS Status;
+    if (!TranslatedAddress.QuadPart)
+        return STATUS_INVALID_PARAMETER;
+    PVOID MappedAddress = *VirtualAddress;
+    DPRINT1("RDDM_DxgkCbMapMemory Entry\n");
+    DPRINT1("InIoSpace: %d\n", InIoSpace);
+
+    if (InIoSpace != 0)
+    {
+        *VirtualAddress = (PVOID)(ULONG_PTR)TranslatedAddress.u.LowPart;
+        return STATUS_SUCCESS;
+    }
     //TODO: Implement meh
-    UNIMPLEMENTED;
-    __debugbreak();
-    return STATUS_UNSUCCESSFUL;
+    if (MapToUserMode == TRUE)
+    {
+        /* Map to userspace */
+        Status = DxgkpMapPhysicalMemory(NtCurrentProcess(),
+                               TranslatedAddress,
+                               Length,
+                               PAGE_READWRITE/* | PAGE_WRITECOMBINE*/,
+                               &MappedAddress);
+
+        if (!NT_SUCCESS(Status))
+         {
+           DPRINT1("DxgkpMapPhysicalMemory() failed! (0x%x)\n", Status);
+            return Status;
+            *VirtualAddress =  NULL;
+         }
+        DPRINT1("Mapped user address = 0x%08x\n", MappedAddress);
+    }
+    else
+    {
+        /* Map to kernel mode */
+        MappedAddress = MmMapIoSpace(TranslatedAddress,
+                                     Length,
+                                     CacheType);
+        DPRINT1("Mapped Kernel address = 0x%08x\n", MappedAddress);
+    }
+        return STATUS_SUCCESS;
 }
 
 BOOLEAN
@@ -155,9 +241,8 @@ RDDM_DxgkCbSynchronizeExecution(_In_ HANDLE DeviceHandle,
                                 _In_ ULONG MessageNumber,
                                 _Out_ PBOOLEAN ReturnValue)
 {
-    //TODO: Implement meh
-    UNIMPLEMENTED;
-    *ReturnValue = 1;
+
+    *ReturnValue = SynchronizeRoutine(Context);
     __debugbreak();
     return STATUS_SUCCESS;
 }
@@ -245,6 +330,7 @@ RDDM_DxgkCbNotifyDpc(IN_CONST_HANDLE hAdapter)
 {
    //TODO: Implement meh
     UNIMPLEMENTED;
+    __debugbreak();
 }
 
 NTSTATUS
@@ -313,6 +399,20 @@ HandleUnimplemented()
     __debugbreak();
     return 0;
 }
+
+NTSTATUS
+APIENTRY
+NTAPI
+DxgkCbExcluseAdapterAccess(_In_ HANDLE DeviceHandle,
+                           _In_ ULONG Attributes,
+                           _In_ DXGKDDI_PROTECTED_CALLBACK DxgkProtectedCallback,
+                           _In_ PVOID ProtectedCallbackContext)
+{
+    UNIMPLEMENTED;
+    __debugbreak();
+    return 0;
+}
+
 /*
  * I turned this into a internal function to keep better eventual seperation of the
  * WDDM 1.2+ and WDDM 1.0-1.1 APIs
@@ -350,6 +450,7 @@ RDDM_SetupDxgkrnl(
     DxgkrnlInterfaceLoc.DxgkCbQueryMonitorInterface = RDDM_DxgkCbQueryMonitorInterface;
     DxgkrnlInterfaceLoc.DxgkCbGetCaptureAddress = RDDM_DxgkCbGetCaptureAddress;
     DxgkrnlInterfaceLoc.DxgkCbLogEtwEvent = RDDM_DxgkCbLogEtwEvent;
+    DxgkrnlInterfaceLoc.DxgkCbExcludeAdapterAccess = DxgkCbExcluseAdapterAccess;
 #if 0
     DxgkrnlInterfaceLoc.DxgkCbCreateContextAllocation = (DXGKCB_CREATECONTEXTALLOCATION          )HandleUnimplemented;
     DxgkrnlInterfaceLoc.DxgkCbDestroyContextAllocation = (DXGKCB_DESTROYCONTEXTALLOCATION         )HandleUnimplemented;
