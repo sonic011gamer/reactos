@@ -1,7 +1,8 @@
 include_directories("include/")
 add_subdirectory(displib)
 add_subdirectory(cdd)
-add_subdirectory(dxgkrnl)
+#add_subdirectory(dxgkrnl)
+add_subdirectory(dxgkrnl_new)
 add_subdirectory(miniport)
 #win32ss
 add_subdirectory(gdi32_vista)
