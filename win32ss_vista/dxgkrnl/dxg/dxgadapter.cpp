@@ -13,6 +13,7 @@ DXGADAPTER::~DXGADAPTER()
 
 }
 
+/* please fill this function with error checking */
 NTSTATUS
 DXGADAPTER::Initialize(PDEVICE_OBJECT AdapterDeviceObject)
 {
@@ -21,8 +22,6 @@ DXGADAPTER::Initialize(PDEVICE_OBJECT AdapterDeviceObject)
 
     UNIMPLEMENTED;
     __debugbreak();
-
-
     /*
      * What a chonker.
      * A BUNCH of classes are initialized here it seems

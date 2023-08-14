@@ -530,6 +530,7 @@ DrvSetPointerShape(
    IN RECTL *prcl,
    IN FLONG fl)
 {
+   /* Return Eng varient */
    return EngSetPointerShape(pso, psoMask, psoColor, pxlo, xHot, yHot, x, y, prcl, fl);
 }
 
