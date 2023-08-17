@@ -63,7 +63,8 @@ DxgkHandleInternalDeviceControl(_In_ DEVICE_OBJECT *DeviceObject, _Inout_ IRP *I
             DPRINT("DxgkInternalDeviceControl: IOCTL_VIDEO_I_AM_REACTOS\n");
             /* Call Start Adapter */
             //TODO: StartAdapterThread();
-            UNIMPLEMENTED;
+            //HACK: This is NOT how windows does this!
+            DxgkPortStartAdapter();
             Irp->IoStatus.Status = STATUS_SUCCESS;
             break;
         default:
@@ -153,6 +154,14 @@ DriverEntry(_In_ PDRIVER_OBJECT DriverObject,
                             FALSE,
                             &DxgkDeviceObject);
     /* Check Status */
+    if (!NT_SUCCESS(Status))
+    {
+        DPRINT("Failed to create device: 0x%X\n", Status);
+        //FIXME: Probably should clean up those globals.
+        return Status;
+    }
+
+    Status = DxgkpSetupDxgkrnl(DriverObject, RegistryPath);
     if (!NT_SUCCESS(Status))
     {
         DPRINT("Failed to create device: 0x%X\n", Status);

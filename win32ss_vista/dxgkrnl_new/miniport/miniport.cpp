@@ -10,6 +10,32 @@
 #include <debug.h>
 
 extern PDXGKRNL_PRIVATE_EXTENSION DxgkpExtension;
+extern DXGKRNL_INTERFACE DxgkrnlInterface;
+NTSTATUS
+NTAPI
+DxgkPortStartAdapter()
+{
+    NTSTATUS Status;
+    DXGK_START_INFO     DxgkStartInfo = {0};
+    //HACK: Yeah. No.
+    DxgkStartInfo.AdapterGuid = {1, 0};
+       //DxgkStartInfo.TcbPrivilege = {SE_TCB_PRIVILEGE, 0};
+    ULONG              NumberOfVideoPresentSources;
+    ULONG              NumberOfChildren;
+    DPRINT1("DxgkPortStartAdapter: EntryPoint\n");
+    Status = DxgkpExtension->DxgkDdiStartDevice(DxgkpExtension->MiniportContext, &DxgkStartInfo,
+                                                 &DxgkrnlInterface, &NumberOfVideoPresentSources, &NumberOfChildren);
+    if (Status == STATUS_SUCCESS)
+    {
+        DPRINT1("DxgkPortStartAdapter: Device has started\n");
+    }
+    else{
+        DPRINT1("DxgkPortStartAdapter: Failed with Status %d\n", Status);
+    }
+    __debugbreak();
+    return Status;
+}
+
 
 /**
  * @brief Intercepts and calls the AddDevice Miniport call back
@@ -32,7 +58,6 @@ DxgkPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
     WCHAR DeviceBuffer[20];
     UNICODE_STRING DeviceName;
     PAGED_CODE();
-
     ULONG_PTR Context = 0;
     /* MS does a whole bunch of bullcrap here so we will try to track it */
     if (!DriverObject || !PhysicalDeviceObject)
@@ -61,7 +86,7 @@ DxgkPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
         DPRINT1("DxgkPortAddDevice: AddDevice Miniport call has continued with success\n");
     }
 
-    swprintf(DeviceBuffer, L"\\Device\\Video%lu", DxgkpExtension->InternalDeviceNumber);
+    swprintf(DeviceBuffer, L"\\Device\\Video%lu", 0);
     RtlInitUnicodeString(&DeviceName, DeviceBuffer);
 
     IoStatusBlock.Information = 1024; //TODO: ehhh
@@ -79,7 +104,6 @@ DxgkPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
         return Status;
     }
 
-
     Status = IntCreateRegistryPath(&DxgkpExtension->RegistryPath,
                                    0,
                                    &DxgkpExtension->RegistryPath);
@@ -91,6 +115,7 @@ DxgkPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
 
     DxgkpExtension->MiniportFdo = Fdo;
     DxgkpExtension->MiniportPdo = PhysicalDeviceObject;
+    DxgkpCreateIds();
 
     /* Remove the initializing flag */
     (DriverObject->DeviceObject)->Flags &= ~DO_DEVICE_INITIALIZING;

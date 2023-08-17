@@ -20,8 +20,8 @@
 @ stdcall -stub TraceDxgkContext(long ptr ptr ptr ptr ptr ptr ptr ptr ptr ptr ptr)
 @ stdcall -stub TraceDxgkDevice(long ptr ptr ptr ptr)
 @ stdcall -stub TraceDxgkFunctionProfiler(long long)
-@ stdcall -stub TraceDxgkPerformanceWarning(long)
-@ stdcall -stub TraceDxgkPresentHistory(long long ptr)
+@ stdcall -stub TraceerformanceWarning(long)
+@ stdcall -stub TraceresentHistory(long long ptr)
 ;Windows 8
 @ stub -version=0x602+ DxgkSqmCommonGeneric ;26
 @ stub -version=0x602+ DxgkSqmCreateDwordStreamEntry ;27
@@ -35,5 +35,5 @@
 @ stub -version=0x602+ TraceDxgkContext ;35
 @ stub -version=0x602+ TraceDxgkDevice ;36
 @ stub -version=0x602+ TraceDxgkFunctionProfiler ;37
-@ stub -version=0x602+ TraceDxgkPerformanceWarning ;38
+@ stub -version=0x602+ TraceerformanceWarning ;38
 @ stub -version=0x602+ DxgkSqmSetDword ;39

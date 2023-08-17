@@ -8,6 +8,8 @@ spec2def(dxgkrnl.sys dxgkrnl.spec ADD_IMPORTLIB)
 list(APPEND SOURCE
     entry.c
     registry.cpp
+    resource.cpp
+    dxgkinterface.cpp
     miniport/dxgkport.cpp
     miniport/miniport.cpp
     )

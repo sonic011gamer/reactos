@@ -88,7 +88,6 @@ DrvEnableDriver(
    ULONG cj,
    PDRVENABLEDATA pded)
 {
-   __debugbreak();
    if (cj >= sizeof(DRVENABLEDATA))
    {
       pded->c = sizeof(DrvFunctionTable) / sizeof(DRVFN);

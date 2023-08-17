@@ -82,7 +82,25 @@ typedef struct _DXGKRNL_PRIVATE_EXTENSION
 
 #ifdef __cplusplus
 #include "dxgkport.hpp"
+extern "C"
+{
 #endif
+NTSTATUS
+NTAPI
+DxgkpSetupDxgkrnl(
+    IN PDRIVER_OBJECT DriverObject,
+    IN PUNICODE_STRING RegistryPath);
+
+NTSTATUS
+NTAPI
+DxgkPortStartAdapter();
+#ifdef __cplusplus
+}
+#endif
+
+NTSTATUS
+NTAPI
+DxgkpCreateIds();
 
 NTSTATUS
 NTAPI
