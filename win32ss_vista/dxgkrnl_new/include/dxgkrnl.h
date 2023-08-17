@@ -83,3 +83,20 @@ typedef struct _DXGKRNL_PRIVATE_EXTENSION
 #ifdef __cplusplus
 #include "dxgkport.hpp"
 #endif
+
+NTSTATUS
+NTAPI
+IntCreateRegistryPath(
+    IN PCUNICODE_STRING DriverRegistryPath,
+    IN ULONG DeviceNumber,
+    OUT PUNICODE_STRING DeviceRegistryPath);
+
+NTSTATUS
+NTAPI
+IntCreateNewRegistryPath(
+    PDXGKRNL_PRIVATE_EXTENSION DeviceExtension);
+
+NTSTATUS
+NTAPI
+IntVideoPortAddDeviceMapLink(
+    PDXGKRNL_PRIVATE_EXTENSION DeviceExtension);

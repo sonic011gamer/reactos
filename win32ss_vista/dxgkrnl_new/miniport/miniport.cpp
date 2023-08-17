@@ -9,9 +9,7 @@
 //#define NDEBUG
 #include <debug.h>
 
-
-
-
+extern PDXGKRNL_PRIVATE_EXTENSION DxgkpExtension;
 
 /**
  * @brief Intercepts and calls the AddDevice Miniport call back
@@ -27,8 +25,96 @@ NTAPI
 DxgkPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
                   _Inout_ DEVICE_OBJECT *PhysicalDeviceObject)
 {
-    DPRINT1("RdPortAddDevice Entry\n");
-    return 0;
+    DPRINT1("DxgkPortAddDevice Entry\n");
+    NTSTATUS Status;
+    PDEVICE_OBJECT Fdo;
+    IO_STATUS_BLOCK IoStatusBlock;
+    WCHAR DeviceBuffer[20];
+    UNICODE_STRING DeviceName;
+    PAGED_CODE();
+
+    ULONG_PTR Context = 0;
+    /* MS does a whole bunch of bullcrap here so we will try to track it */
+    if (!DriverObject || !PhysicalDeviceObject)
+    {
+        DPRINT1("DxgkPortAddDevice: Something has seriously fucked up\n");
+        return STATUS_INVALID_PARAMETER;
+    }
+
+    /* Grab the DXGKRNL internal extension */
+    #if 0
+        /* maybe let's call the miniport extension locally instead of globally? */
+    DxgkpExtension = (PDXGKRNL_PRIVATE_EXTENSION)IoGetDriverObjectExtension(DriverObject, DriverObject);
+    if (!DxgkpExtension)
+    {
+        DPRINT1("Could not gather DXGKRNL Extension\n");
+    }
+    #endif
+    DPRINT1("Calling the Miniport Device\n");
+    /* Call the miniport Routine */
+    Status = DxgkpExtension->DxgkDdiAddDevice(PhysicalDeviceObject, (PVOID*)&Context);
+    if(Status != STATUS_SUCCESS)
+    {
+        DPRINT1("DxgkPortAddDevice: AddDevice Miniport call failed with status %X\n", Status);
+    }
+    else{
+        DPRINT1("DxgkPortAddDevice: AddDevice Miniport call has continued with success\n");
+    }
+
+    swprintf(DeviceBuffer, L"\\Device\\Video%lu", DxgkpExtension->InternalDeviceNumber);
+    RtlInitUnicodeString(&DeviceName, DeviceBuffer);
+
+    IoStatusBlock.Information = 1024; //TODO: ehhh
+    DxgkpExtension->MiniportContext = (PVOID)Context;
+    Status = IoCreateDevice(DriverObject,
+                            IoStatusBlock.Information,
+                            &DeviceName,
+                            FILE_DEVICE_VIDEO,
+                            FILE_DEVICE_SECURE_OPEN,
+                            FALSE,
+                            &Fdo);
+    if (!NT_SUCCESS(Status))
+    {
+        DPRINT1("IoCreateDevice() failed with status 0x%08x\n", Status);
+        return Status;
+    }
+
+
+    Status = IntCreateRegistryPath(&DxgkpExtension->RegistryPath,
+                                   0,
+                                   &DxgkpExtension->RegistryPath);
+    if (!NT_SUCCESS(Status))
+    {
+        DPRINT1("IntCreateRegistryPath() failed with status 0x%08x\n", Status);
+        return Status;
+    }
+
+    DxgkpExtension->MiniportFdo = Fdo;
+    DxgkpExtension->MiniportPdo = PhysicalDeviceObject;
+
+    /* Remove the initializing flag */
+    (DriverObject->DeviceObject)->Flags &= ~DO_DEVICE_INITIALIZING;
+    DxgkpExtension->NextDeviceObject = IoAttachDeviceToDeviceStack(
+                                                DriverObject->DeviceObject,
+                                                PhysicalDeviceObject);
+
+
+    Status = IntCreateNewRegistryPath(DxgkpExtension);
+    if (!NT_SUCCESS(Status))
+    {
+        DPRINT1("IntCreateNewRegistryPath() failed with status 0x%08x\n", Status);
+        return Status;
+    }
+
+    /* Set up the VIDEO/DEVICEMAP registry keys */
+    Status = IntVideoPortAddDeviceMapLink(DxgkpExtension);
+    if (!NT_SUCCESS(Status))
+    {
+        DPRINT1("IntVideoPortAddDeviceMapLink() failed with status 0x%08x\n", Status);
+        return Status;
+    }
+
+    return Status;
 }
 
 /*

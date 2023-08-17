@@ -167,7 +167,6 @@ IntCreateRegistryPath(
     return STATUS_SUCCESS;
 }
 
-static
 NTSTATUS
 NTAPI
 IntVideoPortAddDeviceMapLink(
