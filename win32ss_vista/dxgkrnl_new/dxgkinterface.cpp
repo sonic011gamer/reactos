@@ -214,19 +214,6 @@ DxgkCbQueryServices(_In_ HANDLE DeviceHandle,
     return STATUS_UNSUCCESSFUL;
 }
 
-NTSTATUS
-APIENTRY
-DxgkCbReadDeviceSpace(_In_ HANDLE DeviceHandle,
-                           _In_ ULONG DataType,
-                           _Out_writes_bytes_to_(Length, *BytesRead) PVOID Buffer,
-                           _In_ ULONG Offset,
-                           _In_ ULONG Length,
-                           _Out_ PULONG BytesRead)
-{
-    //TODO: Implement meh
-    UNIMPLEMENTED;
-    return STATUS_UNSUCCESSFUL;
-}
 
 NTSTATUS
 APIENTRY
@@ -253,19 +240,6 @@ DxgkCbUnmapMemory(_In_ HANDLE DeviceHandle,
     return STATUS_SUCCESS;
 }
 
-NTSTATUS
-APIENTRY
-DxgkCbWriteDeviceSpace(_In_ HANDLE DeviceHandle,
-                            _In_ ULONG DataType,
-                            _In_reads_bytes_(Length) PVOID Buffer,
-                            _In_ ULONG Offset,
-                            _In_ ULONG Length,
-                            _Out_ _Out_range_(<=, Length) PULONG BytesWritten)
-{
-    //TODO: Implement meh
-    UNIMPLEMENTED;
-    return STATUS_UNSUCCESSFUL;
-}
 
 NTSTATUS
 APIENTRY
@@ -413,6 +387,125 @@ DxgkCbQueryVidPnInterface(IN_CONST_D3DKMDT_HVIDPN                hVidPn,
     __debugbreak();
     return 0;
 }
+
+CODE_SEG("PAGE")
+NTSTATUS
+DxgkpQueryInterface(
+    _In_ PDXGKRNL_PRIVATE_EXTENSION DxgkpExtension,
+    _In_ const GUID* Guid,
+    _Out_ PVOID Interface,
+    _In_ ULONG Size)
+{
+    KEVENT Event;
+    IO_STATUS_BLOCK IoStatus;
+    PIRP Irp;
+    PIO_STACK_LOCATION Stack;
+    NTSTATUS Status;
+
+    PAGED_CODE();
+
+    KeInitializeEvent(&Event, SynchronizationEvent, FALSE);
+
+    Irp = IoBuildSynchronousFsdRequest(IRP_MJ_PNP,
+                                       DxgkpExtension->MiniportFdo,
+                                       NULL,
+                                       0,
+                                       NULL,
+                                       &Event,
+                                       &IoStatus);
+    if (!Irp)
+        return STATUS_INSUFFICIENT_RESOURCES;
+
+    Irp->IoStatus.Status = STATUS_NOT_SUPPORTED;
+    Irp->IoStatus.Information = 0;
+
+    Stack = IoGetNextIrpStackLocation(Irp);
+    Stack->MinorFunction = IRP_MN_QUERY_INTERFACE;
+    Stack->Parameters.QueryInterface.InterfaceType = Guid;
+    Stack->Parameters.QueryInterface.Version = 1;
+    Stack->Parameters.QueryInterface.Size = Size;
+    Stack->Parameters.QueryInterface.Interface = (PINTERFACE)Interface;
+    Stack->Parameters.QueryInterface.InterfaceSpecificData = NULL;
+
+    Status = IoCallDriver(DxgkpExtension->MiniportFdo, Irp);
+    if (Status == STATUS_PENDING)
+    {
+        KeWaitForSingleObject(&Event, Executive, KernelMode, FALSE, NULL);
+        Status = IoStatus.Status;
+    }
+
+    return Status;
+}
+
+
+NTSTATUS
+APIENTRY
+DxgkCbReadDeviceSpace(_In_ HANDLE DeviceHandle,
+                      _In_ ULONG DataType,
+                      _Out_writes_bytes_to_(Length, *BytesRead) PVOID Buffer,
+                      _In_ ULONG Offset,
+                      _In_ ULONG Length,
+                      _Out_ PULONG BytesRead)
+{
+    switch (DataType)
+    {
+        case DXGK_WHICHSPACE_BRIDGE:
+            DPRINT1("DxgkCbReadDeviceSpace: DXGK_WHICHSPACE_BRIDGE\n");
+            UNIMPLEMENTED;
+            break;
+        case DXGK_WHICHSPACE_CONFIG:
+            DPRINT1("DxgkCbReadDeviceSpace: DXGK_WHICHSPACE_CONFIG");
+            *BytesRead = (DxgkpExtension->BusInterface.GetBusData)(DxgkpExtension->BusInterface.Context,
+                                                                   PCI_WHICHSPACE_CONFIG,
+                                                                   Buffer,
+                                                                   Offset,
+                                                                   Length);
+            break;
+        case DXGK_WHICHSPACE_MCH:
+            DPRINT1("DxgkCbReadDeviceSpace: DXGK_WHICHSPACE_MCH");
+            UNIMPLEMENTED;
+            break;
+        case DXGK_WHICHSPACE_ROM:
+            DPRINT1("DxgkCbReadDeviceSpace: DXGK_WHICHSPACE_ROM");
+            UNIMPLEMENTED;
+            break;
+    }
+
+    return STATUS_SUCCESS;
+}
+
+NTSTATUS
+APIENTRY
+DxgkCbWriteDeviceSpace(_In_ HANDLE DeviceHandle,
+                       _In_ ULONG DataType,
+                       _In_reads_bytes_(Length) PVOID Buffer,
+                       _In_ ULONG Offset,
+                       _In_ ULONG Length,
+                       _Out_ _Out_range_(<=, Length) PULONG BytesWritten)
+{
+    switch (DataType)
+    {
+        case DXGK_WHICHSPACE_BRIDGE:
+            DPRINT1("DxgkCbWriteDeviceSpace: DXGK_WHICHSPACE_BRIDGE\n");
+            UNIMPLEMENTED;
+            break;
+        case DXGK_WHICHSPACE_CONFIG:
+            DPRINT1("DxgkCbWriteDeviceSpace: DXGK_WHICHSPACE_CONFIG");
+            UNIMPLEMENTED;
+            break;
+        case DXGK_WHICHSPACE_MCH:
+            DPRINT1("DxgkCbWriteDeviceSpace: DXGK_WHICHSPACE_MCH");
+            UNIMPLEMENTED;
+            break;
+        case DXGK_WHICHSPACE_ROM:
+            DPRINT1("DxgkCbWriteDeviceSpace: DXGK_WHICHSPACE_ROM");
+            UNIMPLEMENTED;
+            break;
+    }
+
+    return STATUS_SUCCESS;
+}
+
 /*
  * I turned this into a internal function to keep better eventual seperation of the
  * WDDM 1.2+ and WDDM 1.0-1.1 APIs

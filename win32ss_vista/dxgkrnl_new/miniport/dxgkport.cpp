@@ -8,7 +8,6 @@
 #include <dxgkrnl.h>
 //#define NDEBUG
 #include <debug.h>
-
 PDXGKRNL_PRIVATE_EXTENSION DxgkpExtension;
 
 NTSTATUS

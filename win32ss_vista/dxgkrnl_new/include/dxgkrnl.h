@@ -75,6 +75,7 @@ typedef struct _DXGKRNL_PRIVATE_EXTENSION
 	ULONG SystemIoBusNumber;
 	ULONG SystemIoSlotNumber;
     ULONG InternalDeviceNumber;
+    BUS_INTERFACE_STANDARD BusInterface;
 } DXGKRNL_PRIVATE_EXTENSION, *PDXGKRNL_PRIVATE_EXTENSION;
 
 
@@ -93,10 +94,19 @@ DxgkpSetupDxgkrnl(
 
 NTSTATUS
 NTAPI
-DxgkPortStartAdapter();
+DxgkPortStartAdapter();\
+
+CODE_SEG("PAGE")
+NTSTATUS
+DxgkpQueryInterface(
+    _In_ PDXGKRNL_PRIVATE_EXTENSION DxgkpExtension,
+    _In_ const GUID* Guid,
+    _Out_ PVOID Interface,
+    _In_ ULONG Size);
 #ifdef __cplusplus
 }
 #endif
+
 
 NTSTATUS
 NTAPI

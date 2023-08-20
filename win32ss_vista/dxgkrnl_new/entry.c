@@ -6,6 +6,7 @@
  */
 
 #include <include/dxgkrnl.h>
+#include <wdmguid.h>
 //#define NDEBUG
 #include <debug.h>
 
@@ -29,7 +30,6 @@ DxgkHandleInternalDeviceControl(_In_ DEVICE_OBJECT *DeviceObject, _Inout_ IRP *I
     ULONG IoControlCode;
     PVOID *OutputBuffer;
     PIO_STACK_LOCATION IrpStack;
-
     PAGED_CODE();
 
     /* First let's grab the IOCTRL code */

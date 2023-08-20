@@ -6,6 +6,10 @@
  */
 
 #include <dxgkrnl.h>
+
+#include <wdm.h>
+#include <ntddk.h>
+#include <wdmguid.h>
 //#define NDEBUG
 #include <debug.h>
 
@@ -15,6 +19,7 @@ NTSTATUS
 NTAPI
 DxgkPortStartAdapter()
 {
+    GUID Bus = {0x496b8280, 0x6f25, 0x11d0, 0xbe, 0xaf, 0x08, 0x00, 0x2b, 0xe2, 0x09, 0x2f};
     NTSTATUS Status;
     DXGK_START_INFO     DxgkStartInfo = {0};
     //HACK: Yeah. No.
@@ -23,6 +28,17 @@ DxgkPortStartAdapter()
     ULONG              NumberOfVideoPresentSources;
     ULONG              NumberOfChildren;
     DPRINT1("DxgkPortStartAdapter: EntryPoint\n");
+    Status = DxgkpQueryInterface(DxgkpExtension,
+                                   &Bus,
+                                   (PVOID)&DxgkpExtension->BusInterface,
+                                   sizeof(BUS_INTERFACE_STANDARD));
+    if (Status == STATUS_SUCCESS)
+    {
+        DPRINT1("DxgkPortStartAdapter: Device has started\n");
+    }
+    else{
+        DPRINT1("DxgkPortStartAdapter: Failed with Status %d\n", Status);
+    }
     Status = DxgkpExtension->DxgkDdiStartDevice(DxgkpExtension->MiniportContext, &DxgkStartInfo,
                                                  &DxgkrnlInterface, &NumberOfVideoPresentSources, &NumberOfChildren);
     if (Status == STATUS_SUCCESS)
@@ -32,6 +48,7 @@ DxgkPortStartAdapter()
     else{
         DPRINT1("DxgkPortStartAdapter: Failed with Status %d\n", Status);
     }
+
     __debugbreak();
     return Status;
 }
