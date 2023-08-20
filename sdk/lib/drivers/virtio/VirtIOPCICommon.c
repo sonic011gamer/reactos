@@ -51,7 +51,7 @@ NTSTATUS virtio_device_initialize(VirtIODevice *vdev,
     RtlZeroMemory(vdev, sizeof(VirtIODevice));
     vdev->DeviceContext = DeviceContext;
     vdev->system = pSystemOps;
-    vdev->msix_used = msix_used;
+    vdev->msix_used = 0;///msix_used; //TODO:Fix MSI interrupts
     vdev->info = vdev->inline_info;
     vdev->maxQueues = ARRAYSIZE(vdev->inline_info);
 
