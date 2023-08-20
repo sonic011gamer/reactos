@@ -141,7 +141,7 @@ public:
     }
     void SetVgaDevice(BOOLEAN Vga)
     {
-        m_Flags.VgaDevice = Vga;
+        m_Flags.VgaDevice = 1;
     }
     BOOLEAN IsFlexResolution(void) const
     {
@@ -197,7 +197,7 @@ public:
     PHYSICAL_ADDRESS GetFrameBufferPA(void) { return  m_PciResources.GetPciBar(0)->GetPA(); }
 
 private:
-    BOOLEAN CheckHardware();
+    BOOLEAN NTAPI CheckHardware();
     NTSTATUS WriteRegistryString(_In_ HANDLE DevInstRegKeyHandle, _In_ PCWSTR pszwValueName, _In_ PCSTR pszValue);
     NTSTATUS WriteRegistryDWORD(_In_ HANDLE DevInstRegKeyHandle, _In_ PCWSTR pszwValueName, _In_ PDWORD pdwValue);
     NTSTATUS ReadRegistryDWORD(_In_ HANDLE DevInstRegKeyHandle, _In_ PCWSTR pszwValueName, _Inout_ PDWORD pdwValue);

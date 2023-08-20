@@ -37,6 +37,7 @@ VOID
 VioGpu3DUnload(VOID);
 
 NTSTATUS
+NTAPI
 VioGpu3DAddDevice(
     _In_ DEVICE_OBJECT* pPhysicalDeviceObject,
     _Outptr_ PVOID*  ppDeviceContext);
@@ -46,6 +47,7 @@ VioGpu3DRemoveDevice(
     _In_  VOID* pDeviceContext);
 
 NTSTATUS
+NTAPI
 VioGpu3DStartDevice(
     _In_  VOID*              pDeviceContext,
     _In_  DXGK_START_INFO*   pDxgkStartInfo,

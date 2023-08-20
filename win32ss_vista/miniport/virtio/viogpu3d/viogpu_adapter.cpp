@@ -134,38 +134,37 @@ VioGpuAdapter::~VioGpuAdapter(void)
     m_Id = 0;
 }
 
-BOOLEAN VioGpuAdapter::CheckHardware()
+BOOLEAN NTAPI VioGpuAdapter::CheckHardware()
 {
     PAGED_CODE();
+        NTSTATUS Status = STATUS_GRAPHICS_DRIVER_MISMATCH;
 
-    NTSTATUS Status = STATUS_GRAPHICS_DRIVER_MISMATCH;
+        DbgPrint(TRACE_LEVEL_VERBOSE, ("---> %s\n", __FUNCTION__));
 
-    DbgPrint(TRACE_LEVEL_VERBOSE, ("---> %s\n", __FUNCTION__));
+        PCI_COMMON_HEADER Header = { 0 };
+        ULONG BytesRead;
 
-    PCI_COMMON_HEADER Header = { 0 };
-    ULONG BytesRead;
+        Status = m_DxgkInterface.DxgkCbReadDeviceSpace(m_DxgkInterface.DeviceHandle,
+            DXGK_WHICHSPACE_CONFIG,
+            &Header,
+            0,
+            sizeof(Header),
+            &BytesRead);
 
-    Status = m_DxgkInterface.DxgkCbReadDeviceSpace(m_DxgkInterface.DeviceHandle,
-        DXGK_WHICHSPACE_CONFIG,
-        &Header,
-        0,
-        sizeof(Header),
-        &BytesRead);
+        if (!NT_SUCCESS(Status))
+        {
+            DbgPrint(TRACE_LEVEL_ERROR, ("DxgkCbReadDeviceSpace failed with status 0x%X\n", Status));
+            return FALSE;
+        }
+        DbgPrint(TRACE_LEVEL_INFORMATION, ("<--- %s VendorId = 0x%04X DeviceId = 0x%04X\n", __FUNCTION__, Header.VendorID, Header.DeviceID));
+        if (Header.VendorID == REDHAT_PCI_VENDOR_ID &&
+            Header.DeviceID == 0x1050)
+        {
+         //   SetVgaDevice(Header.SubClass == PCI_SUBCLASS_VID_VGA_CTLR);
+            return TRUE;
+        }
 
-    if (!NT_SUCCESS(Status))
-    {
-        DbgPrint(TRACE_LEVEL_ERROR, ("DxgkCbReadDeviceSpace failed with status 0x%X\n", Status));
         return FALSE;
-    }
-    DbgPrint(TRACE_LEVEL_INFORMATION, ("<--- %s VendorId = 0x%04X DeviceId = 0x%04X\n", __FUNCTION__, Header.VendorID, Header.DeviceID));
-    if (Header.VendorID == REDHAT_PCI_VENDOR_ID &&
-        Header.DeviceID == 0x1050)
-    {
-        SetVgaDevice(Header.SubClass == PCI_SUBCLASS_VID_VGA_CTLR);
-        return TRUE;
-    }
-
-    return FALSE;
 }
 
 #pragma warning(disable: 4702)

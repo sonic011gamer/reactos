@@ -57,13 +57,13 @@ void InitializeDebugPrints(IN PDRIVER_OBJECT  DriverObject, IN PUNICODE_STRING R
     UNREFERENCED_PARAMETER(RegistryPath);
     bDebugPrint = 0;
     virtioDebugLevel = 0;
-    nDebugLevel = TRACE_LEVEL_NONE;
+    nDebugLevel = TRACE_LEVEL_VERBOSE;
     bBreakAlways = 0;
 
     bDebugPrint = 1;
     virtioDebugLevel = 0x5;
     bBreakAlways = 1;
-    nDebugLevel = TRACE_LEVEL_WARNING;
+    nDebugLevel = TRACE_LEVEL_VERBOSE;
 #if defined(COM_DEBUG)
     VirtioDebugPrintProc = DebugPrintFuncSerial;
 #elif defined(PRINT_DEBUG)
@@ -188,6 +188,7 @@ VioGpu3DUnload(VOID)
 }
 
 NTSTATUS
+NTAPI
 VioGpu3DAddDevice(
     _In_ DEVICE_OBJECT* pPhysicalDeviceObject,
     _Outptr_ PVOID*  ppDeviceContext)
@@ -235,6 +236,7 @@ VioGpu3DRemoveDevice(
 }
 
 NTSTATUS
+NTAPI
 VioGpu3DStartDevice(
     _In_  VOID*              pDeviceContext,
     _In_  DXGK_START_INFO*   pDxgkStartInfo,

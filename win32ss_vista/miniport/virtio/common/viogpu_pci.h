@@ -72,7 +72,7 @@ public:
         }
     }
 
-    bool Init(PDXGKRNL_INTERFACE pDxgkInterface, PCM_RESOURCE_LIST pResList);
+    bool NTAPI Init(PDXGKRNL_INTERFACE pDxgkInterface, PCM_RESOURCE_LIST pResList);
 
     ULONG GetBarSize(UINT bar)
     {

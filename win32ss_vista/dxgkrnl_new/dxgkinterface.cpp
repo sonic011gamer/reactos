@@ -154,42 +154,43 @@ DxgkCbMapMemory(_In_ HANDLE DeviceHandle,
 {
     NTSTATUS Status;
 
-    PVOID MappedAddress = *VirtualAddress;
     DPRINT1("DxgkCbMapMemory Entry\n");
-    DPRINT1("InIoSpace: %d\n", InIoSpace);
-
-    if (InIoSpace != 0)
+    if (InIoSpace == TRUE)
     {
-        *VirtualAddress = (PVOID)(ULONG_PTR)TranslatedAddress.u.LowPart;
-        return STATUS_SUCCESS;
-    }
-    //TODO: Implement meh
-    if (MapToUserMode == TRUE)
-    {
-        /* Map to userspace */
-        Status = MapPhysicalMemory(NtCurrentProcess(),
-                               TranslatedAddress,
-                               Length,
-                               PAGE_READWRITE/* | PAGE_WRITECOMBINE*/,
-                               &MappedAddress);
-
-        if (!NT_SUCCESS(Status))
-         {
-           DPRINT1("MapPhysicalMemory() failed! (0x%x)\n", Status);
-            return Status;
-            *VirtualAddress =  NULL;
-         }
-        DPRINT1("Mapped user address = 0x%08x\n", MappedAddress);
+        DPRINT1("Mapping InIoSpace\n");
+        *VirtualAddress = (PVOID)TranslatedAddress.LowPart;
     }
     else
     {
-        /* Map to kernel mode */
-        MappedAddress = MmMapIoSpace(TranslatedAddress,
-                                     Length,
-                                     CacheType);
-        DPRINT1("Mapped Kernel address = 0x%08x\n", MappedAddress);
+        if (MapToUserMode == TRUE)
+        {
+                    /* Map to userspace */
+                Status = MapPhysicalMemory((HANDLE)0xFFFFFFFF,
+                               TranslatedAddress,
+                               Length,
+                               PAGE_READWRITE/* | PAGE_WRITECOMBINE*/,
+                               VirtualAddress);
+
+        if (!NT_SUCCESS(Status))
+         {
+            DPRINT1("DxgkCbMapMemory: MapPhysicalMemory() failed! (0x%x)\n", Status);
+            *VirtualAddress =  NULL;
+            return Status;
+         }
+        }
+        else
+        {
+            *VirtualAddress = MmMapIoSpace(TranslatedAddress, Length, CacheType);
+        }
     }
-        return STATUS_SUCCESS;
+
+    if (*VirtualAddress == NULL)
+    {
+        DPRINT1("VirtualAddress is still NULL\n");
+        return STATUS_UNSUCCESSFUL;
+    }
+    DPRINT1("DxgkCbMapMemory Exit\n");
+    return STATUS_SUCCESS;
 }
 
 BOOLEAN
@@ -407,7 +408,7 @@ DxgkpQueryInterface(
     KeInitializeEvent(&Event, SynchronizationEvent, FALSE);
 
     Irp = IoBuildSynchronousFsdRequest(IRP_MJ_PNP,
-                                       DxgkpExtension->MiniportFdo,
+                                       DxgkpExtension->MiniportPdo,
                                        NULL,
                                        0,
                                        NULL,
@@ -427,7 +428,7 @@ DxgkpQueryInterface(
     Stack->Parameters.QueryInterface.Interface = (PINTERFACE)Interface;
     Stack->Parameters.QueryInterface.InterfaceSpecificData = NULL;
 
-    Status = IoCallDriver(DxgkpExtension->MiniportFdo, Irp);
+    Status = IoCallDriver(DxgkpExtension->MiniportPdo, Irp);
     if (Status == STATUS_PENDING)
     {
         KeWaitForSingleObject(&Event, Executive, KernelMode, FALSE, NULL);
@@ -454,12 +455,13 @@ DxgkCbReadDeviceSpace(_In_ HANDLE DeviceHandle,
             UNIMPLEMENTED;
             break;
         case DXGK_WHICHSPACE_CONFIG:
-            DPRINT1("DxgkCbReadDeviceSpace: DXGK_WHICHSPACE_CONFIG");
+            DPRINT1("DxgkCbReadDeviceSpace: DXGK_WHICHSPACE_CONFIG\n");
             *BytesRead = (DxgkpExtension->BusInterface.GetBusData)(DxgkpExtension->BusInterface.Context,
                                                                    PCI_WHICHSPACE_CONFIG,
                                                                    Buffer,
                                                                    Offset,
                                                                    Length);
+             DPRINT1("DxgkCbReadDeviceSpace: DXGK_WHICHSPACE_CONFIG - SUCCESS\n");
             break;
         case DXGK_WHICHSPACE_MCH:
             DPRINT1("DxgkCbReadDeviceSpace: DXGK_WHICHSPACE_MCH");
@@ -470,7 +472,6 @@ DxgkCbReadDeviceSpace(_In_ HANDLE DeviceHandle,
             UNIMPLEMENTED;
             break;
     }
-
     return STATUS_SUCCESS;
 }
 

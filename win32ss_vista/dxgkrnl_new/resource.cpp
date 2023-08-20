@@ -50,7 +50,7 @@ DxgkpCreateIds()
 
     DPRINT1("Device Number: %d\n",  SlotNumber.u.bits.DeviceNumber);
     DPRINT1("FunctionNumber: %d\n", SlotNumber.u.bits.FunctionNumber);
-    __debugbreak();
+
     return 0;
 }
 

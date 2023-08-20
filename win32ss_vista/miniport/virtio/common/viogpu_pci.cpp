@@ -150,7 +150,7 @@ void mem_free_nonpaged_block(void *context, void *addr)
 }
 
 PAGED_CODE_SEG_BEGIN
-static int PCIReadConfig(
+static int NTAPI PCIReadConfig(
     IVioGpuPCI* pDev,
     int where,
     void *buffer,
@@ -344,7 +344,7 @@ void CPciBar::Unmap(PDXGKRNL_INTERFACE pDxgkInterface)
     m_BaseVA = nullptr;
 }
 
-bool CPciResources::Init(PDXGKRNL_INTERFACE pDxgkInterface, PCM_RESOURCE_LIST pResList)
+bool NTAPI CPciResources::Init(PDXGKRNL_INTERFACE pDxgkInterface, PCM_RESOURCE_LIST pResList)
 {
     PCI_COMMON_HEADER pci_config = { 0 };
     ULONG BytesRead = 0;
@@ -394,22 +394,11 @@ bool CPciResources::Init(PDXGKRNL_INTERFACE pDxgkInterface, PCM_RESOURCE_LIST pR
             case CmResourceTypeInterrupt:
             {
                 m_InterruptFlags = pResDescriptor->Flags;
-                if (IsMSIEnabled())
-                {
-                    DbgPrint(TRACE_LEVEL_FATAL, ("Found MSI Interrupt vector %d, level %d, affinity 0x%X, flags %X\n",
-                        pResDescriptor->u.MessageInterrupt.Translated.Vector,
-                        pResDescriptor->u.MessageInterrupt.Translated.Level,
-                        (ULONG)pResDescriptor->u.MessageInterrupt.Translated.Affinity,
-                        pResDescriptor->Flags));
-                }
-                else
-                {
-                    DbgPrint(TRACE_LEVEL_FATAL, ("Found Interrupt vector %d, level %d, affinity 0x%X, flags %X\n",
+                DbgPrint(TRACE_LEVEL_FATAL, ("Found Interrupt vector %d, level %d, affinity 0x%X, flags %X\n",
                         pResDescriptor->u.Interrupt.Vector,
                         pResDescriptor->u.Interrupt.Level,
                         (ULONG)pResDescriptor->u.Interrupt.Affinity,
                         pResDescriptor->Flags));
-                }
                 interrupt_found = true;
             }
             break;

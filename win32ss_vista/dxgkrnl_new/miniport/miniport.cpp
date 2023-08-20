@@ -34,10 +34,12 @@ DxgkPortStartAdapter()
                                    sizeof(BUS_INTERFACE_STANDARD));
     if (Status == STATUS_SUCCESS)
     {
-        DPRINT1("DxgkPortStartAdapter: Device has started\n");
+        DPRINT1("DxgkpQueryInterface: Device has success context:0x%X\n", DxgkpExtension->BusInterface.Context);
     }
     else{
         DPRINT1("DxgkPortStartAdapter: Failed with Status %d\n", Status);
+        __debugbreak();
+        return Status;
     }
     Status = DxgkpExtension->DxgkDdiStartDevice(DxgkpExtension->MiniportContext, &DxgkStartInfo,
                                                  &DxgkrnlInterface, &NumberOfVideoPresentSources, &NumberOfChildren);
@@ -49,7 +51,7 @@ DxgkPortStartAdapter()
         DPRINT1("DxgkPortStartAdapter: Failed with Status %d\n", Status);
     }
 
-    __debugbreak();
+    //__debugbreak();
     return Status;
 }
 
@@ -132,15 +134,46 @@ DxgkPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
 
     DxgkpExtension->MiniportFdo = Fdo;
     DxgkpExtension->MiniportPdo = PhysicalDeviceObject;
-    DxgkpCreateIds();
+   PCI_SLOT_NUMBER SlotNumber;
+    ULONG PciSlotNumber;
+    ULONG Size;
 
+    Size = sizeof(ULONG);
+    IoGetDeviceProperty(DxgkpExtension->MiniportPdo,
+                                 DevicePropertyBusNumber,
+                                 Size,
+                                 &DxgkpExtension->SystemIoBusNumber,
+                                 &Size);
+    Size = sizeof(ULONG);
+    IoGetDeviceProperty(DxgkpExtension->MiniportPdo,
+                        DevicePropertyLegacyBusType,
+                        Size,
+                        &DxgkpExtension->AdapterInterfaceType,
+                        &Size);
+    DPRINT1("AdapterInterfaceType :%d\n", DxgkpExtension->AdapterInterfaceType);
+
+
+    Size = sizeof(ULONG);
+    IoGetDeviceProperty(DxgkpExtension->MiniportPdo,
+                        DevicePropertyAddress,
+                        Size,
+                        &PciSlotNumber,
+                        &Size);
+    SlotNumber.u.AsULONG = 0;
+    SlotNumber.u.bits.DeviceNumber = (PciSlotNumber >> 16) & 0xFFFF;
+    SlotNumber.u.bits.FunctionNumber = PciSlotNumber & 0xFFFF;
+    DxgkpExtension->SystemIoSlotNumber = SlotNumber.u.AsULONG;
+
+    DPRINT1("Device Number: %d\n",  SlotNumber.u.bits.DeviceNumber);
+    DPRINT1("FunctionNumber: %d\n", SlotNumber.u.bits.FunctionNumber);
+    DPRINT1("Create IDs success\n");
     /* Remove the initializing flag */
     (DriverObject->DeviceObject)->Flags &= ~DO_DEVICE_INITIALIZING;
     DxgkpExtension->NextDeviceObject = IoAttachDeviceToDeviceStack(
                                                 DriverObject->DeviceObject,
                                                 PhysicalDeviceObject);
 
-
+        DPRINT1("Driver attach success\n\n");
     Status = IntCreateNewRegistryPath(DxgkpExtension);
     if (!NT_SUCCESS(Status))
     {
@@ -148,6 +181,7 @@ DxgkPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
         return Status;
     }
 
+       DPRINT1("registry path success\n\n");
     /* Set up the VIDEO/DEVICEMAP registry keys */
     Status = IntVideoPortAddDeviceMapLink(DxgkpExtension);
     if (!NT_SUCCESS(Status))
@@ -156,6 +190,7 @@ DxgkPortAddDevice(_In_    DRIVER_OBJECT *DriverObject,
         return Status;
     }
 
+       DPRINT1("registry link success\n\n");
     return Status;
 }
 

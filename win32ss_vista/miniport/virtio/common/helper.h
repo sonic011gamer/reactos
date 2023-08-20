@@ -125,7 +125,7 @@ extern VirtIOSystemOps VioGpuSystemOps;
 #define VIOGPU_ASSERT_CHK(exp) {}
 #endif
 
-#undef PAGED_CODE()
+#undef PAGED_CODE
 #define PAGED_CODE() NOP_FUNCTION;
 
 #define PAGED_CODE_SEG __declspec(code_seg("PAGE"))
