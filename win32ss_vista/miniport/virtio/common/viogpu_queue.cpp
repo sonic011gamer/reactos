@@ -89,37 +89,19 @@ BOOLEAN  VioGpuQueue::Init(
 _IRQL_requires_max_(DISPATCH_LEVEL)
 _IRQL_saves_global_(OldIrql, Irql)
 _IRQL_raises_(DISPATCH_LEVEL)
-void VioGpuQueue::Lock(KIRQL* Irql)
+void NTAPI VioGpuQueue::Lock(KIRQL* Irql)
 {
     KIRQL SavedIrql = KeGetCurrentIrql();
     DbgPrint(TRACE_LEVEL_VERBOSE, ("---> %s at IRQL %d\n", __FUNCTION__, SavedIrql));
-
-    if (SavedIrql < DISPATCH_LEVEL) {
-        KeAcquireSpinLock(&m_SpinLock, &SavedIrql);
-    }
-    else if (SavedIrql == DISPATCH_LEVEL) {
-        KeAcquireSpinLockAtDpcLevel(&m_SpinLock);
-    }
-    else {
-        VioGpuDbgBreak();
-    }
-    *Irql = SavedIrql;
 
     DbgPrint(TRACE_LEVEL_VERBOSE, ("<--- %s\n", __FUNCTION__));
 }
 
 _IRQL_requires_(DISPATCH_LEVEL)
 _IRQL_restores_global_(OldIrql, Irql)
-void VioGpuQueue::Unlock(KIRQL Irql)
+void NTAPI VioGpuQueue::Unlock(KIRQL Irql)
 {
     DbgPrint(TRACE_LEVEL_VERBOSE, ("---> %s at IRQL %d\n", __FUNCTION__, Irql));
-
-    if (Irql < DISPATCH_LEVEL) {
-        KeReleaseSpinLock(&m_SpinLock, Irql);
-    }
-    else {
-        KeReleaseSpinLockFromDpcLevel(&m_SpinLock);
-    }
 
     DbgPrint(TRACE_LEVEL_VERBOSE, ("<--- %s\n", __FUNCTION__));
 }
@@ -181,7 +163,7 @@ PVOID CtrlQueue::AllocCmdResp(PGPU_VBUFFER* buf, int cmd_sz, PVOID resp_buf, int
 
     PGPU_VBUFFER vbuf;
     vbuf = m_pBuf->GetBuf(cmd_sz, resp_sz, resp_buf);
-    ASSERT(vbuf);
+    DbgPrint(TRACE_LEVEL_VERBOSE, ("Buffer: %X\n", vbuf));
     *buf = vbuf;
 
     DbgPrint(TRACE_LEVEL_VERBOSE, ("<--- %s\n", __FUNCTION__));
@@ -263,7 +245,7 @@ BOOLEAN CtrlQueue::AskDisplayInfo(PGPU_VBUFFER* buf)
 
     if (status == STATUS_TIMEOUT) {
         DbgPrint(TRACE_LEVEL_FATAL, ("---> Failed to ask display info\n"));
-        VioGpuDbgBreak();
+        //VioGpuDbgBreak();
         //        return FALSE;
     }
     *buf = vbuf;
@@ -318,7 +300,7 @@ BOOLEAN CtrlQueue::AskEdidInfo(PGPU_VBUFFER* buf, UINT id)
 
     if (status == STATUS_TIMEOUT) {
         DbgPrint(TRACE_LEVEL_FATAL, ("---> Failed to get edid info\n"));
-        VioGpuDbgBreak();
+       // VioGpuDbgBreak();
         //        return FALSE;
     }
 
@@ -365,7 +347,7 @@ BOOLEAN CtrlQueue::AskCapsetInfo(PGPU_VBUFFER* buf, ULONG idx)
     PGPU_VBUFFER vbuf;
     PGPU_RESP_CAPSET_INFO resp_buf;
     KEVENT   event;
-    NTSTATUS status;
+   // NTSTATUS status;
 
     resp_buf = reinterpret_cast<PGPU_RESP_CAPSET_INFO>
         (new (NonPagedPoolNx) BYTE[sizeof(GPU_RESP_CAPSET_INFO)]);
@@ -392,18 +374,8 @@ BOOLEAN CtrlQueue::AskCapsetInfo(PGPU_VBUFFER* buf, ULONG idx)
 
     QueueBuffer(vbuf);
 
-    status = KeWaitForSingleObject(&event,
-        Executive,
-        KernelMode,
-        FALSE,
-        &timeout
-    );
 
-    if (status == STATUS_TIMEOUT) {
-        DbgPrint(TRACE_LEVEL_FATAL, ("---> Failed to get capset info\n"));
-        VioGpuDbgBreak();
-        return FALSE;
-    }
+    KeStallExecutionProcessor(1000);
 
     *buf = vbuf;
 
@@ -460,7 +432,7 @@ BOOLEAN CtrlQueue::AskCapset(PGPU_VBUFFER* buf, ULONG capset_id, ULONG capset_si
 
     if (status == STATUS_TIMEOUT) {
         DbgPrint(TRACE_LEVEL_FATAL, ("---> Failed to get capset\n"));
-        VioGpuDbgBreak();
+        //VioGpuDbgBreak();
         return FALSE;
     }
 
@@ -829,7 +801,7 @@ UINT CtrlQueue::QueueBuffer(PGPU_VBUFFER buf)
     UINT sgleft = SGLIST_SIZE;
     UINT outcnt = 0, incnt = 0;
     UINT ret = 0;
-    KIRQL SavedIrql;
+  //  KIRQL SavedIrql;
 
     if (buf->size > PAGE_SIZE) {
         DbgPrint(TRACE_LEVEL_ERROR, ("<--> %s size is too big %d\n", __FUNCTION__, buf->size));
@@ -878,10 +850,12 @@ UINT CtrlQueue::QueueBuffer(PGPU_VBUFFER buf)
 
     DbgPrint(TRACE_LEVEL_VERBOSE, ("<--> %s sgleft %d\n", __FUNCTION__, sgleft));
 
-    Lock(&SavedIrql);
+    //Lock(&SavedIrql);
     ret = AddBuf(&sg[0], outcnt, incnt, buf, NULL, 0);
-    Kick();
-    Unlock(SavedIrql);
+        DbgPrint(TRACE_LEVEL_VERBOSE, ("GOt passed AddBuf\n"));
+  //  Kick();
+         DbgPrint(TRACE_LEVEL_VERBOSE, ("GOt passed kick\n"));
+    //Unlock(SavedIrql);
 
     DbgPrint(TRACE_LEVEL_VERBOSE, ("<--- %s ret = %d\n", __FUNCTION__, ret));
 
@@ -1007,18 +981,19 @@ PGPU_VBUFFER VioGpuBuf::GetBuf(
 
     PGPU_VBUFFER pbuf = NULL;
     PLIST_ENTRY pListItem = NULL;
-    KIRQL                   OldIrql;
+//    KIRQL                   OldIrql;
 
-    KeAcquireSpinLock(&m_SpinLock, &OldIrql);
+   // KeAcquireSpinLock(&m_SpinLock, &OldIrql);
 
     if (!IsListEmpty(&m_FreeBufs))
     {
         pListItem = RemoveHeadList(&m_FreeBufs);
         pbuf = CONTAINING_RECORD(pListItem, GPU_VBUFFER, list_entry);
+            DbgPrint(TRACE_LEVEL_VERBOSE, ("Passed containing record --> %s\n", __FUNCTION__));
         //ASSERT(pvbuf);
         memset(pbuf, 0, VBUFFER_SIZE);
-        ASSERT(size > MAX_INLINE_CMD_SIZE);
-
+    //  ASSERT(size > MAX_INLINE_CMD_SIZE);
+            DbgPrint(TRACE_LEVEL_VERBOSE, ("Set VBUFFER size --> %s\n", __FUNCTION__));
         pbuf->buf = (char *)((ULONG_PTR)pbuf + sizeof(*pbuf));
         pbuf->size = size;
 
@@ -1033,13 +1008,14 @@ PGPU_VBUFFER VioGpuBuf::GetBuf(
         }
      //   ASSERT(vbuf->resp_buf);
         InsertTailList(&m_InUseBufs, &pbuf->list_entry);
+        DbgPrint(TRACE_LEVEL_VERBOSE, ("Setup Tail List --> %s\n", __FUNCTION__));
     }
     else
     {
         DbgPrint(TRACE_LEVEL_FATAL, ("<--- %s Cannot allocate buffer\n", __FUNCTION__));
-        VioGpuDbgBreak();
+       // VioGpuDbgBreak();
     }
-    KeReleaseSpinLock(&m_SpinLock, OldIrql);
+ //   KeReleaseSpinLock(&m_SpinLock, OldIrql);
 
     DbgPrint(TRACE_LEVEL_VERBOSE, ("<--- %s buf = %p\n", __FUNCTION__, pbuf));
 
