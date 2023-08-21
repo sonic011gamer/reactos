@@ -173,7 +173,8 @@ IntInitScreenInfo(
    /*
     * Call miniport to get information about video modes.
     */
-
+   DPRINT1("IntInitScreenInfo: trying to obtain avaible modes\n");
+   __debugbreak();
    ModeCount = 1;//GetAvailableModes(ppdev->hDriver, &ModeInfo, &ModeInfoSize);
    if (ModeCount == 0)
    {
@@ -596,6 +597,7 @@ DrvGetModes(_In_ HANDLE hDriver,
    KeWaitForSingleObject(&Event, Executive, 0, 0, 0);
    Status = IoStatusBlock.Status;
    DPRINT1("DrvGetModes: IofCallDriver Status %d\n", IoStatusBlock.Status);
+   DPRINT1("Attempting to obtain display mode list\n");
    __debugbreak();
  //  FramebufferMapped = (ULONG_PTR)Ptr;
    DPRINT1("DxgkCddGetDisplayModeList: Status %d\n", Status);

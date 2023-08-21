@@ -47,18 +47,21 @@ struct NOTIFY_CONTEXT {
 };
 
 BOOLEAN NotifyRoutine(PVOID ctx_void) {
-    //DbgPrint(TRACE_LEVEL_ERROR, ("<---> %s\n", __FUNCTION__));
+  //   DbgPrint(TRACE_LEVEL_ERROR, ("<---> %s\n", __FUNCTION__));
+     #if 0
     NOTIFY_CONTEXT* ctx = (NOTIFY_CONTEXT*)ctx_void;
     DXGKRNL_INTERFACE* pDxgkInterface = ctx->pDxgkInterface;
     pDxgkInterface->DxgkCbNotifyInterrupt(pDxgkInterface->DeviceHandle, ctx->interrupt);
     if (ctx->triggerDpc) {
         pDxgkInterface->DxgkCbQueueDpc(pDxgkInterface->DeviceHandle);
     }
-
+    #endif
     return TRUE;
 }
 
 NTSTATUS VioGpuAdapter::NotifyInterrupt(DXGKARGCB_NOTIFY_INTERRUPT_DATA* interruptData, BOOL triggerDpc) {
+      //  DbgPrint(TRACE_LEVEL_ERROR, ("<---> %s\n", __FUNCTION__));
+    #if  0
     NOTIFY_CONTEXT notify;
     notify.pDxgkInterface = &m_DxgkInterface;
     notify.interrupt = interruptData;
@@ -71,6 +74,8 @@ NTSTATUS VioGpuAdapter::NotifyInterrupt(DXGKARGCB_NOTIFY_INTERRUPT_DATA* interru
         0,
         &bRet
     );
+    #endif
+    return 0;
 }
 
 

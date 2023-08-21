@@ -668,10 +668,10 @@ void VioGpuVidPN::CreateFrameBufferObj(PVIDEO_MODE_INFORMATION pModeInfo, CURREN
     }
 
     GpuObjectAttach(resid, obj);
-    //long* pvAddr = (long*)m_FrameSegment.GetVirtualAddress();
-    //for (int i = 0; i < 0x8000 / 4; i += 1) {
-    //    pvAddr[i] = 0x00ff8800;
-    //};
+    long* pvAddr = (long*)m_pAdapter->frameSegment.GetVirtualAddress();
+    for (int i = 0; i < 0x8000 / 4; i += 1) {
+        pvAddr[i] = 0x00ff8800;
+    };
     resid = 1;
 
     m_pFrameBuf = obj;

@@ -199,7 +199,7 @@ DxgkCbQueueDpc(_In_ HANDLE DeviceHandle)
 {
     //TODO: Implement meh
     UNIMPLEMENTED;
-    return FALSE;
+    return TRUE;
 }
 
 
@@ -211,7 +211,7 @@ DxgkCbQueryServices(_In_ HANDLE DeviceHandle,
 {
     //TODO: Implement meh
     UNIMPLEMENTED;
-    __debugbreak();
+
     return STATUS_UNSUCCESSFUL;
 }
 
@@ -227,7 +227,7 @@ DxgkCbSynchronizeExecution(_In_ HANDLE DeviceHandle,
 
     SynchronizeRoutine(Context);
     *ReturnValue = TRUE;
-    __debugbreak();
+    UNIMPLEMENTED;
     return STATUS_SUCCESS;
 }
 
@@ -250,7 +250,7 @@ DxgkCbIsDevicePresent(_In_ HANDLE DeviceHandle,
 {
     //TODO: Implement meh
     UNIMPLEMENTED;
-    __debugbreak();
+    //__debugbreak();
     return STATUS_UNSUCCESSFUL;
 }
 
@@ -301,7 +301,6 @@ DxgkCbNotifyDpc(IN_CONST_HANDLE hAdapter)
 {
    //TODO: Implement meh
     UNIMPLEMENTED;
-    __debugbreak();
 }
 
 NTSTATUS
@@ -360,7 +359,7 @@ CALLBACK
 HandleUnimplemented()
 {
     UNIMPLEMENTED;
-    __debugbreak();
+   // __debugbreak();
     return 0;
 }
 
@@ -373,7 +372,7 @@ DxgkCbExcluseAdapterAccess(_In_ HANDLE DeviceHandle,
                            _In_ PVOID ProtectedCallbackContext)
 {
     UNIMPLEMENTED;
-    __debugbreak();
+   // __debugbreak();
     return 0;
 }
 
@@ -385,7 +384,7 @@ DxgkCbQueryVidPnInterface(IN_CONST_D3DKMDT_HVIDPN                hVidPn,
                                DEREF_OUT_CONST_PPDXGK_VIDPN_INTERFACE ppVidPnInterface)
 {
      UNIMPLEMENTED;
-    __debugbreak();
+    //__debugbreak();
     return 0;
 }
 
