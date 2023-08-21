@@ -78,6 +78,12 @@ typedef struct _DXGKRNL_PRIVATE_EXTENSION
     BUS_INTERFACE_STANDARD BusInterface;
 } DXGKRNL_PRIVATE_EXTENSION, *PDXGKRNL_PRIVATE_EXTENSION;
 
+NTSTATUS
+APIENTRY
+CALLBACK
+DxgkCbQueryVidPnInterface(IN_CONST_D3DKMDT_HVIDPN                hVidPn,
+                               IN_CONST_DXGK_VIDPN_INTERFACE_VERSION  VidPnInterfaceVersion,
+                               DEREF_OUT_CONST_PPDXGK_VIDPN_INTERFACE ppVidPnInterface);
 
 #include "dxgkport.h"
 
@@ -128,3 +134,8 @@ NTSTATUS
 NTAPI
 IntVideoPortAddDeviceMapLink(
     PDXGKRNL_PRIVATE_EXTENSION DeviceExtension);
+
+#include "classes/vidpnmgr.hpp"
+
+/* please keep at bottom :( */
+#include "reactos_wddm.hpp"

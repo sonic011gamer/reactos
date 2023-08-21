@@ -12,6 +12,7 @@ list(APPEND SOURCE
     dxgkinterface.cpp
     miniport/dxgkport.cpp
     miniport/miniport.cpp
+    vidpnss/vidpnmgr.cpp
     )
 
 add_library(dxgkrnl MODULE
