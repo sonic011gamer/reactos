@@ -46,7 +46,7 @@ DrvEnableDriver(ULONG iEngineVersion,
                 PDRVENABLEDATA pded)
 {
     DPRINT1("---ReactOS CDD - ReactOS Display Driver Model---\n");
-    __debugbreak();
+  //  __debugbreak();
     if (cj >= sizeof(DRVENABLEDATA))
     {
        pded->c = sizeof(DrvFunctionTable) / sizeof(DRVFN);
@@ -74,7 +74,7 @@ DrvNotify(_In_ SURFOBJ *pso,
           _In_ PVOID    pvData)
 {
     UNIMPLEMENTED;
-    __debugbreak();
+  // .. __debugbreak();
 }
 
 BOOL
@@ -83,6 +83,6 @@ DrvAssertMode(_In_ DHPDEV dhpdev,
               _In_ BOOL bEnable)
 {
     UNIMPLEMENTED;
-    __debugbreak();
+ //   __debugbreak();
     return 0;
 }

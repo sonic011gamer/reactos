@@ -247,7 +247,7 @@ BmfdLoadFontFile(
     ULONG cjView;
 
     DbgPrint("BmfdLoadFontFile()\n");
-    __debugbreak();
+    //__debugbreak();
 
     /* Check parameters */
     if (cFiles != 1)

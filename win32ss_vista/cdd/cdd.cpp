@@ -133,16 +133,16 @@ IntInitScreenInfo(
    PVIDEO_MODE_INFORMATION ModeInfo, ModeInfoPtr, SelectedMode = NULL;
    //VIDEO_COLOR_CAPABILITIES ColorCapabilities;
   // ULONG Temp;
-
-    VIDEO_MODE_INFORMATION ModeInfoList[1];
-   ModeInfoList[0].Length = 0x1D4C00;
-   ModeInfoList[0].ModeIndex = 0;
-   ModeInfoList[0].VisScreenWidth = 800;
-   ModeInfoList[0].VisScreenHeight = 600;
-   ModeInfoList[0].ScreenStride = 4;
     ULONG BytesPerPixel = 4;
 
-    ModeInfoList[0].ScreenStride = 800 * BytesPerPixel;
+    VIDEO_MODE_INFORMATION ModeInfoList[1];
+   ModeInfoList[0].Length = (768 * 1024 * BytesPerPixel);
+   ModeInfoList[0].ModeIndex = 0;
+   ModeInfoList[0].VisScreenWidth = 1024;
+   ModeInfoList[0].VisScreenHeight = 768;
+   ModeInfoList[0].ScreenStride = 4;
+
+    ModeInfoList[0].ScreenStride = 4096;
     ModeInfoList[0].NumberOfPlanes = 1;
     ModeInfoList[0].BitsPerPlane = BytesPerPixel * 8;
     ModeInfoList[0].Frequency = 60;
@@ -173,8 +173,7 @@ IntInitScreenInfo(
    /*
     * Call miniport to get information about video modes.
     */
-   DPRINT1("IntInitScreenInfo: trying to obtain avaible modes\n");
-   __debugbreak();
+
    ModeCount = 1;//GetAvailableModes(ppdev->hDriver, &ModeInfo, &ModeInfoSize);
    if (ModeCount == 0)
    {
@@ -224,6 +223,7 @@ IntInitScreenInfo(
 
    if (SelectedMode == NULL)
    {
+
       //EngFreeMem(ModeInfo);
       //return FALSE;
    }
@@ -311,37 +311,13 @@ IntInitScreenInfo(
    pDevInfo->hpalDefault = 0;
    pDevInfo->flGraphicsCaps2 = 0;
 
-   if (ppdev->BitsPerPixel == 8)
-   {
-      pGdiInfo->ulNumColors = 20;
-      pGdiInfo->ulNumPalReg = 1 << ppdev->BitsPerPixel;
-      pGdiInfo->ulHTOutputFormat = HT_FORMAT_8BPP;
-      pDevInfo->flGraphicsCaps |= GCAPS_PALMANAGED;
-      pDevInfo->iDitherFormat = BMF_8BPP;
-      /* Assuming palette is orthogonal - all colors are same size. */
-      ppdev->PaletteShift = (UCHAR)(8 - pGdiInfo->ulDACRed);
-   }
-   else
-   {
       pGdiInfo->ulNumColors = (ULONG)(-1);
       pGdiInfo->ulNumPalReg = 0;
-      switch (ppdev->BitsPerPixel)
-      {
-         case 16:
-            pGdiInfo->ulHTOutputFormat = HT_FORMAT_16BPP;
-            pDevInfo->iDitherFormat = BMF_16BPP;
-            break;
 
-         case 24:
-            pGdiInfo->ulHTOutputFormat = HT_FORMAT_24BPP;
-            pDevInfo->iDitherFormat = BMF_24BPP;
-            break;
-
-         default:
             pGdiInfo->ulHTOutputFormat = HT_FORMAT_32BPP;
             pDevInfo->iDitherFormat = BMF_32BPP;
-      }
-   }
+
+
 
  //  EngFreeMem(ModeInfo);
    return TRUE;
@@ -397,7 +373,7 @@ IntSetPalette(
    IN ULONG cColors)
 {
    UNIMPLEMENTED;
-   __debugbreak();
+ //  __debugbreak();
    return TRUE;
 }
 
@@ -424,7 +400,7 @@ DrvEnableSurface(
   // ULONG ulTemp;
 
    DPRINT1("DrvEnableSurface: Entry\n");
-   __debugbreak();
+  // __debugbreak();
 
    /*
     * Set the current mode
@@ -531,7 +507,6 @@ DrvSetPointerShape(
    IN RECTL *prcl,
    IN FLONG fl)
 {
-   /* Return Eng varient */
    return EngSetPointerShape(pso, psoMask, psoColor, pxlo, xHot, yHot, x, y, prcl, fl);
 }
 
@@ -597,9 +572,7 @@ DrvGetModes(_In_ HANDLE hDriver,
    KeWaitForSingleObject(&Event, Executive, 0, 0, 0);
    Status = IoStatusBlock.Status;
    DPRINT1("DrvGetModes: IofCallDriver Status %d\n", IoStatusBlock.Status);
-   DPRINT1("Attempting to obtain display mode list\n");
-   __debugbreak();
- //  FramebufferMapped = (ULONG_PTR)Ptr;
+   FramebufferMapped = 0xF6CAC000;
    DPRINT1("DxgkCddGetDisplayModeList: Status %d\n", Status);
   // DPRINT1("DxgkCddGetDisplayModeList: Screen Height %d\n", GetDisplayModeList->pModeList->Height);
 
@@ -627,16 +600,15 @@ typedef struct _VIDEO_MODE_INFORMATION {
     ULONG DriverSpecificAttributeFlags;
 } VIDEO_MODE_INFORMATION, *PVIDEO_MODE_INFORMATION;
 #endif
-
+       ULONG BytesPerPixel = 4;
    VIDEO_MODE_INFORMATION ModeInfoList[1];
-   ModeInfoList[0].Length = 0x1D4C00;
+   ModeInfoList[0].Length = (768 * 1024 * BytesPerPixel);
    ModeInfoList[0].ModeIndex = 0;
-   ModeInfoList[0].VisScreenWidth = 800;
-   ModeInfoList[0].VisScreenHeight = 600;
+   ModeInfoList[0].VisScreenWidth = 1024;
+   ModeInfoList[0].VisScreenHeight = 768;
    ModeInfoList[0].ScreenStride = 4;
-    ULONG BytesPerPixel = 4;
 
-    ModeInfoList[0].ScreenStride = 800 * BytesPerPixel;
+    ModeInfoList[0].ScreenStride = 4096;
     ModeInfoList[0].NumberOfPlanes = 1;
     ModeInfoList[0].BitsPerPlane = BytesPerPixel * 8;
     ModeInfoList[0].Frequency = 60;

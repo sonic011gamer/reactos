@@ -53,7 +53,7 @@ ULONG iEngineVersion,
 ULONG cj,
 PDRVENABLEDATA pded)
 {
-    __debugbreak();
+    //__debugbreak();
 // Engine Version is passed down so future drivers can support previous
 // engine versions.  A next generation driver can support both the old
 // and new engine conventions if told what version of engine it is

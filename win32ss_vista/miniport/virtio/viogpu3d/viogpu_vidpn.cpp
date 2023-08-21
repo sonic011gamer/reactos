@@ -20,16 +20,12 @@
 
 VIOGPU_DISP_MODE gpu_disp_modes[16] =
 {
-#if NTDDI_VERSION > NTDDI_WINBLUE
     {640, 480},
     {800, 600},
-#endif
     {1024, 768},
     {1280, 1024},
     {1920, 1080},
-#if NTDDI_VERSION > NTDDI_WINBLUE
     {2560, 1600},
-#endif
     {0, 0},
 };
 
@@ -113,8 +109,8 @@ NTSTATUS VioGpuVidPN::Start(ULONG* pNumberOfViews, ULONG* pNumberOfChildren) {
         }
     }
 
-    m_CurrentModes[0].DispInfo.Width = max(MIN_WIDTH_SIZE, m_SystemDisplayInfo.Width);
-    m_CurrentModes[0].DispInfo.Height = max(MIN_HEIGHT_SIZE, m_SystemDisplayInfo.Height);
+    m_CurrentModes[0].DispInfo.Width = max(MIN_WIDTH_SIZE, 1024);
+    m_CurrentModes[0].DispInfo.Height = max(MIN_HEIGHT_SIZE, 768);
     m_CurrentModes[0].DispInfo.ColorFormat = D3DDDIFMT_X8R8G8B8;
     m_CurrentModes[0].DispInfo.Pitch = (BPPFromPixelFormat(m_CurrentModes[0].DispInfo.ColorFormat) / BITS_PER_BYTE) * m_CurrentModes[0].DispInfo.Width;
     m_CurrentModes[0].DispInfo.TargetId = 0;
@@ -122,12 +118,21 @@ NTSTATUS VioGpuVidPN::Start(ULONG* pNumberOfViews, ULONG* pNumberOfChildren) {
         m_CurrentModes[0].DispInfo.PhysicAddress = m_SystemDisplayInfo.PhysicAddress;
     }
 
-    *pNumberOfViews = MAX_VIEWS;
-    *pNumberOfChildren = MAX_CHILDREN;
+    PVOID VAFramebuf;
+   VAFramebuf =  MmMapIoSpace(m_pAdapter->GetFrameBufferPA(), (768 * 1024 * 8), MmNonCached);
+    long* pvAddr = (long*)VAFramebuf;
+    for (int i = 0; i < 0x4000 / 4; i += 1) {
+        pvAddr[i] = 0x00ff8800;
+    };
+
+    DbgPrint(TRACE_LEVEL_INFORMATION, ("<--- %s Height = %d\n", __FUNCTION__, m_CurrentModes[0].DispInfo.Height));
+    DbgPrint(TRACE_LEVEL_INFORMATION, ("<--- %s Width = %d\n", __FUNCTION__, m_CurrentModes[0].DispInfo.Width));
+    DbgPrint(TRACE_LEVEL_INFORMATION, ("<--- %s VA = %X\n", __FUNCTION__, VAFramebuf));
+    DbgPrint(TRACE_LEVEL_INFORMATION, ("<--- %s Pitch = %d\n", __FUNCTION__, m_CurrentModes[0].DispInfo.Pitch));
 
     DbgPrint(TRACE_LEVEL_INFORMATION, ("<--- %s ColorFormat = %d\n", __FUNCTION__, m_CurrentModes[0].DispInfo.ColorFormat));
-
-
+   // __debugbreak();
+    return STATUS_SUCCESS;
     HANDLE   threadHandle = 0;
     m_shouldFlipStop = false;
     Status = PsCreateSystemThread(&threadHandle,
@@ -672,10 +677,7 @@ void VioGpuVidPN::CreateFrameBufferObj(PVIDEO_MODE_INFORMATION pModeInfo, CURREN
     for (int i = 0; i < 0x8000 / 4; i += 1) {
         pvAddr[i] = 0x00ff8800;
     };
-    resid = 1;
 
-    m_pFrameBuf = obj;
-    pCurrentMode->FrameBuffer.Ptr = obj->GetVirtualAddress();
     pCurrentMode->Flags.FrameBufferIsActive = TRUE;
     DbgPrint(TRACE_LEVEL_VERBOSE, ("<--- %s\n", __FUNCTION__));
 }
@@ -1072,7 +1074,7 @@ NTSTATUS VioGpuVidPN::AddSingleMonitorMode(_In_ CONST DXGKARG_RECOMMENDMONITORMO
     return Status;
 }
 
-NTSTATUS VioGpuVidPN::EnumVidPnCofuncModality(_In_ CONST DXGKARG_ENUMVIDPNCOFUNCMODALITY* CONST pEnumCofuncModality)
+NTSTATUS VioGpuVidPN:: EnumVidPnCofuncModality(_In_ CONST DXGKARG_ENUMVIDPNCOFUNCMODALITY* CONST pEnumCofuncModality)
 {
     PAGED_CODE();
 

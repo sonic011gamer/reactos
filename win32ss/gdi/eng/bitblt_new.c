@@ -222,7 +222,7 @@ EngBitBlt(
             psoPattern = BRUSHOBJ_psoPattern(pbo);
             if (!psoPattern)
             {
-                __debugbreak();
+              //  __debugbreak();
                 return FALSE;
             }
 
