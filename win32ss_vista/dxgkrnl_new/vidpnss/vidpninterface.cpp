@@ -23,12 +23,7 @@ APIENTRY
 DxgkVidPnAcquireSourceModeSet(IN_CONST_D3DKMDT_HVIDPN                                hVidPn,
                               IN_CONST_D3DDDI_VIDEO_PRESENT_SOURCE_ID                VidPnSourceId,
                               OUT_PD3DKMDT_HVIDPNSOURCEMODESET                       phVidPnSourceModeSet,
-                              DEREF_OUT_CONST_PPDXGK_VIDPNSOURCEMODESET_INTERFACE    ppVidPnSourceModeSetInterface)
-{
-    DPRINT1("DxgkVidPnAcquireSourceModeSet: Entry\n");
-    __debugbreak();
-    return 0;
-}
+                              DEREF_OUT_CONST_PPDXGK_VIDPNSOURCEMODESET_INTERFACE    ppVidPnSourceModeSetInterface);
 
 NTSTATUS
 APIENTRY
@@ -36,7 +31,7 @@ DxgkVidPnReleaseSourceModeSet(IN_CONST_D3DKMDT_HVIDPN                hVidPn,
                               IN_CONST_D3DKMDT_HVIDPNSOURCEMODESET   hVidPnSourceModeSet)
 {
     DPRINT1("DxgkVidPnReleaseSourceModeSet: Entry\n");
-    __debugbreak();
+    DPRINT1("TODO: Gotta clean up this crap\n");
     return 0;
 }
 
@@ -46,13 +41,7 @@ APIENTRY
 DxgkVidPnCreateNewSourceModeSet(IN_CONST_D3DKMDT_HVIDPN hVidPn,
                                 IN_CONST_D3DDDI_VIDEO_PRESENT_SOURCE_ID                VidPnSourceId,
                                 OUT_PD3DKMDT_HVIDPNSOURCEMODESET                       phNewVidPnSourceModeSet,
-                                DEREF_OUT_CONST_PPDXGK_VIDPNSOURCEMODESET_INTERFACE    ppVidPnSourceModeSetInterface)
-{
-    DPRINT1("DxgkVidPnReleaseSourceModeSet: Entry\n");
-    __debugbreak();
-    return 0;
-}
-
+                                DEREF_OUT_CONST_PPDXGK_VIDPNSOURCEMODESET_INTERFACE    ppVidPnSourceModeSetInterface);
 NTSTATUS
 APIENTRY
 DxgkVidPnAssignSourceModeSet(IN_D3DKMDT_HVIDPN                       hVidPn,
@@ -82,12 +71,7 @@ APIENTRY
 DxgkVidPnAcquireTargetModeSet(IN_CONST_D3DKMDT_HVIDPN                                  hVidPn,
                               IN_CONST_D3DDDI_VIDEO_PRESENT_TARGET_ID                  VidPnTargetId,
                               OUT_PD3DKMDT_HVIDPNTARGETMODESET                         phVidPnTargetModeSet,
-                              DEREF_OUT_CONST_PPDXGK_VIDPNTARGETMODESET_INTERFACE      ppVidPnTargetModeSetInterface)
-{
-    DPRINT1("DxgkVidPnAcquireTargetModeSet: Entry\n");
-    __debugbreak();
-    return 0;
-}
+                              DEREF_OUT_CONST_PPDXGK_VIDPNTARGETMODESET_INTERFACE      ppVidPnTargetModeSetInterface);
 
 NTSTATUS
 APIENTRY

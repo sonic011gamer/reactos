@@ -77,7 +77,7 @@ DxgkDdiVidPnTopologyAcquireFirstPathInfo(
 {
     PD3DKMDT_VIDPN_PRESENT_PATH VidPnPresentPathInfo = ( PD3DKMDT_VIDPN_PRESENT_PATH )*ppFirstVidPnPresentPathInfo;
     VidPnPresentPathInfo->VidPnSourceId = 0;
-    VidPnPresentPathInfo->VidPnTargetId = 0;
+    VidPnPresentPathInfo->VidPnTargetId = 0; /* Ah okay, so this is Source 0, target 0, and with the first path mode. */
     VidPnPresentPathInfo->NumPathModes = 1;
     VidPnPresentPathInfo->ContentTransformation.Scaling = D3DKMDT_VPPS_IDENTITY;
     VidPnPresentPathInfo->ContentTransformation.Rotation = D3DKMDT_VPPR_IDENTITY;
@@ -88,8 +88,25 @@ DxgkDdiVidPnTopologyAcquireFirstPathInfo(
     VidPnPresentPathInfo->VidPnTargetColorCoeffDynamicRanges.FourthChannel = 0;
     VidPnPresentPathInfo->VidPnTargetColorCoeffDynamicRanges.FifthChannel = 0;
     VidPnPresentPathInfo->VidPnTargetColorCoeffDynamicRanges.SixthChannel = 0;
+    VidPnPresentPathInfo->VidPnTargetColorCoeffDynamicRanges.SeventhChannel = 0;
+    VidPnPresentPathInfo->VidPnTargetColorCoeffDynamicRanges.EighthChannel = 0;
+    VidPnPresentPathInfo->VidPnTargetGamma = 0;
+    VidPnPresentPathInfo->VidPnTargetRefreshRate.Numerator = 60;
+    VidPnPresentPathInfo->VidPnTargetRefreshRate.Denominator = 1;
+    VidPnPresentPathInfo->VidPnTargetContent = D3DKMDT_VPPC_GRAPHICS;
+    VidPnPresentPathInfo->Flags.PathPoweredOff = FALSE;
+    VidPnPresentPathInfo->Flags.ContentOnly = FALSE;
+    VidPnPresentPathInfo->Flags.NoScanout = FALSE;
+    VidPnPresentPathInfo->Flags.SupportVirtualMode = FALSE;
+    VidPnPresentPathInfo->Flags.FixedSource = FALSE;
+    VidPnPresentPathInfo->Flags.GammaCompensation = FALSE;
+    VidPnPresentPathInfo->Flags.Occluded = FALSE;
+    VidPnPresentPathInfo->Flags.VidPnPresentPathPersistent = FALSE;
+    VidPnPresentPathInfo->Flags.ForcedVidPnSourceMode = FALSE;
+    VidPnPresentPathInfo->Flags.ForcedScaling = FALSE;
+    VidPnPresentPathInfo->Flags.SupportNonDestructiveRotation = FALSE;
+    VidPnPresentPathInfo->Flags.RecommendedForModeSet = FALSE;
     UNIMPLEMENTED;
-    __debugbreak();
     return 0;
 }
 
