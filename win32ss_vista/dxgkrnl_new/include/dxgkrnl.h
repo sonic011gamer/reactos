@@ -100,7 +100,7 @@ DxgkpSetupDxgkrnl(
 
 NTSTATUS
 NTAPI
-DxgkPortStartAdapter();\
+DxgkPortStartAdapter();
 
 CODE_SEG("PAGE")
 NTSTATUS

@@ -107,6 +107,7 @@ DxgkVidPnAcquireSourceModeSet(IN_CONST_D3DKMDT_HVIDPN                           
     DPRINT1("DxgkVidPnAcquireSourceModeSet: Entry\n");
     *phVidPnSourceModeSet = (D3DKMDT_HVIDPNSOURCEMODESET)&VidPnSourceHandle;
     //DXGK_VIDPNSOURCEMODESET_INTERFACE SourceModeSetInterface = {0};
+    #if 0
     PDXGK_VIDPNSOURCEMODESET_INTERFACE SourceModeSetInterface = *ppVidPnSourceModeSetInterface;
     SourceModeSetInterface.pfnGetNumModes = DxgkDdiVidPnSourceModeSetGETNUMMODES;
     SourceModeSetInterface.pfnAcquireFirstModeInfo = DxgkDdiVidPnSourceModeSetACQUIREFIRSTMODEINFO;
@@ -116,6 +117,7 @@ DxgkVidPnAcquireSourceModeSet(IN_CONST_D3DKMDT_HVIDPN                           
     SourceModeSetInterface.pfnCreateNewModeInfo = DxgkDdiVidPnSourceModeSetCREATENEWMODEINFO;
     SourceModeSetInterface.pfnAddMode = DxgkDdiVidPnSourceModeSetAddMode;
     SourceModeSetInterface.pfnPinMode = DxgkDdiVidPnSourceModeSetPINMODE;
+    #endif
     return STATUS_SUCCESS;
 }
 
@@ -129,8 +131,9 @@ DxgkVidPnCreateNewSourceModeSet(IN_CONST_D3DKMDT_HVIDPN hVidPn,
     DPRINT1("DxgkVidPnReleaseSourceModeSet: Entry\n");
     REACTOS_HVIDPN_SOURCE_MODE VidPnSourceHandle = {0};
     DPRINT1("DxgkVidPnAcquireSourceModeSet: Entry\n");
-    *phVidPnSourceModeSet = (D3DKMDT_HVIDPNSOURCEMODESET)&VidPnSourceHandle;
+   // *phVidPnSourceModeSet = (D3DKMDT_HVIDPNSOURCEMODESET)&VidPnSourceHandle;
     //DXGK_VIDPNSOURCEMODESET_INTERFACE SourceModeSetInterface = {0};
+    #if 0
     PDXGK_VIDPNSOURCEMODESET_INTERFACE SourceModeSetInterface = *ppVidPnSourceModeSetInterface;
     SourceModeSetInterface.pfnGetNumModes = DxgkDdiVidPnSourceModeSetGETNUMMODES;
     SourceModeSetInterface.pfnAcquireFirstModeInfo = DxgkDdiVidPnSourceModeSetACQUIREFIRSTMODEINFO;
@@ -140,5 +143,6 @@ DxgkVidPnCreateNewSourceModeSet(IN_CONST_D3DKMDT_HVIDPN hVidPn,
     SourceModeSetInterface.pfnCreateNewModeInfo = DxgkDdiVidPnSourceModeSetCREATENEWMODEINFO;
     SourceModeSetInterface.pfnAddMode = DxgkDdiVidPnSourceModeSetAddMode;
     SourceModeSetInterface.pfnPinMode = DxgkDdiVidPnSourceModeSetPINMODE;
+    #endif
     return 0;
 }

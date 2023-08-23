@@ -13,6 +13,10 @@ list(APPEND SOURCE
     miniport/dxgkport.cpp
     miniport/miniport.cpp
     vidpnss/vidpnmgr.cpp
+    vidpnss/vidpninterface.cpp
+    vidpnss/vidpnsourcemodset.cpp
+    vidpnss/vidpntargetmodeset.cpp
+    vidpnss/vidpntopology.cpp
     )
 
 add_library(dxgkrnl MODULE

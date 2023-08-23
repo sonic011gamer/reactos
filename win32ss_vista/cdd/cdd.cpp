@@ -136,13 +136,11 @@ IntInitScreenInfo(
     ULONG BytesPerPixel = 4;
 
     VIDEO_MODE_INFORMATION ModeInfoList[1];
-   ModeInfoList[0].Length = (768 * 1024 * BytesPerPixel);
    ModeInfoList[0].ModeIndex = 0;
-   ModeInfoList[0].VisScreenWidth = 1024;
-   ModeInfoList[0].VisScreenHeight = 768;
-   ModeInfoList[0].ScreenStride = 4;
-
-    ModeInfoList[0].ScreenStride = 4096;
+   ModeInfoList[0].VisScreenWidth = 1920;
+   ModeInfoList[0].VisScreenHeight = 1080;
+   ModeInfoList[0].Length = (7680 * ModeInfoList[0].VisScreenHeight);
+    ModeInfoList[0].ScreenStride = 7680;
     ModeInfoList[0].NumberOfPlanes = 1;
     ModeInfoList[0].BitsPerPlane = BytesPerPixel * 8;
     ModeInfoList[0].Frequency = 60;
@@ -174,7 +172,7 @@ IntInitScreenInfo(
     * Call miniport to get information about video modes.
     */
 
-   ModeCount = 1;//GetAvailableModes(ppdev->hDriver, &ModeInfo, &ModeInfoSize);
+   ModeCount = 2;//GetAvailableModes(ppdev->hDriver, &ModeInfo, &ModeInfoSize);
    if (ModeCount == 0)
    {
       return FALSE;
@@ -572,7 +570,7 @@ DrvGetModes(_In_ HANDLE hDriver,
    KeWaitForSingleObject(&Event, Executive, 0, 0, 0);
    Status = IoStatusBlock.Status;
    DPRINT1("DrvGetModes: IofCallDriver Status %d\n", IoStatusBlock.Status);
-   FramebufferMapped = 0xF6CAC000;
+   FramebufferMapped = 0xB4583000;
    DPRINT1("DxgkCddGetDisplayModeList: Status %d\n", Status);
   // DPRINT1("DxgkCddGetDisplayModeList: Screen Height %d\n", GetDisplayModeList->pModeList->Height);
 
@@ -602,13 +600,12 @@ typedef struct _VIDEO_MODE_INFORMATION {
 #endif
        ULONG BytesPerPixel = 4;
    VIDEO_MODE_INFORMATION ModeInfoList[1];
-   ModeInfoList[0].Length = (768 * 1024 * BytesPerPixel);
    ModeInfoList[0].ModeIndex = 0;
-   ModeInfoList[0].VisScreenWidth = 1024;
-   ModeInfoList[0].VisScreenHeight = 768;
-   ModeInfoList[0].ScreenStride = 4;
+   ModeInfoList[0].VisScreenWidth = 1920;
+   ModeInfoList[0].VisScreenHeight = 1080;
+   ModeInfoList[0].Length = (7680 * ModeInfoList[0].VisScreenHeight);
+    ModeInfoList[0].ScreenStride = 7680;
 
-    ModeInfoList[0].ScreenStride = 4096;
     ModeInfoList[0].NumberOfPlanes = 1;
     ModeInfoList[0].BitsPerPlane = BytesPerPixel * 8;
     ModeInfoList[0].Frequency = 60;

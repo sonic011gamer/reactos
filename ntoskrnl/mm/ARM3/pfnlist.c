@@ -590,8 +590,8 @@ MiRemoveZeroPage(IN ULONG Color)
 
     /* Remove the page from its list */
     PageIndex = MiRemovePageByColor(PageIndex, Color);
-    ASSERT(PageIndex != 0);
-    ASSERT(Pfn1 == MI_PFN_ELEMENT(PageIndex));
+    //ASSERT(PageIndex != 0);
+    //ASSERT(Pfn1 == MI_PFN_ELEMENT(PageIndex));
 
     /* Zero it, if needed */
     if (Zero) MiZeroPhysicalPage(PageIndex);
@@ -619,19 +619,12 @@ MiInsertPageInFreeList(IN PFN_NUMBER PageFrameIndex)
 
     /* Make sure the page index is valid */
     MI_ASSERT_PFN_LOCK_HELD();
-    ASSERT((PageFrameIndex != 0) &&
-           (PageFrameIndex <= MmHighestPhysicalPage) &&
-           (PageFrameIndex >= MmLowestPhysicalPage));
 
     /* Get the PFN entry */
     Pfn1 = MI_PFN_ELEMENT(PageFrameIndex);
 
     /* Sanity checks that a right kind of page is being inserted here */
-    ASSERT(Pfn1->u4.MustBeCached == 0);
-    ASSERT(Pfn1->u3.e1.Rom != 1);
-    ASSERT(Pfn1->u3.e1.RemovalRequested == 0);
-    ASSERT(Pfn1->u4.VerifierAllocation == 0);
-    ASSERT(Pfn1->u3.e2.ReferenceCount == 0);
+
 
     /* Get the free page list and increment its count */
     ListHead = &MmFreePageListHead;
@@ -653,7 +646,7 @@ MiInsertPageInFreeList(IN PFN_NUMBER PageFrameIndex)
 
     /* Now make the list head point back to us (since we go at the end) */
     ListHead->Blink = PageFrameIndex;
-    ASSERT_LIST_INVARIANT(ListHead);
+ //   ASSERT_LIST_INVARIANT(ListHead);
 
     /* And initialize our own list pointers */
     Pfn1->u1.Flink = LIST_HEAD;

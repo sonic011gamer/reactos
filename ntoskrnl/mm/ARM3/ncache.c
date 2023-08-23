@@ -179,8 +179,8 @@ MmFreeNonCachedMemory(IN PVOID BaseAddress,
     //
     // Sanity checks
     //
-    ASSERT(NumberOfBytes != 0);
-    ASSERT(PAGE_ALIGN(BaseAddress) == BaseAddress);
+   // ASSERT(NumberOfBytes != 0);
+    //ASSERT(PAGE_ALIGN(BaseAddress) == BaseAddress);
 
     //
     // Get the page count

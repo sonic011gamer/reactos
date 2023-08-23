@@ -20,7 +20,7 @@ DxgkVidPnAcquireTargetModeSet(IN_CONST_D3DKMDT_HVIDPN                           
     DPRINT1("DxgkVidPnAcquireTargetModeSet: Entry\n");
     *phVidPnTargetModeSet = (D3DKMDT_HVIDPNTARGETMODESET)&hTargetModeSet;
 
-    DXGK_VIDPNTARGETMODESET_INTERFACE* TargetModeSetInterface = *ppVidPnTargetModeSetInterface;
+    //DXGK_VIDPNTARGETMODESET_INTERFACE* TargetModeSetInterface = *ppVidPnTargetModeSetInterface;
     __debugbreak();
     return 0;
 }

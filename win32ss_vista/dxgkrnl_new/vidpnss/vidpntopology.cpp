@@ -75,6 +75,7 @@ DxgkDdiVidPnTopologyAcquireFirstPathInfo(
     IN_CONST_D3DKMDT_HVIDPNTOPOLOGY              hVidPnTopology,
     DEREF_OUT_CONST_PPD3DKMDT_VIDPN_PRESENT_PATH ppFirstVidPnPresentPathInfo)
 {
+    #if 0
     PD3DKMDT_VIDPN_PRESENT_PATH VidPnPresentPathInfo = ( PD3DKMDT_VIDPN_PRESENT_PATH )*ppFirstVidPnPresentPathInfo;
     VidPnPresentPathInfo->VidPnSourceId = 0;
     VidPnPresentPathInfo->VidPnTargetId = 0; /* Ah okay, so this is Source 0, target 0, and with the first path mode. */
@@ -106,6 +107,7 @@ DxgkDdiVidPnTopologyAcquireFirstPathInfo(
     VidPnPresentPathInfo->Flags.ForcedScaling = FALSE;
     VidPnPresentPathInfo->Flags.SupportNonDestructiveRotation = FALSE;
     VidPnPresentPathInfo->Flags.RecommendedForModeSet = FALSE;
+    #endif
     UNIMPLEMENTED;
     return 0;
 }
@@ -186,8 +188,8 @@ DxgkVidPnGetTopology(IN_CONST_D3DKMDT_HVIDPN                        hVidPn,
     if (!ppVidPnTopologyInterface)
         return STATUS_INVALID_PARAMETER;
 
-    REACTOS_VIDPN_TOPOLOGY_HANDLE VidPnTopologyHandle = {0};
-    DXGK_VIDPNTOPOLOGY_INTERFACE* VidPnTopologyInterface = ( DXGK_VIDPNTOPOLOGY_INTERFACE* )*ppVidPnTopologyInterface;
+  //  REACTOS_VIDPN_TOPOLOGY_HANDLE VidPnTopologyHandle = {0};
+   // DXGK_VIDPNTOPOLOGY_INTERFACE* VidPnTopologyInterface = ( DXGK_VIDPNTOPOLOGY_INTERFACE* )*ppVidPnTopologyInterface;
 
     /*
      * This looks weird... Lemme explain
@@ -198,11 +200,11 @@ DxgkVidPnGetTopology(IN_CONST_D3DKMDT_HVIDPN                        hVidPn,
      * all of this stuff is internal and unused by anything else, unless they're hacky.
      * as this internal structure changes between versions..
      */
-    *phVidPnTopology = (D3DKMDT_HVIDPNTOPOLOGY)&VidPnTopologyHandle
-    VidPnTopologyHandle.IsActive = TRUE; /* Doesn't do much yet */
-
+//    *phVidPnTopology = (D3DKMDT_HVIDPNTOPOLOGY)&VidPnTopologyHandle;
+  //  VidPnTopologyHandle.IsActive = TRUE; /* Doesn't do much yet */
+#if 0
     /* For now we're targetting WDDM version 2.0 */
-    VidPnTopologyInterface.Version = DXGK_VIDPN_INTERFACE_VERSION_V1;
+    //VidPnTopologyInterface.Version = DXGK_VIDPN_INTERFACE_VERSION_V1;
     VidPnTopologyInterface.pfnAcquireFirstPathInfo = DxgkDdiVidPnTopologyAcquireFirstPathInfo;
     VidPnTopologyInterface.pfnAcquireNextPathInfo = DxgkDdiVidPnTopologyAcquireNextPathInfo;
     VidPnTopologyInterface.pfnAcquirePathInfo = DxgkDdiVidPnTopologyAcquirePathInfo;
@@ -215,8 +217,8 @@ DxgkVidPnGetTopology(IN_CONST_D3DKMDT_HVIDPN                        hVidPn,
     VidPnTopologyInterface.pfnReleasePathInfo = DxgkDdiVidPnTopologyReleasePathInfo;
     VidPnTopologyInterface.pfnRemovePath = DxgkDdiVidPnTopologyRemovePath;
     VidPnTopologyInterface.pfnUpdatePathSupportInfo = DxgkDdiVidPnTopologyUpdatePathSupportInfo;
+#endif
 
-
-    __debugbreak();
+    //__debugbreak();
     return 0;
 }

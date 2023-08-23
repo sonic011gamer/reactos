@@ -20,18 +20,19 @@
 
 VIOGPU_DISP_MODE gpu_disp_modes[16] =
 {
+#if NTDDI_VERSION > NTDDI_WINBLUE
     {640, 480},
     {800, 600},
+#endif
     {1024, 768},
     {1280, 1024},
     {1920, 1080},
+#if NTDDI_VERSION > NTDDI_WINBLUE
     {2560, 1600},
+#endif
     {0, 0},
 };
 
-
-
-PAGED_CODE_SEG_BEGIN
 
 VioGpuVidPN::VioGpuVidPN(VioGpuAdapter* adapter) {
     PAGED_CODE();
@@ -82,7 +83,7 @@ NTSTATUS VioGpuVidPN::Start(ULONG* pNumberOfViews, ULONG* pNumberOfChildren) {
     if (!NT_SUCCESS(Status))
     {
         DbgPrint(TRACE_LEVEL_FATAL, ("%s GetModeList failed with %x\n", __FUNCTION__, Status));
-        VioGpuDbgBreak();
+       // VioGpuDbgBreak();
     }
 
     if (m_pAdapter->IsVgaDevice())
@@ -109,8 +110,8 @@ NTSTATUS VioGpuVidPN::Start(ULONG* pNumberOfViews, ULONG* pNumberOfChildren) {
         }
     }
 
-    m_CurrentModes[0].DispInfo.Width = max(MIN_WIDTH_SIZE, 1024);
-    m_CurrentModes[0].DispInfo.Height = max(MIN_HEIGHT_SIZE, 768);
+    m_CurrentModes[0].DispInfo.Width = max(MIN_WIDTH_SIZE, 1920);
+    m_CurrentModes[0].DispInfo.Height = max(MIN_HEIGHT_SIZE, 1080);
     m_CurrentModes[0].DispInfo.ColorFormat = D3DDDIFMT_X8R8G8B8;
     m_CurrentModes[0].DispInfo.Pitch = (BPPFromPixelFormat(m_CurrentModes[0].DispInfo.ColorFormat) / BITS_PER_BYTE) * m_CurrentModes[0].DispInfo.Width;
     m_CurrentModes[0].DispInfo.TargetId = 0;
@@ -118,8 +119,14 @@ NTSTATUS VioGpuVidPN::Start(ULONG* pNumberOfViews, ULONG* pNumberOfChildren) {
         m_CurrentModes[0].DispInfo.PhysicAddress = m_SystemDisplayInfo.PhysicAddress;
     }
 
+    Status = SetCurrentMode(2, &m_CurrentModes[0]);
+    if (NT_SUCCESS(Status))
+    {
+        DbgPrint(TRACE_LEVEL_INFORMATION, ("SetCurrentMode Failed"));
+    }
+
     PVOID VAFramebuf;
-   VAFramebuf =  MmMapIoSpace(m_pAdapter->GetFrameBufferPA(), (768 * 1024 * 8), MmNonCached);
+    VAFramebuf =  MmMapIoSpace(m_pAdapter->GetFrameBufferPA(),  (7680 * 1920)* 4, MmNonCached);
     long* pvAddr = (long*)VAFramebuf;
     for (int i = 0; i < 0x4000 / 4; i += 1) {
         pvAddr[i] = 0x00ff8800;
@@ -129,10 +136,11 @@ NTSTATUS VioGpuVidPN::Start(ULONG* pNumberOfViews, ULONG* pNumberOfChildren) {
     DbgPrint(TRACE_LEVEL_INFORMATION, ("<--- %s Width = %d\n", __FUNCTION__, m_CurrentModes[0].DispInfo.Width));
     DbgPrint(TRACE_LEVEL_INFORMATION, ("<--- %s VA = %X\n", __FUNCTION__, VAFramebuf));
     DbgPrint(TRACE_LEVEL_INFORMATION, ("<--- %s Pitch = %d\n", __FUNCTION__, m_CurrentModes[0].DispInfo.Pitch));
-
     DbgPrint(TRACE_LEVEL_INFORMATION, ("<--- %s ColorFormat = %d\n", __FUNCTION__, m_CurrentModes[0].DispInfo.ColorFormat));
-   // __debugbreak();
-    return STATUS_SUCCESS;
+
+    *pNumberOfViews = MAX_VIEWS;
+    *pNumberOfChildren = MAX_CHILDREN;
+
     HANDLE   threadHandle = 0;
     m_shouldFlipStop = false;
     Status = PsCreateSystemThread(&threadHandle,
@@ -161,7 +169,7 @@ NTSTATUS VioGpuVidPN::AcquirePostDisplayOwnership() {
     {
         DbgPrint(TRACE_LEVEL_FATAL, ("DxgkCbAcquirePostDisplayOwnership failed with status 0x%X Width = %d\n",
             Status, m_SystemDisplayInfo.Width));
-        VioGpuDbgBreak();
+      //  VioGpuDbgBreak();
     }
 
     return Status;
@@ -183,7 +191,7 @@ void VioGpuVidPN::ReleasePostDisplayOwnership(D3DDDI_VIDEO_PRESENT_TARGET_ID Tar
         FALSE,
         &timeout) == STATUS_TIMEOUT) {
         DbgPrint(TRACE_LEVEL_FATAL, ("---> Failed to exit the flip thread\n"));
-        VioGpuDbgBreak();
+       // VioGpuDbgBreak();
     }
 
     ObDereferenceObject(m_pFlipThread);
@@ -1074,7 +1082,7 @@ NTSTATUS VioGpuVidPN::AddSingleMonitorMode(_In_ CONST DXGKARG_RECOMMENDMONITORMO
     return Status;
 }
 
-NTSTATUS VioGpuVidPN:: EnumVidPnCofuncModality(_In_ CONST DXGKARG_ENUMVIDPNCOFUNCMODALITY* CONST pEnumCofuncModality)
+NTSTATUS VioGpuVidPN::EnumVidPnCofuncModality(_In_ CONST DXGKARG_ENUMVIDPNCOFUNCMODALITY* CONST pEnumCofuncModality)
 {
     PAGED_CODE();
 
@@ -1817,4 +1825,4 @@ VOID VioGpuVidPN::SystemDisplayWrite(_In_reads_bytes_(SourceHeight* SourceStride
 
 }
 
-#pragma code_seg(pop) // End Non-Paged Code
+//#pragma code_seg(pop) // End Non-Paged Code

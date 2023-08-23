@@ -10,13 +10,3 @@
 #include <debug.h>
 
 extern PDXGKRNL_PRIVATE_EXTENSION DxgkpExtension;
-
-VIDPNMGR::VIDPNMGR()
-{
-
-}
-
-VIDPNMGR::~VIDPNMGR()
-{
-
-}

@@ -158,14 +158,14 @@ DxgkCbMapMemory(_In_ HANDLE DeviceHandle,
     if (InIoSpace == TRUE)
     {
         DPRINT1("Mapping InIoSpace\n");
-        *VirtualAddress = (PVOID)TranslatedAddress.LowPart;
+        *VirtualAddress = (PVOID)TranslatedAddress.QuadPart;
     }
     else
     {
         if (MapToUserMode == TRUE)
         {
                     /* Map to userspace */
-                Status = MapPhysicalMemory((HANDLE)0xFFFFFFFF,
+                Status = MapPhysicalMemory((HANDLE)0xFFFFFFFFFFFFFFFF,
                                TranslatedAddress,
                                Length,
                                PAGE_READWRITE/* | PAGE_WRITECOMBINE*/,
