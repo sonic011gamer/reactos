@@ -49,6 +49,7 @@ HalInitializeBios(
     _In_ ULONG Phase,
     _In_ PLOADER_PARAMETER_BLOCK LoaderBlock)
 {
+    #if 0
     PPFN_NUMBER PfnArray;
     PFN_NUMBER Pfn, Last;
     PMEMORY_ALLOCATION_DESCRIPTOR Descriptor;
@@ -145,6 +146,7 @@ HalInitializeBios(
 
         HalpBiosDisplayReset();
     }
+    #endif
 }
 
 NTSTATUS
@@ -235,6 +237,7 @@ x86BiosWriteMemory(
     _In_reads_bytes_(Size) PVOID Buffer,
     _In_ ULONG Size)
 {
+    return STATUS_INVALID_PARAMETER;
     ULONG_PTR Address;
 
     /* Calculate the physical address */

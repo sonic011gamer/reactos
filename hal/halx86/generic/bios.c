@@ -71,7 +71,7 @@ HalpOpcodeInvalid(IN PHAL_BIOS_FRAME BiosFrame)
             Inst[5], Inst[6], Inst[7], Inst[8], Inst[9]);
 
     /* Break */
-    DbgBreakPoint();
+  //  DbgBreakPoint();
     return FALSE;
 }
 
