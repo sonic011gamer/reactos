@@ -510,6 +510,14 @@ PowerGetActiveScheme(HKEY UserRootPowerKey, GUID **polguid)
    return ERROR_CALL_NOT_IMPLEMENTED;
 }
 
+
+DWORD WINAPI
+PowerSetActiveScheme(HKEY UserRootPowerKey, GUID **polguid)
+{
+   FIXME("(%p,%p) stub!\n", UserRootPowerKey, polguid);
+   return ERROR_CALL_NOT_IMPLEMENTED;
+}
+
 DWORD WINAPI
 PowerReadDCValue(HKEY RootPowerKey, const GUID *Scheme, const GUID *SubGroup, const GUID *PowerSettings, PULONG Type, PUCHAR Buffer, DWORD *BufferSize)
 {

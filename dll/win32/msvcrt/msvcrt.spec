@@ -1460,7 +1460,7 @@
 @ cdecl sinh(double)
 @ cdecl -arch=x86_64,arm sinhf(long)
 @ varargs sprintf(ptr str)
-@ stub -version=0x600+ sprintf_s
+@ cdecl -stub -version=0x600+ sprintf_s(ptr)
 @ cdecl sqrt(double)
 @ cdecl -arch=x86_64,arm sqrtf(long)
 @ cdecl srand(long)
