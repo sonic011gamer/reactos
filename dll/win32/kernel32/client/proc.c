@@ -4810,7 +4810,7 @@ WinExec(LPCSTR lpCmdLine,
 }
 
 
-BOOL GetProcessGroupAffinity(HANDLE hProcess, PUSHORT GroupCount, PUSHORT GroupArray)
+BOOL WINAPI GetProcessGroupAffinity(HANDLE hProcess, PUSHORT GroupCount, PUSHORT GroupArray)
 {
    PROCESS_INFORMATION ProcessInfo;
    NTSTATUS Status;
@@ -4834,7 +4834,7 @@ BOOL GetProcessGroupAffinity(HANDLE hProcess, PUSHORT GroupCount, PUSHORT GroupA
 
 }
 
-BOOL SetThreadGroupAffinity(HANDLE hThread, const GROUP_AFFINITY *GroupAffinity, PGROUP_AFFINITY PreviousGroupAffinity)
+BOOL WINAPI SetThreadGroupAffinity(HANDLE hThread, const GROUP_AFFINITY *GroupAffinity, PGROUP_AFFINITY PreviousGroupAffinity)
 
 {
 		DWORD_PTR ProcessAffinityMask;
@@ -4857,7 +4857,7 @@ BOOL SetThreadGroupAffinity(HANDLE hThread, const GROUP_AFFINITY *GroupAffinity,
 		return SetThreadAffinityMask(hThread, GroupAffinity->Mask);
 }
 
-BOOL GetThreadGroupAffinity(HANDLE hThread, PGROUP_AFFINITY GroupAffinity)
+BOOL WINAPI GetThreadGroupAffinity(HANDLE hThread, PGROUP_AFFINITY GroupAffinity)
 
 {
 		DWORD_PTR ProcessAffinityMask;
@@ -4879,7 +4879,7 @@ BOOL GetThreadGroupAffinity(HANDLE hThread, PGROUP_AFFINITY GroupAffinity)
 		return TRUE;
 }
 
-BOOL GetThreadIdealProcessorEx(HANDLE hThread, PPROCESSOR_NUMBER lpIdealProcessor)
+BOOL WINAPI GetThreadIdealProcessorEx(HANDLE hThread, PPROCESSOR_NUMBER lpIdealProcessor)
 
 {
 		lpIdealProcessor->Number = SetThreadIdealProcessor(hThread, MAXIMUM_PROCESSORS);
@@ -4891,7 +4891,7 @@ BOOL GetThreadIdealProcessorEx(HANDLE hThread, PPROCESSOR_NUMBER lpIdealProcesso
 			return TRUE;
 }
 
-BOOL SetThreadIdealProcessorEx(HANDLE hThread, PPROCESSOR_NUMBER lpIdealProcessor,
+BOOL WINAPI SetThreadIdealProcessorEx(HANDLE hThread, PPROCESSOR_NUMBER lpIdealProcessor,
 		PPROCESSOR_NUMBER lpPreviousIdealProcessor)
 {
 	lpPreviousIdealProcessor->Number = SetThreadIdealProcessor(hThread, lpIdealProcessor->Number);
@@ -4907,7 +4907,9 @@ BOOL
 WINAPI
 GetLogicalProcessorInformation(OUT PSYSTEM_LOGICAL_PROCESSOR_INFORMATION Buffer,
                                IN OUT PDWORD ReturnLength);
-BOOL GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP RelationshipType, PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX Buffer, PDWORD ReturnedLength)
+BOOL
+WINAPI
+GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP RelationshipType, PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX Buffer, PDWORD ReturnedLength)
 {
  PSYSTEM_LOGICAL_PROCESSOR_INFORMATION BufferClassic;
 	PSYSTEM_LOGICAL_PROCESSOR_INFORMATION Ptr;
@@ -4965,7 +4967,6 @@ BOOL GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP Relationshi
 	Offset = 0;
 	RequiredLength_All = 0;
 	RequiredLength = 0;
-	NewOffset = 0;
 
 
 
@@ -4974,6 +4975,10 @@ BOOL GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP Relationshi
 		StructisCopied = FALSE;
 		switch(Ptr->Relationship)
 		{
+            case RelationAll:
+                break;
+            case RelationGroup:
+                break;
 			case RelationNumaNode:
 		     if(RelationshipType == RelationNumaNode || RelationshipType == RelationAll)
 		     {
@@ -5003,9 +5008,12 @@ BOOL GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP Relationshi
 			 {
 				 StructisCopied = TRUE;
 				 if(Ptr->Relationship == RelationProcessorCore)
-				 Temp.Relationship = RelationProcessorCore;
-			     else
-				 Temp.Relationship = RelationProcessorPackage;
+                 {
+				    Temp.Relationship = RelationProcessorCore;
+                 }
+                 {
+				     Temp.Relationship = RelationProcessorPackage;
+                 }
 				 #ifdef _X86_
 				 Temp.Size = 76;
 				 RequiredLength = 76;
@@ -5060,6 +5068,7 @@ BOOL GetLogicalProcessorInformationEx(LOGICAL_PROCESSOR_RELATIONSHIP Relationshi
 
 		Offset += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
 		NewOffset = RequiredLength + Offset;
+        DPRINT1("new offset %X", NewOffset);
 		RequiredLength = 0;   // to make sure it doesn't advance the SYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX pointer
                               // if a SYSTEM_LOGICAL_PROCESSOR_INFORMATION struct contains irrelevant information
 		if (StructisCopied && !BufferTooSmall)
