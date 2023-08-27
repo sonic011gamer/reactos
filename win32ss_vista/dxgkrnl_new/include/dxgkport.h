@@ -18,3 +18,6 @@ DxgkPortInitializeDodMiniport(_In_ PDRIVER_OBJECT DriverObject,
 #ifdef __cplusplus
 }
 #endif
+
+VOID
+DxgkSetupTimedOperationServices();

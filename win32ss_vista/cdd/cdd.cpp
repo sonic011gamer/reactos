@@ -137,10 +137,10 @@ IntInitScreenInfo(
 
     VIDEO_MODE_INFORMATION ModeInfoList[1];
    ModeInfoList[0].ModeIndex = 0;
-   ModeInfoList[0].VisScreenWidth = 1024;
-   ModeInfoList[0].VisScreenHeight = 768;
-   ModeInfoList[0].Length = (4096 * ModeInfoList[0].VisScreenHeight);
-    ModeInfoList[0].ScreenStride = 4096;
+   ModeInfoList[0].VisScreenWidth = 800;
+   ModeInfoList[0].VisScreenHeight = 600;
+   ModeInfoList[0].Length = 0x1D4C00;
+    ModeInfoList[0].ScreenStride = 800 * BytesPerPixel;
     ModeInfoList[0].NumberOfPlanes = 1;
     ModeInfoList[0].BitsPerPlane = BytesPerPixel * 8;
     ModeInfoList[0].Frequency = 60;
@@ -172,7 +172,7 @@ IntInitScreenInfo(
     * Call miniport to get information about video modes.
     */
 
-   ModeCount = 2;//GetAvailableModes(ppdev->hDriver, &ModeInfo, &ModeInfoSize);
+   ModeCount = 1;//GetAvailableModes(ppdev->hDriver, &ModeInfo, &ModeInfoSize);
    if (ModeCount == 0)
    {
       return FALSE;
@@ -407,7 +407,10 @@ DrvEnableSurface(
    /*
     * Map the framebuffer into our memory.
     */
-
+   PHYSICAL_ADDRESS Addr;
+   Addr.QuadPart = 0x80000000;
+   FramebufferMapped = (ULONG_PTR)MmMapIoSpace(Addr, 0x1D4C00, MmNonCached);
+   RtlZeroMemory((PVOID)FramebufferMapped,0x1D4C00);
    //TODO: This is just a note, this isn't suppose to be called yet
    VideoMemoryInfo.FrameBufferBase = (PVOID)FramebufferMapped;
 #if 0
@@ -568,9 +571,8 @@ DrvGetModes(_In_ HANDLE hDriver,
    Status = IofCallDriver(RDDM_DeviceObject, Irp);
    KeWaitForSingleObject(&Event, Executive, 0, 0, 0);
    Status = IoStatusBlock.Status;
-   D3DKMT_GETDISPLAYMODELIST* GetDisplayModeList;
 
-   Status = Interfaces.DxgkCddGetDisplayModeList(NULL,&GetDisplayModeList);
+  // Status = Interfaces.DxgkCddGetDisplayModeList(NULL,&GetDisplayModeList);
    DPRINT1("DxgkCddGetDisplayModeList: Status %d\n", Status);
   // DPRINT1("DxgkCddGetDisplayModeList: Screen Height %d\n", GetDisplayModeList->pModeList->Height);
 
@@ -601,10 +603,10 @@ typedef struct _VIDEO_MODE_INFORMATION {
        ULONG BytesPerPixel = 4;
    VIDEO_MODE_INFORMATION ModeInfoList[1];
    ModeInfoList[0].ModeIndex = 0;
-   ModeInfoList[0].VisScreenWidth = 1024;
-   ModeInfoList[0].VisScreenHeight = 768;
-   ModeInfoList[0].Length = (4096 * ModeInfoList[0].VisScreenHeight);
-    ModeInfoList[0].ScreenStride = 1024 * BytesPerPixel;
+   ModeInfoList[0].VisScreenWidth = 800;
+   ModeInfoList[0].VisScreenHeight = 600;
+   ModeInfoList[0].Length = 0x1D4C00;
+    ModeInfoList[0].ScreenStride = 800 * BytesPerPixel;
 
     ModeInfoList[0].NumberOfPlanes = 1;
     ModeInfoList[0].BitsPerPlane = BytesPerPixel * 8;

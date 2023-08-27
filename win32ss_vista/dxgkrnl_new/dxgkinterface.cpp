@@ -197,14 +197,37 @@ DxgkCbMapMemory(_In_ HANDLE DeviceHandle,
 NTSTATUS
 APIENTRY
 DxgkCbQueryServices(_In_ HANDLE DeviceHandle,
-                         _In_ DXGK_SERVICES ServicesType,
-                         _Inout_ PINTERFACE Interface)
+                    _In_ DXGK_SERVICES ServicesType,
+                    _Inout_ PINTERFACE Interface)
 {
 
+    switch(ServicesType)
+    {
+        case DxgkServicesAgp:
+            DPRINT1("DxgkCbQuerySercices: requested DxgkServicesAgp services.\n");
+            break;
+        case DxgkServicesDebugReport:
+            DPRINT1("DxgkCbQuerySercices: requested DxgkServicesDebugReport services.\n");
+            break;
+        case DxgkServicesTimedOperation:
+            DPRINT1("DxgkCbQuerySercices: requested DxgkServicesTimedOperation services.\n");
+            break;
+        case DxgkServicesSPB:
+            DPRINT1("DxgkCbQuerySercices: requested DxgkServicesSPB services.\n");
+            break;
+        case DxgkServicesBDD:
+            DPRINT1("DxgkCbQuerySercices: requested DxgkServicesBDD services.\n");
+            break;
+        case DxgkServicesFirmwareTable:
+            DPRINT1("DxgkCbQuerySercices: requested DxgkServicesFirmwareTable services.\n");
+            break;
+        case DxgkServicesIDD:
+            DPRINT1("DxgkCbQuerySercices: requested DxgkServicesIDD services.\n");
+            break;
+    }
     //TODO: Implement meh
     UNIMPLEMENTED;
-
-    return STATUS_UNSUCCESSFUL;
+    return STATUS_SUCCESS;
 }
 
 

@@ -18,6 +18,13 @@ list(APPEND SOURCE
     vidpnss/vidpnsourcemodset.cpp
     vidpnss/vidpntargetmodeset.cpp
     vidpnss/vidpntopology.cpp
+    services/dxgkagp.cpp
+    services/dxgkbdd.cpp
+    services/dxgkbugreport.cpp
+    services/dxgkfirmwaretable.cpp
+    services/dxgkidd.cpp
+    services/dxgkspb.cpp
+    services/dxgktimedoperation.cpp
     )
 
 add_library(dxgkrnl MODULE

@@ -332,8 +332,8 @@ UefiPrepareForReactOS(VOID)
 
     /* Technically UEFI defines that stack space as 32kb */
     StackPtrNew = &StackVar;
-    StackPtrEnd = (&StackVar + 0x2000);
+    StackPtrEnd = (&StackVar - 0x16000);
     UefiExitBootServices();
     //TODO: Let's take another look at this
-    MempSetupPaging((ULONG_PTR)StackPtrEnd >> MM_PAGE_SHIFT, 0x2000 >> MM_PAGE_SHIFT, FALSE);
+    MempSetupPaging((ULONG_PTR)StackPtrEnd >> MM_PAGE_SHIFT, 0x32000 >> MM_PAGE_SHIFT, FALSE);
 }
