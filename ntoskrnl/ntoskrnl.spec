@@ -1713,7 +1713,7 @@
 @ cdecl _vsnprintf()
 @ cdecl -version=0x600+ _vsnprintf_s(ptr wstr ptr)
 @ cdecl _vsnwprintf()
-@ stub -version=0x600+ _vswprintf ;TODO: Probably need to fix this
+@ cdecl -stub -version=0x600+ _vswprintf(ptr wstr ptr)
 @ cdecl _wcsicmp()
 @ cdecl _wcslwr()
 @ cdecl _wcsnicmp()

@@ -40,7 +40,7 @@ DxgkCbSynchronizeExecution(_In_ HANDLE DeviceHandle,
                            _In_ ULONG MessageNumber,
                            _Out_ PBOOLEAN ReturnValue)
 {
-    *ReturnValue = KeSynchronizeExecution(DxgkpExtension->InterruptObject, SynchronizeRoutine, Context);
+   // *ReturnValue = KeSynchronizeExecution(DxgkpExtension->InterruptObject, SynchronizeRoutine, Context);
     return STATUS_SUCCESS;
 }
 

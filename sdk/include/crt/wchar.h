@@ -1368,13 +1368,6 @@ _CRTIMP int __cdecl iswblank(wint_t _C);
     _In_z_ _Printf_format_string_ const wchar_t *_Format,
     ...);
 
-  _CRTIMP
-  int
-  __cdecl
-  _vswprintf(
-    _Pre_notnull_ _Post_z_ wchar_t *_Dest,
-    _In_z_ _Printf_format_string_ const wchar_t *_Format,
-    va_list _Args);
 
 
   _CRTIMP int __cdecl __swprintf_l(wchar_t *_Dest,const wchar_t *_Format,_locale_t _Plocinfo,...);

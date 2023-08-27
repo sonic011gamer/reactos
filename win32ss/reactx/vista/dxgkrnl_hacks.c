@@ -12,7 +12,7 @@
 
 PFILE_OBJECT RDDM_FileObject;
 PDEVICE_OBJECT RDDM_DeviceObject;
-
+BOOLEAN IsWDDMOn = FALSE;
 #define IOCTL_VIDEO_I_AM_REACTOS \
 	CTL_CODE(FILE_DEVICE_VIDEO, 0xB, METHOD_NEITHER, FILE_ANY_ACCESS)
 
@@ -75,12 +75,14 @@ TryHackedDxgkrnlStartAdapter()
     if (IoStatusBlock.Status != STATUS_SUCCESS)
     {
         DPRINT1("Wait... This is Windows DXGKNRL.SYS >:(\n");
+        IsWDDMOn = TRUE;
         return FALSE;
     }
     else
     {
         DPRINT1("TryHackedDxgkrnlAdapterStart: ReactOS AdapterStart hack triggered\n");
         /* let's load cdd here.. i guess */
+        IsWDDMOn = TRUE;
         return TRUE;
     }
 BypassDxgkrnl:
