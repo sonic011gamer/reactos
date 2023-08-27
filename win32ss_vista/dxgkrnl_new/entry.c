@@ -14,6 +14,8 @@ static PDRIVER_OBJECT DxgkDriverObject;
 static PDEVICE_OBJECT DxgkDeviceObject;
 static UNICODE_STRING DxgkRegistryPath;
 
+extern DXGKCDD_INTERFACE CddInterface;
+
 /*
  * @ HALF-IMPLEMENTED
  * Internal Device Control Handler
@@ -42,7 +44,10 @@ DxgkHandleInternalDeviceControl(_In_ DEVICE_OBJECT *DeviceObject, _Inout_ IRP *I
     {
         case IOCTL_VIDEO_CDD_FUNC_REGISTER:
             DPRINT("DxgkInternalDeviceControl: IOCTL_VIDEO_CDD_FUNC_REGISTER\n");
-            UNIMPLEMENTED;
+             OutputBuffer = Irp->UserBuffer;
+            Irp->IoStatus.Information = 0;
+            Irp->IoStatus.Status = STATUS_SUCCESS;
+            *OutputBuffer = (PVOID)&CddInterface;
             Irp->IoStatus.Status = STATUS_SUCCESS;
             break;
         case IOCTL_VIDEO_KMDOD_DDI_REGISTER:

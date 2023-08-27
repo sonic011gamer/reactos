@@ -473,6 +473,28 @@ DxgkCbWriteDeviceSpace(_In_ HANDLE DeviceHandle,
     return STATUS_SUCCESS;
 }
 
+NTSTATUS
+APIENTRY
+DxgkCdd_GETDISPLAYMODELIST(PVOID DxgAdater, D3DKMT_GETDISPLAYMODELIST **GetDisplayModeList)
+{
+    REACTOS_HVIDPN_HANDLE PublicVidpnHandle = {0};
+
+    DXGKARG_ENUMVIDPNCOFUNCMODALITY test = {0};
+    test.hConstrainingVidPn = (D3DKMDT_HVIDPN)&PublicVidpnHandle;
+    test.EnumPivot.VidPnSourceId = 0;
+    test.EnumPivot.VidPnTargetId = 0;
+    test.EnumPivotType = D3DKMDT_EPT_UNINITIALIZED;
+    DPRINT1("DxgkCdd_GETDISPLAYMODELIST");
+    DxgkpExtension->DxgkDdiEnumVidPnCofuncModality(DxgkpExtension->MiniportContext, &test);
+    __debugbreak();
+    return 0;
+}
+
+extern "C"
+{
+    DXGKCDD_INTERFACE CddInterface;
+}
+
 /*
  * I turned this into a internal function to keep better eventual seperation of the
  * WDDM 1.2+ and WDDM 1.0-1.1 APIs
@@ -483,6 +505,7 @@ DxgkpSetupDxgkrnl(
     IN PDRIVER_OBJECT DriverObject,
     IN PUNICODE_STRING RegistryPath)
 {
+    CddInterface.DxgkCddGetDisplayModeList = DxgkCdd_GETDISPLAYMODELIST;
     DXGKRNL_INTERFACE DxgkrnlInterfaceLoc = {0};
     DxgkrnlInterfaceLoc.Size = sizeof(DXGKRNL_INTERFACE);
     DxgkrnlInterfaceLoc.Version = DXGKDDI_INTERFACE_VERSION_WDDM2_0;

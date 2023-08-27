@@ -11,8 +11,10 @@
 #include <windef.h>
 #include <ntstatus.h>
 #include <stdio.h>
+
 #include "../../include/dispmprt.h"
 
+//#include "../../cdd/cdd_testinterface.h"
 /* Create an IO request to fill out the function pointer list */
 #define IOCTL_VIDEO_DDI_FUNC_REGISTER \
 	CTL_CODE( FILE_DEVICE_VIDEO, 0xF, METHOD_NEITHER, FILE_ANY_ACCESS  )
@@ -138,11 +140,16 @@ DxgkpQueryInterface(
     _In_ const GUID* Guid,
     _Out_ PVOID Interface,
     _In_ ULONG Size);
+
+
 #ifdef __cplusplus
 }
 #endif
 
-
+#include "../include/d3dukmdt.h"
+#include "../include/d3dkmdt.h"
+#include "../include/d3dkmthk.h"
+#include "../include/d3dkmddi.h"
 NTSTATUS
 NTAPI
 DxgkpCreateIds();
@@ -168,3 +175,5 @@ IntVideoPortAddDeviceMapLink(
 
 /* please keep at bottom :( */
 #include "reactos_wddm.hpp"
+
+#include "../../cdd/cdd_testinterface.h"

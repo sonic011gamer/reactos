@@ -545,23 +545,22 @@ DrvGetModes(_In_ HANDLE hDriver,
    {
        DPRINT1("DrvGetModes: Setting up DxgKrnl Failed\n");
    }
-  /// DXGKCDD_INTERFACE Interfaces;
+   DXGKCDD_INTERFACE Interfaces;
 
    Status = EngQueryW32kCddInterface(hDriver, 0, (PVOID)&W32kCddInterface, (PVOID)DxgAdapter, (PVOID)&OkayLol, (PVOID)&ProcessLocal);
    if (Status != STATUS_SUCCESS)
    {
       DPRINT1("DrvGetModes: EngQueryW32kCddInterface Failed with Status %d\n", Status);
    }
-   ULONG_PTR Ptr;
    /* Build event and create IRP */
    DPRINT1("DrvGetModes: Building IOCTRL with DxgKrnl\n");
    KeInitializeEvent(&Event, SynchronizationEvent, FALSE);
    Irp = IoBuildDeviceIoControlRequest(0x23E05B, /* TODO: decide name*/
                                          RDDM_DeviceObject,
-                                         &Ptr,
-                                         sizeof(Ptr),
-                                         &Ptr,
-                                         sizeof(Ptr),
+                                         &Interfaces,
+                                         sizeof(DXGKCDD_INTERFACE),
+                                         &Interfaces,
+                                         sizeof(DXGKCDD_INTERFACE),
                                          TRUE,
                                          &Event,
                                          &IoStatusBlock);
@@ -569,8 +568,9 @@ DrvGetModes(_In_ HANDLE hDriver,
    Status = IofCallDriver(RDDM_DeviceObject, Irp);
    KeWaitForSingleObject(&Event, Executive, 0, 0, 0);
    Status = IoStatusBlock.Status;
-   DPRINT1("DrvGetModes: IofCallDriver Status %d\n", IoStatusBlock.Status);
-   FramebufferMapped = 0xF3A4A000;
+   D3DKMT_GETDISPLAYMODELIST* GetDisplayModeList;
+
+   Status = Interfaces.DxgkCddGetDisplayModeList(NULL,&GetDisplayModeList);
    DPRINT1("DxgkCddGetDisplayModeList: Status %d\n", Status);
   // DPRINT1("DxgkCddGetDisplayModeList: Screen Height %d\n", GetDisplayModeList->pModeList->Height);
 
