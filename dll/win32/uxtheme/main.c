@@ -19,6 +19,7 @@
  */
 
 #include "uxthemep.h"
+#include <debug.h>
 
 /***********************************************************************/
 
@@ -48,5 +49,24 @@ EndBufferedAnimation(
  //   FIXME("Stub (%p %u)\n", hbpAnimation, fUpdateTarget);
 
     return E_NOTIMPL;
+}
+
+/* Docs:
+ * https://learn.microsoft.com/en-us/windows/win32/api/uxtheme/nf-uxtheme-getthemestream
+ * @ UNIMPLEMENTED
+ */
+HRESULT
+WINAPI
+GetThemeStream(_In_ HTHEME        hTheme,
+               _In_ int       iPartId,
+               _In_ int       iStateId,
+               _In_ int       iPropId,
+               _Inout_ VOID      **ppvStream,
+               _Inout_ DWORD     *pcbStream,
+               _In_   HINSTANCE hInst)
+{
+    DPRINT1("Needs GetThemeStream - This WILL FAIL!\n");
+    UNIMPLEMENTED;
+    return 0;
 }
 

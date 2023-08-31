@@ -93,6 +93,7 @@
 93 stdcall SetThemeAppProperties(long)
 94 stdcall SetWindowTheme(ptr wstr wstr)
 95 stdcall ThemeInitApiHook(long ptr)
+@ stdcall GetThemeStream(ptr long long long ptr ptr ptr)
 
 @ stdcall -stub -version=0x600+ BeginBufferedAnimation(ptr ptr ptr long ptr ptr ptr ptr)
 @ stdcall -version=0x600+ BeginBufferedPaint(ptr ptr long ptr ptr)
