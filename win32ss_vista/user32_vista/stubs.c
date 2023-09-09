@@ -312,7 +312,9 @@ NTSTATUS
 WINAPI
 RegisterSessionPort(UINT32 x1)
 {
-    return NtUserRegisterSessionPort((HANDLE)x1);
+
+    return 1;
+   // return NtUserRegisterSessionPort((HANDLE)x1);
 }
 
 NTSTATUS
