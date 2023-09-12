@@ -279,6 +279,7 @@ MempSetupPaging(IN PFN_NUMBER StartPage,
                     StartPage, NumberOfPages);
             return FALSE;
         }
+         TRACE("Map Status is %d\n", MempIsPageMapped((PVOID)0xFFFFF80000001000));
     }
     /* Identity mapping */
     if (MempMapRangeOfPages(StartPage * PAGE_SIZE,
@@ -395,7 +396,7 @@ ARM64IsAwesome()
    TRACE("Hello from paged mode, KiSystemStartup %p, LoaderBlockVA %p!\n",
           PubKiSystemStartup, PubLoaderBlockVA);
     TRACE("Jumping to kernel\n");
-    (*PubKiSystemStartup)(PubLoaderBlockVA);
+    (*PubKiSystemStartup)(NULL);
     for(;;)
     {
 
