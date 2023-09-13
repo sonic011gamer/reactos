@@ -577,6 +577,7 @@
 @ stdcall KdDisableDebugger()
 @ stdcall KdEnableDebugger()
 @ extern KdEnteredDebugger
+@ stdcall -version=0x600+ KdLogDbgPrint(ptr)
 @ stdcall KdPollBreakIn()
 @ stdcall KdPowerTransition(long)
 @ stdcall KdRefreshDebuggerNotPresent()
@@ -654,6 +655,7 @@
 @ stdcall KeInitializeQueue(ptr long)
 @ stdcall KeInitializeSemaphore(ptr long long)
 @ stdcall -arch=i386,arm KeInitializeSpinLock(ptr) _KeInitializeSpinLock
+@ stdcall -version=0x600+ -arch=x86_64 KeInitializeSpinLock(ptr) _KeInitializeSpinLock
 @ stdcall KeInitializeThreadedDpc(ptr ptr ptr)
 @ stdcall KeInitializeTimer(ptr)
 @ stdcall KeInitializeTimerEx(ptr long)

@@ -394,7 +394,7 @@ KiSystemStartup(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
 
     /* HACK */
     FrLdrDbgPrint = LoaderBlock->u.I386.CommonDataArea;
-    //FrLdrDbgPrint("Hello from KiSystemStartup!!!\n");
+    FrLdrDbgPrint("Hello from KiSystemStartup!!!\n");
 
     /* Save the loader block */
     KeLoaderBlock = LoaderBlock;
@@ -445,12 +445,6 @@ KiSystemStartup(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
 
         /* Setup the IDT */
         KeInitExceptions();
-
-         /* Initialize debugging system */
-        KdInitSystem(0, KeLoaderBlock);
-
-        /* Check for break-in */
-        if (KdPollBreakIn()) DbgBreakPointWithStatus(DBG_STATUS_CONTROL_C);
     }
 
     DPRINT1("Pcr = %p, Gdt = %p, Idt = %p, Tss = %p\n",
@@ -476,7 +470,16 @@ KiSystemStartup(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
     KfRaiseIrql(HIGH_LEVEL);
 
     /* Machine specific kernel initialization */
-    if (Cpu == 0) KiInitializeKernelMachineDependent(&Pcr->Prcb, LoaderBlock);
+    if (Cpu == 0)
+    {
+        KiInitializeKernelMachineDependent(&Pcr->Prcb, LoaderBlock);
+
+        /* Initialize debugging system */
+        KdInitSystem(0, KeLoaderBlock);
+
+        /* Check for break-in */
+        if (KdPollBreakIn()) DbgBreakPointWithStatus(DBG_STATUS_CONTROL_C);
+    }
 
     /* Switch to new kernel stack and start kernel bootstrapping */
     KiSwitchToBootStack(InitialStack & ~3);

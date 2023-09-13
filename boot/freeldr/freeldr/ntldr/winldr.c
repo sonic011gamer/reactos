@@ -540,8 +540,11 @@ LoadModule(
         /* Cleanup and bail out */
         ERR("PeLdrAllocateDataTableEntry('%s') failed\n", FullFileName);
         MmFreeMemory(BaseAddress);
-        BaseAddress = NULL;
+        return NULL;
     }
+
+    /* Init security cookie */
+    PeLdrInitSecurityCookie(*Dte);
 
     return BaseAddress;
 }
