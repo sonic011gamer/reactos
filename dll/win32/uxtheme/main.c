@@ -19,7 +19,9 @@
  */
 
 #include "uxthemep.h"
+#ifndef __GNUC__
 #include <debug.h>
+#endif
 
 /***********************************************************************/
 
@@ -65,7 +67,12 @@ GetThemeStream(_In_ HTHEME        hTheme,
                _Inout_ DWORD     *pcbStream,
                _In_   HINSTANCE hInst)
 {
-    DPRINT1("Needs GetThemeStream - This WILL FAIL!\n");
+#ifdef __GNUC__
+    DPRINTF
+#else
+    DPRINT1
+#endif
+    ("Needs GetThemeStream - This WILL FAIL!\n");
     UNIMPLEMENTED;
     return 0;
 }
