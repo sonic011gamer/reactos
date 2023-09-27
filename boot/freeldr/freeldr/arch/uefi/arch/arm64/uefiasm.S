@@ -35,7 +35,7 @@
 	bic	x1, x1, #1
 	msr	sctlr_el1, x1
 	adrp	x0, PgdBase
-	msr	ttbr1_el1, x0
+	msr	ttbr0_el1, x0
 
     /* Fire up MMU - Paging is now enabled  */
     mrs X0, SCTLR_EL1

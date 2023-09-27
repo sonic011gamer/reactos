@@ -102,19 +102,16 @@ PHARDWARE_PTE PgdBase; /* PGD */
  PMD
  PTE
  */
-#define PTI_SHIFT  12L
-#define PDI_SHIFT  21L
-#define PPI_SHIFT  30L
-#define PXI_SHIFT  39L
+#define PTI_SHIFT  12L // PPO
+#define PDI_SHIFT  21L //L3 Table
+#define PPI_SHIFT  30L //L2 Table
+#define PXI_SHIFT  39L //L1 TABLE
 #define VAtoPXI(va) ((((ULONG64)(va)) >> PGD_SHIFT) & 0x1FF)
 #define VAtoPGI(va) ((((ULONG64)(va)) >> PGD_SHIFT) & 0x1FF)
-
 #define VAtoPPI(va) ((((ULONG64)(va)) >> PUD_SHIFT) & 0x1FF)
 #define VAtoPUI(va) ((((ULONG64)(va)) >> PUD_SHIFT) & 0x1FF)
-
 #define VAtoPDI(va) ((((ULONG64)(va)) >> PMD_SHIFT) & 0x1FF)
 #define VAtoPMI(va) ((((ULONG64)(va)) >> PMD_SHIFT) & 0x1FF)
-
 #define VAtoPTI(va) ((((ULONG64)(va)) >> PAGE_SHIFT) & 0x1FF)
 //#define VAtoPMI(va) ((((ULONG64)(va)) >> PAGE_SHIFT))
 
@@ -341,11 +338,11 @@ including PGD, and therefore each process must keep its PGD address. During a co
 loaded into the ttbr0_el1 register.
 
 Next, MMU uses PGD pointer and virtual address to calculate the corresponding physical address. All virtual addresses use only 48 out of 64 available bits. When doing a translation, MMU splits an address into 4 parts:
-Bits [39 - 47] contain an index in the PGD table. MMU uses this index to find the location of the PUD.
-Bits [30 - 38] contain an index in the PUD table. MMU uses this index to find the location of the PMD.
-Bits [21 - 29] contain an index in the PMD table. MMU uses this index to find the location of the PTE.
-Bits [12 - 20] contain an index in the PTE table. MMU uses this index to find a page in the physical memory.
-Bits [0 - 11] contain an offset in the physical page. MMU uses this offset to determine the exact position in the previously found page that corresponds to the original virtual address.
+Bits 8[39 - 47] contain an index in the PGD table. MMU uses this index to find the location of the PUD.
+Bits 8[30 - 38] contain an index in the PUD table. MMU uses this index to find the location of the PMD.
+Bits 8[21 - 29] contain an index in the PMD table. MMU uses this index to find the location of the PTE.
+Bits 8[12 - 20] contain an index in the PTE table. MMU uses this index to find a page in the physical memory.
+Bits 12[0 - 11] contain an offset in the physical page. MMU uses this offset to determine the exact position in the previously found page that corresponds to the original virtual address.
 
                            Virtual address                                                                 Physical Memory
 +-----------------------------------------------------------------------+                                +------------------+
@@ -397,10 +394,6 @@ ARM64IsAwesome()
           PubKiSystemStartup, PubLoaderBlockVA);
     TRACE("Jumping to kernel\n");
     (*PubKiSystemStartup)(NULL);
-    for(;;)
-    {
-
-    }
 }
 VOID
 WinLdrSetupMachineDependent(
