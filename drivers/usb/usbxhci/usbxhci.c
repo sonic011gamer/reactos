@@ -297,7 +297,11 @@ XHCI_InitController(
     DPRINT("XHCI_StartController: OperRegisters - %p\n", OperRegisters);
     DPRINT("XHCI_StartController: HC supports max %d device slot(s)\n", MaxDeviceSlots);
 
+    /* Setup XhciExt */
     XhciExt->NumberOfPorts = StructParams1.MaxPorts;
+    XhciExt->OperRegs = OperRegisters;
+    XhciExt->CapRegs = CapabilityRegisters;
+    XhciExt->HcSystemErrors = 0;
 
     /* xHCI spec says we need to perform a chip hardware reset */
     RetStatus = XHCI_ResetController(OperRegisters);
