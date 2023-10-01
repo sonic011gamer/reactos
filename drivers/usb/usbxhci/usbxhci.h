@@ -24,17 +24,11 @@ typedef struct _XHCI_HC_RESOURCES {
 } XHCI_HC_RESOURCES, *PXHCI_HC_RESOURCES;
 
 typedef struct _XHCI_EXTENSION {
-    ULONG Rsvd;
-    ULONG Flags;
     PXHCI_HC_CAPABILITY_REGISTERS CapRegs;
     PXHCI_HC_OPER_REGS OperRegs;
     PXHCI_PORTSC PortSc;
-    UCHAR FrameLengthAdjustment;
-    BOOLEAN IsStarted;
     USHORT HcSystemErrors;
-    ULONG PortRoutingControl;
     USHORT NumberOfPorts;
-    USHORT PortPowerControl;
 } XHCI_EXTENSION, *PXHCI_EXTENSION;
 
 /* roothub.c */
