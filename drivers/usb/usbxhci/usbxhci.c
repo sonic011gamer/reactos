@@ -433,7 +433,32 @@ XHCI_QueryEndpointRequirements(
     _In_ PUSBPORT_ENDPOINT_PROPERTIES EndpointProps,
     _In_ PUSBPORT_ENDPOINT_REQUIREMENTS EndpointRequirements)
 {
+    ULONG TransferType;
+
     DPRINT("XHCI_QueryEndpointRequirements: UNIMPLEMENTED. FIXME\n");
+    TransferType = EndpointProps->TransferType;
+    DPRINT1("XHCI_QueryEndpointRequirements: Port Number :%X\n", EndpointProps->PortNumber);
+
+    switch (TransferType)
+    {
+        case USBPORT_TRANSFER_TYPE_ISOCHRONOUS:
+            break;
+
+        case USBPORT_TRANSFER_TYPE_CONTROL:
+            break;
+
+        case USBPORT_TRANSFER_TYPE_BULK:
+            break;
+
+        case USBPORT_TRANSFER_TYPE_INTERRUPT:
+            break;
+
+        default:
+            DPRINT1("XHCI_QueryEndpointRequirements: Unknown TransferType - %x\n",
+                    TransferType);
+            DbgBreakPoint();
+            break;
+    }
 }
 
 VOID
