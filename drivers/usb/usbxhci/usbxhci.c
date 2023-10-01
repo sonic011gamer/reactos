@@ -34,6 +34,25 @@ typedef LONG POLLSTATUS;
 USBPORT_REGISTRATION_PACKET RegPacket;
 
 /**
+ * XHCI_Write64bitReg - Delay write of 64-bit register
+ *
+ * Don't write the entire 64-bit value at once due to a quirk in a
+ * specific HC
+ *
+ * @BaseAddr: Base addr for registry
+ * @Data: Data to write
+ */
+VOID
+NTAPI
+XHCI_Write64bitReg(IN PULONG BaseAddr,
+                   IN ULONGLONG Data)
+{
+    WRITE_REGISTER_ULONG(BaseAddr, Data);
+    KeStallExecutionProcessor(10);
+    WRITE_REGISTER_ULONG(BaseAddr + 1, Data >> 32);
+}
+
+/**
  * XHCI_PollTimeout - Poll with timeout
  *
  * This function polls `PollValue` until set or a timeout
