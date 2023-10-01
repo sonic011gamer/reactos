@@ -424,22 +424,17 @@ XHCI_OpenEndpoint(
     {
         case USBPORT_TRANSFER_TYPE_ISOCHRONOUS:
             return MP_STATUS_FAILURE;
-            break;
 
         case USBPORT_TRANSFER_TYPE_CONTROL:
             return MP_STATUS_FAILURE;
-            break;
 
         case USBPORT_TRANSFER_TYPE_BULK:
             return MP_STATUS_FAILURE;
-            break;
 
         case USBPORT_TRANSFER_TYPE_INTERRUPT:
             return MP_STATUS_FAILURE;
-            break;
         default:
             return MP_STATUS_NOT_SUPPORTED;
-            break;
     }
 
     return MP_STATUS_SUCCESS;
