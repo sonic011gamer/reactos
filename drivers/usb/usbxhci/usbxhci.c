@@ -634,6 +634,7 @@ DriverEntry(
     RegPacket.MiniPortVersion = USB_MINIPORT_VERSION_XHCI;
     RegPacket.MiniPortFlags = USB_MINIPORT_FLAGS_MEMORY_IO;
 
+    RegPacket.MiniPortExtensionSize = sizeof(XHCI_EXTENSION);
     RegPacket.MiniPortResourcesSize = sizeof(XHCI_HC_RESOURCES);
 
     return USBPORT_RegisterUSBPortDriver(DriverObject,
