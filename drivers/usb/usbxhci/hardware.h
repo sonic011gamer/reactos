@@ -7,6 +7,10 @@
 
 #pragma once
 
+/*
+ * See section 5.3.3 (HCSPARAMS1), table 5-10 of
+ * the xHCI spec for more information.
+ */
 typedef union _XHCI_HC_STRUCTURAL_PARAMS1 {
     struct {
        ULONG MaxDeviceSlots  : 8;
@@ -17,6 +21,10 @@ typedef union _XHCI_HC_STRUCTURAL_PARAMS1 {
     ULONG AsULONG;
 } XHCI_HC_STRUCTURAL_PARAMS1;
 
+/*
+ * See section 5.3.4 (HCSPARAMS2), table 5-11 of
+ * the xHCI spec for more information.
+ */
 typedef union _XHCI_HC_STRUCTURAL_PARAMS2 {
     struct {
         ULONG IsochronousSchedulingThreshold : 4;
@@ -29,6 +37,10 @@ typedef union _XHCI_HC_STRUCTURAL_PARAMS2 {
     ULONG AsULONG;
 } XHCI_HC_STRUCTURAL_PARAMS2;
 
+/*
+ * See section 5.3.5 (HCSPARAMS3), table 5-11 of
+ * the xHCI spec for more information.
+ */
 typedef union _XHCI_HC_STRUCTURAL_PARAMS3 {
     struct {
         ULONG U1DeviceExitLatency    : 8;
