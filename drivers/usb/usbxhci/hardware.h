@@ -38,7 +38,7 @@ typedef union _XHCI_HC_STRUCTURAL_PARAMS2 {
 } XHCI_HC_STRUCTURAL_PARAMS2;
 
 /*
- * See section 5.3.5 (HCSPARAMS3), table 5-11 of
+ * See section 5.3.5 (HCSPARAMS3), table 5-12 of
  * the xHCI spec for more information.
  */
 typedef union _XHCI_HC_STRUCTURAL_PARAMS3 {
