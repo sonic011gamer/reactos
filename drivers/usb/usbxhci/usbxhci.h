@@ -16,6 +16,33 @@
 #include <drivers/usbport/usbmport.h>
 #include "hardware.h"
 
+/*
+ * Do not use this directly!!! Use XHCI_GET_PORTSC()
+ * instead.
+ *
+ * The spec states that the address of port status
+ * and control (which can be many as many ports exist)
+ * is Operational Base + (400h + (10h * (n–1)))
+ * where: n = Port Number (Valid values are 1, 2, 3, ...MaxPorts
+ */
+#define XHCI_PORTSC(OperationalBase, PortNo) \
+    (PVOID)((ULONG_PTR)OperationalBase + (0x400 + (0x10 * (PortNo - 1))))
+
+/*
+ * Ensures a port number is valid.
+ */
+#define XHCI_ASSERT_PORT_VALID(Portno, XhciExt)                             \
+    NT_ASSERTMSG("Invalid port number of '0'", Portno != 0);                \
+    NT_ASSERTMSG("Port number too high!",                                   \
+                 Portno <= ((PXHCI_EXTENSION)XhciExt)->NumberOfPorts);      \
+
+/*
+ * Fetches port status and control.
+ * XhciExt must be of type PXHCI_EXTENSION.
+ */
+#define XHCI_GET_PORTSC(Portno, XhciExt) \
+    XHCI_PORTSC(((PXHCI_EXTENSION)XhciExt)->OperRegs, Portno)
+
 extern USBPORT_REGISTRATION_PACKET RegPacket;
 
 typedef struct _XHCI_HC_RESOURCES {
