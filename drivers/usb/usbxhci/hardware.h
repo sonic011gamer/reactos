@@ -5,6 +5,8 @@
  * COPYRIGHT:   Copyright 2023 Ian Marco Moffett <ian@vegaa.systems>
  */
 
+#pragma once
+
 typedef union _XHCI_HC_STRUCTURAL_PARAMS1 {
     struct {
        ULONG MaxDeviceSlots  : 8;
