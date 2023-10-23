@@ -375,8 +375,6 @@ XHCI_StartController(
     /*
      * Just to be safe, we will wait 16ms
      * to allow the HC to start up
-     *
-     * XXX: Is it risky not to wait?
      */
     KeQuerySystemTime(&EndTime);
     EndTime.QuadPart += XHCI_POLL_TIME_SET(16);
