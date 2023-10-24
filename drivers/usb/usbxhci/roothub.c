@@ -173,7 +173,8 @@ XHCI_RH_ClearFeaturePortPower(
     _In_ PVOID XhciExtension,
     _In_ USHORT Port)
 {
-    DPRINT("XHCI_RH_SetFeaturePortPower: UNIMPLEMENTED. FIXME\n");
+
+    DPRINT("XHCI_RH_ClearFeaturePortPower: UNIMPLEMENTED. FIXME\n");
     return MP_STATUS_SUCCESS;
 }
 
