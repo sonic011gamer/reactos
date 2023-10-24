@@ -10,6 +10,67 @@
 #define NDEBUG
 #include <debug.h>
 
+/**
+ * Sets port power state.
+ *
+ * @XhciExtension: xHCI Extension structure
+ * @Port: Port to set state of
+ * @State: State (1: power on, 0: power off)
+ */
+MPSTATUS
+NTAPI
+XHCI_RH_SetPortPower(
+    _In_ PVOID XhciExtension,
+    _In_ USHORT Port,
+    _In_ UCHAR State)
+{
+    PXHCI_EXTENSION XhciExt = XhciExtension;
+    PXHCI_PORTSC PortScPtr;
+    XHCI_PORTSC PortSc;
+    UCHAR PowerOnAttempts = 0;
+
+    /*
+     * If the host controller does not implement
+     * port power switching then the port should
+     * be, by default, powered on, meaning we don't
+     * have to do anything here...
+     */
+    if (XhciExt->HasPPC == 0)
+    {
+        return MP_STATUS_SUCCESS;
+    }
+
+    State &= 1;
+
+    XHCI_ASSERT_PORT_VALID(Port, XhciExtension);
+    PortScPtr = XHCI_GET_PORTSC(Port, XhciExtension);
+
+    PortSc.AsULONG = READ_REGISTER_ULONG(&PortScPtr->AsULONG);
+    PortSc.PortPower = State;
+    WRITE_REGISTER_ULONG(&PortScPtr->AsULONG, PortSc.AsULONG);
+
+    /* Ensure PortPower reached desired state */
+    do
+    {
+        PortSc.AsULONG = READ_REGISTER_ULONG(&PortScPtr->AsULONG);
+        ++PowerOnAttempts;
+
+        if (PortSc.PortPower == State)
+        {
+            return MP_STATUS_SUCCESS;
+        }
+
+        /* Did all attempts fail? */
+        if (PowerOnAttempts == 3)
+        {
+            DPRINT1("XHCI_InitPorts: Could not power on port %d\n", Port);
+            return MP_STATUS_FAILURE;
+        }
+    } while (1);
+
+    return MP_STATUS_SUCCESS;
+}
+
 MPSTATUS
 NTAPI
 XHCI_RH_ChirpRootPort(
@@ -83,8 +144,7 @@ XHCI_RH_SetFeaturePortPower(
     _In_ PVOID XhciExtension,
     _In_ USHORT Port)
 {
-    DPRINT("XHCI_RH_SetFeaturePortPower: UNIMPLEMENTED. FIXME\n");
-    return MP_STATUS_SUCCESS;
+    return XHCI_RH_SetPortPower(XhciExtension, Port, 1);
 }
 
 MPSTATUS

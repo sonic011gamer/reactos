@@ -100,18 +100,18 @@ XHCI_InitPorts(
         PortScPtr = XHCI_GET_PORTSC(i, XhciExtension);
         PortSc.AsULONG = READ_REGISTER_ULONG(&PortScPtr->AsULONG);
 
-        /* XXX: Maybe remove this? */
-        if (PortSc.CurrentConnectStatus && PortSc.DeviceRemovable)
+        if (PortSc.CurrentConnectStatus == 0)
         {
-            DPRINT("Port %d has removable device connected\n", i);
-        }
-        else if (PortSc.CurrentConnectStatus)
-        {
-            DPRINT("Port %d has non-removable device connected\n", i);
+            /* No device connected */
+            continue;
         }
 
+        /* Reset the port */
         PortSc.PortReset = 1;
         WRITE_REGISTER_ULONG(&PortScPtr->AsULONG, PortSc.AsULONG);
+
+        /* Power on the port */
+        XHCI_RH_SetFeaturePortPower(XhciExtension, i);
     }
 }
 
@@ -230,6 +230,7 @@ XHCI_InitController(
     PXHCI_HC_RESOURCES HcResources;
     PXHCI_EXTENSION XhciExt;
     XHCI_HC_STRUCTURAL_PARAMS1 StructParams1;
+    XHCI_HC_CAP_PARAMS1 CapParams1;
     XHCI_HC_CONFIG Config;
     ULONG DcbaaBasePA;
     ULONG CommandRingBasePA;
@@ -264,6 +265,8 @@ XHCI_InitController(
     StructParams1.AsULONG = READ_REGISTER_ULONG(&CapabilityRegisters->StructParams1.AsULONG);
     MaxDeviceSlots = StructParams1.MaxDeviceSlots;
 
+    CapParams1.AsULONG = READ_REGISTER_ULONG(&CapabilityRegisters->CapParams1.AsULONG);
+
     DPRINT("XHCI_StartController: CapabilityRegisters - %p\n", CapabilityRegisters);
     DPRINT("XHCI_StartController: OperRegisters - %p\n", OperRegisters);
     DPRINT("XHCI_StartController: HC supports max %d device slot(s)\n", MaxDeviceSlots);
@@ -273,6 +276,7 @@ XHCI_InitController(
     XhciExt->OperRegs = OperRegisters;
     XhciExt->CapRegs = CapabilityRegisters;
     XhciExt->HcSystemErrors = 0;
+    XhciExt->HasPPC = CapParams1.PortPowerControl;
 
     /* xHCI spec says we need to perform a chip hardware reset */
     RetStatus = XHCI_ResetController(OperRegisters);

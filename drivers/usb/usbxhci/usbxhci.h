@@ -56,6 +56,7 @@ typedef struct _XHCI_EXTENSION {
     PXHCI_PORTSC PortSc;
     USHORT HcSystemErrors;
     USHORT NumberOfPorts;
+    BOOL HasPPC;
 } XHCI_EXTENSION, *PXHCI_EXTENSION;
 
 /* roothub.c */
