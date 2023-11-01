@@ -18,10 +18,10 @@
     NESTED_END pArmTranslationTableRegisterSet
 
     NESTED_ENTRY pArmDomainRegisterSet
-    PROLOG_END pArmDomainRegisterSet
+    PROLOG_END pArmDomainRegisterSet// THis is how you set a public function in reactos asm
     mcr p15, 0, r0, c3, c0, 0
     bx lr
-    NESTED_END pArmDomainRegisterSet
+    NESTED_END pArmDomainRegisterSet // yes seriously
 
 
     NESTED_ENTRY pArmControlRegisterGet

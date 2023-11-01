@@ -16,91 +16,20 @@ DBG_DEFAULT_CHANNEL(WINDOWS);
 #include <internal/arm/intrin_i.h>
 #include "../../winldr.h"
 
-#define PFN_SHIFT                   12
-#define LARGE_PFN_SHIFT             20
-
-#define PTE_BASE                    0xC0000000
-#define PDE_BASE                    0xC0400000
-#define PDR_BASE                    0xFFD00000
-#define VECTOR_BASE                 0xFFFF0000
-
-
-#define IDMAP_BASE                  0x81000000
-#define MMIO_BASE                   0x10000000
-
-#define LowMemPageTableIndex        (IDMAP_BASE >> PDE_SHIFT)
-#define MmioPageTableIndex          (MMIO_BASE >> PDE_SHIFT)
-#define KernelPageTableIndex        (KSEG0_BASE >> PDE_SHIFT)
-#define StartupPtePageTableIndex    (PTE_BASE >> PDE_SHIFT)
-#define StartupPdePageTableIndex    (PDE_BASE >> PDE_SHIFT)
-#define PdrPageTableIndex           (PDR_BASE >> PDE_SHIFT)
-#define VectorPageTableIndex        (VECTOR_BASE >> PDE_SHIFT)
-
-PVOID MempPdrBaseAddress = (PVOID)0x70000;
-PVOID MempKernelBaseAddress = (PVOID)0;
-
+/* no idea if any of this is right */
 PHARDWARE_PTE PDE;
 PHARDWARE_PTE HalPageTable;
-
+#define SELFMAP_ENTRY       0x300
 PUCHAR PhysicalPageTablesBuffer;
 PUCHAR KernelPageTablesBuffer;
 ULONG PhysicalPageTables;
 ULONG KernelPageTables;
 
+/* just kernel shit */
 ULONG PcrBasePage;
 
-/* Converts a Physical Address into a Page Frame Number */
-#define PaToPfn(p)                  ((p) >> PFN_SHIFT)
-#define PaToLargePfn(p)             ((p) >> LARGE_PFN_SHIFT)
-#define PaPtrToPfn(p)               (((ULONG_PTR)(p)) >> PFN_SHIFT)
-
-/* Converts a Physical Address into a Coarse Page Table PFN */
-#define PaPtrToPdePfn(p)            (((ULONG_PTR)(p)) >> CPT_SHIFT)
-
-typedef struct _KPDR_PAGE
-{
-    PAGE_DIRECTORY_ARM PageDir;             // 0xC0400000 [0xFFD00000]
-    CHAR HyperSpace[233 * PAGE_SIZE];       // 0xC0404000 [0xFFD04000]
-    PAGE_TABLE_ARM KernelPageTable[3];      // 0xC04ED000 [0xFFDED000]
-    CHAR SharedData[PAGE_SIZE];             // 0xC04F0000 [0xFFDF0000]
-    CHAR KernelStack[KERNEL_STACK_SIZE];    // 0xC04F1000 [0xFFDF1000]
-    CHAR PanicStack[KERNEL_STACK_SIZE];     // 0xC04F4000 [0xFFDF4000]
-    CHAR InterruptStack[KERNEL_STACK_SIZE]; // 0xC04F7000 [0xFFDF7000]
-    CHAR InitialProcess[PAGE_SIZE];         // 0xC04FA000 [0xFFDFA000]
-    CHAR InitialThread[PAGE_SIZE];          // 0xC04FB000 [0xFFDFB000]
-    CHAR Prcb[PAGE_SIZE];                   // 0xC04FC000 [0xFFDFC000]
-    PAGE_TABLE_ARM PageDirPageTable;        // 0xC04FD000 [0xFFDFD000]
-    PAGE_TABLE_ARM VectorPageTable;         // 0xC04FE000 [0xFFDFE000]
-    CHAR Pcr[PAGE_SIZE];                    // 0xC04FF000 [0xFFDFF000]
-} KPDR_PAGE, *PKPDR_PAGE;
-
-C_ASSERT(sizeof(KPDR_PAGE) == (1 * 1024 * 1024));
-
-HARDWARE_PTE_ARMV6 TempPte;
-HARDWARE_LARGE_PTE_ARMV6 TempLargePte;
-HARDWARE_PDE_ARMV6 TempPde;
-PKPDR_PAGE PdrPage;
 
 /* FUNCTIONS **************************************************************/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 FORCEINLINE
 ARM_STATUS_REGISTER
@@ -166,19 +95,21 @@ ArmDomainRegisterSet(IN ARM_DOMAIN_REGISTER DomainRegister)
 #endif
 }
 
+/*  IMportant shit *************************************************************/
+// this is freeloader itself, if you want to make a hack. What is currently
+// Executing at this moment.
+extern PVOID OsLoaderBase;
+extern SIZE_T OsLoaderSize;
 
-
-
-
-
-
-
+/* pages being mapped, you will get all of ntoskrnl, hal, freeloader etc one segment at a time*/
 BOOLEAN
 MempSetupPaging(IN PFN_NUMBER StartPage,
                 IN PFN_NUMBER NumberOfPages,
                 IN BOOLEAN KernelMapping)
 {
     TRACE("base Page %X\n", StartPage);
+    // if it's a kernel mapping.. shift KSEG0_BASE
+
     return TRUE;
 }
 
@@ -194,210 +125,82 @@ MempDump(VOID)
     return;
 }
 
-static
-BOOLEAN
-WinLdrMapSpecialPages(ULONG PcrBasePage)
-{
-    ULONG i;
-    PHARDWARE_PTE_ARMV6 PointerPte;
-    PHARDWARE_PDE_ARMV6 PointerPde;
-    PHARDWARE_LARGE_PTE_ARMV6 LargePte;
-    PFN_NUMBER Pfn;
-
-    /* Setup the Startup PDE */
-    LargePte = &PdrPage->PageDir.Pte[StartupPdePageTableIndex];
-    TempLargePte.PageFrameNumber = PaToLargePfn((ULONG_PTR)&PdrPage->PageDir);
-    *LargePte = TempLargePte;
-
-    /* Map-in the PDR */
-    LargePte = &PdrPage->PageDir.Pte[PdrPageTableIndex];
-    *LargePte = TempLargePte;
-
-    /* After this point, any MiAddressToPde is guaranteed not to fault */
-
-    /*
-     * Link them in the Startup PDE.
-     * Note these are the entries in the PD at (MiAddressToPde(PTE_BASE)).
-     */
-    PointerPde = &PdrPage->PageDir.Pde[StartupPtePageTableIndex];
-    Pfn = PaPtrToPdePfn(&PdrPage->PageDirPageTable);
-    for (i = 0; i < 4; i++)
-    {
-        TempPde.PageFrameNumber = Pfn++;
-        *PointerPde++ = TempPde;
-    }
-
-    /*
-     * Now map these page tables in PTE space (MiAddressToPte(PTE_BASE)).
-     * Note that they all live on a single page, since each is 1KB.
-     */
-    PointerPte = &PdrPage->PageDirPageTable.Pte[0x300];
-    TempPte.PageFrameNumber = PaPtrToPfn(&PdrPage->PageDirPageTable);
-    *PointerPte = TempPte;
-
-    /*
-     * After this point, MiAddressToPte((PDE_BASE) to MiAddressToPte(PDE_TOP))
-     * is guaranteed not to fault.
-     * Any subsequent page allocation will first need its page table created
-     * and mapped in the PTE_BASE first, then the page table itself will be
-     * editable through its flat PTE address.
-     */
-
-    /* Setup the Vector PDE */
-    PointerPde = &PdrPage->PageDir.Pde[VectorPageTableIndex];
-    TempPde.PageFrameNumber = PaPtrToPdePfn(&PdrPage->VectorPageTable);
-    *PointerPde = TempPde;
-
-    /* Setup the Vector PTEs */
-    PointerPte = &PdrPage->VectorPageTable.Pte[0xF0];
-    TempPte.PageFrameNumber = 0;
-    *PointerPte = TempPte;
-
-    /* TODO: Map in the kernel CPTs */
-    return TRUE;
-}
-
-VOID
-WinLdrSetupForNt(IN PLOADER_PARAMETER_BLOCK LoaderBlock,
-                 IN PVOID *GdtIdt,
-                 IN PULONG PcrBasePage,
-                 IN PULONG TssBasePage)
-{
-    PKPDR_PAGE PdrPage = (PVOID)0xFFD00000;
-
-    /* Load cache information */
-    LoaderBlock->u.Arm.FirstLevelDcacheSize = FirstLevelDcacheSize;
-    LoaderBlock->u.Arm.FirstLevelDcacheFillSize = FirstLevelDcacheFillSize;
-    LoaderBlock->u.Arm.FirstLevelIcacheSize = FirstLevelIcacheSize;
-    LoaderBlock->u.Arm.FirstLevelIcacheFillSize = FirstLevelIcacheFillSize;
-    LoaderBlock->u.Arm.SecondLevelDcacheSize = SecondLevelDcacheSize;
-    LoaderBlock->u.Arm.SecondLevelDcacheFillSize = SecondLevelDcacheFillSize;
-    LoaderBlock->u.Arm.SecondLevelIcacheSize = SecondLevelIcacheSize;
-    LoaderBlock->u.Arm.SecondLevelIcacheFillSize = SecondLevelIcacheSize;
-
-    /* Write initial context information */
-    LoaderBlock->KernelStack = (ULONG_PTR)PdrPage->KernelStack;
-    LoaderBlock->KernelStack += KERNEL_STACK_SIZE;
-    LoaderBlock->u.Arm.PanicStack = (ULONG_PTR)PdrPage->PanicStack;
-    LoaderBlock->u.Arm.PanicStack += KERNEL_STACK_SIZE;
-    LoaderBlock->u.Arm.InterruptStack = (ULONG_PTR)PdrPage->InterruptStack;
-    LoaderBlock->u.Arm.InterruptStack += KERNEL_STACK_SIZE;
-    LoaderBlock->Prcb = (ULONG_PTR)PdrPage->Prcb;
-    LoaderBlock->Process = (ULONG_PTR)PdrPage->InitialProcess;
-    LoaderBlock->Thread = (ULONG_PTR)PdrPage->InitialThread;
-}
-
+/* This is all just a guess based on i386 paging----- */
 static
 BOOLEAN
 MempAllocatePageTables(VOID)
 {
     TRACE("Setting up page tables\n");
-    ULONG i;
-    PHARDWARE_PTE_ARMV6 PointerPte;
-    PHARDWARE_PDE_ARMV6 PointerPde;
-    PHARDWARE_LARGE_PTE_ARMV6 LargePte;
-    PFN_NUMBER Pfn;
+    ULONG NumPageTables, TotalSize;
+    PUCHAR Buffer;
 
-    /* Setup templates */
-    TempPte.Sbo = TempPte.Valid = TempLargePte.LargePage = TempLargePte.Sbo = TempPde.Valid = 1;
+    NumPageTables = TotalPagesInLookupTable >> 10;
 
-    /* Allocate the 1MB "PDR" (Processor Data Region). Must be 1MB aligned */
-    PdrPage = MmAllocateMemoryWithType(sizeof(KPDR_PAGE), LoaderFirmwareTemporary);
+    TRACE("NumPageTables = %d\n", NumPageTables);
 
-    /* Setup the Low Memory PDE as an identity-mapped Large Page (1MB) */
-    LargePte = &PdrPage->PageDir.Pte[LowMemPageTableIndex];
-    TempLargePte.PageFrameNumber = PaToLargePfn(IDMAP_BASE);
-    *LargePte = TempLargePte;
+    // Allocate memory block for all these things:
+    // PDE, HAL mapping page table, physical mapping, kernel mapping
+    TotalSize = (1 + 1 + NumPageTables * 2) * MM_PAGE_SIZE;
 
-    /* Setup the MMIO PDE as two identity mapped large pages -- the kernel will blow these away later */
-    LargePte = &PdrPage->PageDir.Pte[MmioPageTableIndex];
-    Pfn = PaToLargePfn(MMIO_BASE);
-    for (i = 0; i < 2; i++)
+    // PDE+HAL+KernelPTEs == MemoryData
+    Buffer = MmAllocateMemoryWithType(TotalSize, LoaderMemoryData);
+
+    // Physical PTEs = FirmwareTemporary
+    PhysicalPageTablesBuffer = (PUCHAR)Buffer + TotalSize - NumPageTables*MM_PAGE_SIZE;
+    MmSetMemoryType(PhysicalPageTablesBuffer,
+                    NumPageTables*MM_PAGE_SIZE,
+                    LoaderFirmwareTemporary);
+
+    // This check is now redundant
+    if (Buffer + (TotalSize - NumPageTables*MM_PAGE_SIZE) !=
+        PhysicalPageTablesBuffer)
     {
-        TempLargePte.PageFrameNumber = Pfn++;
-        *LargePte++ = TempLargePte;
+        TRACE("There was a problem allocating two adjacent blocks of memory!\n");
     }
 
-    /* Setup the Kernel PDEs */
-    PointerPde = &PdrPage->PageDir.Pde[KernelPageTableIndex];
-    Pfn = PaPtrToPdePfn(PdrPage->KernelPageTable);
-    for (i = 0; i < 12; i++)
+    if (Buffer == NULL || PhysicalPageTablesBuffer == NULL)
     {
-        TempPde.PageFrameNumber = Pfn;
-        *PointerPde++ = TempPde;
-        Pfn++;
+        UiMessageBox("Impossible to allocate memory block for page tables!");
+        return FALSE;
     }
 
-    /* Setup the Kernel PTEs */
-    PointerPte = PdrPage->KernelPageTable[0].Pte;
-    Pfn = PaPtrToPfn(MempKernelBaseAddress);
-    for (i = 0; i < 3072; i++)
-    {
-        TempPte.PageFrameNumber = Pfn++;
-        *PointerPte++ = TempPte;
-    }
+    // Zero all this memory block
+    RtlZeroMemory(Buffer, TotalSize);
 
+    // Set up pointers correctly now
+    PDE = (PHARDWARE_PTE)Buffer;
+
+    // Map the page directory at 0xC0000000 (maps itself)
+    PDE[SELFMAP_ENTRY].PageFrameNumber = (ULONG)PDE >> MM_PAGE_SHIFT;
+    PDE[SELFMAP_ENTRY].Valid = 1;
+    PDE[SELFMAP_ENTRY].ReadOnly = 0;
+
+    // The last PDE slot is allocated for HAL's memory mapping (Virtual Addresses 0xFFC00000 - 0xFFFFFFFF)
+    HalPageTable = (PHARDWARE_PTE)&Buffer[MM_PAGE_SIZE*1];
+
+    // Map it
+    PDE[1023].PageFrameNumber = (ULONG)HalPageTable >> MM_PAGE_SHIFT;
+    PDE[1023].Valid = 1;
+    PDE[1023].ReadOnly = 0;
+
+    // Store pointer to the table for easier access
+    KernelPageTablesBuffer = &Buffer[MM_PAGE_SIZE*2];
+
+    // Zero counters of page tables used
+    PhysicalPageTables = 0;
+    KernelPageTables = 0;
 
     /* Done */
     return TRUE;
 }
-extern PLOADER_PARAMETER_BLOCK PubLoaderBlockVA;
-extern KERNEL_ENTRY_POINT PubKiSystemStartup;
-VOID
-WinLdrSetProcessorContext(VOID)
-{
-        ARM_CONTROL_REGISTER ControlRegister;
-    ARM_TTB_REGISTER TtbRegister;
-    ARM_DOMAIN_REGISTER DomainRegister;
-        /* Enable ARMv6+ paging (MMU), caches and the access bit */
-    ControlRegister = ArmControlRegisterGet();
-    ControlRegister.MmuEnabled = FALSE;
-    ControlRegister.ICacheEnabled = TRUE;
-    ControlRegister.DCacheEnabled = TRUE;
-    ControlRegister.ForceAp = TRUE;
-    ControlRegister.ExtendedPageTables = TRUE;
-    ArmControlRegisterSet(ControlRegister);
-    TRACE("WinldrSetProessorContext for ARM\n");
 
-    /* Set the TTBR */
-    TtbRegister.AsUlong = (ULONG_PTR)&PdrPage->PageDir;
-    if (&PdrPage->PageDir == NULL)
-    {
-        TRACE("The page tables are null\n");
-    }
-    ArmTranslationTableRegisterSet(TtbRegister);
-
-    /* Disable domains and simply use access bits on PTEs */
-    DomainRegister.AsUlong = 0;
-    DomainRegister.Domain0 = ClientDomain;
-    KeArmDomainRegisterSet(DomainRegister);
-
-    TRACE("Enabling paging\n");
-    /* Enable ARMv6+ paging (MMU), caches and the access bit */
-    ControlRegister = ArmControlRegisterGet();
-    ControlRegister.MmuEnabled = TRUE;
-    ControlRegister.ICacheEnabled = TRUE;
-    ControlRegister.DCacheEnabled = TRUE;
-    ControlRegister.ForceAp = TRUE;
-    ControlRegister.ExtendedPageTables = TRUE;
-    ArmControlRegisterSet(ControlRegister);
-
-    TRACE("Jumping to kernel\n");
-    (*PubKiSystemStartup)(PubLoaderBlockVA);
-     TRACE("failed to jump to kernel\n");
-#if 1
-#endif
-}
-extern PVOID OsLoaderBase;
-extern SIZE_T OsLoaderSize;
+/* THIS IS BEFORE PAGES START BEING MAPPED ------*/
 VOID
 WinLdrSetupMachineDependent(
     PLOADER_PARAMETER_BLOCK LoaderBlock)
 {
     TRACE("Preperaing for paging\n");
     ULONG_PTR Pcr = 0;
-
-    /* Allocate 2 pages for PCR: one for the boot processor PCR and one for KI_USER_SHARED_DATA */
     Pcr = (ULONG_PTR)MmAllocateMemoryWithType(OsLoaderSize + MM_PAGE_SIZE, LoaderStartupPcrPage);
     PcrBasePage = (ULONG_PTR)OsLoaderBase >> MM_PAGE_SHIFT;
     if (Pcr == 0)
@@ -412,7 +215,45 @@ WinLdrSetupMachineDependent(
     {
         BugCheck("MempAllocatePageTables failed!\n");
     }
+}
 
-    /* Map stuff like PCR, KI_USER_SHARED_DATA and Apic */
-    WinLdrMapSpecialPages(PcrBasePage);
+/* THIS IS AFTER ALL PAGES ARE MAPPED ------*/
+extern PLOADER_PARAMETER_BLOCK PubLoaderBlockVA;
+extern KERNEL_ENTRY_POINT PubKiSystemStartup;
+
+VOID
+WinLdrSetProcessorContext(VOID)
+{
+    TRACE("WinLdrSetProcessorContext: Entry");
+    ARM_CONTROL_REGISTER ControlRegister;
+    ARM_TTB_REGISTER TtbRegister;
+    ARM_DOMAIN_REGISTER DomainRegister;
+
+    /* Set the TTBR */
+    TtbRegister.AsUlong = (ULONG_PTR)PDE; //I have no idea if this is right
+    if (PDE == NULL)
+    {
+        TRACE("The page tables are null\n");
+    }
+
+    ArmTranslationTableRegisterSet(TtbRegister);
+
+    /* Disable domains and simply use access bits on PTEs */
+    DomainRegister.AsUlong = 0;
+    DomainRegister.Domain0 = ClientDomain;
+    ArmDomainRegisterSet(DomainRegister);
+
+    TRACE("Enabling paging\n");
+    /* Enable ARMv6+ paging (MMU), caches and the access bit */
+    ControlRegister = ArmControlRegisterGet();
+    ControlRegister.MmuEnabled = TRUE;
+    ControlRegister.ICacheEnabled = TRUE;
+    ControlRegister.DCacheEnabled = TRUE;
+    ControlRegister.ForceAp = TRUE;
+    ControlRegister.ExtendedPageTables = TRUE;
+    ArmControlRegisterSet(ControlRegister);
+
+    TRACE("Jumping to kernel\n");
+    /* this will launch ntoskrnl */
+    (*PubKiSystemStartup)(PubLoaderBlockVA);
 }

@@ -477,7 +477,11 @@ VOID
 NTAPI
 KiSystemStartup(IN PLOADER_PARAMETER_BLOCK LoaderBlock)
 {
-    DbgPrintEarly("hello from armport two \n");
+    DbgPrintEarly("ReactOS 0.4.15 ARM32 Edition \n");
+    for(;;)
+    {
+
+    }
     KiInitializeSystem(LoaderBlock);
     for(;;)
     {

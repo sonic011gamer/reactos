@@ -1233,7 +1233,8 @@ LoadAndBootWindowsCommon(
 
     /* Debugging... */
     //DumpMemoryAllocMap();
-
+   TRACE("KiSystemStartup VA %p, LoaderBlockVA %p!\n",
+          KiSystemStartup, LoaderBlockVA);
     /* Do the machine specific initialization */
     WinLdrSetupMachineDependent(LoaderBlock);
 

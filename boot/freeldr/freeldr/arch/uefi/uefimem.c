@@ -151,7 +151,7 @@ UefiConvertToFreeldrDesc(EFI_MEMORY_TYPE EfiMemoryType)
     switch (EfiMemoryType)
     {
         case EfiReservedMemoryType:
-            return LoaderReserve;
+            return LoaderBad;
         case EfiLoaderCode:
             return LoaderLoadedProgram;
         case EfiLoaderData:
@@ -169,13 +169,13 @@ UefiConvertToFreeldrDesc(EFI_MEMORY_TYPE EfiMemoryType)
         case EfiUnusableMemory:
             return LoaderBad;
         case EfiACPIReclaimMemory:
-            return LoaderFirmwareTemporary;
+            return LoaderBad;
         case EfiACPIMemoryNVS:
-            return LoaderReserve;
+            return LoaderBad;
         case EfiMemoryMappedIO:
-            return LoaderReserve;
+            return LoaderBad;
         case EfiMemoryMappedIOPortSpace:
-            return LoaderReserve;
+            return LoaderBad;
         default:
             break;
     }
@@ -243,7 +243,7 @@ UefiMemGetMemoryMap(ULONG *MemoryMapSize)
 	for (Index = 0; Index < EntryCount; ++Index)
     {
         TYPE_OF_MEMORY MemoryType = UefiConvertToFreeldrDesc(MapEntry->Type);
-        if (MemoryType == LoaderFree)
+        if (MemoryType != LoaderBad)
         {
             #if 0
             Status = GlobalSystemTable->BootServices->AllocatePages(AllocateAddress,
@@ -256,13 +256,14 @@ UefiMemGetMemoryMap(ULONG *MemoryMapSize)
                 MemoryType = LoaderFirmwareTemporary;
             }
             #endif
+
         }
+
 
         UefiSetMemory(FreeldrMem,
                       MapEntry->PhysicalStart,
                       MapEntry->NumberOfPages,
                       MemoryType);
-
         MapEntry = NEXT_MEMORY_DESCRIPTOR(MapEntry, DescriptorSize);
     }
 
